@@ -18,10 +18,11 @@ const HeroSection = () => {
         </p>
 
         <div className="hero-actions" id="join">
-          <Button href="#events" variant="solid">
-            explore events
-          </Button>
-          <Button href="#team" variant="outline">
+  <Button to="/events" variant="solid">
+    explore events
+  </Button>
+  
+          <Button to="/team" variant="outline">
             learn more
           </Button>
         </div>

@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Button = ({ 
   children, 
-  href, 
+  to,       
+  href,  
   onClick, 
   variant = 'solid', 
   className = '', 
@@ -11,7 +13,13 @@ const Button = ({
   const baseStyle = 'button';
   const variantStyle = variant === 'outline' ? 'button--outline' : 'button--solid';
   const combinedClasses = `${baseStyle} ${variantStyle} ${className}`.trim();
-
+  if (to) {
+    return (
+      <Link to={to} className={combinedClasses} {...props}>
+        {children}
+      </Link>
+    );
+  }
   if (href) {
     return (
       <a href={href} className={combinedClasses} {...props}>
