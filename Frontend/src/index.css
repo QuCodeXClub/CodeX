@@ -211,6 +211,7 @@
   .split-right {
     @apply min-h-[31rem] px-[1.15rem] py-[3.1rem] lg:p-[3.1rem];
   }
+  
 
   .split-right {
     @apply bg-panel text-[#f4efe6] border-t lg:border-t-0 lg:border-l border-line;
