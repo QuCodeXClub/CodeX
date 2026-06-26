@@ -1,16 +1,45 @@
-# React + Vite
+# Frontend — CodeX Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the React + Vite frontend for the CodeX Club website. It provides the public landing pages, event listings, and the member/admin portal UI.
 
-Currently, two official plugins are available:
+Getting started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Requirements:
+- Node.js >= 18
+- npm (or yarn)
 
-## React Compiler
+Install dependencies and run the development server:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd Frontend
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Available scripts (see `package.json`):
+- `dev` — start Vite development server with HMR
+- `build` — build production assets
+- `preview` — preview the production build
+- `lint` — run ESLint on the codebase
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Environment variables
+
+- Use `.env` or `.env.local` to set any frontend-specific variables (API base URL, analytics keys, etc.). Typical variables:
+	- `VITE_API_BASE_URL` — Backend API base URL (e.g., `http://localhost:3000/api`)
+
+Build & deploy
+
+```bash
+npm run build
+npm run preview
+```
+
+Testing & linting
+
+- Lint: `npm run lint`
+- There are no automated tests included by default; please add unit or integration tests under `Testing/` and update CI accordingly.
+
+Contributing
+
+See the root `CONTRIBUTING.md` for guidance on running the full stack locally and contributing changes.
+
