@@ -45,9 +45,25 @@ app.use(cookieParser());
 
 // routes import
 import healthcheckRouter from "./routes/healthcheck.routes.js";
+import adminRouter from "./routes/admin.routes.js";
+import studentRouter from "./routes/student.routes.js";
+import registrationRouter from "./routes/registration.routes.js";
+import eventRouter from "./routes/event.routes.js";
+import teamRouter from "./routes/team.routes.js";
+import certificateRouter from "./routes/certificate.routes.js";
+import contactRouter from "./routes/contact.routes.js";
+import faqRouter from "./routes/faq.routes.js";
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthcheckRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/students", studentRouter);
+app.use("/api/v1/registrations", registrationRouter);
+app.use("/api/v1/events", eventRouter);
+app.use("/api/v1/teams", teamRouter);
+app.use("/api/v1/certificates", certificateRouter);
+app.use("/api/v1/contact", contactRouter);
+app.use("/api/v1/faqs", faqRouter);
 
 // error handling middleware (should be added after all routes)
 app.use(errorHandler);
