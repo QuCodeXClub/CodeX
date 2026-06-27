@@ -13,6 +13,10 @@ const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminRegistrations = lazy(() => import('./pages/admin/Registrations'));
 const AdminEvents = lazy(() => import('./pages/admin/ManageEvents'));
 const AdminTeam = lazy(() => import('./pages/admin/ManageTeam'));
+const BulkCertificates = lazy(() => import('./pages/admin/BulkCertificates'));
+const ManageFAQs = lazy(() => import('./pages/admin/ManageFAQs'));
+const ManageSessions = lazy(() => import('./pages/admin/ManageSessions'));
+
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-base-light text-accent-cyan font-mono">
     {/* INITIALIZING MODULE... */}
@@ -38,6 +42,9 @@ function App() {
             <Route path="registrations" element={<AdminRegistrations />} />
             <Route path="events" element={<AdminEvents />} />
             <Route path="team" element={<AdminTeam />} />
+            <Route path="certificates" element={<BulkCertificates />} />
+            <Route path="faqs" element={<ManageFAQs />} />
+            <Route path="sessions" element={<ManageSessions />} />
           </Route>
 
         </Routes>

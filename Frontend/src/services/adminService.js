@@ -21,6 +21,14 @@ class AdminService {
     return axiosInstance.post('/admin/change-password', { oldPassword, newPassword });
   }
 
+  async getSessions() {
+    return axiosInstance.get('/admin/sessions');
+  }
+
+  async killSession(sessionId) {
+    return axiosInstance.delete(`/admin/sessions/${sessionId}`);
+  }
+
   async updateAdminProfile(name, email) {
     return axiosInstance.patch('/admin/update-profile', { name, email });
   }
