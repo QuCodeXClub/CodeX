@@ -57,7 +57,7 @@ const registerStudent = asyncHandler(async (req, res) => {
   // 2. Validate Required Fields
   if (
     [name, fatherName, course, year, semester, section, set, studentId, email, phone, transactionId].some(
-      (field) => field?.trim() === '' || field === undefined
+      (field) => !field || field.toString().trim() === ''
     )
   ) {
     throw new ApiError(400, 'All fields are required');
