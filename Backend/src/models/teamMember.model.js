@@ -1,0 +1,34 @@
+import mongoose from 'mongoose';
+
+const teamMemberSchema = new mongoose.Schema(
+  {
+    academicYear: {
+      type: String,
+      required: [true, "Academic year is required (e.g., '2024-2025')"], 
+    },
+    subTeam: {
+      type: String,
+      required: [true, "Sub-team is required"],
+      enum: {
+        values: ['Core Team', 'Tech Team', 'Graphic Team'],
+        message: '{VALUE} is not a valid sub-team'
+      },
+    },
+    name: {
+      type: String,
+      required: [true, "Team member name is required"],
+      trim: true,
+    },
+    post: {
+      type: String,
+      required: [true, "Post/Role is required (e.g., 'Project Lead')"], 
+    },
+    photo: {
+      type: String, // Cloudinary URL
+      required: [true, "Profile photo is required"],
+    },
+  },
+  { timestamps: true }
+);
+
+export const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
