@@ -283,6 +283,22 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
     `,
   });
 
+/**
+ * Contact Form Received Email
+ */
+const contactFormReceivedEmail = (userName) =>
+  emailLayout({
+    preheader: `Thank you for contacting CodeX, ${userName}`,
+    body: `
+      ${kicker('// message_received')}
+      ${heading('We got your message.')}
+      ${paragraph(`Hi <strong>${userName}</strong>,`)}
+      ${paragraph('Thank you for reaching out to us. We have successfully received your message and our team will get back to you as soon as possible.')}
+      ${paragraph('In the meantime, feel free to explore our website and upcoming events.')}
+      ${darkBadge('status: received')}
+    `,
+  });
+
 export {
   emailLayout,
   ctaButton,
@@ -298,4 +314,5 @@ export {
   registrationApprovedEmail,
   registrationRejectedEmail,
   certificateEmail,
+  contactFormReceivedEmail,
 };

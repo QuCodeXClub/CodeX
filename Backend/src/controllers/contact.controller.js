@@ -2,12 +2,25 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Contact } from "../models/contact.model.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { contactFormReceivedEmail } from "../utils/emailTemplates.js";
+import { verifyTurnstileToken } from "../utils/turnstile.js";
 
 // @desc    Submit a contact form
 // @route   POST /api/v1/contact
 // @access  Public
 const submitContactForm = asyncHandler(async (req, res) => {
-  const { name, email, subject, message } = req.body;
+  const { name, email, subject, message, turnstileToken } = req.body;
+
+  // 1. Verify Bot Token
+  if (!turnstileToken) {
+    throw new ApiError(400, "Bot verification token is missing");
+  }
+
+  const isHuman = await verifyTurnstileToken(turnstileToken);
+  if (!isHuman) {
+    throw new ApiError(400, "Bot verification failed. Please try again.");
+  }
 
   if (!name || !email || !subject || !message) {
     throw new ApiError(400, "All fields are required");
@@ -18,6 +31,15 @@ const submitContactForm = asyncHandler(async (req, res) => {
     email,
     subject,
     message,
+  });
+
+  // Send confirmation email to the user (non-blocking)
+  sendEmail({
+    email,
+    subject: "We received your message - CodeX",
+    message: contactFormReceivedEmail(name),
+  }).catch((err) => {
+    console.error("Failed to send contact confirmation email:", err);
   });
 
   return res.status(201).json(
