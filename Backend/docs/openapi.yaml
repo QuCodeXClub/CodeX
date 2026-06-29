@@ -169,6 +169,7 @@ components:
         - email
         - subject
         - message
+        - turnstileToken
       properties:
         name:
           type: string
@@ -183,6 +184,9 @@ components:
         message:
           type: string
           example: I would like to know more about joining CodeX.
+        turnstileToken:
+          type: string
+          example: dev-bypass
 paths:
   /healthcheck:
     get:
