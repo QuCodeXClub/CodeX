@@ -123,20 +123,30 @@ components:
           example: dev-bypass
     Event:
       type: object
+      required:
+        - eventName
+        - description
+        - date
+        - coverImage
       properties:
-        title:
+        eventName:
           type: string
           example: Hackathon 2026
+
         description:
           type: string
-          example: Annual 24-hour hackathon
+          example: Annual coding competition
+
         date:
           type: string
           format: date
-          example: 2026-08-15
-        location:
+          example: "2026-08-15"
+
+        registrationLink:
           type: string
-          example: Auditorium Hall
+          format: uri
+          example: https://forms.google.com/xxxxxxxx
+
         coverImage:
           type: string
           format: binary
@@ -446,20 +456,21 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - eventName
+                - description
+                - date
+                - coverImage
               properties:
-                title:
+                eventName:
                   type: string
-                  example: Hackathon 2026
                 description:
                   type: string
-                  example: Annual coding competition
                 date:
                   type: string
                   format: date
-                  example: 2026-08-15
-                location:
+                registrationLink:
                   type: string
-                  example: Auditorium Hall
                 coverImage:
                   type: string
                   format: binary
