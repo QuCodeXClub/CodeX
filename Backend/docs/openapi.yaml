@@ -123,45 +123,64 @@ components:
           example: dev-bypass
     Event:
       type: object
+      required:
+        - eventName
+        - description
+        - date
+        - coverImage
       properties:
-        title:
+        eventName:
           type: string
           example: Hackathon 2026
+
         description:
           type: string
-          example: Annual 24-hour hackathon
+          example: Annual coding competition
+
         date:
           type: string
           format: date
-          example: 2026-08-15
-        location:
+          example: "2026-08-15"
+
+        registrationLink:
           type: string
-          example: Auditorium Hall
+          format: uri
+          example: https://forms.google.com/xxxxxxxx
+
         coverImage:
           type: string
           format: binary
     TeamMember:
       type: object
+      required:
+        - academicYear
+        - subTeam
+        - name
+        - post
+        - photo
       properties:
+        academicYear:
+          type: string
+          example: "2025-2026"
+
+        subTeam:
+          type: string
+          enum:
+            - Core Team
+            - Tech Team
+            - Graphic Team
+
         name:
           type: string
           example: Jane Doe
-        role:
+
+        post:
           type: string
           example: Lead Developer
-        bio:
-          type: string
-          example: Full-stack engineer with 3 years of experience
+
         photo:
           type: string
           format: binary
-        socialLinks:
-          type: object
-          properties:
-            github:
-              type: string
-            linkedin:
-              type: string
     Contact:
       type: object
       required:
@@ -474,20 +493,21 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - eventName
+                - description
+                - date
+                - coverImage
               properties:
-                title:
+                eventName:
                   type: string
-                  example: Hackathon 2026
                 description:
                   type: string
-                  example: Annual coding competition
                 date:
                   type: string
                   format: date
-                  example: 2026-08-15
-                location:
+                registrationLink:
                   type: string
-                  example: Auditorium Hall
                 coverImage:
                   type: string
                   format: binary
@@ -550,23 +570,36 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - academicYear
+                - subTeam
+                - name
+                - post
+                - photo
               properties:
+                academicYear:
+                  type: string
+                  example: "2025-2026"
+
+                subTeam:
+                  type: string
+                  enum:
+                    - Core Team
+                    - Tech Team
+                    - Graphic Team
+                  example: Tech Team
+
                 name:
                   type: string
                   example: Jane Doe
-                role:
+
+                post:
                   type: string
                   example: Lead Developer
-                bio:
-                  type: string
-                  example: Full-stack engineer
+
                 photo:
                   type: string
                   format: binary
-                github:
-                  type: string
-                linkedin:
-                  type: string
       responses:
         "201":
           description: Team member added
