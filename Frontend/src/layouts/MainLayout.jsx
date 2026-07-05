@@ -1,11 +1,13 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 
 const MainLayout = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="app-shell">
-            <header className="site-header sticky top-0 z-50">
+      <header className="site-header sticky top-0 z-50">
         <div className="brand-lockup flex items-center gap-3">
           <div className="brand-dot"></div>
           <Link to="/" className="brand-wordmark hover:text-accent transition-colors">
@@ -18,11 +20,15 @@ const MainLayout = () => {
           <Link to="/events">EVENTS</Link>
           <Link to="/team">TEAM</Link>
           <Link to="/resources">RESOURCES</Link>
+          <Link to="/faqs">FAQS</Link>
         </nav>
-
         <div className="site-meta flex items-center justify-between w-full lg:w-auto">
           <span className="hidden lg:inline-block">EST. 2018 — VOL.07</span>
-          <Button href="#join" variant="solid" className="join-button m-0 lg:ml-4">
+          <Button 
+            onClick={() => navigate('/register')} 
+            variant="solid" 
+            className="join-button m-0 lg:ml-4"
+          >
             JOIN US
           </Button>
         </div>
@@ -40,7 +46,7 @@ const MainLayout = () => {
       <main className="main-content">
         <Outlet />
       </main>
-            <footer className="border-t border-line p-6 font-mono text-xs text-ink/40 text-center uppercase tracking-widest bg-bg">
+      <footer className="border-t border-line p-6 font-mono text-xs text-ink/40 text-center uppercase tracking-widest bg-bg">
         © {new Date().getFullYear()} Codex Collective. All systems nominal.
       </footer>
     </div>

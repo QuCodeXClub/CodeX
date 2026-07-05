@@ -12,12 +12,14 @@ const CommitSection = () => {
           We are looking for high-performance individuals to bridge the gap between
           abstract logic and hardware reality. Ready to commit?
         </p>
-
-        <Button href="#archive" variant="solid" className="button--wide">
-          execute: join_us[]
-        </Button>
+       <Button 
+            onClick={() => navigate('/register')} 
+            variant="solid" 
+            className="join-button m-0 lg:ml-4"
+          >
+   Join Now 
+             </Button>
       </div>
-
       <div className="split-right" id="archive">
         <p className="split-kicker">// why codex?</p>
         <ul className="split-list">

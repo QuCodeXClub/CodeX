@@ -25,7 +25,6 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-
 // Compression for better performance
 app.use(compression());
 

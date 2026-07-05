@@ -30,10 +30,8 @@ const addTeamMember = asyncHandler(async (req, res) => {
     post,
     photo: photo.url,
   });
-
   return res.status(201).json(new ApiResponse(201, member, 'Team member added successfully'));
 });
-
 const getTeamMembers = asyncHandler(async (req, res) => {
   const { academicYear } = req.query;
 
@@ -41,7 +39,7 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   if (academicYear) query.academicYear = academicYear;
 
   const members = await TeamMember.find(query).sort({ subTeam: 1, post: 1 });
-
+  
   return res.status(200).json(new ApiResponse(200, members, 'Team members fetched successfully'));
 });
 
@@ -67,7 +65,6 @@ const deleteTeamMember = asyncHandler(async (req, res) => {
 const updateTeamMember = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { academicYear, subTeam, name, post } = req.body;
-
   const member = await TeamMember.findById(id);
 
   if (!member) {
@@ -93,9 +90,7 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   member.name = name || member.name;
   member.post = post || member.post;
   member.photo = newPhotoUrl;
-
   await member.save();
-
   return res.status(200).json(new ApiResponse(200, member, 'Team member updated successfully'));
 });
 

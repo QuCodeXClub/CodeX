@@ -1,110 +1,221 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import axios from 'axios';
+import { Users, Calendar, Activity, ShieldCheck, CalendarDays, Users2, FileText, Settings } from 'lucide-react';
+import { registrationService } from '../../services/registrationService';
+import { adminService } from '../../services/adminService';
 
-const Dashboard = () => {
+export default function Dashboard() {
+  const [metrics, setMetrics] = useState({
+    pendingApps: 0,
+    activeEvents: 0,
+    liveSessions: 0,
+    totalApps: 0,
+    teamSize: 0,
+    loading: true
+  });
+  
+  const [recentLogs, setRecentLogs] = useState([]);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const [pendingRes, allRegRes, eventsRes, sessionsRes, teamRes] = await Promise.all([
+          registrationService.getRegistrations({ status: 'PENDING' }),
+          registrationService.getRegistrations({ limit: 5 }),
+          axios.get('/api/v1/events', { withCredentials: true }),
+          adminService.getSessions(),
+          axios.get('/api/v1/teams', { withCredentials: true })
+        ]);
+
+        const pendingData = pendingRes.data?.data || pendingRes.data || {};
+        const allRegData = allRegRes.data?.data || allRegRes.data || {};
+        const evData = eventsRes.data?.data || eventsRes.data || [];
+        const sessData = sessionsRes.data?.data || sessionsRes.data || [];
+        const teamData = teamRes.data?.data || teamRes.data || [];
+
+        setMetrics({
+          pendingApps: pendingData.total || 0,
+          totalApps: allRegData.total || 0,
+          activeEvents: evData.length || 0,
+          liveSessions: sessData.length || 0,
+          teamSize: teamData.length || 0,
+          loading: false
+        });
+
+        setRecentLogs(allRegData.registrations || (Array.isArray(allRegData) ? allRegData : []));
+      } catch (error) {
+        console.error("Failed to fetch dashboard metrics:", error);
+        setMetrics(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    fetchMetrics();
+  }, []);
+
+  const currentDate = new Intl.DateTimeFormat('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'
+  }).format(new Date());
+
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-          Admin Dashboard
-        </h1>
-        <p className="text-gray-400 mt-2">Welcome to the CodeX Admin Dashboard. Select an option to manage.</p>
-      </div>
+    <div className="p-8 lg:p-10 font-sans text-slate-900 min-h-full">
+      
+      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">System Overview</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time metrics and system health</p>
+        </div>
+        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm font-medium text-slate-700">
+          <CalendarDays className="w-4 h-4 text-slate-400" />
+          {currentDate}
+        </div>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/registrations"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-cyan-900/50 to-blue-900/30 border border-cyan-700/30 hover:border-cyan-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+      <div className="grid grid-cols-12 gap-6">
+                <div className="col-span-12 lg:col-span-4 space-y-6">
+          
+          <div className="bg-slate-900 rounded-2xl p-8 text-white relative overflow-hidden shadow-lg">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500 opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            <div className="relative z-10">
+              <p className="text-slate-300 text-sm mb-1">Welcome back,</p>
+              <h2 className="text-3xl font-bold mb-4">Admin User</h2>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-[85%]">
+                Here's what's happening with Codex today.
+              </p>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Registrations</h3>
-            <p className="text-gray-400 text-sm">Review and manage student registrations.</p>
-          </Link>
-        </motion.div>
+          </div>
 
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/events"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-purple-900/50 to-pink-900/30 border border-purple-700/30 hover:border-purple-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Quick Actions</h3>
+            <div className="space-y-3">
+              <Link to="/admin/events" className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50 transition-colors group">
+                <div className="flex items-center gap-3 text-sm font-medium text-slate-700 group-hover:text-teal-700">
+                  <Calendar className="w-5 h-5 text-teal-500" /> Event Management
+                </div>
+              </Link>
+              <Link to="/admin/team" className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50 transition-colors group">
+                <div className="flex items-center gap-3 text-sm font-medium text-slate-700 group-hover:text-teal-700">
+                  <Users2 className="w-5 h-5 text-teal-500" /> Team Management
+                </div>
+              </Link>
+              <Link to="/admin/certificates" className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50 transition-colors group">
+                <div className="flex items-center gap-3 text-sm font-medium text-slate-700 group-hover:text-teal-700">
+                  <FileText className="w-5 h-5 text-teal-500" /> Certificate Management
+                </div>
+              </Link>
+              <Link to="/admin/dashboard" className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-teal-100 hover:bg-teal-50 transition-colors group">
+                <div className="flex items-center gap-3 text-sm font-medium text-slate-700 group-hover:text-teal-700">
+                  <Settings className="w-5 h-5 text-slate-400 group-hover:text-teal-500" /> System Settings
+                </div>
+              </Link>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Manage Events</h3>
-            <p className="text-gray-400 text-sm">Create, edit, and organize club events.</p>
-          </Link>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/team"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-green-900/50 to-emerald-900/30 border border-green-700/30 hover:border-green-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+          </div>
+        </div>
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-teal-50 rounded-lg">
+                  <Users className="w-6 h-6 text-teal-600" />
+                </div>
+                <span className="text-sm font-medium text-slate-500">Pending Applications</span>
+              </div>
+              <div>
+                <span className="text-3xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.pendingApps}</span>
+                <p className="text-xs font-medium text-teal-600 mt-2">Real-time sync</p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Manage Team</h3>
-            <p className="text-gray-400 text-sm">Add and organize core team members.</p>
-          </Link>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/certificates"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-yellow-900/50 to-orange-900/30 border border-yellow-700/30 hover:border-yellow-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-yellow-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-purple-50 rounded-lg">
+                  <Calendar className="w-6 h-6 text-purple-600" />
+                </div>
+                <span className="text-sm font-medium text-slate-500">Active Events</span>
+              </div>
+              <div>
+                <span className="text-3xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.activeEvents}</span>
+                <p className="text-xs font-medium text-teal-600 mt-2">Real-time sync</p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Bulk Certificates</h3>
-            <p className="text-gray-400 text-sm">Generate and manage event certificates.</p>
-          </Link>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/faqs"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-rose-900/50 to-red-900/30 border border-rose-700/30 hover:border-rose-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-rose-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-amber-50 rounded-lg">
+                  <Activity className="w-6 h-6 text-amber-600" />
+                </div>
+                <span className="text-sm font-medium text-slate-500">Live Sessions</span>
+              </div>
+              <div>
+                <span className="text-3xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.liveSessions}</span>
+                <p className="text-xs font-medium text-teal-600 mt-2">Real-time sync</p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Manage FAQs</h3>
-            <p className="text-gray-400 text-sm">Edit and update the public FAQ section.</p>
-          </Link>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            to="/admin/sessions"
-            className="block p-6 rounded-2xl bg-gradient-to-br from-indigo-900/50 to-blue-900/30 border border-indigo-700/30 hover:border-indigo-500/50 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-7 h-7 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-              </svg>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <ShieldCheck className="w-6 h-6 text-blue-600" />
+                </div>
+                <span className="text-sm font-medium text-slate-500">System Status</span>
+              </div>
+              <div>
+                <span className="text-3xl font-bold text-slate-900">OK</span>
+                <p className="text-xs font-medium text-teal-600 mt-2">All systems operational</p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Active Sessions</h3>
-            <p className="text-gray-400 text-sm">View devices currently logged in and manage account security.</p>
-          </Link>
-        </motion.div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-slate-900">Database Aggregates</h3>
+                <Link to="/admin/events" className="text-xs font-medium text-teal-600 hover:underline">Manage Records</Link>
+              </div>
+              <div className="flex-1 flex flex-col justify-center gap-6">
+                <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-sm font-medium text-slate-600">Total Applications Received</span>
+                  <span className="text-xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.totalApps}</span>
+                </div>
+                <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-sm font-medium text-slate-600">Total Events Hosted</span>
+                  <span className="text-xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.activeEvents}</span>
+                </div>
+                <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-sm font-medium text-slate-600">Active Team Roster</span>
+                  <span className="text-xl font-bold text-slate-900">{metrics.loading ? '-' : metrics.teamSize}</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col h-[320px]">
+              <div className="flex items-center justify-between mb-6 shrink-0">
+                <h3 className="font-bold text-slate-900">Recent Registrations</h3>
+                <Link to="/admin/registrations" className="text-xs font-medium text-teal-600 hover:underline">View All</Link>
+              </div>
+              <div className="space-y-4 overflow-y-auto pr-2">
+                {metrics.loading ? (
+                  <p className="text-sm text-slate-500">Loading activity...</p>
+                ) : recentLogs.length === 0 ? (
+                  <p className="text-sm text-slate-500">No recent registrations found.</p>
+                ) : (
+                  recentLogs.map((log) => (
+                    <div key={log._id} className="flex gap-4">
+                      <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                        log.status === 'APPROVED' ? 'bg-teal-500' : 
+                        log.status === 'REJECTED' ? 'bg-red-500' : 'bg-amber-500'
+                      }`}></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-slate-700 truncate">
+                          <span className="font-medium text-slate-900">{log.name}</span> applied for CodeX ({log.course}).
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {new Date(log.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
