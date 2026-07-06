@@ -1,60 +1,106 @@
-# CodeX Backend Setup Documentation
+# CodeX Club Backend
 
-This repository contains the backend for the CodeX Coding Club platform. It's built with Node.js, Express, and MongoDB, providing a REST API for student registrations, event management, team coordination, certificates, and an administrative dashboard.
+Backend REST API powering the CodeX Club platform at Quantum University.
 
-## Prerequisites
+It provides secure authentication, student registrations, event management, certificate generation, team management, and administrative features through a scalable Express.js backend.
 
-- **Node.js** (v20.6+ recommended due to native dotenv integration)
-- **MongoDB** database (local or MongoDB Atlas)
-- **Cloudinary** account (for image uploads like team photos and signatures)
-- **SMTP provider** (e.g., Gmail, Mailtrap, AWS SES) for email and OTP delivery
+---
 
-## Local Development Setup
+## Features
 
-### 1. Install Dependencies
-Navigate into the Backend folder and install all necessary NPM packages:
+- JWT + OTP Authentication
+- Student Registration Management
+- Event Management
+- Team Member Management
+- Certificate Generation & Verification
+- Contact Form Management
+- Cloudinary Image Uploads
+- Email Notifications
+- Session Management
+- Secure REST APIs
+
+---
+
+## Tech Stack
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT Authentication
+- Nodemailer
+- Cloudinary
+- Multer
+- Helmet
+- Express Rate Limit
+
+---
+
+## Project Structure
+
+```
+backend/
+│
+├── src/
+├── docs/
+├── package.json
+├── README.md
+└── .env.example
+```
+
+For a complete explanation of the project structure:
+
+➡️ [Project Structure](docs/project-structure.md)
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|  
+| [Getting Started](docs/getting-started.md) | Installation and local setup |
+| [Architecture](docs/architecture.md) | Backend architecture and request lifecycle |
+| [API Reference](docs/api-reference.md) | Complete REST API documentation |
+| [Authentication](docs/authentication.md) | Login flow, JWT, OTP and Sessions |
+| [Database](docs/database.md) | MongoDB collections and schema explanation |
+| [Middleware](docs/middleware.md) | Global and route middleware |
+| [Environment Variables](docs/environment.md) | Complete `.env` explanation |
+| [Security](docs/security.md) | Security implementation and best practices |
+| [Deployment](docs/deployment.md) | Production deployment guide |
+| [Development Guide](docs/development-guide.md) | Coding standards and conventions |
+| [Contributing](docs/contributing.md) | Contribution workflow |
+
+---
+
+## Quick Start
+
+Clone the repository
+
+```bash
+git clone <repository-url>
+cd backend
+```
+
+Install dependencies
+
 ```bash
 npm install
 ```
 
-### 2. Configure Environment Variables
-Create a `.env` file in the root of the backend folder. You can use the provided `.env.sample` as a template:
+Create environment file
+
 ```bash
-cp .env.sample .env
+cp .env.example .env
 ```
 
-**Crucial Variables to Fill Out in `.env`:**
-- `MONGODB_URI`: Your MongoDB connection string.
-- `ACCESS_TOKEN_SECRET`: A strong random string for signing JWT tokens securely.
-- **Cloudinary**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for storing assets in the cloud.
-- **SMTP/Email**: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` to send OTPs and approval notifications.
+Run development server
 
-*Note: The first time the server successfully connects to the database, it will automatically create a default Admin account using the `ADMIN_EMAIL` and `ADMIN_PASSWORD` defined in your `.env`.*
-
-### 3. Start the Server
-To start the server with auto-reloading (via nodemon) for development:
 ```bash
 npm run dev
 ```
-*(Or use `npm start` for standard node execution in production).*
 
-By default, the server runs on `http://localhost:5000`.
+---
 
-## API Documentation
-When the server is running in development mode, the interactive Swagger OpenAPI documentation is automatically served at:
-**[http://localhost:5000/api-docs](http://localhost:5000/api-docs)**
+## License
 
-You can use this interface to test endpoints directly.
-
-## Important Scripts
-- `npm run dev` - Starts server in watch mode
-- `npm start` - Starts server normally
-- `npm run format` - Runs Prettier to format the codebase
-
-## Tech Stack
-- **Core Framework:** Node.js, Express.js (ES Modules)
-- **Database:** MongoDB (Mongoose ODM)
-- **Authentication:** JSON Web Tokens (JWT) & Database Sessions, Bcrypt
-- **Security:** Helmet, CORS, Express-Rate-Limit, Express-Mongo-Sanitize
-- **File Uploads:** Multer + Cloudinary
-- **Emails:** Nodemailer
+MIT License
