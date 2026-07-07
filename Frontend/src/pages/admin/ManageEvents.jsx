@@ -20,17 +20,8 @@ export default function ManageEvents() {
   const { events, loading, isLoaded } = useSelector((state) => state.adminEvents);
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const confirm = useConfirm();
-  const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    eventName: "",
-    date: "",
-    description: "",
-    registrationLink: "",
-    coverImage: null,
-  });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -38,72 +29,14 @@ export default function ManageEvents() {
     }
   }, [dispatch, isLoaded]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, coverImage: file }));
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
   const openCreateModal = () => {
-    setEditingId(null);
-    setFormData({
-      eventName: "",
-      date: "",
-      description: "",
-      registrationLink: "",
-      coverImage: null,
-    });
-    setImagePreview(null);
+    setEditingEvent(null);
     setIsModalOpen(true);
   };
 
   const openEditModal = (event) => {
-    setEditingId(event._id);
-    const formattedDate = new Date(event.date).toISOString().slice(0, 16);
-    setFormData({
-      eventName: event.eventName,
-      date: formattedDate,
-      description: event.description,
-      registrationLink: event.registrationLink || "",
-      coverImage: null,
-    });
-    setImagePreview(event.coverImage);
+    setEditingEvent(event);
     setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const submitData = new FormData();
-      submitData.append("eventName", formData.eventName);
-      submitData.append("date", formData.date);
-      submitData.append("description", formData.description);
-      if (formData.registrationLink)
-        submitData.append("registrationLink", formData.registrationLink);
-      if (formData.coverImage) {
-        submitData.append("coverImage", formData.coverImage);
-      }
-
-      if (editingId) {
-        await dispatch(updateAdminEvent({ id: editingId, formData: submitData })).unwrap();
-      } else {
-        await dispatch(createAdminEvent(submitData)).unwrap();
-      }
-      setIsModalOpen(false);
-      dispatch(fetchAdminEvents());
-    } catch (err) {
-      // Error is handled in the thunk via messageSlice
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleDelete = async (id) => {
@@ -154,13 +87,7 @@ export default function ManageEvents() {
       {isModalOpen && (
         <EventModal
           setIsModalOpen={setIsModalOpen}
-          editingId={editingId}
-          handleSubmit={handleSubmit}
-          formData={formData}
-          handleInputChange={handleInputChange}
-          handleFileChange={handleFileChange}
-          imagePreview={imagePreview}
-          isSubmitting={isSubmitting}
+          editingEvent={editingEvent}
         />
       )}
     </div>

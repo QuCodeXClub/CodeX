@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Plus,
   Edit,
@@ -38,16 +39,23 @@ export default function ManageTeam() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const confirm = useConfirm();
   const [editingId, setEditingId] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    post: "",
-    subTeam: "",
-    academicYear: "",
-    photo: null,
-  });
-
+  const [photoFile, setPhotoFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    reset
+  } = useForm({
+    defaultValues: {
+      name: "",
+      post: "",
+      subTeam: "",
+      academicYear: "",
+    }
+  });
 
   useEffect(() => {
     if (!isLoaded || currentYear !== filterYear) {
@@ -55,60 +63,53 @@ export default function ManageTeam() {
     }
   }, [dispatch, filterYear, isLoaded, currentYear]);
 
-  // Form Handlers
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, photo: file }));
+      setPhotoFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const openCreateModal = () => {
     setEditingId(null);
-    setFormData({
+    reset({
       name: "",
       post: "",
       subTeam: "",
       academicYear: "",
-      photo: null,
     });
+    setPhotoFile(null);
     setImagePreview(null);
     setIsModalOpen(true);
   };
 
   const openEditModal = (member) => {
     setEditingId(member._id);
-    setFormData({
+    reset({
       name: member.name,
       post: member.post,
       subTeam: member.subTeam,
       academicYear: member.academicYear,
-      photo: null,
     });
+    setPhotoFile(null);
     setImagePreview(member.photo);
     setIsModalOpen(true);
   };
 
   // Submit Handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onFormSubmit = async (data) => {
     setIsSubmitting(true);
 
     try {
       const submitData = new FormData();
-      submitData.append("name", formData.name);
-      submitData.append("post", formData.post);
-      submitData.append("subTeam", formData.subTeam);
-      submitData.append("academicYear", formData.academicYear);
+      submitData.append("name", data.name);
+      submitData.append("post", data.post);
+      submitData.append("subTeam", data.subTeam);
+      submitData.append("academicYear", data.academicYear);
 
-      if (formData.photo) {
-        submitData.append("photo", formData.photo);
+      if (photoFile) {
+        submitData.append("photo", photoFile);
       }
 
       if (editingId) {
@@ -120,7 +121,11 @@ export default function ManageTeam() {
       setIsModalOpen(false);
       dispatch(fetchAdminTeam(filterYear));
     } catch (err) {
-      // Handled in thunk
+      if (err.response?.data?.errors?.length > 0) {
+        err.response.data.errors.forEach((e) => {
+          if (e.field) setError(e.field, { type: "server", message: e.message });
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -290,7 +295,7 @@ export default function ManageTeam() {
                 {editingId ? "Edit Team Member" : "Add Team Member"}
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -298,13 +303,11 @@ export default function ManageTeam() {
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                      {...register("name", { required: "Name is required" })}
+                      className={`w-full bg-white border ${errors.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                       placeholder="Full Name"
                     />
+                    {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
                   </div>
 
                   <div>
@@ -313,28 +316,31 @@ export default function ManageTeam() {
                     </label>
                     <input
                       type="text"
-                      name="post"
-                      required
-                      value={formData.post}
-                      onChange={handleInputChange}
+                      {...register("post", { required: "Post/Role is required" })}
                       placeholder="Position"
-                      className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                      className={`w-full bg-white border ${errors.post ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                     />
+                    {errors.post && <p className="mt-1 text-xs text-red-500">{errors.post.message}</p>}
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                       Sub-Team / Department
                     </label>
-                    <input
-                      type="text"
-                      name="subTeam"
-                      required
-                      value={formData.subTeam}
-                      onChange={handleInputChange}
-                      placeholder="Sub Team"
-                      className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
-                    />
+                    <select
+                      {...register("subTeam", { required: "Sub-Team is required" })}
+                      className={`w-full bg-white border ${errors.subTeam ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                    >
+                      <option value="">Select Sub-Team</option>
+                      <option value="Core Team">Core Team</option>
+                      <option value="Tech Team">Tech Team</option>
+                      <option value="Design Team">Design Team</option>
+                      <option value="PR & Outreach Team">PR & Outreach Team</option>
+                      <option value="Event Management Team">Event Management Team</option>
+                      <option value="Advisors">Advisors</option>
+                      <option value="Alumni">Alumni</option>
+                    </select>
+                    {errors.subTeam && <p className="mt-1 text-xs text-red-500">{errors.subTeam.message}</p>}
                   </div>
 
                   <div>
@@ -343,12 +349,11 @@ export default function ManageTeam() {
                     </label>
                     <input
                       type="text"
-                      name="academicYear"
-                      required
-                      value={formData.academicYear}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                      {...register("academicYear", { required: "Academic Year is required" })}
+                      className={`w-full bg-white border ${errors.academicYear ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      placeholder="e.g., 2023-2024"
                     />
+                    {errors.academicYear && <p className="mt-1 text-xs text-red-500">{errors.academicYear.message}</p>}
                   </div>
                 </div>
 

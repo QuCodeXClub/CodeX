@@ -29,6 +29,7 @@ export default function AdminLayout() {
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
     { name: "Sessions", path: "/admin/sessions", icon: Activity },
+    { name: "Messages", path: "/admin/messages", icon: MessageSquare },
   ];
   const handleLogout = async () => {
     try {

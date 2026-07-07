@@ -20,6 +20,7 @@ const Resources = lazy(() => import("./pages/Resources"));
 const Faqs = lazy(() => import("./pages/Faqs"));
 const Register = lazy(() => import("./pages/Register"));
 const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 // Admin only pages
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -28,8 +29,8 @@ const AdminRegistrations = lazy(() => import("./pages/admin/Registrations"));
 const AdminEvents = lazy(() => import("./pages/admin/ManageEvents"));
 const AdminTeam = lazy(() => import("./pages/admin/ManageTeam"));
 const BulkCertificates = lazy(() => import("./pages/admin/BulkCertificates"));
-const ManageFAQs = lazy(() => import("./pages/admin/ManageFAQs"));
 const ManageSessions = lazy(() => import("./pages/admin/ManageSessions"));
+const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
       { path: "/resources", element: <Resources /> },
       { path: "/faqs", element: <Faqs /> },
       { path: "/register", element: <Register /> },
+      { path: "/contact", element: <Contact /> },
     ],
   },
   {
@@ -67,6 +69,7 @@ const router = createBrowserRouter([
           { path: "team", element: <AdminTeam /> },
           { path: "certificates", element: <BulkCertificates /> },
           { path: "sessions", element: <ManageSessions /> },
+          { path: "messages", element: <ManageContacts /> },
         ],
       },
     ],

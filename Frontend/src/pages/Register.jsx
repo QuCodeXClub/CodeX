@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { registrationService } from "../services/registrationService";
 import { useDispatch } from "react-redux";
 import { setError } from "../context/messageSlice";
@@ -15,27 +16,28 @@ const Register = () => {
   const [turnstileToken, setTurnstileToken] = useState(null);
   const { register } = contentData;
 
-  const [formData, setFormData] = useState({
-    name: "",
-    fatherName: "",
-    email: "",
-    phone: "",
-    course: "",
-    year: "",
-    semester: "",
-    section: "",
-    set: "",
-    studentId: "",
-    transactionId: "",
+  const {
+    register: formRegister,
+    handleSubmit,
+    formState: { errors },
+    setError: setFormError
+  } = useForm({
+    defaultValues: {
+      name: "",
+      fatherName: "",
+      email: "",
+      phone: "",
+      course: "",
+      year: "",
+      semester: "",
+      section: "",
+      set: "",
+      studentId: "",
+      transactionId: "",
+    }
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onFormSubmit = async (data) => {
     setLoading(true);
 
     if (!turnstileToken) {
@@ -46,13 +48,18 @@ const Register = () => {
 
     try {
       const payload = {
-        ...formData,
+        ...data,
         turnstileToken,
       };
 
       await registrationService.registerStudent(payload);
       setIsSuccess(true);
     } catch (err) {
+      if (err.response?.data?.errors?.length > 0) {
+        err.response.data.errors.forEach((e) => {
+          if (e.field) setFormError(e.field, { type: "server", message: e.message });
+        });
+      }
       setTurnstileToken(null);
     } finally {
       setLoading(false);
@@ -88,20 +95,20 @@ const Register = () => {
         </header>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onFormSubmit)}
           className="bg-white border-4 border-gray-800 p-6 md:p-10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
         >
           <PersonalDetailsForm
-            formData={formData}
-            handleInputChange={handleInputChange}
+            register={formRegister}
+            errors={errors}
           />
           <AcademicDetailsForm
-            formData={formData}
-            handleInputChange={handleInputChange}
+            register={formRegister}
+            errors={errors}
           />
           <VerificationDetailsForm
-            formData={formData}
-            handleInputChange={handleInputChange}
+            register={formRegister}
+            errors={errors}
             setTurnstileToken={setTurnstileToken}
             loading={loading}
             turnstileToken={turnstileToken}

@@ -112,7 +112,8 @@
       { "label": "EVENTS", "path": "/events" },
       { "label": "TEAM", "path": "/team" },
       { "label": "RESOURCES", "path": "/resources" },
-      { "label": "FAQS", "path": "/faqs" }
+      { "label": "FAQS", "path": "/faqs" },
+      { "label": "CONTACT", "path": "/contact" }
     ],
     "meta": "EST. 2018 — VOL.07",
     "cta": "JOIN US"
@@ -148,6 +149,14 @@
       }
     ],
     "contact": "Contact us at codex.club@quantumeducation.in or follow us on Instagram @codexclub"
+  },
+  "contact": {
+    "eyebrow": "GET IN TOUCH",
+    "titlePart1": "Contact",
+    "titlePart2": "Us",
+    "description": "Have a question or want to collaborate? Send us a message and we'll get back to you.",
+    "email": "codex.club@quantumeducation.in",
+    "instagram": "@codexclub"
   },
   "error": {
     "defaultMessage": "Something went wrong!",

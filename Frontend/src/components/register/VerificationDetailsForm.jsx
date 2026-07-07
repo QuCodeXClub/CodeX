@@ -3,8 +3,8 @@ import { QrCode, ShieldCheck, Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function VerificationDetailsForm({
-  formData,
-  handleInputChange,
+  register,
+  errors,
   setTurnstileToken,
   loading,
   turnstileToken,
@@ -31,12 +31,10 @@ export default function VerificationDetailsForm({
           </label>
           <input
             type="text"
-            name="transactionId"
-            required
-            value={formData.transactionId}
-            onChange={handleInputChange}
-            className="w-full max-w-sm bg-white border-2 border-gray-300 text-[#0a0a0a] p-3 focus:outline-none focus:border-[#2ec5d4] transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300"
+            {...register("transactionId", { required: "Transaction ID is required" })}
+            className={`w-full max-w-sm bg-white border-2 ${errors.transactionId ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
           />
+          {errors.transactionId && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.transactionId.message}</p>}
         </div>
       </div>
       <div className="mb-8 flex flex-col items-center border-2 border-gray-100 p-4 bg-gray-50">

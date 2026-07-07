@@ -1,16 +1,68 @@
-import React from "react";
-import { X, AlertCircle, Link as LinkIcon, Image as ImageIcon, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { X, Link as LinkIcon, Image as ImageIcon, Loader2 } from "lucide-react";
+import { createAdminEvent, updateAdminEvent, fetchAdminEvents } from "../../../context/adminEventsSlice";
 
 export default function EventModal({
   setIsModalOpen,
-  editingId,
-  handleSubmit,
-  formData,
-  handleInputChange,
-  handleFileChange,
-  imagePreview,
-  isSubmitting,
+  editingEvent,
 }) {
+  const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState(editingEvent?.coverImage || null);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError
+  } = useForm({
+    defaultValues: {
+      eventName: editingEvent?.eventName || "",
+      date: editingEvent ? new Date(editingEvent.date).toISOString().slice(0, 16) : "",
+      description: editingEvent?.description || "",
+      registrationLink: editingEvent?.registrationLink || "",
+    }
+  });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const submitData = new FormData();
+      submitData.append("eventName", data.eventName);
+      submitData.append("date", data.date);
+      submitData.append("description", data.description);
+      if (data.registrationLink) submitData.append("registrationLink", data.registrationLink);
+      if (coverImageFile) submitData.append("coverImage", coverImageFile);
+
+      if (editingEvent) {
+        await dispatch(updateAdminEvent({ id: editingEvent._id, formData: submitData })).unwrap();
+      } else {
+        await dispatch(createAdminEvent(submitData)).unwrap();
+      }
+      setIsModalOpen(false);
+      dispatch(fetchAdminEvents());
+    } catch (err) {
+      if (err.response?.data?.errors?.length > 0) {
+        err.response.data.errors.forEach((e) => {
+          if (e.field) setError(e.field, { type: "server", message: e.message });
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl relative my-auto">
@@ -22,9 +74,9 @@ export default function EventModal({
         </button>
         <div className="p-6 md:p-8">
           <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4 mb-6">
-            {editingId ? "Edit Event Details" : "Initialize New Event"}
+            {editingEvent ? "Edit Event Details" : "Initialize New Event"}
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -32,13 +84,11 @@ export default function EventModal({
                 </label>
                 <input
                   type="text"
-                  name="eventName"
-                  required
-                  value={formData.eventName}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                  {...register("eventName", { required: "Event name is required" })}
+                  className={`w-full bg-white border ${errors.eventName ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                   placeholder="Event Name"
                 />
+                {errors.eventName && <p className="mt-1 text-xs text-red-500">{errors.eventName.message}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -46,12 +96,10 @@ export default function EventModal({
                 </label>
                 <input
                   type="datetime-local"
-                  name="date"
-                  required
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                  {...register("date", { required: "Date is required" })}
+                  className={`w-full bg-white border ${errors.date ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                 />
+                {errors.date && <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>}
               </div>
             </div>
             <div>
@@ -59,14 +107,12 @@ export default function EventModal({
                 Description
               </label>
               <textarea
-                name="description"
-                required
                 rows="4"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm resize-none"
+                {...register("description", { required: "Description is required" })}
+                className={`w-full bg-white border ${errors.description ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm resize-none`}
                 placeholder="Event Description"
               ></textarea>
+              {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -74,16 +120,20 @@ export default function EventModal({
                 <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <div className="relative">
-                <LinkIcon className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                <LinkIcon className={`absolute left-3 top-2.5 w-4 h-4 ${errors.registrationLink ? 'text-red-400' : 'text-slate-400'}`} />
                 <input
                   type="url"
-                  name="registrationLink"
-                  value={formData.registrationLink}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                  {...register("registrationLink", {
+                    pattern: {
+                      value: /^https?:\/\/.+/,
+                      message: "Must be a valid URL starting with http:// or https://"
+                    }
+                  })}
+                  className={`w-full bg-white border ${errors.registrationLink ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                   placeholder="https://..."
                 />
               </div>
+              {errors.registrationLink && <p className="mt-1 text-xs text-red-500">{errors.registrationLink.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -120,7 +170,7 @@ export default function EventModal({
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
-              ) : editingId ? (
+              ) : editingEvent ? (
                 "Save Changes"
               ) : (
                 "Create Event"

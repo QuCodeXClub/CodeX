@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
 import { adminService } from "../../services/adminService";
 import { setLogin } from "../../context/authSlice";
-// Removed manual messageSlice imports
 import {
   Lock,
   Mail,
@@ -23,11 +23,21 @@ export default function AdminLogin() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-    otp: "",
-  });
+  const [userEmail, setUserEmail] = useState("");
+
+  const {
+    register: registerLogin,
+    handleSubmit: handleSubmitLogin,
+    formState: { errors: loginErrors },
+    setError: setLoginError,
+  } = useForm();
+
+  const {
+    register: registerOtp,
+    handleSubmit: handleSubmitOtp,
+    formState: { errors: otpErrors },
+    setError: setOtpError,
+  } = useForm();
 
   useEffect(() => {
     if (isAuthResolved && user) {
@@ -35,39 +45,44 @@ export default function AdminLogin() {
     }
   }, [isAuthResolved, user, navigate]);
 
-  const handleInputChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    setError("");
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
+  const onLoginSubmit = async (data) => {
     setLoading(true);
     setError("");
 
     try {
-      await adminService.loginAdmin(credentials.email, credentials.password);
+      await adminService.loginAdmin(data.email, data.password);
+      setUserEmail(data.email);
       setStep(2);
     } catch (err) {
       const msg = err.response?.data?.message || "Authentication failed. Verify credentials.";
       setError(msg);
+      // Map specific field errors if backend provides them
+      if (err.response?.data?.errors?.length > 0) {
+        err.response.data.errors.forEach((e) => {
+          if (e.field) setLoginError(e.field, { type: "server", message: e.message });
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOtpSubmit = async (e) => {
-    e.preventDefault();
+  const onOtpSubmit = async (data) => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await adminService.verifyAdminOtp(credentials.email, credentials.otp);
+      const response = await adminService.verifyAdminOtp(userEmail, data.otp);
       dispatch(setLogin(response.data || response));
       navigate("/admin/dashboard");
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid or expired OTP sequence.";
       setError(msg);
+      if (err.response?.data?.errors?.length > 0) {
+        err.response.data.errors.forEach((e) => {
+          if (e.field) setOtpError(e.field, { type: "server", message: e.message });
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -105,40 +120,39 @@ export default function AdminLogin() {
           </div>
         )}
         {step === 1 ? (
-          <form onSubmit={handleLoginSubmit} className="space-y-5">
+          <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                <Mail className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.email ? 'text-red-400' : 'text-slate-400'}`} />
                 <input
                   type="email"
-                  name="email"
-                  required
-                  value={credentials.email}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm placeholder:text-slate-400"
+                  {...registerLogin("email", { 
+                    required: "Email is required",
+                    pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" }
+                  })}
+                  className={`w-full bg-white border ${loginErrors.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
                   placeholder="Enter your Mail"
                 />
               </div>
+              {loginErrors.email && <p className="mt-1 text-xs text-red-500">{loginErrors.email.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                <Lock className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.password ? 'text-red-400' : 'text-slate-400'}`} />
                 <input
                   type="password"
-                  name="password"
-                  required
-                  value={credentials.password}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm placeholder:text-slate-400"
+                  {...registerLogin("password", { required: "Password is required" })}
+                  className={`w-full bg-white border ${loginErrors.password ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
                   placeholder="••••••••"
                 />
               </div>
+              {loginErrors.password && <p className="mt-1 text-xs text-red-500">{loginErrors.password.message}</p>}
             </div>
             <button
               type="submit"
@@ -155,12 +169,12 @@ export default function AdminLogin() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleOtpSubmit} className="space-y-6">
+          <form onSubmit={handleSubmitOtp(onOtpSubmit)} className="space-y-6">
             <div className="text-center mb-6">
               <p className="text-sm text-slate-600">
                 A 6-digit code has been sent to <br />
                 <span className="font-semibold text-teal-600">
-                  {credentials.email}
+                  {userEmail}
                 </span>
               </p>
             </div>
@@ -169,18 +183,19 @@ export default function AdminLogin() {
                 Authentication Code
               </label>
               <div className="relative">
-                <KeyRound className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                <KeyRound className={`absolute left-4 top-3.5 w-5 h-5 ${otpErrors.otp ? 'text-red-400' : 'text-slate-400'}`} />
                 <input
                   type="text"
-                  name="otp"
-                  required
                   maxLength={6}
-                  value={credentials.otp}
-                  onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors font-mono shadow-inner placeholder:text-slate-300"
+                  {...registerOtp("otp", { 
+                    required: "OTP is required",
+                    pattern: { value: /^[0-9]{6}$/, message: "OTP must be exactly 6 digits" }
+                  })}
+                  className={`w-full bg-slate-50 border ${otpErrors.otp ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-colors font-mono shadow-inner placeholder:text-slate-300`}
                   placeholder="000000"
                 />
               </div>
+              {otpErrors.otp && <p className="mt-1 text-xs text-red-500 text-center">{otpErrors.otp.message}</p>}
             </div>
             <button
               type="submit"

@@ -243,31 +243,31 @@ export default function Registrations() {
                         <div className="flex justify-end pr-2 text-slate-400">
                           <Loader2 className="w-5 h-5 animate-spin" />
                         </div>
-                      ) : reg.status === "PENDING" ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() =>
-                              handleStatusChange(reg._id, "APPROVED")
-                            }
-                            className="p-1.5 text-teal-600 bg-teal-50 hover:bg-teal-100 rounded-md transition-colors border border-teal-100"
-                            title="Approve"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleStatusChange(reg._id, "REJECTED")
-                            }
-                            className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-100"
-                            title="Reject"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
                       ) : (
-                        <span className="text-xs font-medium text-slate-400">
-                          Processed
-                        </span>
+                        <div className="flex items-center justify-end gap-2">
+                          {reg.status !== "APPROVED" && (
+                            <button
+                              onClick={() =>
+                                handleStatusChange(reg._id, "APPROVED")
+                              }
+                              className="p-1.5 text-teal-600 bg-teal-50 hover:bg-teal-100 rounded-md transition-colors border border-teal-100"
+                              title="Approve"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                          )}
+                          {reg.status !== "REJECTED" && (
+                            <button
+                              onClick={() =>
+                                handleStatusChange(reg._id, "REJECTED")
+                              }
+                              className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-100"
+                              title="Reject"
+                            >
+                              <XIcon className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>

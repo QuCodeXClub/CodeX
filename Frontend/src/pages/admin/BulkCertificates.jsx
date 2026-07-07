@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   Award,
   Plus,
@@ -22,58 +23,42 @@ export default function BulkCertificates() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState({
-    eventName: "",
-    eventDate: "",
-    coordinatorName: "",
-    signature: null,
-  });
   const [signaturePreview, setSignaturePreview] = useState(null);
-  const [students, setStudents] = useState([{ name: "", email: "" }]);
+  const [signatureFile, setSignatureFile] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    reset
+  } = useForm({
+    defaultValues: {
+      eventName: "",
+      eventDate: "",
+      coordinatorName: "",
+      students: [{ name: "", email: "" }],
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "students",
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, signature: file }));
+      setSignatureFile(file);
       setSignaturePreview(URL.createObjectURL(file));
     }
   };
 
-  const handleStudentChange = (index, field, value) => {
-    const updatedStudents = [...students];
-    updatedStudents[index][field] = value;
-    setStudents(updatedStudents);
-  };
-
-  const addStudentRow = () => {
-    setStudents([...students, { name: "", email: "" }]);
-  };
-
-  const removeStudentRow = (index) => {
-    if (students.length === 1) return;
-    const updatedStudents = students.filter((_, i) => i !== index);
-    setStudents(updatedStudents);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onFormSubmit = async (data) => {
     setLoading(true);
-    const validStudents = students.filter(
-      (s) => s.name.trim() !== "" && s.email.trim() !== ""
-    );
 
-    if (validStudents.length === 0) {
-      dispatch(setError("You must provide at least one valid student name and email."));
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.signature) {
+    if (!signatureFile) {
       dispatch(setError("Coordinator signature image is required."));
       setLoading(false);
       return;
@@ -81,11 +66,11 @@ export default function BulkCertificates() {
 
     try {
       const submitData = new FormData();
-      submitData.append("eventName", formData.eventName);
-      submitData.append("eventDate", formData.eventDate);
-      submitData.append("coordinatorName", formData.coordinatorName);
-      submitData.append("studentsStr", JSON.stringify(validStudents));
-      submitData.append("signature", formData.signature);
+      submitData.append("eventName", data.eventName);
+      submitData.append("eventDate", data.eventDate);
+      submitData.append("coordinatorName", data.coordinatorName);
+      submitData.append("studentsStr", JSON.stringify(data.students));
+      submitData.append("signature", signatureFile);
 
       const response = await axiosInstance.post(
         "/certificates/bulk",
@@ -96,14 +81,14 @@ export default function BulkCertificates() {
         }
       );
 
-      setFormData({
+      reset({
         eventName: "",
         eventDate: "",
         coordinatorName: "",
-        signature: null,
+        students: [{ name: "", email: "" }]
       });
+      setSignatureFile(null);
       setSignaturePreview(null);
-      setStudents([{ name: "", email: "" }]);
     } catch (err) {
       // Handled globally
     } finally {
@@ -127,7 +112,7 @@ export default function BulkCertificates() {
         </div>
       </header>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onFormSubmit)}
         className="grid grid-cols-1 lg:grid-cols-12 gap-8"
       >
         <div className="lg:col-span-4 space-y-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-2xl shadow-sm h-fit">
@@ -142,13 +127,11 @@ export default function BulkCertificates() {
               </label>
               <input
                 type="text"
-                name="eventName"
-                required
-                value={formData.eventName}
-                onChange={handleInputChange}
+                {...register("eventName", { required: "Event name is required" })}
                 placeholder="Event Name"
-                className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                className={`w-full bg-white border ${errors.eventName ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
               />
+              {errors.eventName && <p className="mt-1 text-xs text-red-500">{errors.eventName.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -156,29 +139,25 @@ export default function BulkCertificates() {
               </label>
               <input
                 type="date"
-                name="eventDate"
-                required
-                value={formData.eventDate}
-                onChange={handleInputChange}
-                className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                {...register("eventDate", { required: "Date is required" })}
+                className={`w-full bg-white border ${errors.eventDate ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
               />
+              {errors.eventDate && <p className="mt-1 text-xs text-red-500">{errors.eventDate.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Authorizing Coordinator
               </label>
               <div className="relative">
-                <UserCheck className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                <UserCheck className={`absolute left-3 top-2.5 w-4 h-4 ${errors.coordinatorName ? 'text-red-400' : 'text-slate-400'}`} />
                 <input
                   type="text"
-                  name="coordinatorName"
-                  required
-                  value={formData.coordinatorName}
-                  onChange={handleInputChange}
+                  {...register("coordinatorName", { required: "Coordinator name is required" })}
                   placeholder="Coordinator Name"
-                  className="w-full bg-white border border-slate-300 text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-sm"
+                  className={`w-full bg-white border ${errors.coordinatorName ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                 />
               </div>
+              {errors.coordinatorName && <p className="mt-1 text-xs text-red-500">{errors.coordinatorName.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -218,45 +197,37 @@ export default function BulkCertificates() {
               Recipient Details
             </h2>
             <span className="bg-teal-50 text-teal-700 border border-teal-200 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
-              TOTAL: {students.length}
+              TOTAL: {fields.length}
             </span>
           </div>
           <div className="flex-1 overflow-y-auto pr-2 space-y-3 max-h-[500px]">
-            {students.map((student, index) => (
+            {fields.map((field, index) => (
               <div
-                key={index}
+                key={field.id}
                 className="flex flex-col md:flex-row gap-3 items-center bg-slate-50 p-3 rounded-xl border border-slate-100 transition-colors hover:border-slate-300"
               >
                 <div className="flex-1 w-full relative">
-                  <User className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                  <User className={`absolute left-3 top-2.5 w-4 h-4 ${errors?.students?.[index]?.name ? 'text-red-400' : 'text-slate-400'}`} />
                   <input
                     type="text"
-                    required
                     placeholder="Recipient Name"
-                    value={student.name}
-                    onChange={(e) =>
-                      handleStudentChange(index, "name", e.target.value)
-                    }
-                    className="w-full bg-white border border-slate-300 text-slate-900 p-2 pl-9 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                    {...register(`students.${index}.name`, { required: "Required" })}
+                    className={`w-full bg-white border ${errors?.students?.[index]?.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 p-2 pl-9 rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors`}
                   />
                 </div>
                 <div className="flex-1 w-full relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                  <Mail className={`absolute left-3 top-2.5 w-4 h-4 ${errors?.students?.[index]?.email ? 'text-red-400' : 'text-slate-400'}`} />
                   <input
                     type="email"
-                    required
                     placeholder="Recipient Email"
-                    value={student.email}
-                    onChange={(e) =>
-                      handleStudentChange(index, "email", e.target.value)
-                    }
-                    className="w-full bg-white border border-slate-300 text-slate-900 p-2 pl-9 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                    {...register(`students.${index}.email`, { required: "Required", pattern: /^\S+@\S+$/i })}
+                    className={`w-full bg-white border ${errors?.students?.[index]?.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 p-2 pl-9 rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors`}
                   />
                 </div>
                 <button
                   type="button"
-                  onClick={() => removeStudentRow(index)}
-                  disabled={students.length === 1}
+                  onClick={() => remove(index)}
+                  disabled={fields.length === 1}
                   className="w-full md:w-auto p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex justify-center border border-transparent hover:border-red-100"
                   title="Remove Recipient"
                 >
@@ -269,7 +240,7 @@ export default function BulkCertificates() {
           <div className="border-t border-slate-100 mt-6 pt-6 flex flex-col sm:flex-row gap-4">
             <button
               type="button"
-              onClick={addStudentRow}
+              onClick={() => append({ name: "", email: "" })}
               className="flex-1 flex items-center justify-center gap-2 bg-slate-50 text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-slate-100 transition-colors"
             >
               <Plus className="w-4 h-4" /> Add Row
