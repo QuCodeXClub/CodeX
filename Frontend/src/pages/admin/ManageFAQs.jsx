@@ -67,10 +67,9 @@ export default function ManageFAQs() {
 
     try {
       await dispatch(deleteAdminFaq(index)).unwrap();
-      dispatch(setSuccess("FAQ entry deleted successfully."));
       dispatch(fetchAdminFaqs());
     } catch (err) {
-      dispatch(setError("Failed to delete FAQ entry."));
+      // Error handled by global interceptor
     }
   };
 

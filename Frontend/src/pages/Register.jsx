@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { registrationService } from "../services/registrationService";
 import { useDispatch } from "react-redux";
-import { setError, setSuccess } from "../context/messageSlice";
+import { setError } from "../context/messageSlice";
 import RegistrationSuccess from "../components/register/RegistrationSuccess";
 import PersonalDetailsForm from "../components/register/PersonalDetailsForm";
 import AcademicDetailsForm from "../components/register/AcademicDetailsForm";
@@ -51,10 +51,8 @@ const Register = () => {
       };
 
       await registrationService.registerStudent(payload);
-      dispatch(setSuccess("Registration submitted successfully!"));
       setIsSuccess(true);
     } catch (err) {
-      dispatch(setError(err.response?.data?.message || "Failed to submit registration."));
       setTurnstileToken(null);
     } finally {
       setLoading(false);

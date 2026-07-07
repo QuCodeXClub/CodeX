@@ -1,70 +1,55 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { setError, setSuccess } from "./messageSlice";
+import axiosInstance from "../services/axiosInstance";
 
 export const fetchAdminEvents = createAsyncThunk(
   "adminEvents/fetch",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/v1/events", {
-        withCredentials: true,
-      });
-      return response.data?.data || [];
+      const response = await axiosInstance.get("/events");
+      const payload = response.data?.data || response.data || response;
+      return payload.events || (Array.isArray(payload) ? payload : []);
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to fetch events.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const createAdminEvent = createAsyncThunk(
   "adminEvents/create",
-  async (submitData, { dispatch, rejectWithValue }) => {
+  async (formData, { rejectWithValue }) => {
     try {
-      await axios.post("/api/v1/events", submitData, {
-        withCredentials: true,
+      const response = await axiosInstance.post("/events", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(setSuccess("Event created successfully."));
-      return true;
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to create event.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const updateAdminEvent = createAsyncThunk(
   "adminEvents/update",
-  async ({ id, submitData }, { dispatch, rejectWithValue }) => {
+  async ({ id, formData }, { rejectWithValue }) => {
     try {
-      await axios.patch(`/api/v1/events/${id}`, submitData, {
-        withCredentials: true,
+      const response = await axiosInstance.patch(`/events/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(setSuccess("Event updated successfully."));
-      return true;
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to update event.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const deleteAdminEvent = createAsyncThunk(
   "adminEvents/delete",
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/events/${id}`, { withCredentials: true });
-      dispatch(setSuccess("Event deleted successfully."));
+      await axiosInstance.delete(`/events/${id}`);
       return id;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to delete event.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../services/axiosInstance";
 import { useDispatch } from "react-redux";
-import { setError } from "../context/messageSlice";
 import EventsHero from "../features/events/components/EventsHero";
 import EventList from "../features/events/components/EventList";
 import EventSidebar from "../features/events/components/EventSidebar";
@@ -14,10 +13,10 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("/api/v1/events");
+        const response = await axiosInstance.get("/events");
         setEvents(response.data?.data || []);
       } catch (err) {
-        dispatch(setError("Failed to sync event data."));
+        // Error handled globally
       } finally {
         setLoading(false);
       }

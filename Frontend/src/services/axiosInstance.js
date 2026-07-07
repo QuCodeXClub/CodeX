@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../store/store";
-import { setError } from "../context/messageSlice";
+import { setError, setSuccess } from "../context/messageSlice";
 
 const axiosInstance = axios.create({
   baseURL: "/api/v1",
@@ -18,7 +18,16 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    const method = response.config.method?.toLowerCase();
+    if (["post", "put", "patch", "delete"].includes(method)) {
+      const successMessage = response.data?.message;
+      if (successMessage && successMessage !== "Success") {
+        store.dispatch(setSuccess(successMessage));
+      }
+    }
+    return response.data;
+  },
   (error) => {
     if (error.response?.status === 401) {
       if (

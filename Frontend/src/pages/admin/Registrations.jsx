@@ -8,6 +8,8 @@ import {
   XCircle,
   Mail,
   MoreVertical,
+  Check,
+  X,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
@@ -24,7 +26,7 @@ export default function Registrations() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const confirm = useConfirm();
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchAdminRegistrations());
   }, [dispatch]);
 

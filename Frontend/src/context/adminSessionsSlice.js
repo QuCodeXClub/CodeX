@@ -1,32 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { adminService } from "../services/adminService";
-import { setError, setSuccess } from "./messageSlice";
 
 export const fetchAdminSessions = createAsyncThunk(
   "adminSessions/fetch",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await adminService.getSessions();
       return response.data?.data || response.data || [];
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to fetch session data.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const killAdminSession = createAsyncThunk(
   "adminSessions/kill",
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       await adminService.killSession(id);
-      dispatch(setSuccess("Session terminated successfully."));
       return id;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to terminate session.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );

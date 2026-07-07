@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../services/axiosInstance";
 import { useDispatch } from "react-redux";
-import { setError } from "../context/messageSlice";
 import { Mail, User, Loader2 } from "lucide-react";
 const MemberCard = ({ member }) => {
   const generateEmail = (name) => {
@@ -44,10 +43,10 @@ const Team = () => {
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const response = await axios.get("/api/v1/teams");
+        const response = await axiosInstance.get("/teams");
         setMembers(response.data?.data || []);
       } catch (err) {
-        dispatch(setError("Failed to load team data."));
+        // Error handled globally
       } finally {
         setLoading(false);
       }

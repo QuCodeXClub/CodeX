@@ -18,7 +18,7 @@ export default function ManageSessions() {
   const dispatch = useDispatch();
   const confirm = useConfirm();
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchAdminSessions());
   }, [dispatch]);
 

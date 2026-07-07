@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { adminService } from "../../services/adminService";
 import { setLogin } from "../../context/authSlice";
-import { setError as setGlobalError, setSuccess } from "../../context/messageSlice";
+// Removed manual messageSlice imports
 import {
   Lock,
   Mail,
@@ -47,12 +47,10 @@ export default function AdminLogin() {
 
     try {
       await adminService.loginAdmin(credentials.email, credentials.password);
-      dispatch(setSuccess("OTP sent to your email."));
       setStep(2);
     } catch (err) {
       const msg = err.response?.data?.message || "Authentication failed. Verify credentials.";
       setError(msg);
-      dispatch(setGlobalError(msg));
     } finally {
       setLoading(false);
     }
@@ -66,12 +64,10 @@ export default function AdminLogin() {
     try {
       const response = await adminService.verifyAdminOtp(credentials.email, credentials.otp);
       dispatch(setLogin(response.data || response));
-      dispatch(setSuccess("Welcome back, Admin!"));
       navigate("/admin/dashboard");
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid or expired OTP sequence.";
       setError(msg);
-      dispatch(setGlobalError(msg));
     } finally {
       setLoading(false);
     }

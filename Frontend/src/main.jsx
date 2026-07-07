@@ -57,7 +57,7 @@ const router = createBrowserRouter([
     errorElement: <GlobalError />,
     children: [
       {
-        path: "/admin",
+        path: "",
         element: <AdminLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },

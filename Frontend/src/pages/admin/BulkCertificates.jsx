@@ -14,7 +14,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "../../services/axiosInstance";
 import { useDispatch } from "react-redux";
 import { setError, setSuccess } from "../../context/messageSlice";
 
@@ -87,8 +87,8 @@ export default function BulkCertificates() {
       submitData.append("studentsStr", JSON.stringify(validStudents));
       submitData.append("signature", formData.signature);
 
-      const response = await axios.post(
-        "/api/v1/certificates/bulk",
+      const response = await axiosInstance.post(
+        "/certificates/bulk",
         submitData,
         {
           withCredentials: true,
@@ -96,7 +96,6 @@ export default function BulkCertificates() {
         }
       );
 
-      dispatch(setSuccess(`Successfully generated ${response.data.data.count} certificates and dispatched emails.`));
       setFormData({
         eventName: "",
         eventDate: "",
@@ -106,7 +105,7 @@ export default function BulkCertificates() {
       setSignaturePreview(null);
       setStudents([{ name: "", email: "" }]);
     } catch (err) {
-      dispatch(setError(err.response?.data?.message || "Failed to generate certificates."));
+      // Handled globally
     } finally {
       setLoading(false);
     }

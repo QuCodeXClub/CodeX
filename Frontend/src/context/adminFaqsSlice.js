@@ -1,66 +1,51 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { setError, setSuccess } from "./messageSlice";
+import axiosInstance from "../services/axiosInstance";
 
 export const fetchAdminFaqs = createAsyncThunk(
   "adminFaqs/fetch",
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/v1/faqs", {
-        withCredentials: true,
-      });
-      return response.data?.data || [];
+      const response = await axiosInstance.get("/faqs");
+      const payload = response.data?.data || response.data || response;
+      return payload.faqs || (Array.isArray(payload) ? payload : []);
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to fetch FAQ manifest.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const createAdminFaq = createAsyncThunk(
   "adminFaqs/create",
-  async (formData, { dispatch, rejectWithValue }) => {
+  async (faqData, { rejectWithValue }) => {
     try {
-      await axios.post("/api/v1/faqs", formData, { withCredentials: true });
-      dispatch(setSuccess("FAQ created successfully."));
-      return true;
+      const response = await axiosInstance.post("/faqs", faqData);
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to create FAQ.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const updateAdminFaq = createAsyncThunk(
   "adminFaqs/update",
-  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+  async ({ id, faqData }, { rejectWithValue }) => {
     try {
-      await axios.patch(`/api/v1/faqs/${id}`, formData, {
-        withCredentials: true,
-      });
-      dispatch(setSuccess("FAQ updated successfully."));
-      return true;
+      const response = await axiosInstance.patch(`/faqs/${id}`, faqData);
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to update FAQ.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const deleteAdminFaq = createAsyncThunk(
   "adminFaqs/delete",
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/faqs/${id}`, { withCredentials: true });
-      dispatch(setSuccess("FAQ entry deleted successfully."));
+      await axiosInstance.delete(`/faqs/${id}`);
       return id;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to delete FAQ.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );

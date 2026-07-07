@@ -1,71 +1,52 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { setError, setSuccess } from "./messageSlice";
+import { teamService } from "../services/teamService";
 
 export const fetchAdminTeam = createAsyncThunk(
   "adminTeam/fetch",
-  async (filterYear, { dispatch, rejectWithValue }) => {
+  async (year, { rejectWithValue }) => {
     try {
-      const queryParams = filterYear && filterYear !== "ALL" ? `?academicYear=${filterYear}` : "";
-      const response = await axios.get(`/api/v1/teams${queryParams}`, {
-        withCredentials: true,
-      });
-      return response.data?.data || [];
+      const params = year && year !== "ALL" ? { academicYear: year } : {};
+      const response = await teamService.getTeamMembers(params);
+      const payload = response.data?.data || response.data || response;
+      return payload.team || (Array.isArray(payload) ? payload : []);
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to fetch team data.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
-export const createAdminTeamMember = createAsyncThunk(
-  "adminTeam/create",
-  async (submitData, { dispatch, rejectWithValue }) => {
+export const addAdminTeamMember = createAsyncThunk(
+  "adminTeam/add",
+  async (formData, { rejectWithValue }) => {
     try {
-      await axios.post("/api/v1/teams", submitData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      dispatch(setSuccess("Team member added successfully."));
-      return true;
+      const response = await teamService.addTeamMember(formData);
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to add member.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const updateAdminTeamMember = createAsyncThunk(
   "adminTeam/update",
-  async ({ id, submitData }, { dispatch, rejectWithValue }) => {
+  async ({ id, formData }, { rejectWithValue }) => {
     try {
-      await axios.patch(`/api/v1/teams/${id}`, submitData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      dispatch(setSuccess("Team member updated successfully."));
-      return true;
+      const response = await teamService.updateTeamMember(id, formData);
+      return response.data;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to update member.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );
 
 export const deleteAdminTeamMember = createAsyncThunk(
   "adminTeam/delete",
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/v1/teams/${id}`, { withCredentials: true });
-      dispatch(setSuccess("Team member deleted successfully."));
+      await teamService.deleteTeamMember(id);
       return id;
     } catch (err) {
-      const msg = err.response?.data?.message || "Failed to delete member.";
-      dispatch(setError(msg));
-      return rejectWithValue(msg);
+      return rejectWithValue(err);
     }
   }
 );

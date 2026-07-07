@@ -90,7 +90,7 @@ export default function ManageEvents() {
       }
 
       if (editingId) {
-        await dispatch(updateAdminEvent({ id: editingId, submitData })).unwrap();
+        await dispatch(updateAdminEvent({ id: editingId, formData: submitData })).unwrap();
       } else {
         await dispatch(createAdminEvent(submitData)).unwrap();
       }

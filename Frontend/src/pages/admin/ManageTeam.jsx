@@ -18,7 +18,7 @@ import { useConfirm } from "../../context/ConfirmContext";
 import { setError, setSuccess } from "../../context/messageSlice";
 import {
   fetchAdminTeam,
-  createAdminTeamMember,
+  addAdminTeamMember,
   updateAdminTeamMember,
   deleteAdminTeamMember,
 } from "../../context/adminTeamSlice";
@@ -108,9 +108,9 @@ export default function ManageTeam() {
       }
 
       if (editingId) {
-        await dispatch(updateAdminTeamMember({ id: editingId, submitData })).unwrap();
+        await dispatch(updateAdminTeamMember({ id: editingId, formData: submitData })).unwrap();
       } else {
-        await dispatch(createAdminTeamMember(submitData)).unwrap();
+        await dispatch(addAdminTeamMember(submitData)).unwrap();
       }
 
       setIsModalOpen(false);
