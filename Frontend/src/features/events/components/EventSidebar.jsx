@@ -44,8 +44,8 @@ const EventSidebar = () => {
             </div>
           </div>
 
-          <button className="w-full py-4 bg-accent text-panel font-sans text-sm uppercase tracking-widest font-bold rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2 mb-6">
-            Register Now <ArrowRight className="w-4 h-4" />
+          <button type="button" className="w-full py-4 bg-accent text-panel font-sans text-sm uppercase tracking-widest font-bold rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2 mb-6">
+            Register Now <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
           <div className="grid grid-cols-4 gap-2 text-center bg-black/40 rounded-xl p-4 border border-white/5">
             <div>
@@ -94,13 +94,18 @@ const EventSidebar = () => {
           className="flex flex-col gap-3"
           onSubmit={(e) => e.preventDefault()}
         >
+          <label htmlFor="events-sidebar-email" className="sr-only">
+            Email address
+          </label>
           <input
+            id="events-sidebar-email"
             type="email"
             placeholder="Enter your email"
+            autoComplete="email"
             className="w-full px-4 py-3 bg-white border border-line rounded-lg text-sm font-mono placeholder:text-ink/30 focus:outline-none focus:border-accent transition-colors"
           />
-          <button className="w-full py-3 bg-panel text-white font-sans text-sm uppercase tracking-widest rounded-lg hover:bg-black transition-colors flex items-center justify-center gap-2">
-            Subscribe <ArrowRight className="w-4 h-4" />
+          <button type="submit" className="w-full py-3 bg-panel text-white font-sans text-sm uppercase tracking-widest rounded-lg hover:bg-black transition-colors flex items-center justify-center gap-2">
+            Subscribe <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
         </form>
       </div>
@@ -129,8 +134,8 @@ const EventSidebar = () => {
           Relive the moments and see what we've built together.
         </p>
 
-        <button className="text-xs font-mono uppercase tracking-widest text-accent hover:text-ink transition-colors flex items-center gap-1">
-          Explore Recaps <ArrowRight className="w-3 h-3" />
+        <button type="button" className="text-xs font-mono uppercase tracking-widest text-accent hover:text-ink transition-colors flex items-center gap-1">
+          Explore Recaps <ArrowRight className="w-3 h-3" aria-hidden="true" />
         </button>
       </div>
     </div>

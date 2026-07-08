@@ -108,12 +108,14 @@ export default function Registrations() {
         </div>
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => dispatch(fetchAdminRegistrations())}
             disabled={loading}
             className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50"
             title="Refresh Data"
+            aria-label="Refresh registration data"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} aria-hidden="true" />
           </button>
         </div>
       </header>
@@ -121,8 +123,12 @@ export default function Registrations() {
       {/* Control Bar */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+          <label htmlFor="registration-search" className="sr-only">
+            Search registrations
+          </label>
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" aria-hidden="true" />
           <input
+            id="registration-search"
             type="text"
             placeholder="Search by Name, Email, or Q-ID..."
             value={searchTerm}
@@ -132,8 +138,12 @@ export default function Registrations() {
         </div>
 
         <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-4 h-4 text-teal-600 pointer-events-none" />
+          <label htmlFor="registration-status-filter" className="sr-only">
+            Filter registrations by status
+          </label>
+          <Filter className="absolute left-3 top-2.5 w-4 h-4 text-teal-600 pointer-events-none" aria-hidden="true" />
           <select
+            id="registration-status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="appearance-none bg-white border border-slate-200 text-slate-700 rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 hover:border-slate-300 transition-colors shadow-sm cursor-pointer"
@@ -247,24 +257,28 @@ export default function Registrations() {
                         <div className="flex items-center justify-end gap-2">
                           {reg.status !== "APPROVED" && (
                             <button
+                              type="button"
                               onClick={() =>
                                 handleStatusChange(reg._id, "APPROVED")
                               }
                               className="p-1.5 text-teal-600 bg-teal-50 hover:bg-teal-100 rounded-md transition-colors border border-teal-100"
                               title="Approve"
+                              aria-label={`Approve ${reg.name}`}
                             >
-                              <Check className="w-4 h-4" />
+                              <Check className="w-4 h-4" aria-hidden="true" />
                             </button>
                           )}
                           {reg.status !== "REJECTED" && (
                             <button
+                              type="button"
                               onClick={() =>
                                 handleStatusChange(reg._id, "REJECTED")
                               }
                               className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-100"
                               title="Reject"
+                              aria-label={`Reject ${reg.name}`}
                             >
-                              <XIcon className="w-4 h-4" />
+                              <XIcon className="w-4 h-4" aria-hidden="true" />
                             </button>
                           )}
                         </div>

@@ -47,8 +47,11 @@ const Faqs = () => {
                   className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border-2 border-gray-100 overflow-hidden transition-all hover:border-[#2ec5d4]/50"
                 >
                   <button
+                    type="button"
                     onClick={() => toggleAccordion(index)}
                     className="w-full text-left p-6 md:p-8 flex justify-between items-center focus:outline-none"
+                    aria-expanded={openIndex === index}
+                    aria-controls={`faq-answer-${faq._id}`}
                   >
                     <h3 className="font-oswald text-2xl font-bold uppercase text-[#0a0a0a] pr-8">
                       {faq.question}
@@ -62,6 +65,9 @@ const Faqs = () => {
                     </div>
                   </button>
                   <div
+                    id={`faq-answer-${faq._id}`}
+                    role="region"
+                    aria-label={`Answer: ${faq.question}`}
                     className={`grid transition-all duration-300 ease-in-out ${
                       openIndex === index
                         ? "grid-rows-[1fr] opacity-100"

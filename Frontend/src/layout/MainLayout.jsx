@@ -19,6 +19,12 @@ const MainLayout = () => {
 
   return (
     <div className="app-shell">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-xs focus:font-bold focus:uppercase focus:tracking-widest"
+      >
+        Skip to main content
+      </a>
       <header className="site-header sticky top-0 z-50">
         <div className="brand-lockup flex items-center gap-3">
           <div className="brand-dot"></div>
@@ -55,16 +61,18 @@ const MainLayout = () => {
           ))}
         </div>
       </div>
-      <main className="main-content">
+      <main id="main-content" className="main-content">
         <Outlet />
       </main>
       <footer className="border-t border-line p-6 font-mono text-xs text-ink/40 text-center uppercase tracking-widest bg-bg">
-        <span
+        <button
+          type="button"
           onClick={handleFooterClick}
-          className="cursor-default select-none"
+          className="cursor-default select-none text-inherit"
+          aria-label="Footer copyright text"
         >
           {layout.footerText.replace("2026", new Date().getFullYear())}
-        </span>
+        </button>
       </footer>
     </div>
   );

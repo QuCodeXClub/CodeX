@@ -9,14 +9,18 @@ const EventList = ({ events, loading }) => {
   if (loading) {
     return (
       <div className="flex flex-col gap-10">
-        <div className="flex flex-wrap gap-3 font-bold uppercase tracking-wider text-xs border-b-2 border-gray-200 pb-2">
+        <div className="flex flex-wrap gap-3 font-bold uppercase tracking-wider text-xs border-b-2 border-gray-200 pb-2" role="tablist" aria-label="Event categories">
           {tabs.map((tab) => (
             <button
               key={tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-label={`Filter events by ${tab.toLowerCase()}`}
               className={`px-5 py-2 border-2 transition-all ${
                 activeTab === tab
                   ? "border-[#2ec5d4] bg-[#2ec5d4] text-[#0a0a0a]"
-                  : "border-transparent text-gray-400 hover:border-gray-400 hover:text-gray-800"
+                  : "border-transparent text-gray-600 hover:border-gray-500 hover:text-gray-900"
               }`}
             >
               {tab}
@@ -36,15 +40,19 @@ const EventList = ({ events, loading }) => {
   }
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-wrap gap-3 font-bold uppercase tracking-wider text-xs border-b-2 border-gray-200 pb-2">
+      <div className="flex flex-wrap gap-3 font-bold uppercase tracking-wider text-xs border-b-2 border-gray-200 pb-2" role="tablist" aria-label="Event categories">
         {tabs.map((tab) => (
           <button
             key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            aria-label={`Filter events by ${tab.toLowerCase()}`}
             onClick={() => setActiveTab(tab)}
             className={`px-5 py-2 border-2 transition-all ${
               activeTab === tab
                 ? "border-[#2ec5d4] bg-[#2ec5d4] text-[#0a0a0a]"
-                : "border-transparent text-gray-400 hover:border-gray-400 hover:text-gray-800"
+                : "border-transparent text-gray-600 hover:border-gray-500 hover:text-gray-900"
             }`}
           >
             {tab}
@@ -127,9 +135,14 @@ const EventList = ({ events, loading }) => {
                     href={event.registrationLink || "#"}
                     target={event.registrationLink ? "_blank" : "_self"}
                     rel="noreferrer"
+                    aria-label={
+                      event.registrationLink
+                        ? `Register for ${event.eventName}`
+                        : `Registration unavailable for ${event.eventName}`
+                    }
                     className="w-12 h-12 bg-[#0a0a0a] text-white rounded-xl flex items-center justify-center hover:bg-[#2ec5d4] hover:text-[#0a0a0a] transition-colors shrink-0"
                   >
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-5 h-5" aria-hidden="true" />
                   </a>
                 </div>
               </div>
@@ -139,7 +152,7 @@ const EventList = ({ events, loading }) => {
       </div>
       {events.length > 0 && (
         <div className="flex justify-center mt-4">
-          <button className="border-2 border-gray-300 text-gray-500 font-bold uppercase tracking-widest text-xs px-8 py-4 hover:border-[#0a0a0a] hover:text-[#0a0a0a] transition-colors rounded-lg">
+          <button type="button" className="border-2 border-gray-300 text-gray-600 font-bold uppercase tracking-widest text-xs px-8 py-4 hover:border-[#0a0a0a] hover:text-[#0a0a0a] transition-colors rounded-lg">
             Load More Events
           </button>
         </div>

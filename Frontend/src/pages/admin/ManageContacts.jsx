@@ -71,12 +71,14 @@ export default function ManageContacts() {
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => dispatch(fetchAdminContacts())}
             disabled={loading}
             className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50"
             title="Refresh Messages"
+            aria-label="Refresh messages"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} aria-hidden="true" />
           </button>
         </div>
       </header>
@@ -84,8 +86,12 @@ export default function ManageContacts() {
       {/* Control Bar */}
       <div className="mb-6 max-w-md">
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+          <label htmlFor="contacts-search" className="sr-only">
+            Search messages
+          </label>
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" aria-hidden="true" />
           <input
+            id="contacts-search"
             type="text"
             placeholder="Search by name, email, or subject..."
             value={searchTerm}
@@ -114,9 +120,12 @@ export default function ManageContacts() {
                 key={msg._id}
                 className={`transition-colors ${!msg.isRead ? "bg-teal-50/30" : "hover:bg-slate-50/50"}`}
               >
-                <div
-                  className="p-4 cursor-pointer flex items-center gap-4"
+                <button
+                  type="button"
+                  className="w-full p-4 text-left cursor-pointer flex items-center gap-4"
                   onClick={() => handleToggleExpand(msg)}
+                  aria-expanded={expandedId === msg._id}
+                  aria-controls={`message-panel-${msg._id}`}
                 >
                   <div className="shrink-0 flex items-center justify-center">
                     {!msg.isRead ? (
@@ -148,16 +157,17 @@ export default function ManageContacts() {
                       <ChevronDown className="w-5 h-5" />
                     )}
                   </div>
-                </div>
+                </button>
 
                 {/* Expanded Content */}
                 {expandedId === msg._id && (
-                  <div className="px-10 pb-5 pt-2 border-t border-slate-50 bg-slate-50/50">
+                  <div id={`message-panel-${msg._id}`} className="px-10 pb-5 pt-2 border-t border-slate-50 bg-slate-50/50">
                     <div className="mb-4 whitespace-pre-wrap text-sm text-slate-700 leading-relaxed bg-white p-4 rounded-xl border border-slate-200">
                       {msg.message}
                     </div>
                     <div className="flex justify-end">
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(msg._id);
