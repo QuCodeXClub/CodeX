@@ -14,9 +14,10 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setLogout } from "../../context/authSlice";
 
-export default function AdminLayout() {
+export default function DashboardLayout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
   const navItems = [
     {
       name: "Dashboard",
@@ -41,6 +42,7 @@ export default function AdminLayout() {
       navigate("/admin/login");
     }
   };
+
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col z-20">

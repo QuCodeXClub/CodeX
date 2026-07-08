@@ -10,7 +10,6 @@ const authSlice = createSlice({
   },
   reducers: {
     setLogin: (state, action) => {
-      localStorage.setItem("trueLogin", "true");
       state.user = action.payload;
       state.isAuthResolved = true;
     },
@@ -19,7 +18,6 @@ const authSlice = createSlice({
     },
     setLogout: (state) => {
       state.user = null;
-      localStorage.setItem("trueLogin", "false");
       state.isAuthResolved = true;
     }
   },

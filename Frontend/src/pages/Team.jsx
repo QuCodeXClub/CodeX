@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../services/axiosInstance";
-import { useDispatch } from "react-redux";
 import { Mail, User, Loader2 } from "lucide-react";
 import { PublicTeamCardSkeleton } from "../components/common/SkeletonLoaders";
 const MemberCard = ({ member }) => {
@@ -40,13 +39,12 @@ const MemberCard = ({ member }) => {
 const Team = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
   useEffect(() => {
     const fetchTeam = async () => {
       try {
         const response = await axiosInstance.get("/teams");
         setMembers(response.data?.data || []);
-      } catch (err) {
+      } catch {
         // Error handled globally
       } finally {
         setLoading(false);

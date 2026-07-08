@@ -44,7 +44,7 @@ const Contact = () => {
 
       await axiosInstance.post("/contact", payload);
       setIsSuccess(true);
-    } catch (err) {
+    } catch {
       setTurnstileToken(null);
       // Let global interceptor handle the error message display
     } finally {

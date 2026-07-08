@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { adminService } from "../../services/adminService";
 import { setLogin } from "../../context/authSlice";
@@ -17,8 +17,6 @@ import {
 export default function AdminLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const isAuthResolved = useSelector((state) => state.auth.isAuthResolved);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -39,12 +37,6 @@ export default function AdminLogin() {
     setError: setOtpError,
   } = useForm();
 
-  useEffect(() => {
-    if (isAuthResolved && user) {
-      navigate("/admin/dashboard", { replace: true });
-    }
-  }, [isAuthResolved, user, navigate]);
-
   const onLoginSubmit = async (data) => {
     setLoading(true);
     setError("");
@@ -56,7 +48,6 @@ export default function AdminLogin() {
     } catch (err) {
       const msg = err.response?.data?.message || "Authentication failed. Verify credentials.";
       setError(msg);
-      // Map specific field errors if backend provides them
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
           if (e.field) setLoginError(e.field, { type: "server", message: e.message });

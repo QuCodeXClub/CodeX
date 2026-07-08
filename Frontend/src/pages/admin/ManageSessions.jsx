@@ -38,8 +38,8 @@ export default function ManageSessions() {
     setUpdatingId(id);
     try {
       await dispatch(killAdminSession(id)).unwrap();
-    } catch (err) {
-      // Handled in thunk
+    } catch {
+      // Error handled in thunk
     } finally {
       setUpdatingId(null);
     }

@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
-import { setError, setSuccess } from "../../context/messageSlice";
 import {
   fetchAdminEvents,
-  createAdminEvent,
-  updateAdminEvent,
   deleteAdminEvent,
 } from "../../context/adminEventsSlice";
 
@@ -50,7 +47,7 @@ export default function ManageEvents() {
     try {
       await dispatch(deleteAdminEvent(id)).unwrap();
       dispatch(fetchAdminEvents());
-    } catch (err) {
+    } catch {
       // Error handled in thunk
     }
   };

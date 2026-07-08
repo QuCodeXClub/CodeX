@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from "../store/store";
 import { setError, setSuccess } from "../context/messageSlice";
+import { setLogout } from "../context/authSlice";
 
 const axiosInstance = axios.create({
   baseURL: "/api/v1",
@@ -9,14 +10,6 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-axiosInstance.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 axiosInstance.interceptors.response.use(
   (response) => {
     const method = response.config.method?.toLowerCase();
@@ -39,8 +32,7 @@ axiosInstance.interceptors.response.use(
         window.location.pathname.startsWith("/admin") &&
         window.location.pathname !== "/admin/login"
       ) {
-        localStorage.setItem("trueLogin", "false");
-        window.location.href = "/admin/login";
+        store.dispatch(setLogout());
       }
     }
     return Promise.reject(error.response?.data || error.message);

@@ -7,8 +7,8 @@ import store from "./store/store";
 import "./index.css";
 import App from "./App";
 import MainLayout from "./layout/MainLayout";
-import AuthLayout from "./layout/AuthLayout";
-import AdminLayout from "./pages/admin/AdminLayout";
+import DashboardLayout from "./pages/admin/DashboardLayout";
+import AdminLayout from "./layout/AdminLayout";
 import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
@@ -54,18 +54,17 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin/login",
-    element: <AdminLogin />,
-    errorElement: <GlobalError />,
-  },
-  {
     path: "/admin",
-    element: <AuthLayout />, // Guards the routes
+    element: <AdminLayout />,
     errorElement: <GlobalError />,
     children: [
       {
+        path: "login",
+        element: <AdminLogin />,
+      },
+      {
         path: "",
-        element: <AdminLayout />,
+        element: <DashboardLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: "dashboard", element: <AdminDashboard /> },

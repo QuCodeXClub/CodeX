@@ -1,20 +1,16 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { adminService } from "./services/adminService";
 import { setLogin, setLogout, setAuthResolved } from "./context/authSlice";
 import GlobalMessage from "./components/common/GlobalMessage";
+import SplashScreen from "./components/common/SplashScreen";
 import { ConfirmProvider } from "./context/ConfirmContext";
 
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-[#2ec5d4] font-jetbrains">
-    <div className="animate-pulse font-bold tracking-widest uppercase">
-      Initializing Module...
-    </div>
-  </div>
-);
 
 function App({ children }) {
   const dispatch = useDispatch();
+  const isTargetingAdmin = window.location.pathname.startsWith('/admin');
+  const [showSplash, setShowSplash] = useState(isTargetingAdmin);
 
   useEffect(() => {
     dispatch(setAuthResolved(false));
@@ -22,28 +18,28 @@ function App({ children }) {
       try {
         const response = await adminService.getCurrentAdmin();
         // Assuming response or response.data contains the user payload
-        dispatch(setLogin(response.data || response)); 
-      } catch (error) {
+        dispatch(setLogin(response.data || response));
+      } catch {
         dispatch(setLogout());
       } finally {
         dispatch(setAuthResolved(true));
+        // Keep splash screen mounted momentarily so Suspense chunks can load underneath
+        setTimeout(() => {
+          setShowSplash(false);
+        }, 1200);
       }
     };
 
-    if (localStorage.getItem("trueLogin") === "true") {
-      fetchProfile();
-    } else {
-      // Allow initial API call anyway for strict session verification,
-      // or just assume not logged in to save API calls.
-      // We will assume not logged in to mimic Resume Saathi.
-      dispatch(setAuthResolved(true));
-    }
+    // Since the session token is in an httpOnly cookie, we should always
+    // attempt to fetch the profile on mount to verify the session.
+    fetchProfile();
   }, [dispatch]);
 
   return (
     <ConfirmProvider>
+      <SplashScreen show={showSplash} />
       <GlobalMessage />
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<div className="flex h-screen items-center justify-center bg-slate-50"><div className="animate-spin h-8 w-8 border-4 border-teal-500 border-t-transparent rounded-full"></div></div>}>
         {children}
       </Suspense>
     </ConfirmProvider>

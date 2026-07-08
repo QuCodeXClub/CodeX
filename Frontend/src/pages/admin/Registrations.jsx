@@ -51,8 +51,8 @@ export default function Registrations() {
           status: newStatus 
         })
       ).unwrap();
-    } catch (err) {
-      // Handled in thunk
+    } catch {
+      // Error handled in thunk
     } finally {
       setUpdatingId(null);
     }

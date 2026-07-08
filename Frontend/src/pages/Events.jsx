@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../services/axiosInstance";
-import { useDispatch } from "react-redux";
 import EventsHero from "../features/events/components/EventsHero";
 import EventList from "../features/events/components/EventList";
 import EventSidebar from "../features/events/components/EventSidebar";
@@ -8,14 +7,13 @@ import EventSidebar from "../features/events/components/EventSidebar";
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await axiosInstance.get("/events");
         setEvents(response.data?.data || []);
-      } catch (err) {
+      } catch {
         // Error handled globally
       } finally {
         setLoading(false);

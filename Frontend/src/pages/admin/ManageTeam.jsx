@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
-import { setError, setSuccess } from "../../context/messageSlice";
 import {
   fetchAdminTeam,
   addAdminTeamMember,
@@ -143,7 +142,7 @@ export default function ManageTeam() {
     try {
       await dispatch(deleteAdminTeamMember(id)).unwrap();
       dispatch(fetchAdminTeam(filterYear));
-    } catch (err) {
+    } catch {
       // Handled in thunk
     }
   };
