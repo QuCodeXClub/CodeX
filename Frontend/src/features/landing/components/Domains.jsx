@@ -6,7 +6,7 @@ const Domains = () => {
   if (!domains || !domains.list) return null;
 
   return (
-    <section className="domains-panel relative overflow-hidden py-16 md:py-24" id="domains">
+    <section className="border-b domains-panel relative overflow-hidden py-16 md:py-24" id="domains">
       <div className="section-header mb-12 text-center relative z-10">
         <p className="eyebrow">{domains.eyebrow}</p>
         <h2 className="hero-title text-reflect mb-4">

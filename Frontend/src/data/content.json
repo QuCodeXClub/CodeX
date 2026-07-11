@@ -118,6 +118,41 @@
           "description": "Contribute to real-world projects."
         }
       ]
+    },
+    "contactSection": {
+  "eyebrow": "Contact Us",
+  "title": "Get in Touch",
+  "headline": "Have a question or want to connect? We'd love to hear from you.",
+  "description": "Whether you're interested in joining CodeX, collaborating on an event, exploring partnership opportunities, or simply have a query, our team is here to help. Reach out and we'll get back to you as soon as possible.",
+  "ctaPrimary": "Contact Us",
+  "directLines": [
+    {
+      "label": "Club Coordinator",
+      "name": "Arjun Sharma",
+      "detail": "+91 356658998"
+    },
+    {
+      "label": "Partnerships & Events",
+      "name": "Priya Singh",
+      "detail": "+91 752937022"
+    }
+  ]
+},
+"partners": {
+      "title": "Organizations We've Worked With",
+      "description": "Building opportunities with organizations that support developers and innovation.",
+      "list": [
+        { "name": "HackIndia" },
+        { "name": "Unstop" },
+        { "name": "Hostinger" },
+        { "name": ".xyz" }
+      ]
+    },
+    "mission": {
+      "eyebrow": "Our Core Vision",
+      "headline": "Our mission is to create a thriving community where students transform ideas into real-world solutions.",
+      "description": "Through mentorship, live projects, hackathons, technical workshops, and competitive programming, we help members develop industry-ready skills, strengthen problem-solving abilities, and build impactful portfolios for internships, placements, and entrepreneurship.",
+      "cta": "Learn About Us"
     }
   },
   "faqs": [
