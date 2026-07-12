@@ -65,6 +65,14 @@ const studentRegistrationSchema = new mongoose.Schema(
       required: [true, "Transaction ID is required for fee verification"],
       unique: true,
     },
+    paymentMode: {
+      type: String,
+      enum: {
+        values: ['ONLINE', 'CASH'],
+        message: '{VALUE} is not a valid payment mode'
+      },
+      default: 'ONLINE',
+    },
     status: {
       type: String,
       enum: {

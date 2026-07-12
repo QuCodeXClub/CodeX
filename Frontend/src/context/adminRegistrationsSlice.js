@@ -34,6 +34,18 @@ export const updateRegistrationStatus = createAsyncThunk(
   }
 );
 
+export const createManualRegistration = createAsyncThunk(
+  "adminRegistrations/createManual",
+  async (studentData, { rejectWithValue }) => {
+    try {
+      const response = await registrationService.addManualRegistration(studentData);
+      return response.data?.data || response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to add registration');
+    }
+  }
+);
+
 const adminRegistrationsSlice = createSlice({
   name: "adminRegistrations",
   initialState: {
@@ -62,6 +74,15 @@ const adminRegistrationsSlice = createSlice({
           if (index !== -1) {
             state.registrationsByYear[year][index].status = action.payload.status;
           }
+        });
+      })
+      .addCase(createManualRegistration.fulfilled, (state, action) => {
+        // Find the correct academic year to insert this into, or just re-fetch next time.
+        // Easiest is to push to 'ALL' if it exists, and the specific academic year if it exists.
+        const reg = action.payload;
+        Object.keys(state.registrationsByYear).forEach(year => {
+          // We can just unshift it to the top so it appears as NEW
+          state.registrationsByYear[year].unshift(reg);
         });
       });
   },

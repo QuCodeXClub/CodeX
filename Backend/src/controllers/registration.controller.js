@@ -7,7 +7,7 @@ import { registrationApprovedEmail, registrationRejectedEmail } from '../utils/e
 
 // Get all registrations (Admin only)
 const getAllRegistrations = asyncHandler(async (req, res) => {
-  const { status, search, academicYear, page = 1, limit = 10 } = req.query;
+  const { status, search, academicYear, paymentMode, page = 1, limit = 10 } = req.query;
 
   const query = {};
   if (status) query.status = status;
@@ -18,6 +18,14 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
       { studentId: { $regex: search, $options: 'i' } },
       { transactionId: { $regex: search, $options: 'i' } },
     ];
+  }
+  
+  if (paymentMode && paymentMode !== 'ALL') {
+    if (paymentMode === 'ONLINE') {
+        query.paymentMode = { $ne: 'CASH' };
+    } else {
+        query.paymentMode = paymentMode;
+    }
   }
   
   if (academicYear && academicYear !== 'ALL') {
@@ -107,4 +115,60 @@ const updateRegistrationStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, registration, `Registration ${status.toLowerCase()} successfully`));
 });
 
-export { getAllRegistrations, updateRegistrationStatus };
+// Add Manual Registration (Admin only)
+const addManualRegistration = asyncHandler(async (req, res) => {
+  const {
+    name,
+    fatherName,
+    course,
+    year,
+    semester,
+    section,
+    set,
+    studentId,
+    email,
+    phone,
+  } = req.body;
+
+  if (
+    [name, fatherName, course, year, semester, section, set, studentId, email, phone].some(
+      (field) => !field || field.toString().trim() === ''
+    )
+  ) {
+    throw new ApiError(400, 'All fields are required');
+  }
+
+  // Generate a mock transaction ID for cash
+  const transactionId = `CASH-${Date.now()}`;
+
+  const registration = await StudentRegistration.create({
+    name,
+    fatherName,
+    course,
+    year,
+    semester,
+    section,
+    set,
+    studentId,
+    email,
+    phone,
+    transactionId,
+    paymentMode: 'CASH',
+    status: 'APPROVED', // Default to approved since it's manual admin entry
+  });
+
+  // Optional: Send welcome email for manual registration here if desired
+  const { html, text } = registrationApprovedEmail(registration.name);
+  sendEmail({
+    email: registration.email,
+    subject: 'Welcome to CodeX - Registration Approved (Cash)',
+    message: html,
+    textMessage: text,
+  }).catch(err => console.error("Failed to send approval email:", err));
+
+  return res.status(201).json(
+    new ApiResponse(201, registration, 'Manual registration added successfully')
+  );
+});
+
+export { getAllRegistrations, updateRegistrationStatus, addManualRegistration };

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Search,
   Filter,
@@ -18,6 +19,7 @@ import { useConfirm } from "../../context/ConfirmContext";
 import {
   fetchAdminRegistrations,
   updateRegistrationStatus,
+  createManualRegistration,
 } from "../../context/adminRegistrationsSlice";
 import { TableRowSkeleton } from "../../components/common/SkeletonLoaders";
 import { generateAcademicYears, getAcademicYearFromDate } from "../../utils/helpers";
@@ -35,6 +37,21 @@ export default function Registrations() {
   const [courseFilter, setCourseFilter] = useState("ALL");
   const [yearFilter, setYearFilter] = useState("ALL");
   const [academicYearFilter, setAcademicYearFilter] = useState(formAcademicYears[0] || "ALL");
+  const [paymentModeFilter, setPaymentModeFilter] = useState("ALL");
+  
+  const [showAddModal, setShowAddModal] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm({
+    defaultValues: {
+      course: "B.Tech",
+      year: "1st Year",
+      semester: "1st"
+    }
+  });
   
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
@@ -82,9 +99,21 @@ export default function Registrations() {
     const matchesStatus = statusFilter === "ALL" || currentStatus === statusFilter;
     const matchesCourse = courseFilter === "ALL" || reg.course === courseFilter;
     const matchesYear = yearFilter === "ALL" || reg.year === yearFilter;
+    const regPaymentMode = reg.paymentMode || "ONLINE";
+    const matchesPaymentMode = paymentModeFilter === "ALL" || regPaymentMode === paymentModeFilter;
     
-    return matchesSearch && matchesStatus && matchesCourse && matchesYear;
+    return matchesSearch && matchesStatus && matchesCourse && matchesYear && matchesPaymentMode;
   });
+
+  const onAddSubmit = async (data) => {
+    try {
+      await dispatch(createManualRegistration(data)).unwrap();
+      setShowAddModal(false);
+      reset();
+    } catch (error) {
+      alert(error || "Failed to add registration");
+    }
+  };
 
   const handleExportCSV = () => {
     if (filteredRegistrations.length === 0) {
@@ -141,11 +170,14 @@ export default function Registrations() {
     window.URL.revokeObjectURL(url);
   };
 
-  const isNewEntry = (dateString) => {
-    const createdAt = new Date(dateString);
+  const isNewEntry = (reg) => {
+    const createdAt = new Date(reg.createdAt);
     const now = new Date();
     // highlight if created within the last 24 hours
-    return (now - createdAt) < 24 * 60 * 60 * 1000;
+    const within24Hours = (now - createdAt) < 24 * 60 * 60 * 1000;
+    
+    // Only highlight if it is still PENDING
+    return within24Hours && reg.status === 'PENDING';
   };
 
   const StatusBadge = ({ status }) => {
@@ -192,6 +224,12 @@ export default function Registrations() {
           >
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm"
+          >
+            <span>+ Add Student (Cash)</span>
           </button>
           <button
             onClick={() => dispatch(fetchAdminRegistrations(academicYearFilter))}
@@ -294,6 +332,21 @@ export default function Registrations() {
             </select>
             <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-slate-400 pointer-events-none"></div>
           </div>
+
+          {/* Payment Mode Filter */}
+          <div className="relative">
+            <Filter className="absolute left-3 top-2.5 w-4 h-4 text-teal-600 pointer-events-none" />
+            <select
+              value={paymentModeFilter}
+              onChange={(e) => setPaymentModeFilter(e.target.value)}
+              className="appearance-none bg-white border border-slate-200 text-slate-700 rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 hover:border-slate-300 transition-colors shadow-sm cursor-pointer"
+            >
+              <option value="ALL">All Payments</option>
+              <option value="ONLINE">Online</option>
+              <option value="CASH">Cash</option>
+            </select>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-slate-400 pointer-events-none"></div>
+          </div>
         </div>
       </div>
 
@@ -341,7 +394,7 @@ export default function Registrations() {
                 </tr>
               ) : (
                 filteredRegistrations.map((reg) => {
-                  const isNew = isNewEntry(reg.createdAt);
+                  const isNew = isNewEntry(reg);
                   return (
                   <tr
                     key={reg._id}
@@ -385,8 +438,15 @@ export default function Registrations() {
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="inline-flex items-center px-2 py-1 rounded bg-slate-100 border border-slate-200 text-slate-600 font-mono text-xs">
-                        UTR: {reg.transactionId}
+                      <div className="flex flex-col gap-1">
+                        <div className="inline-flex items-center px-2 py-1 rounded bg-slate-100 border border-slate-200 text-slate-600 font-mono text-xs w-max">
+                          UTR: {reg.transactionId}
+                        </div>
+                        {(!reg.paymentMode || reg.paymentMode === 'ONLINE') ? (
+                          <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-max border border-blue-100">ONLINE</span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded w-max border border-emerald-100">CASH</span>
+                        )}
                       </div>
                     </td>
 
@@ -434,6 +494,99 @@ export default function Registrations() {
           </table>
         </div>
       </div>
+
+      {/* Add Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+              <h2 className="text-xl font-bold text-slate-900">Add Student (Cash)</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-lg hover:bg-slate-50"
+              >
+                <XIcon className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit(onAddSubmit)} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Student Name</label>
+                  <input {...register("name", { required: "Name is required" })} type="text" className={`w-full border ${errors.name ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Father's Name</label>
+                  <input {...register("fatherName", { required: "Father's name is required" })} type="text" className={`w-full border ${errors.fatherName ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.fatherName && <p className="text-red-500 text-xs mt-1">{errors.fatherName.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                  <input {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })} type="email" className={`w-full border ${errors.email ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                  <input {...register("phone", { required: "Phone is required", pattern: { value: /^[0-9]{10}$/, message: "Must be 10 digits" } })} type="text" className={`w-full border ${errors.phone ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Course</label>
+                  <select {...register("course")} className="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    {['B.Tech', 'M.Tech', 'BCA', 'MCA', 'BBA', 'MBA', 'B.Sc', 'M.Sc'].map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Year</label>
+                  <select {...register("year")} className="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    {['1st Year', '2nd Year', '3rd Year', '4th Year'].map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Semester</label>
+                  <select {...register("semester")} className="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'].map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Section</label>
+                  <input {...register("section", { required: "Section is required" })} type="text" className={`w-full border ${errors.section ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.section && <p className="text-red-500 text-xs mt-1">{errors.section.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Set</label>
+                  <input {...register("set", { required: "Set is required" })} type="text" className={`w-full border ${errors.set ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.set && <p className="text-red-500 text-xs mt-1">{errors.set.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Q-ID</label>
+                  <input {...register("studentId", { required: "Q-ID is required" })} type="text" className={`w-full border ${errors.studentId ? 'border-red-500' : 'border-slate-200'} rounded-lg p-2.5 text-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500`} />
+                  {errors.studentId && <p className="text-red-500 text-xs mt-1">{errors.studentId.message}</p>}
+                </div>
+              </div>
+              
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+                <button
+                  type="button"
+                  onClick={() => { setShowAddModal(false); reset(); }}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center gap-2 px-6 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Register & Approve
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

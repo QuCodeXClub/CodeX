@@ -12,6 +12,10 @@ class RegistrationService {
   async updateRegistrationStatus(id, status) {
     return axiosInstance.patch(`/registrations/${id}/status`, { status });
   }
+
+  async addManualRegistration(studentData) {
+    return axiosInstance.post("/registrations/manual", studentData);
+  }
 }
 
 export const registrationService = new RegistrationService();
