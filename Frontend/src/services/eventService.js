@@ -1,20 +1,29 @@
 import axiosInstance from "./axiosInstance";
 
 class EventService {
-  async getEvents() {
+  getEvents() {
     return axiosInstance.get("/events");
   }
 
-  async createEvent(formData) {
+  createEvent(formData) {
     return axiosInstance.post("/events", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
   }
 
-  async deleteEvent(id) {
+  updateEvent(id, formData) {
+    return axiosInstance.put(`/events/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+
+  deleteEvent(id) {
     return axiosInstance.delete(`/events/${id}`);
   }
 }
 
 export const eventService = new EventService();
-export default EventService;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../services/axiosInstance";
+import { eventService } from "../services/eventService";
+
 import EventsHero from "../features/events/components/EventsHero";
 import EventList from "../features/events/components/EventList";
-import EventSidebar from "../features/events/components/EventSidebar";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -11,10 +11,10 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axiosInstance.get("/events");
-        setEvents(response.data?.data || []);
-      } catch {
-        // Error handled globally
+        const response = await eventService.getEvents();
+        setEvents(response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
       } finally {
         setLoading(false);
       }
@@ -32,23 +32,17 @@ const Events = () => {
             "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
-      ></div>
+      />
 
-      <div className="relative z-10">
-        <EventsHero events={events} loading={loading} />
+     <div className="relative z-10">
+  <EventsHero events={events} loading={loading} />
 
-        <section className="w-full max-w-[1400px] mx-auto px-4 lg:px-12 py-12 lg:py-20 border-t-2 border-gray-200">
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-12 lg:gap-20">
-            <div className="event-feed">
-                <EventList events={events} loading={loading} />
-            </div>
-
-            <aside className="event-sidebar hidden xl:block">
-              <EventSidebar events={events} />
-            </aside>
-          </div>
-        </section>
-      </div>
+  <section className="w-full max-w-[1400px] mx-auto px-4 lg:px-12 py-12 lg:py-20 border-t-2 border-gray-200">
+    <div className="w-full">
+      <EventList events={events} loading={loading} />
+    </div>
+  </section>
+</div>
     </div>
   );
 };

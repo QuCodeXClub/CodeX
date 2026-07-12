@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { X, Link as LinkIcon, Image as ImageIcon, Loader2 } from "lucide-react";
 import { createAdminEvent, updateAdminEvent, fetchAdminEvents } from "../../../context/adminEventsSlice";
+import RichTextEditor from "../../common/RichTextEditor";
 
 export default function EventModal({
   setIsModalOpen,
@@ -12,7 +13,9 @@ export default function EventModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(editingEvent?.coverImage || null);
   const [coverImageFile, setCoverImageFile] = useState(null);
-
+  const [description, setDescription] = useState(
+    editingEvent?.description || ""
+  );
   const {
     register,
     handleSubmit,
@@ -22,7 +25,6 @@ export default function EventModal({
     defaultValues: {
       eventName: editingEvent?.eventName || "",
       date: editingEvent ? new Date(editingEvent.date).toISOString().slice(0, 16) : "",
-      description: editingEvent?.description || "",
       registrationLink: editingEvent?.registrationLink || "",
     }
   });
@@ -41,7 +43,12 @@ export default function EventModal({
       const submitData = new FormData();
       submitData.append("eventName", data.eventName);
       submitData.append("date", data.date);
-      submitData.append("description", data.description);
+      if (!description.trim()) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      submitData.append("description", description);
       if (data.registrationLink) submitData.append("registrationLink", data.registrationLink);
       if (coverImageFile) submitData.append("coverImage", coverImageFile);
 
@@ -106,12 +113,10 @@ export default function EventModal({
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Description
               </label>
-              <textarea
-                rows="4"
-                {...register("description", { required: "Description is required" })}
-                className={`w-full bg-white border ${errors.description ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm resize-none`}
-                placeholder="Event Description"
-              ></textarea>
+              <RichTextEditor
+                value={description}
+                onChange={setDescription}
+              />
               {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
             </div>
             <div>
