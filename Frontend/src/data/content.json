@@ -274,5 +274,37 @@
   "error": {
     "defaultMessage": "Something went wrong!",
     "buttonText": "Return to Base"
+  },
+  "eventsHero": {
+    "badge": "// All Events",
+    "title": {
+      "line1": "Build. Learn.",
+      "highlight": "Connect."
+    },
+    "description": "From hackathons to hands-on workshops, join experiences that push boundaries and build the future.",
+
+    "cards": [
+      {
+        "id": 1,
+        "title": "Hackathon",
+        "subtitle": "Build • Break • Innovate",
+        "image": "hackathon",
+        "className": "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-[22rem] z-30"
+      },
+      {
+        "id": 2,
+        "title": "Coding Contest",
+        "subtitle": "Competitive Programming",
+        "image": "contest",
+        "className": "absolute top-1/2 left-[10%] -translate-y-1/2 -rotate-12 w-56 h-72 z-10 opacity-80 scale-90"
+      },
+      {
+        "id": 3,
+        "title": "Webinar",
+        "subtitle": "Learn from Experts",
+        "image": "webinar",
+        "className": "absolute top-1/2 right-[10%] -translate-y-1/2 rotate-12 w-56 h-72 z-20 opacity-80 scale-90"
+      }
+    ]
   }
 }
