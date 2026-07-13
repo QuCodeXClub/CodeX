@@ -71,20 +71,20 @@ export default function EventModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl relative my-auto">
+    <div className="fixed inset-0 z-[9999] flex items-start md:items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 pt-24 md:pt-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-6xl relative mb-10 md:my-auto flex flex-col">
         <button
           onClick={() => setIsModalOpen(false)}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-100 rounded-full transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-100 rounded-full transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
-        <div className="p-6 md:p-8">
-          <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4 mb-6">
+        <div className="p-6 md:p-8 lg:p-10 flex-1 flex flex-col">
+          <h2 className="text-xl lg:text-2xl font-bold text-slate-900 border-b border-slate-100 pb-4 mb-6">
             {editingEvent ? "Edit Event Details" : "Initialize New Event"}
           </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                   Event Name
@@ -109,78 +109,88 @@ export default function EventModal({
                 {errors.date && <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>}
               </div>
             </div>
-            <div>
+            
+            <div className="flex-1 flex flex-col">
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Description
               </label>
-              <RichTextEditor
-                value={description}
-                onChange={setDescription}
-              />
-              {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Registration URL{" "}
-                <span className="text-slate-400 font-normal">(Optional)</span>
-              </label>
-              <div className="relative">
-                <LinkIcon className={`absolute left-3 top-2.5 w-4 h-4 ${errors.registrationLink ? 'text-red-400' : 'text-slate-400'}`} />
-                <input
-                  type="url"
-                  {...register("registrationLink", {
-                    pattern: {
-                      value: /^https?:\/\/.+/,
-                      message: "Must be a valid URL starting with http:// or https://"
-                    }
-                  })}
-                  className={`w-full bg-white border ${errors.registrationLink ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
-                  placeholder="https://..."
+              <div className="min-h-[300px] lg:min-h-[450px] w-full flex flex-col">
+                <RichTextEditor
+                  value={description}
+                  onChange={setDescription}
                 />
               </div>
-              {errors.registrationLink && <p className="mt-1 text-xs text-red-500">{errors.registrationLink.message}</p>}
+              {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Cover Image
-              </label>
-              <div className="flex items-center gap-4">
-                <label className="flex-1 border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-teal-50 hover:border-teal-400 rounded-xl p-6 text-center cursor-pointer transition-colors group">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <ImageIcon className="w-8 h-8 text-slate-400 mx-auto mb-2 group-hover:text-teal-500 transition-colors" />
-                  <span className="text-sm font-medium text-slate-500 group-hover:text-teal-600">
-                    Click to browse or drag image here
-                  </span>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0 pt-2">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Registration URL{" "}
+                  <span className="text-slate-400 font-normal">(Optional)</span>
                 </label>
-                {imagePreview && (
-                  <div className="w-28 h-28 border border-slate-200 rounded-xl overflow-hidden shrink-0 bg-slate-100 shadow-sm">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
+                <div className="relative">
+                  <LinkIcon className={`absolute left-3 top-2.5 w-4 h-4 ${errors.registrationLink ? 'text-red-400' : 'text-slate-400'}`} />
+                  <input
+                    type="url"
+                    {...register("registrationLink", {
+                      pattern: {
+                        value: /^https?:\/\/.+/,
+                        message: "Must be a valid URL starting with http:// or https://"
+                      }
+                    })}
+                    className={`w-full bg-white border ${errors.registrationLink ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                    placeholder="https://..."
+                  />
+                </div>
+                {errors.registrationLink && <p className="mt-1 text-xs text-red-500">{errors.registrationLink.message}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Cover Image
+                </label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <label className="w-full sm:flex-1 border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-teal-50 hover:border-teal-400 rounded-xl p-6 text-center cursor-pointer transition-colors group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
                     />
-                  </div>
-                )}
+                    <ImageIcon className="w-8 h-8 text-slate-400 mx-auto mb-2 group-hover:text-teal-500 transition-colors" />
+                    <span className="text-sm font-medium text-slate-500 group-hover:text-teal-600 block">
+                      Click to browse or drag image
+                    </span>
+                  </label>
+                  {imagePreview && (
+                    <div className="w-full sm:w-28 sm:h-28 border border-slate-200 rounded-xl overflow-hidden shrink-0 bg-slate-100 shadow-sm aspect-video sm:aspect-square">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl text-sm font-semibold transition-colors hover:bg-teal-700 disabled:opacity-50 mt-4 shadow-sm"
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : editingEvent ? (
-                "Save Changes"
-              ) : (
-                "Create Event"
-              )}
-            </button>
+
+            <div className="pt-4 shrink-0 border-t border-slate-100 mt-6">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full md:w-auto md:min-w-[200px] md:ml-auto flex items-center justify-center gap-2 bg-teal-600 text-white py-3 px-8 rounded-xl text-sm font-semibold transition-colors hover:bg-teal-700 disabled:opacity-50 shadow-sm"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : editingEvent ? (
+                  "Save Changes"
+                ) : (
+                  "Create Event"
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>
