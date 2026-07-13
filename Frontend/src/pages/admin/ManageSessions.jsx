@@ -9,8 +9,6 @@ import {
   Globe,
   Activity,
   Loader2,
-  AlertCircle,
-  ShieldAlert,
   RefreshCw,
 } from "lucide-react";
 import { SessionCardSkeleton } from "../../components/common/SkeletonLoaders";
@@ -54,29 +52,17 @@ export default function ManageSessions() {
   };
 
   return (
-    <div className="p-8 lg:p-10 font-sans text-slate-900 min-h-full relative">
-      {/* Header */}
-      <header className="flex items-start justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Session Control</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Monitor and manage active admin sessions.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => dispatch(fetchAdminSessions())}
-            disabled={loading}
-            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50"
-            title="Refresh Data"
-          >
-            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} />
-          </button>
-          <div className="p-3 bg-teal-50 rounded-xl hidden sm:block">
-            <ShieldAlert className="w-8 h-8 text-teal-600" />
-          </div>
-        </div>
-      </header>
+    <div className="font-sans text-slate-900 relative">
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => dispatch(fetchAdminSessions())}
+          disabled={loading}
+          className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:text-teal-600 hover:bg-teal-50 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-teal-500" : ""}`} />
+          Refresh
+        </button>
+      </div>
 
       {/* Main Content */}
       {loading ? (

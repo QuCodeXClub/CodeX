@@ -1,4 +1,6 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Users,
@@ -9,6 +11,8 @@ import {
   Activity,
   LogOut,
   User,
+  Menu,
+  X
 } from "lucide-react";
 import axios from "axios";
 
@@ -18,7 +22,14 @@ import { setLogout } from "../../context/authSlice";
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
   const navItems = [
     {
       name: "Dashboard",
@@ -30,7 +41,6 @@ export default function DashboardLayout() {
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
-    { name: "Sessions", path: "/admin/sessions", icon: Activity },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
   ];
@@ -47,14 +57,31 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col z-20">
-        <div className="p-8 pb-4">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            CODEX
-          </h1>
-          <p className="mt-1 text-[11px] font-semibold text-teal-500 uppercase tracking-widest">
-            Admin Portal
-          </p>
+      {/* Mobile Sidebar Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="p-8 pb-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              CODEX
+            </h1>
+            <p className="mt-1 text-[11px] font-semibold text-teal-500 uppercase tracking-widest">
+              Admin Portal
+            </p>
+          </div>
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="p-2 text-slate-400 hover:text-slate-600 lg:hidden"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
@@ -85,7 +112,26 @@ export default function DashboardLayout() {
           </button>
         </div>
       </aside>
-      <main className="flex-1 relative overflow-hidden flex flex-col h-screen">
+
+      {/* Main Content Area */}
+      <main className="flex-1 relative overflow-hidden flex flex-col h-screen w-full">
+        {/* Mobile Header */}
+        <header className="bg-white border-b border-slate-200 px-4 py-4 flex items-center justify-between lg:hidden z-30 shrink-0">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 leading-none">
+                CODEX
+              </h1>
+            </div>
+          </div>
+        </header>
+
         <div className="relative z-10 flex-1 overflow-y-auto">
           <Outlet />
         </div>

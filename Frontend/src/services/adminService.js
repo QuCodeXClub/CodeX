@@ -17,9 +17,13 @@ class AdminService {
     return axiosInstance.get("/admin/current");
   }
 
-  async changeAdminPassword(oldPassword, newPassword) {
+  async requestPasswordChange(oldPassword) {
+    return axiosInstance.post("/admin/request-password-change", { oldPassword });
+  }
+
+  async changeAdminPassword(otp, newPassword) {
     return axiosInstance.post("/admin/change-password", {
-      oldPassword,
+      otp,
       newPassword,
     });
   }
@@ -43,12 +47,11 @@ class AdminService {
   }
 
   async updateProfile(formData) {
-    const response = await axiosInstance.patch("/admin/profile", formData, {
+    return axiosInstance.patch("/admin/profile", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    return response.data;
   }
 }
 

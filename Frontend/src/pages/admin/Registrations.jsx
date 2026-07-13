@@ -22,7 +22,7 @@ import {
   createManualRegistration,
 } from "../../context/adminRegistrationsSlice";
 import { TableRowSkeleton } from "../../components/common/SkeletonLoaders";
-import { generateAcademicYears, getAcademicYearFromDate } from "../../utils/helpers";
+import { generateAcademicYears } from "../../utils/helpers";
 
 export default function Registrations() {
   const { registrationsByYear, loading } = useSelector(
