@@ -8,7 +8,8 @@ export default function RichTextEditor({
 
     return (
         <Editor
-            apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
             value={value}
             init={tinyMCEConfig}
             onEditorChange={(content) => onChange(content)}
