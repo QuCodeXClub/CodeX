@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import Button from "../components/common/Button"; 
+import Button from "../components/common/Button";
 
 const Navbar = ({ layout }) => {
   const navigate = useNavigate();
@@ -16,7 +16,6 @@ const Navbar = ({ layout }) => {
 
   return (
     <header className="site-header sticky top-0 z-50 bg-bg flex justify-between">
-      
       {/* 1. Brand Lockup */}
       <Link
         to="/"
@@ -28,7 +27,10 @@ const Navbar = ({ layout }) => {
           alt="CodeX Club logo"
           className="h-9 w-9 shrink-0"
         />
-        <span className="brand-divider hidden sm:block w-px h-6 bg-line" aria-hidden="true" />
+        <span
+          className="brand-divider hidden sm:block w-px h-6 bg-line"
+          aria-hidden="true"
+        />
         <img
           src="/university-logo-icon.svg"
           alt="Quantum University logo"
@@ -51,9 +53,8 @@ const Navbar = ({ layout }) => {
       {/* 3. Meta, Desktop CTA, and Mobile Toggle Container */}
       {/* FIX: Removed 'w-full' so this stays on the same line as the logo in mobile view */}
       <div className="site-meta flex items-center gap-4 z-50 relative">
-        
         <span className="hidden lg:inline-block">{layout.meta}</span>
-        
+
         {/* DESKTOP BUTTON: Hidden on mobile */}
         <Button
           onClick={() => navigate("/register")}
@@ -70,16 +71,24 @@ const Navbar = ({ layout }) => {
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
         >
-          <span className={`block w-6 h-[2px] bg-current transition-all duration-300 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}></span>
-          <span className={`block w-6 h-[2px] bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 translate-x-2' : ''}`}></span>
-          <span className={`block w-6 h-[2px] bg-current transition-all duration-300 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`}></span>
+          <span
+            className={`block w-6 h-[2px] bg-current transition-all duration-300 origin-center ${isMobileMenuOpen ? "rotate-45 translate-y-[7px]" : ""}`}
+          ></span>
+          <span
+            className={`block w-6 h-[2px] bg-current transition-all duration-300 ${isMobileMenuOpen ? "opacity-0 translate-x-2" : ""}`}
+          ></span>
+          <span
+            className={`block w-6 h-[2px] bg-current transition-all duration-300 origin-center ${isMobileMenuOpen ? "-rotate-45 -translate-y-[7px]" : ""}`}
+          ></span>
         </button>
       </div>
 
       {/* 4. Mobile Menu Dropdown */}
-      <div 
+      <div
         className={`lg:hidden absolute top-full left-0 w-full bg-bg border-b border-line transition-all duration-300 ease-in-out overflow-hidden shadow-xl ${
-          isMobileMenuOpen ? 'max-h-[400px] py-8 opacity-100' : 'max-h-0 py-0 opacity-0 border-transparent'
+          isMobileMenuOpen
+            ? "max-h-[400px] py-8 opacity-100"
+            : "max-h-0 py-0 opacity-0 border-transparent"
         }`}
       >
         <nav className="flex flex-col items-center gap-6">
@@ -92,7 +101,7 @@ const Navbar = ({ layout }) => {
               {item.label}
             </Link>
           ))}
-          
+
           {/* MOBILE BUTTON: Uses your exact theme variant, stretched and centered for mobile */}
           <Button
             onClick={() => navigate("/register")}
@@ -103,7 +112,6 @@ const Navbar = ({ layout }) => {
           </Button>
         </nav>
       </div>
-      
     </header>
   );
 };

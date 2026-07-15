@@ -34,9 +34,7 @@ export default function RecentRegistrations({ metrics, recentLogs }) {
               ></div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-slate-700 truncate">
-                  <span className="font-medium text-slate-900">
-                    {log.name}
-                  </span>{" "}
+                  <span className="font-medium text-slate-900">{log.name}</span>{" "}
                   applied for CodeX ({log.course}).
                 </p>
                 <p className="text-xs text-slate-400 mt-1">

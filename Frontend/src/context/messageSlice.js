@@ -27,5 +27,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const { setError, setSuccess, setWarning, clearError } = messageSlice.actions;
+export const { setError, setSuccess, setWarning, clearError } =
+  messageSlice.actions;
 export default messageSlice.reducer;

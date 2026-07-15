@@ -18,7 +18,9 @@ class AdminService {
   }
 
   async requestPasswordChange(oldPassword) {
-    return axiosInstance.post("/admin/request-password-change", { oldPassword });
+    return axiosInstance.post("/admin/request-password-change", {
+      oldPassword,
+    });
   }
 
   async changeAdminPassword(otp, newPassword) {

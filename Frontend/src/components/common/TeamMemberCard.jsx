@@ -1,7 +1,12 @@
-import React from 'react';
-import { ShieldCheck, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import React from "react";
+import { ShieldCheck, Edit, Trash2, Image as ImageIcon } from "lucide-react";
 
-export const TeamMemberCard = ({ member, isAdmin = false, onEdit, onDelete }) => {
+export const TeamMemberCard = ({
+  member,
+  isAdmin = false,
+  onEdit,
+  onDelete,
+}) => {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow w-full">
       {/* Photo Section */}
@@ -33,9 +38,9 @@ export const TeamMemberCard = ({ member, isAdmin = false, onEdit, onDelete }) =>
         </h3>
 
         <div className="flex items-center justify-center gap-1.5 text-teal-600 text-sm font-semibold mb-1 w-full">
-          <ShieldCheck className="w-4 h-4 shrink-0" /> <span className="line-clamp-1">{member.post}</span>
+          <ShieldCheck className="w-4 h-4 shrink-0" />{" "}
+          <span className="line-clamp-1">{member.post}</span>
         </div>
-
 
         {/* Actions */}
         {isAdmin && (

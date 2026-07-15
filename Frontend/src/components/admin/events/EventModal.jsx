@@ -2,16 +2,19 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { X, Link as LinkIcon, Image as ImageIcon, Loader2 } from "lucide-react";
-import { createAdminEvent, updateAdminEvent, fetchAdminEvents } from "../../../context/adminEventsSlice";
+import {
+  createAdminEvent,
+  updateAdminEvent,
+  fetchAdminEvents,
+} from "../../../context/adminEventsSlice";
 import RichTextEditor from "../../common/RichTextEditor";
 
-export default function EventModal({
-  setIsModalOpen,
-  editingEvent,
-}) {
+export default function EventModal({ setIsModalOpen, editingEvent }) {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreview, setImagePreview] = useState(editingEvent?.coverImage || null);
+  const [imagePreview, setImagePreview] = useState(
+    editingEvent?.coverImage || null
+  );
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [description, setDescription] = useState(
     editingEvent?.description || ""
@@ -20,13 +23,15 @@ export default function EventModal({
     register,
     handleSubmit,
     formState: { errors },
-    setError
+    setError,
   } = useForm({
     defaultValues: {
       eventName: editingEvent?.eventName || "",
-      date: editingEvent ? new Date(editingEvent.date).toISOString().slice(0, 16) : "",
+      date: editingEvent
+        ? new Date(editingEvent.date).toISOString().slice(0, 16)
+        : "",
       registrationLink: editingEvent?.registrationLink || "",
-    }
+    },
   });
 
   const handleFileChange = (e) => {
@@ -49,11 +54,14 @@ export default function EventModal({
       }
 
       submitData.append("description", description);
-      if (data.registrationLink) submitData.append("registrationLink", data.registrationLink);
+      if (data.registrationLink)
+        submitData.append("registrationLink", data.registrationLink);
       if (coverImageFile) submitData.append("coverImage", coverImageFile);
 
       if (editingEvent) {
-        await dispatch(updateAdminEvent({ id: editingEvent._id, formData: submitData })).unwrap();
+        await dispatch(
+          updateAdminEvent({ id: editingEvent._id, formData: submitData })
+        ).unwrap();
       } else {
         await dispatch(createAdminEvent(submitData)).unwrap();
       }
@@ -62,7 +70,8 @@ export default function EventModal({
     } catch (err) {
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
-          if (e.field) setError(e.field, { type: "server", message: e.message });
+          if (e.field)
+            setError(e.field, { type: "server", message: e.message });
         });
       }
     } finally {
@@ -91,11 +100,17 @@ export default function EventModal({
                 </label>
                 <input
                   type="text"
-                  {...register("eventName", { required: "Event name is required" })}
-                  className={`w-full bg-white border ${errors.eventName ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                  {...register("eventName", {
+                    required: "Event name is required",
+                  })}
+                  className={`w-full bg-white border ${errors.eventName ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                   placeholder="Event Name"
                 />
-                {errors.eventName && <p className="mt-1 text-xs text-red-500">{errors.eventName.message}</p>}
+                {errors.eventName && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.eventName.message}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -104,20 +119,25 @@ export default function EventModal({
                 <input
                   type="datetime-local"
                   {...register("date", { required: "Date is required" })}
-                  className={`w-full bg-white border ${errors.date ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                  className={`w-full bg-white border ${errors.date ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                 />
-                {errors.date && <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>}
+                {errors.date && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.date.message}
+                  </p>
+                )}
               </div>
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Description
               </label>
-              <RichTextEditor
-                value={description}
-                onChange={setDescription}
-              />
-              {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
+              <RichTextEditor value={description} onChange={setDescription} />
+              {errors.description && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.description.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -125,20 +145,27 @@ export default function EventModal({
                 <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <div className="relative">
-                <LinkIcon className={`absolute left-3 top-2.5 w-4 h-4 ${errors.registrationLink ? 'text-red-400' : 'text-slate-400'}`} />
+                <LinkIcon
+                  className={`absolute left-3 top-2.5 w-4 h-4 ${errors.registrationLink ? "text-red-400" : "text-slate-400"}`}
+                />
                 <input
                   type="url"
                   {...register("registrationLink", {
                     pattern: {
                       value: /^https?:\/\/.+/,
-                      message: "Must be a valid URL starting with http:// or https://"
-                    }
+                      message:
+                        "Must be a valid URL starting with http:// or https://",
+                    },
                   })}
-                  className={`w-full bg-white border ${errors.registrationLink ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                  className={`w-full bg-white border ${errors.registrationLink ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                   placeholder="https://..."
                 />
               </div>
-              {errors.registrationLink && <p className="mt-1 text-xs text-red-500">{errors.registrationLink.message}</p>}
+              {errors.registrationLink && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.registrationLink.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">

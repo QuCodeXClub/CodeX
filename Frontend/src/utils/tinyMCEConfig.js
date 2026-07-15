@@ -19,7 +19,7 @@ export const tinyMCEConfig = {
     "media",
     "table",
     "help",
-    "wordcount"
+    "wordcount",
   ],
 
   toolbar:
@@ -46,5 +46,5 @@ export const tinyMCEConfig = {
       font-size:15px;
       padding:10px;
     }
-  `
+  `,
 };

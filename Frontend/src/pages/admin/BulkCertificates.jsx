@@ -80,7 +80,10 @@ export default function BulkCertificates() {
       if (rows.length === 0) return;
 
       let startIndex = 0;
-      if (rows[0].toLowerCase().includes("name") || rows[0].toLowerCase().includes("email")) {
+      if (
+        rows[0].toLowerCase().includes("name") ||
+        rows[0].toLowerCase().includes("email")
+      ) {
         startIndex = 1;
       }
 
@@ -106,7 +109,9 @@ export default function BulkCertificates() {
         } else {
           append(parsedStudents);
         }
-        dispatch(setSuccess(`${parsedStudents.length} students imported from CSV.`));
+        dispatch(
+          setSuccess(`${parsedStudents.length} students imported from CSV.`)
+        );
       } else {
         dispatch(setError("Could not parse valid students from the CSV."));
       }
@@ -128,7 +133,8 @@ export default function BulkCertificates() {
 
     try {
       const validStudents = data.students.filter(
-        (student) => student.name.trim() && student.email.trim() && student.position.trim()
+        (student) =>
+          student.name.trim() && student.email.trim() && student.position.trim()
       );
 
       if (validStudents.length === 0) {
@@ -155,15 +161,20 @@ export default function BulkCertificates() {
         submitData.append("signatureImageUrl", previousSignatureUrl);
       }
 
-      const response = await certificateService.generateBulkCertificates(submitData);
+      const response =
+        await certificateService.generateBulkCertificates(submitData);
 
-      dispatch(setSuccess(response.message || "Certificates generated successfully."));
+      dispatch(
+        setSuccess(response.message || "Certificates generated successfully.")
+      );
       reset();
       setSignaturePreview(null);
     } catch (error) {
       dispatch(
         setError(
-          error?.response?.data?.message || error?.message || "Failed to generate certificates."
+          error?.response?.data?.message ||
+            error?.message ||
+            "Failed to generate certificates."
         )
       );
       console.error(error);
@@ -177,14 +188,19 @@ export default function BulkCertificates() {
       <header className="flex items-start justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold">Credential Forge</h1>
-          <p className="text-sm text-slate-500 mt-1">Bulk generate and email certificates.</p>
+          <p className="text-sm text-slate-500 mt-1">
+            Bulk generate and email certificates.
+          </p>
         </div>
         <div className="hidden sm:block p-3 rounded-xl bg-teal-50">
           <Award className="w-8 h-8 text-teal-600" />
         </div>
       </header>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+      >
         {/* Left Panel : Event Details */}
         <div className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8 h-fit space-y-6">
           <h2 className="flex items-center gap-2 text-lg font-bold border-b border-slate-100 pb-4">
@@ -194,45 +210,67 @@ export default function BulkCertificates() {
 
           {/* Event Name */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Event Name</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Event Name
+            </label>
             <input
               type="text"
               {...register("eventName", { required: "Event name is required" })}
               placeholder="Hackathon 2026"
               className="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            {errors.eventName && <p className="mt-1 text-xs text-red-500">{errors.eventName.message}</p>}
+            {errors.eventName && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.eventName.message}
+              </p>
+            )}
           </div>
 
           {/* Event Date */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Event Date</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Event Date
+            </label>
             <input
               type="date"
               {...register("eventDate", { required: "Event date is required" })}
               className="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            {errors.eventDate && <p className="mt-1 text-xs text-red-500">{errors.eventDate.message}</p>}
+            {errors.eventDate && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.eventDate.message}
+              </p>
+            )}
           </div>
 
           {/* Coordinator */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Coordinator Name</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Coordinator Name
+            </label>
             <div className="relative">
               <UserCheck className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                {...register("coordinatorName", { required: "Coordinator name is required" })}
+                {...register("coordinatorName", {
+                  required: "Coordinator name is required",
+                })}
                 placeholder="Dr. Smith"
                 className="w-full rounded-lg border border-slate-300 pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
-            {errors.coordinatorName && <p className="mt-1 text-xs text-red-500">{errors.coordinatorName.message}</p>}
+            {errors.coordinatorName && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.coordinatorName.message}
+              </p>
+            )}
           </div>
 
           {/* Signature Upload */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Signature Image</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Signature Image
+            </label>
             <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition">
               <input
                 type="file"
@@ -249,17 +287,29 @@ export default function BulkCertificates() {
               />
               {signaturePreview ? (
                 <div className="flex flex-col items-center">
-                  <img src={signaturePreview} alt="Signature Preview" className="max-h-24 object-contain mb-2" />
-                  <span className="text-xs text-teal-600 font-medium">Click to change signature</span>
+                  <img
+                    src={signaturePreview}
+                    alt="Signature Preview"
+                    className="max-h-24 object-contain mb-2"
+                  />
+                  <span className="text-xs text-teal-600 font-medium">
+                    Click to change signature
+                  </span>
                 </div>
               ) : (
                 <>
                   <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
-                  <span className="text-sm text-slate-500">Upload Signature</span>
+                  <span className="text-sm text-slate-500">
+                    Upload Signature
+                  </span>
                 </>
               )}
             </label>
-            {errors.signatureImage && <p className="mt-1 text-xs text-red-500">{errors.signatureImage.message}</p>}
+            {errors.signatureImage && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.signatureImage.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -277,7 +327,13 @@ export default function BulkCertificates() {
               </span>
 
               {/* CSV Upload Button */}
-              <input type="file" accept=".csv" ref={csvInputRef} onChange={handleCsvUpload} className="hidden" />
+              <input
+                type="file"
+                accept=".csv"
+                ref={csvInputRef}
+                onChange={handleCsvUpload}
+                className="hidden"
+              />
               <button
                 type="button"
                 onClick={() => csvInputRef.current.click()}
@@ -291,18 +347,25 @@ export default function BulkCertificates() {
 
           <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
             {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div
+                key={field.id}
+                className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start bg-slate-50 border border-slate-200 rounded-xl p-4"
+              >
                 {/* Name */}
                 <div className="md:col-span-4 relative">
                   <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Student Name"
-                    {...register(`students.${index}.name`, { required: "Name is required" })}
+                    {...register(`students.${index}.name`, {
+                      required: "Name is required",
+                    })}
                     className="w-full rounded-lg border border-slate-300 pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                   {errors.students?.[index]?.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.students[index].name.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.students[index].name.message}
+                    </p>
                   )}
                 </div>
 
@@ -322,14 +385,18 @@ export default function BulkCertificates() {
                     className="w-full rounded-lg border border-slate-300 pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                   {errors.students?.[index]?.email && (
-                    <p className="mt-1 text-xs text-red-500">{errors.students[index].email.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.students[index].email.message}
+                    </p>
                   )}
                 </div>
 
                 {/* Position */}
                 <div className="md:col-span-3">
                   <select
-                    {...register(`students.${index}.position`, { required: "Position is required" })}
+                    {...register(`students.${index}.position`, {
+                      required: "Position is required",
+                    })}
                     className="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="Winner">Winner</option>
@@ -340,7 +407,9 @@ export default function BulkCertificates() {
                     <option value="Coordinator">Coordinator</option>
                   </select>
                   {errors.students?.[index]?.position && (
-                    <p className="mt-1 text-xs text-red-500">{errors.students[index].position.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.students[index].position.message}
+                    </p>
                   )}
                 </div>
 
@@ -363,7 +432,9 @@ export default function BulkCertificates() {
           <div className="border-t border-slate-200 mt-6 pt-6 flex flex-col sm:flex-row gap-4">
             <button
               type="button"
-              onClick={() => append({ name: "", email: "", position: "Participant" })}
+              onClick={() =>
+                append({ name: "", email: "", position: "Participant" })
+              }
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 transition-all font-medium"
             >
               <Plus className="w-4 h-4" />

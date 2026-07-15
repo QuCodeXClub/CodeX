@@ -11,9 +11,7 @@ const CommitSection = () => {
       <div className="split-left">
         <p className="eyebrow">{commitSection.eyebrow}</p>
         <h2 className="split-title">{commitSection.title}</h2>
-        <p className="split-copy">
-          {commitSection.description}
-        </p>
+        <p className="split-copy">{commitSection.description}</p>
         <Button
           onClick={() => navigate("/register")}
           variant="solid"

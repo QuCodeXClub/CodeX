@@ -49,7 +49,9 @@ export default function AdminLayout() {
   if (isAuthResolved) {
     // 2. If unauthenticated and trying to access dashboard routes, redirect to login
     if (!user && !isLoginPage) {
-      content = <Navigate to="/admin/login" replace state={{ from: location }} />;
+      content = (
+        <Navigate to="/admin/login" replace state={{ from: location }} />
+      );
     }
     // 3. If authenticated and trying to access the login page, redirect to dashboard
     else if (user && isLoginPage) {
@@ -68,11 +70,13 @@ export default function AdminLayout() {
         It fades out smoothly after showSplash becomes false.
       */}
       <SplashScreen show={!isAuthResolved || showSplash} />
-      <Suspense fallback={
-        <div className="flex h-screen items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-teal-500 border-t-transparent rounded-full"></div>
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="flex h-screen items-center justify-center">
+            <div className="animate-spin h-8 w-8 border-4 border-teal-500 border-t-transparent rounded-full"></div>
+          </div>
+        }
+      >
         {content}
       </Suspense>
     </>

@@ -1,8 +1,8 @@
 export const generateAcademicYears = () => {
   const currentYear = new Date().getFullYear();
-  // Academic year runs from June to June. 
+  // Academic year runs from June to June.
   // Month 5 is June (0-indexed). A new academic year is automatically added when June arrives.
-  const currentMonth = new Date().getMonth(); 
+  const currentMonth = new Date().getMonth();
   const maxYear = currentMonth >= 5 ? currentYear : currentYear - 1;
   const years = [];
   for (let startYear = 2018; startYear <= maxYear; startYear++) {

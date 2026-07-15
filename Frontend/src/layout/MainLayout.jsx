@@ -29,7 +29,7 @@ const MainLayout = () => {
           ))}
         </div>
       </div>
-      
+
       <main className="main-content">
         <Outlet />
       </main>

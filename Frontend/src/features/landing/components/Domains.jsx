@@ -6,7 +6,10 @@ const Domains = () => {
   if (!domains || !domains.list) return null;
 
   return (
-    <section className="border-b domains-panel relative overflow-hidden py-16 md:py-24" id="domains">
+    <section
+      className="border-b domains-panel relative overflow-hidden py-16 md:py-24"
+      id="domains"
+    >
       <div className="section-header mb-12 text-center relative z-10">
         <p className="eyebrow">{domains.eyebrow}</p>
         <h2 className="hero-title text-reflect mb-4">
@@ -20,7 +23,7 @@ const Domains = () => {
 
       <div className="domains-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         {domains.list.map((domain, index) => (
-          <article 
+          <article
             key={domain.title || index}
             className="stat-card flex flex-col justify-between hover:-translate-y-1 transition-transform duration-300"
           >

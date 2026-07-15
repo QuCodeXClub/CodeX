@@ -14,7 +14,7 @@ export const fetchAdminSessions = createAsyncThunk(
   {
     condition: (_, { getState }) => {
       if (getState().adminSessions.loading) return false;
-    }
+    },
   }
 );
 

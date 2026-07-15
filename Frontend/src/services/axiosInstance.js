@@ -22,8 +22,11 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    const errorMessage = error.response?.data?.message || error.message || "An unexpected error occurred.";
-    
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "An unexpected error occurred.";
+
     // Global error handler for all backend errors
     store.dispatch(setError(errorMessage));
 

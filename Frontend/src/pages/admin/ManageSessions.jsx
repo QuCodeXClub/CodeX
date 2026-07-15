@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminSessions, killAdminSession } from "../../context/adminSessionsSlice";
+import {
+  fetchAdminSessions,
+  killAdminSession,
+} from "../../context/adminSessionsSlice";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
   Monitor,
@@ -11,10 +14,12 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { SessionCardSkeleton } from "../../components/common/SkeletonLoaders";
+import { SessionCardSkeleton } from "../../components/common/skeletons";
 
 export default function ManageSessions() {
-  const { sessions, loading, isLoaded } = useSelector((state) => state.adminSessions);
+  const { sessions, loading, isLoaded } = useSelector(
+    (state) => state.adminSessions
+  );
   const dispatch = useDispatch();
   const confirm = useConfirm();
   const [updatingId, setUpdatingId] = useState(null);
@@ -28,7 +33,7 @@ export default function ManageSessions() {
   const handleKill = async (id) => {
     const isConfirmed = await confirm({
       title: "Revoke Session",
-      message: "Are you sure you want to forcibly log out this device?"
+      message: "Are you sure you want to forcibly log out this device?",
     });
 
     if (!isConfirmed) return;
@@ -59,7 +64,9 @@ export default function ManageSessions() {
           disabled={loading}
           className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:text-teal-600 hover:bg-teal-50 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-teal-500" : ""}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${loading ? "animate-spin text-teal-500" : ""}`}
+          />
           Refresh
         </button>
       </div>

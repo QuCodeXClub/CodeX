@@ -14,10 +14,14 @@ export default function PersonalDetailsForm({ register, errors }) {
           <input
             type="text"
             {...register("name", { required: "Name is required" })}
-            className={`w-full bg-transparent border-2 ${errors.name ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+            className={`w-full bg-transparent border-2 ${errors.name ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
             placeholder="Enter Your Name"
           />
-          {errors.name && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.name.message}
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -25,10 +29,16 @@ export default function PersonalDetailsForm({ register, errors }) {
           </label>
           <input
             type="text"
-            {...register("fatherName", { required: "Father's name is required" })}
-            className={`w-full bg-transparent border-2 ${errors.fatherName ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+            {...register("fatherName", {
+              required: "Father's name is required",
+            })}
+            className={`w-full bg-transparent border-2 ${errors.fatherName ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
           />
-          {errors.fatherName && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.fatherName.message}</p>}
+          {errors.fatherName && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.fatherName.message}
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -36,11 +46,18 @@ export default function PersonalDetailsForm({ register, errors }) {
           </label>
           <input
             type="email"
-            {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })}
-            className={`w-full bg-transparent border-2 ${errors.email ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors font-bold text-sm tracking-wider placeholder-gray-300`}
+            {...register("email", {
+              required: "Email is required",
+              pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
+            })}
+            className={`w-full bg-transparent border-2 ${errors.email ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors font-bold text-sm tracking-wider placeholder-gray-300`}
             placeholder="Email"
           />
-          {errors.email && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.email.message}
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -48,11 +65,21 @@ export default function PersonalDetailsForm({ register, errors }) {
           </label>
           <input
             type="text"
-            {...register("phone", { required: "Phone number is required", pattern: { value: /^[0-9]{10}$/, message: "Must be a 10-digit number" } })}
-            className={`w-full bg-transparent border-2 ${errors.phone ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors font-bold text-sm tracking-wider placeholder-gray-300`}
+            {...register("phone", {
+              required: "Phone number is required",
+              pattern: {
+                value: /^[0-9]{10}$/,
+                message: "Must be a 10-digit number",
+              },
+            })}
+            className={`w-full bg-transparent border-2 ${errors.phone ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors font-bold text-sm tracking-wider placeholder-gray-300`}
             placeholder="Enter Phone Number"
           />
-          {errors.phone && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.phone.message}</p>}
+          {errors.phone && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.phone.message}
+            </p>
+          )}
         </div>
       </div>
     </>

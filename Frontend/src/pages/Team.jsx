@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Filter, Users } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminTeam } from "../context/adminTeamSlice";
-import { AdminTeamCardSkeleton } from "../components/common/SkeletonLoaders";
+import { AdminTeamCardSkeleton } from "../components/common/skeletons";
 import { TeamMemberCard } from "../components/common/TeamMemberCard";
 import { generateAcademicYears } from "../utils/helpers";
 const formAcademicYears = generateAcademicYears();
@@ -11,18 +11,22 @@ const Team = () => {
   const dispatch = useDispatch();
   const { members, loading } = useSelector((state) => state.adminTeam);
   const [filterYear, setFilterYear] = useState(formAcademicYears[0]);
-  
+
   useEffect(() => {
     if (filterYear) {
       dispatch(fetchAdminTeam(filterYear));
     }
   }, [dispatch, filterYear]);
-  const displayedMembers = [...members].sort((a, b) => (a.sequenceNumber || 0) - (b.sequenceNumber || 0));
+  const displayedMembers = [...members].sort(
+    (a, b) => (a.sequenceNumber || 0) - (b.sequenceNumber || 0)
+  );
 
   const adminTeam = displayedMembers.filter((m) => m.subTeam === "Admin Team");
   const coreTeam = displayedMembers.filter((m) => m.subTeam === "Core Team");
   const techTeam = displayedMembers.filter((m) => m.subTeam === "Tech Team");
-  const graphicTeam = displayedMembers.filter((m) => m.subTeam === "Graphic Team");
+  const graphicTeam = displayedMembers.filter(
+    (m) => m.subTeam === "Graphic Team"
+  );
 
   return (
     <div className="team-page min-h-screen bg-[#Faf9f6] relative font-jetbrains selection:bg-[#2ec5d4] selection:text-white pb-24">
@@ -38,8 +42,12 @@ const Team = () => {
       <div className="relative z-10 max-w-[1920px] mx-auto px-6 pt-8 lg:pt-12">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Codex Team</h1>
-            <p className="text-sm text-slate-500 mt-1">Meet the people driving Codex forward.</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Codex Team
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              Meet the people driving Codex forward.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative min-w-[200px]">
@@ -63,7 +71,9 @@ const Team = () => {
           <div className="flex flex-col gap-16 w-full">
             <div className="w-full">
               <div className="flex items-center gap-4 mb-6 w-full">
-                <h2 className="text-xl font-bold text-slate-300 tracking-tight">Loading Roster...</h2>
+                <h2 className="text-xl font-bold text-slate-300 tracking-tight">
+                  Loading Roster...
+                </h2>
                 <div className="flex-1 h-px bg-slate-100"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-7xl">
@@ -80,7 +90,8 @@ const Team = () => {
               No Team Members Found
             </h3>
             <p className="text-gray-500 text-sm">
-              There are no team records available for the selected academic year.
+              There are no team records available for the selected academic
+              year.
             </p>
           </div>
         ) : (
@@ -88,27 +99,37 @@ const Team = () => {
             {adminTeam.length > 0 && (
               <div className="w-full">
                 <div className="flex items-center gap-4 mb-6 w-full">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">Admin Team</h2>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                    Admin Team
+                  </h2>
                   <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
-              <div className="flex flex-wrap justify-center gap-6 w-full max-w-[1920px]">
-                {adminTeam.map((member) => (
-                  <div key={member._id} className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]">
-                    <TeamMemberCard member={member} />
-                  </div>
-                ))}
-              </div>
+                <div className="flex flex-wrap justify-center gap-6 w-full max-w-[1920px]">
+                  {adminTeam.map((member) => (
+                    <div
+                      key={member._id}
+                      className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]"
+                    >
+                      <TeamMemberCard member={member} />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {coreTeam.length > 0 && (
               <div className="w-full">
                 <div className="flex items-center gap-4 mb-6 w-full">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">Core Team</h2>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                    Core Team
+                  </h2>
                   <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
                 <div className="flex flex-wrap justify-center gap-6 w-full max-w-[1920px]">
                   {coreTeam.map((member) => (
-                    <div key={member._id} className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]">
+                    <div
+                      key={member._id}
+                      className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]"
+                    >
                       <TeamMemberCard member={member} />
                     </div>
                   ))}
@@ -118,12 +139,17 @@ const Team = () => {
             {techTeam.length > 0 && (
               <div className="w-full">
                 <div className="flex items-center gap-4 mb-6 w-full">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">Tech Team</h2>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                    Tech Team
+                  </h2>
                   <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
                 <div className="flex flex-wrap justify-center gap-6 w-full max-w-[1920px]">
                   {techTeam.map((member) => (
-                    <div key={member._id} className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]">
+                    <div
+                      key={member._id}
+                      className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]"
+                    >
                       <TeamMemberCard member={member} />
                     </div>
                   ))}
@@ -133,12 +159,17 @@ const Team = () => {
             {graphicTeam.length > 0 && (
               <div className="w-full">
                 <div className="flex items-center gap-4 mb-6 w-full">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">Graphic Team</h2>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                    Graphic Team
+                  </h2>
                   <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
                 <div className="flex flex-wrap justify-center gap-6 w-full max-w-[1920px]">
                   {graphicTeam.map((member) => (
-                    <div key={member._id} className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]">
+                    <div
+                      key={member._id}
+                      className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-19.2px)] 2xl:w-[calc(14.28%-20.5px)] max-w-[240px]"
+                    >
                       <TeamMemberCard member={member} />
                     </div>
                   ))}

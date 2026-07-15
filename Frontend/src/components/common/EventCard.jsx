@@ -1,19 +1,25 @@
 import React from "react";
-import { Image as ImageIcon, Calendar, X, ExternalLink, MapPin, Clock } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Calendar,
+  X,
+  ExternalLink,
+  MapPin,
+  Clock,
+} from "lucide-react";
 
 export default function EventCard({ event, onClose }) {
   if (!event) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-6"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-none border-4 border-black w-full max-w-3xl max-h-[90vh] flex flex-col relative transform transition-all overflow-hidden"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       >
-        
         {/* --- FIXED HEADER --- */}
         <div className="flex items-center justify-between px-8 py-5 border-b-4 border-black bg-white z-20">
           <h2 className="text-xl font-bold text-black uppercase tracking-widest">
@@ -29,7 +35,6 @@ export default function EventCard({ event, onClose }) {
 
         {/* --- SCROLLABLE BODY --- */}
         <div className="flex-1 overflow-y-auto bg-slate-50">
-          
           {/* Hero Image */}
           <div className="w-full h-64 sm:h-80 bg-slate-200 relative flex items-center justify-center shrink-0 border-b-4 border-black">
             {event.coverImage ? (
@@ -41,14 +46,18 @@ export default function EventCard({ event, onClose }) {
             ) : (
               <div className="flex flex-col items-center text-black">
                 <ImageIcon className="w-16 h-16 mb-2 stroke-[1.5]" />
-                <span className="text-xl font-bold uppercase tracking-widest">No Image</span>
+                <span className="text-xl font-bold uppercase tracking-widest">
+                  No Image
+                </span>
               </div>
             )}
-            
+
             {/* Floating Date Badge */}
             <div className="absolute -bottom-10 right-10 bg-white px-5 py-3 rounded-none border-4 border-black flex flex-col items-center min-w-[100px] z-10">
               <span className="text-xs font-black text-[#2ec5d4] uppercase tracking-widest mb-1">
-                {new Date(event.date).toLocaleDateString("en-US", { month: "short" })}
+                {new Date(event.date).toLocaleDateString("en-US", {
+                  month: "short",
+                })}
               </span>
               <span className="text-3xl font-black text-black leading-none uppercase">
                 {new Date(event.date).getDate()}
@@ -61,7 +70,7 @@ export default function EventCard({ event, onClose }) {
             <div className="inline-block bg-[#e6f8fa] text-[#2ec5d4] text-[12px] font-black uppercase tracking-widest px-4 py-1.5 rounded-none border-2 border-black mb-6">
               Event Overview
             </div>
-            
+
             <h3 className="font-bold text-4xl sm:text-5xl text-black mb-8 leading-tight uppercase">
               {event.eventName}
             </h3>
@@ -71,15 +80,21 @@ export default function EventCard({ event, onClose }) {
               <div className="flex items-center gap-2.5 px-4 py-2 border-2 border-black bg-white">
                 <Calendar className="w-5 h-5 text-[#2ec5d4] stroke-[2.5]" />
                 {new Date(event.date).toLocaleDateString("en-US", {
-                  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                })} 
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </div>
-              
+
               <div className="flex items-center gap-2.5 px-4 py-2 border-2 border-black bg-white">
                 <Clock className="w-5 h-5 text-[#2ec5d4] stroke-[2.5]" />
-                {new Date(event.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                {new Date(event.date).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
-              
+
               <div className="flex items-center gap-2.5 px-4 py-2 border-2 border-black bg-white">
                 <MapPin className="w-5 h-5 text-[#2ec5d4] stroke-[2.5]" />
                 Offline
@@ -87,7 +102,7 @@ export default function EventCard({ event, onClose }) {
             </div>
 
             {/* Rich Text Wrapper */}
-            <div 
+            <div
               className="
                 text-slate-600 text-base leading-relaxed
                 [&_p]:mb-6
@@ -100,7 +115,7 @@ export default function EventCard({ event, onClose }) {
                 [&_strong]:font-black [&_strong]:text-black
                 [&_blockquote]:border-4 [&_blockquote]:border-black [&_blockquote]:pl-6 [&_blockquote]:py-3 [&_blockquote]:mb-6 [&_blockquote]:bg-slate-100 [&_blockquote]:italic [&_blockquote]:rounded-none
               "
-              dangerouslySetInnerHTML={{ __html: event.description }} 
+              dangerouslySetInnerHTML={{ __html: event.description }}
             />
           </div>
         </div>
@@ -108,9 +123,9 @@ export default function EventCard({ event, onClose }) {
         {/* --- FIXED FOOTER --- */}
         {event.registrationLink && (
           <div className="p-6 sm:p-8 border-t-4 border-black bg-white z-10 flex justify-end">
-            <a 
-              href={event.registrationLink} 
-              target="_blank" 
+            <a
+              href={event.registrationLink}
+              target="_blank"
               rel="noreferrer"
               className="w-full sm:w-auto flex items-center justify-center gap-3 bg-[#0a0a0a] text-white px-10 py-4 rounded-none font-black uppercase tracking-wider hover:bg-[#2ec5d4] hover:text-black border-4 border-black transition-colors"
             >
@@ -119,7 +134,6 @@ export default function EventCard({ event, onClose }) {
             </a>
           </div>
         )}
-
       </div>
     </div>
   );

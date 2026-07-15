@@ -14,7 +14,7 @@ export const fetchDashboardMetrics = createAsyncThunk(
   {
     condition: (_, { getState }) => {
       if (getState().adminDashboard?.loading) return false;
-    }
+    },
   }
 );
 

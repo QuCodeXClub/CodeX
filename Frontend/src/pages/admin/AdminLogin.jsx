@@ -47,11 +47,14 @@ export default function AdminLogin() {
       setUserEmail(data.email);
       setStep(2);
     } catch (err) {
-      const msg = err.response?.data?.message || "Authentication failed. Verify credentials.";
+      const msg =
+        err.response?.data?.message ||
+        "Authentication failed. Verify credentials.";
       setError(msg);
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
-          if (e.field) setLoginError(e.field, { type: "server", message: e.message });
+          if (e.field)
+            setLoginError(e.field, { type: "server", message: e.message });
         });
       }
     } finally {
@@ -68,11 +71,13 @@ export default function AdminLogin() {
       dispatch(setLogin(response.data || response));
       navigate("/admin/dashboard");
     } catch (err) {
-      const msg = err.response?.data?.message || "Invalid or expired OTP sequence.";
+      const msg =
+        err.response?.data?.message || "Invalid or expired OTP sequence.";
       setError(msg);
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
-          if (e.field) setOtpError(e.field, { type: "server", message: e.message });
+          if (e.field)
+            setOtpError(e.field, { type: "server", message: e.message });
         });
       }
     } finally {
@@ -112,39 +117,59 @@ export default function AdminLogin() {
           </div>
         )}
         {step === 1 ? (
-          <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-5">
+          <form
+            onSubmit={handleSubmitLogin(onLoginSubmit)}
+            className="space-y-5"
+          >
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.email ? 'text-red-400' : 'text-slate-400'}`} />
+                <Mail
+                  className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.email ? "text-red-400" : "text-slate-400"}`}
+                />
                 <input
                   type="email"
                   {...registerLogin("email", {
                     required: "Email is required",
-                    pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" }
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Invalid email format",
+                    },
                   })}
-                  className={`w-full bg-white border ${loginErrors.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
+                  className={`w-full bg-white border ${loginErrors.email ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
                   placeholder="Enter your Mail"
                 />
               </div>
-              {loginErrors.email && <p className="mt-1 text-xs text-red-500">{loginErrors.email.message}</p>}
+              {loginErrors.email && (
+                <p className="mt-1 text-xs text-red-500">
+                  {loginErrors.email.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.password ? 'text-red-400' : 'text-slate-400'}`} />
+                <Lock
+                  className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.password ? "text-red-400" : "text-slate-400"}`}
+                />
                 <input
                   type="password"
-                  {...registerLogin("password", { required: "Password is required" })}
-                  className={`w-full bg-white border ${loginErrors.password ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
+                  {...registerLogin("password", {
+                    required: "Password is required",
+                  })}
+                  className={`w-full bg-white border ${loginErrors.password ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-slate-400`}
                   placeholder="••••••••"
                 />
               </div>
-              {loginErrors.password && <p className="mt-1 text-xs text-red-500">{loginErrors.password.message}</p>}
+              {loginErrors.password && (
+                <p className="mt-1 text-xs text-red-500">
+                  {loginErrors.password.message}
+                </p>
+              )}
             </div>
             <button
               type="submit"
@@ -161,16 +186,18 @@ export default function AdminLogin() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleSubmitOtp(onOtpSubmit)} className="space-y-6" autoComplete="off">
+          <form
+            onSubmit={handleSubmitOtp(onOtpSubmit)}
+            className="space-y-6"
+            autoComplete="off"
+          >
             {/* Hidden inputs to trick browser password managers from autofilling the OTP field */}
-            <input type="text" style={{ display: 'none' }} />
-            <input type="password" style={{ display: 'none' }} />
+            <input type="text" style={{ display: "none" }} />
+            <input type="password" style={{ display: "none" }} />
             <div className="text-center mb-6">
               <p className="text-sm text-slate-600">
                 A 6-digit code has been sent to <br />
-                <span className="font-semibold text-teal-600">
-                  {userEmail}
-                </span>
+                <span className="font-semibold text-teal-600">{userEmail}</span>
               </p>
             </div>
             <div>
@@ -178,20 +205,29 @@ export default function AdminLogin() {
                 Authentication Code
               </label>
               <div className="relative">
-                <KeyRound className={`absolute left-4 top-3.5 w-5 h-5 ${otpErrors.otp ? 'text-red-400' : 'text-slate-400'}`} />
+                <KeyRound
+                  className={`absolute left-4 top-3.5 w-5 h-5 ${otpErrors.otp ? "text-red-400" : "text-slate-400"}`}
+                />
                 <input
                   type="text"
                   maxLength={6}
                   autoComplete="one-time-code"
                   {...registerOtp("otp", {
                     required: "OTP is required",
-                    pattern: { value: /^[0-9]{6}$/, message: "OTP must be exactly 6 digits" }
+                    pattern: {
+                      value: /^[0-9]{6}$/,
+                      message: "OTP must be exactly 6 digits",
+                    },
                   })}
-                  className={`w-full bg-slate-50 border ${otpErrors.otp ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-colors font-mono shadow-inner placeholder:text-slate-300`}
+                  className={`w-full bg-slate-50 border ${otpErrors.otp ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-colors font-mono shadow-inner placeholder:text-slate-300`}
                   placeholder="000000"
                 />
               </div>
-              {otpErrors.otp && <p className="mt-1 text-xs text-red-500 text-center">{otpErrors.otp.message}</p>}
+              {otpErrors.otp && (
+                <p className="mt-1 text-xs text-red-500 text-center">
+                  {otpErrors.otp.message}
+                </p>
+              )}
             </div>
             <button
               type="submit"

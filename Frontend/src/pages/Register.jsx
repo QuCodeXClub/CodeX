@@ -20,7 +20,7 @@ const Register = () => {
     register: formRegister,
     handleSubmit,
     formState: { errors },
-    setError: setFormError
+    setError: setFormError,
   } = useForm({
     defaultValues: {
       name: "",
@@ -34,7 +34,7 @@ const Register = () => {
       set: "",
       studentId: "",
       transactionId: "",
-    }
+    },
   });
 
   const onFormSubmit = async (data) => {
@@ -57,7 +57,8 @@ const Register = () => {
     } catch (err) {
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
-          if (e.field) setFormError(e.field, { type: "server", message: e.message });
+          if (e.field)
+            setFormError(e.field, { type: "server", message: e.message });
         });
       }
       setTurnstileToken(null);
@@ -87,7 +88,8 @@ const Register = () => {
             {register.eyebrow}
           </p>
           <h1 className="font-oswald text-5xl md:text-6xl font-bold uppercase text-[#0a0a0a] mb-3">
-            {register.titlePart1} <span className="text-[#27EBF5]">{register.titlePart2}</span>
+            {register.titlePart1}{" "}
+            <span className="text-[#27EBF5]">{register.titlePart2}</span>
           </h1>
           <p className="text-gray-500 text-sm font-medium">
             {register.description}
@@ -98,14 +100,8 @@ const Register = () => {
           onSubmit={handleSubmit(onFormSubmit)}
           className="bg-white border-4 border-gray-800 p-6 md:p-10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
         >
-          <PersonalDetailsForm
-            register={formRegister}
-            errors={errors}
-          />
-          <AcademicDetailsForm
-            register={formRegister}
-            errors={errors}
-          />
+          <PersonalDetailsForm register={formRegister} errors={errors} />
+          <AcademicDetailsForm register={formRegister} errors={errors} />
           <VerificationDetailsForm
             register={formRegister}
             errors={errors}

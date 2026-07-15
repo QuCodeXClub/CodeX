@@ -19,7 +19,6 @@ const Home = () => {
       <PartnerSection />
       <ContactSection />
       <GradientPulse />
-      
     </div>
   );
 };

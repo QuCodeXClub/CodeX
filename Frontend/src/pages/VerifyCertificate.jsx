@@ -21,7 +21,8 @@ const VerifyCertificate = () => {
       setLoading(true);
       setError("");
 
-      const response = await certificateService.verifyCertificate(certificateId);
+      const response =
+        await certificateService.verifyCertificate(certificateId);
 
       if (response.success) {
         setCertificate(response.data);
@@ -31,8 +32,7 @@ const VerifyCertificate = () => {
     } catch (err) {
       console.error(err);
       setError(
-        err?.response?.data?.message ||
-          "Unable to verify this certificate."
+        err?.response?.data?.message || "Unable to verify this certificate."
       );
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ const VerifyCertificate = () => {
   if (error || !certificate) {
     return (
       <section className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
-        <div className="w-full max-w-2xl rounded-3xl border-2 border-red-200 bg-white p-12 text-center shadow-xl">   
+        <div className="w-full max-w-2xl rounded-3xl border-2 border-red-200 bg-white p-12 text-center shadow-xl">
           <h1 className="mt-6 text-4xl font-black uppercase tracking-wider text-slate-800">
             Invalid Certificate
           </h1>
@@ -96,8 +96,8 @@ const VerifyCertificate = () => {
   /* ---------------- Main Certificate Page ---------------- */
   return (
     <>
-      {/* Fixed Print-Specific CSS 
-      */}
+      {/* Fixed Print-Specific CSS
+       */}
       <style>{`
         @media print {
           @page { size: landscape; margin: 0; }
@@ -131,11 +131,10 @@ const VerifyCertificate = () => {
         }
       `}</style>
 
-      <section 
+      <section
         id="certificate-overlay"
         className="min-h-screen bg-[#Faf9f6] py-8 px-4 flex flex-col items-center justify-center font-sans overflow-y-auto"
       >
-
         {/* Action Buttons */}
         <div className="relative z-10 w-full max-w-[1000px] flex flex-wrap justify-end gap-4 mb-6 print:hidden">
           <button
@@ -154,10 +153,8 @@ const VerifyCertificate = () => {
 
         {/* Certificate Container */}
         <div className="relative z-10 w-full max-w-[1000px] bg-white shadow-2xl print:shadow-none print:w-full print:h-full print:max-w-none md:aspect-[1.414/1] flex flex-col p-3 md:p-5 border-[10px] border-[#e5e7eb] border-double rounded-sm">
-          
           {/* Inner Border container */}
           <div className="relative border-4 border-[#d1d5db] flex-1 w-full p-4 md:p-8 flex flex-col justify-between text-center bg-[#fffdf9] overflow-hidden">
-            
             {/* Header */}
             <div className="flex justify-between items-start w-full shrink-0">
               <img
@@ -165,7 +162,7 @@ const VerifyCertificate = () => {
                 alt="University Logo"
                 className="w-16 md:w-28 object-contain"
               />
-              
+
               <div className="flex flex-col items-center px-2 md:px-4">
                 <span className="inline-flex rounded-full border border-emerald-400/50 bg-emerald-50 px-3 py-1 text-[8px] md:text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 mb-2 md:mb-4 shadow-sm">
                   ✔ Verified Authentic
@@ -190,19 +187,19 @@ const VerifyCertificate = () => {
               <p className="text-xs md:text-base text-slate-500 uppercase tracking-widest mb-2 md:mb-4">
                 This is proudly presented to
               </p>
-              
+
               <h2 className="text-3xl md:text-6xl font-serif italic text-slate-900 border-b-2 border-slate-300 pb-2 mx-auto inline-block px-4 md:px-16">
                 {certificate.studentName}
               </h2>
-              
+
               <p className="text-xs md:text-base text-slate-500 mt-4 md:mt-8 uppercase tracking-widest">
                 For successfully participating in
               </p>
-              
+
               <h3 className="mt-2 text-xl md:text-4xl font-serif text-slate-800">
                 {certificate.eventName}
               </h3>
-              
+
               <div className="mt-4 md:mt-6">
                 <span className="inline-flex bg-slate-800 px-4 py-1.5 md:px-6 md:py-2 rounded-sm text-[10px] md:text-sm font-semibold uppercase tracking-[0.25em] text-white">
                   {certificate.position}
@@ -212,7 +209,6 @@ const VerifyCertificate = () => {
 
             {/* Footer */}
             <div className="grid grid-cols-3 items-end text-left w-full gap-2 md:gap-4 shrink-0">
-              
               {/* Left: Metadata */}
               <div className="flex flex-col gap-2 md:gap-4 text-[8px] md:text-xs text-slate-600 pb-1">
                 <div>
@@ -258,7 +254,7 @@ const VerifyCertificate = () => {
                 ) : (
                   <div className="h-12 md:h-16 mb-2"></div> /* Spacer */
                 )}
-                
+
                 <div className="w-full border-t border-slate-400 pt-1.5 md:pt-2">
                   <p className="font-bold text-[9px] md:text-sm text-slate-800 line-clamp-1">
                     {certificate.coordinatorName}
@@ -268,7 +264,6 @@ const VerifyCertificate = () => {
                   </p>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

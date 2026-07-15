@@ -8,10 +8,10 @@ import webinarImg from "../../../assets/events/webinar.jpg";
 const EventsHero = () => {
   const { eventsHero } = content;
   const images = {
-  hackathon: hackathonImg,
-  contest: contestImg,
-  webinar: webinarImg,
-};
+    hackathon: hackathonImg,
+    contest: contestImg,
+    webinar: webinarImg,
+  };
   return (
     <section className="relative overflow-hidden border-b border-line bg-[#f8f5f0] pt-16 pb-24 lg:pt-24 lg:pb-32 px-[1.15rem] lg:px-12">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
@@ -31,20 +31,19 @@ const EventsHero = () => {
             <Button to="#upcoming" variant="solid">
               Explore Events →
             </Button>
-            
           </div>
         </div>
         <div className="relative h-[400px] hidden lg:block">
-  <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-    <span className="text-[30rem] font-sans font-bold text-accent leading-none">
-      X
-    </span>
-  </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+            <span className="text-[30rem] font-sans font-bold text-accent leading-none">
+              X
+            </span>
+          </div>
 
-  {eventsHero.cards.map((card) => (
-    <div
-      key={card.id}
-      className={`${card.className}
+          {eventsHero.cards.map((card) => (
+            <div
+              key={card.id}
+              className={`${card.className}
   rounded-xl
   overflow-hidden
   shadow-2xl
@@ -55,29 +54,30 @@ const EventsHero = () => {
   hover:rotate-0
   hover:z-50
   hover:opacity-100
-`}>
-      <img
-        src={images[card.image]}
-        alt={card.title}
-        className="w-full h-full object-cover"
-      />
+`}
+            >
+              <img
+                src={images[card.image]}
+                alt={card.title}
+                className="w-full h-full object-cover"
+              />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent flex flex-col justify-end p-6">
-        <h3 className="text-white font-sans text-2xl uppercase leading-tight">
-          {card.title}
-        </h3>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent flex flex-col justify-end p-6">
+                <h3 className="text-white font-sans text-2xl uppercase leading-tight">
+                  {card.title}
+                </h3>
 
-        <p className="text-accent text-xs font-mono tracking-widest mt-1">
-          {card.subtitle}
-        </p>
+                <p className="text-accent text-xs font-mono tracking-widest mt-1">
+                  {card.subtitle}
+                </p>
 
-        <p className="text-white/70 text-xs font-mono mt-4">
-          {card.date}
-        </p>
-      </div>
-    </div>
-  ))}
-</div>
+                <p className="text-white/70 text-xs font-mono mt-4">
+                  {card.date}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

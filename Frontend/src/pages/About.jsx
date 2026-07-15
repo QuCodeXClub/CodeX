@@ -38,13 +38,19 @@ const About = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {about.activities.map((activity, index) => (
-              <div 
+              <div
                 key={index}
                 className="bg-white rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border-2 border-gray-50 hover:border-[#2ec5d4]/30 transition-colors"
               >
-                <div className="text-[#2ec5d4] text-xs font-bold font-mono mb-3">0{index + 1}</div>
-                <h3 className="font-bold text-[#0a0a0a] text-lg mb-2">{activity.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{activity.description}</p>
+                <div className="text-[#2ec5d4] text-xs font-bold font-mono mb-3">
+                  0{index + 1}
+                </div>
+                <h3 className="font-bold text-[#0a0a0a] text-lg mb-2">
+                  {activity.title}
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  {activity.description}
+                </p>
               </div>
             ))}
           </div>

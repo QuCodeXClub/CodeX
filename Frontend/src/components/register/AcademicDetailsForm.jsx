@@ -13,11 +13,17 @@ export default function AcademicDetailsForm({ register, errors }) {
           </label>
           <input
             type="text"
-            {...register("studentId", { required: "University ID is required" })}
-            className={`w-full bg-transparent border-2 ${errors.studentId ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+            {...register("studentId", {
+              required: "University ID is required",
+            })}
+            className={`w-full bg-transparent border-2 ${errors.studentId ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
             placeholder="QID"
           />
-          {errors.studentId && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.studentId.message}</p>}
+          {errors.studentId && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.studentId.message}
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -25,7 +31,7 @@ export default function AcademicDetailsForm({ register, errors }) {
           </label>
           <select
             {...register("course", { required: "Course is required" })}
-            className={`w-full bg-transparent border-2 ${errors.course ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
+            className={`w-full bg-transparent border-2 ${errors.course ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
           >
             <option value="">SELECT COURSE</option>
             {[
@@ -43,7 +49,11 @@ export default function AcademicDetailsForm({ register, errors }) {
               </option>
             ))}
           </select>
-          {errors.course && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.course.message}</p>}
+          {errors.course && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.course.message}
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -52,7 +62,7 @@ export default function AcademicDetailsForm({ register, errors }) {
             </label>
             <select
               {...register("year", { required: "Year is required" })}
-              className={`w-full bg-transparent border-2 ${errors.year ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
+              className={`w-full bg-transparent border-2 ${errors.year ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
             >
               <option value="">YEAR</option>
               {["1st Year", "2nd Year", "3rd Year", "4th Year"].map((y) => (
@@ -61,7 +71,11 @@ export default function AcademicDetailsForm({ register, errors }) {
                 </option>
               ))}
             </select>
-            {errors.year && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.year.message}</p>}
+            {errors.year && (
+              <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                {errors.year.message}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -69,7 +83,7 @@ export default function AcademicDetailsForm({ register, errors }) {
             </label>
             <select
               {...register("semester", { required: "Semester is required" })}
-              className={`w-full bg-transparent border-2 ${errors.semester ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
+              className={`w-full bg-transparent border-2 ${errors.semester ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider cursor-pointer`}
             >
               <option value="">SEM</option>
               {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].map(
@@ -80,7 +94,11 @@ export default function AcademicDetailsForm({ register, errors }) {
                 )
               )}
             </select>
-            {errors.semester && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.semester.message}</p>}
+            {errors.semester && (
+              <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                {errors.semester.message}
+              </p>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -91,10 +109,14 @@ export default function AcademicDetailsForm({ register, errors }) {
             <input
               type="text"
               {...register("section", { required: "Section is required" })}
-              className={`w-full bg-transparent border-2 ${errors.section ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+              className={`w-full bg-transparent border-2 ${errors.section ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
               placeholder="Section"
             />
-            {errors.section && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.section.message}</p>}
+            {errors.section && (
+              <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                {errors.section.message}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
@@ -103,9 +125,13 @@ export default function AcademicDetailsForm({ register, errors }) {
             <input
               type="text"
               {...register("set", { required: "Set/Group is required" })}
-              className={`w-full bg-transparent border-2 ${errors.set ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+              className={`w-full bg-transparent border-2 ${errors.set ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
             />
-            {errors.set && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.set.message}</p>}
+            {errors.set && (
+              <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                {errors.set.message}
+              </p>
+            )}
           </div>
         </div>
       </div>

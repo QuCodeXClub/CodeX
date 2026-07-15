@@ -15,7 +15,7 @@ export const fetchAdminEvents = createAsyncThunk(
   {
     condition: (_, { getState }) => {
       if (getState().adminEvents.loading) return false;
-    }
+    },
   }
 );
 

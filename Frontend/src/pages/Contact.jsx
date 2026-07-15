@@ -61,7 +61,8 @@ const Contact = () => {
             Message Sent
           </h2>
           <p className="text-gray-500 font-medium mb-8">
-            Thank you for reaching out! We've received your message and will get back to you shortly.
+            Thank you for reaching out! We've received your message and will get
+            back to you shortly.
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -91,7 +92,8 @@ const Contact = () => {
             {contact.eyebrow}
           </p>
           <h1 className="font-oswald text-5xl md:text-6xl font-bold uppercase text-[#0a0a0a] mb-3">
-            {contact.titlePart1} <span className="text-[#27EBF5]">{contact.titlePart2}</span>
+            {contact.titlePart1}{" "}
+            <span className="text-[#27EBF5]">{contact.titlePart2}</span>
           </h1>
           <p className="text-gray-500 text-sm font-medium">
             {contact.description}
@@ -112,12 +114,16 @@ const Contact = () => {
                   type="text"
                   {...register("name", { required: "Name is required" })}
                   className={`w-full bg-transparent border-2 ${
-                    errors.name ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"
+                    errors.name
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-gray-300 focus:border-[#2ec5d4]"
                   } text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
                   placeholder="Enter Your Name"
                 />
                 {errors.name && (
-                  <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.name.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                    {errors.name.message}
+                  </p>
                 )}
               </div>
               <div>
@@ -131,12 +137,16 @@ const Contact = () => {
                     pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
                   })}
                   className={`w-full bg-transparent border-2 ${
-                    errors.email ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"
+                    errors.email
+                      ? "border-red-400 focus:border-red-500"
+                      : "border-gray-300 focus:border-[#2ec5d4]"
                   } text-[#0a0a0a] p-3 focus:outline-none transition-colors font-bold text-sm tracking-wider placeholder-gray-300`}
                   placeholder="name@example.com"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.email.message}</p>
+                  <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -149,12 +159,16 @@ const Contact = () => {
                 type="text"
                 {...register("subject", { required: "Subject is required" })}
                 className={`w-full bg-transparent border-2 ${
-                  errors.subject ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"
+                  errors.subject
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-gray-300 focus:border-[#2ec5d4]"
                 } text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
                 placeholder="What is this regarding?"
               />
               {errors.subject && (
-                <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.subject.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                  {errors.subject.message}
+                </p>
               )}
             </div>
 
@@ -166,22 +180,30 @@ const Contact = () => {
                 {...register("message", { required: "Message is required" })}
                 rows="5"
                 className={`w-full bg-transparent border-2 ${
-                  errors.message ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"
+                  errors.message
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-gray-300 focus:border-[#2ec5d4]"
                 } text-[#0a0a0a] p-3 focus:outline-none transition-colors font-medium text-sm placeholder-gray-300 resize-none`}
                 placeholder="How can we help you?"
               ></textarea>
               {errors.message && (
-                <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.message.message}</p>
+                <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+                  {errors.message.message}
+                </p>
               )}
             </div>
           </div>
 
           <div className="mb-8 flex flex-col items-center border-2 border-gray-100 p-4 bg-gray-50">
             <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-              <ShieldCheck className="w-4 h-4 text-[#2ec5d4]" /> Verification Required
+              <ShieldCheck className="w-4 h-4 text-[#2ec5d4]" /> Verification
+              Required
             </div>
             <Turnstile
-              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+              siteKey={
+                import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+                "1x00000000000000000000AA"
+              }
               onSuccess={(token) => setTurnstileToken(token)}
               options={{ theme: "light" }}
             />
@@ -192,7 +214,11 @@ const Contact = () => {
             disabled={loading || !turnstileToken}
             className="w-full bg-[#0a0a0a] text-white py-5 font-bold uppercase tracking-widest hover:bg-[#2ec5d4] hover:text-[#0a0a0a] transition-colors border-2 border-transparent hover:border-[#0a0a0a] disabled:opacity-50 flex justify-center items-center gap-3"
           >
-            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Transmit Message"}
+            {loading ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              "Transmit Message"
+            )}
           </button>
         </form>
       </div>

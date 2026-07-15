@@ -31,10 +31,16 @@ export default function VerificationDetailsForm({
           </label>
           <input
             type="text"
-            {...register("transactionId", { required: "Transaction ID is required" })}
-            className={`w-full max-w-sm bg-white border-2 ${errors.transactionId ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-[#2ec5d4]'} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
+            {...register("transactionId", {
+              required: "Transaction ID is required",
+            })}
+            className={`w-full max-w-sm bg-white border-2 ${errors.transactionId ? "border-red-400 focus:border-red-500" : "border-gray-300 focus:border-[#2ec5d4]"} text-[#0a0a0a] p-3 focus:outline-none transition-colors uppercase font-bold text-sm tracking-wider placeholder-gray-300`}
           />
-          {errors.transactionId && <p className="mt-1 text-xs text-red-500 font-bold uppercase">{errors.transactionId.message}</p>}
+          {errors.transactionId && (
+            <p className="mt-1 text-xs text-red-500 font-bold uppercase">
+              {errors.transactionId.message}
+            </p>
+          )}
         </div>
       </div>
       <div className="mb-8 flex flex-col items-center border-2 border-gray-100 p-4 bg-gray-50">
@@ -44,7 +50,8 @@ export default function VerificationDetailsForm({
         </div>
         <Turnstile
           siteKey={
-            import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"
+            import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+            "1x00000000000000000000AA"
           }
           onSuccess={(token) => setTurnstileToken(token)}
           options={{ theme: "light" }}

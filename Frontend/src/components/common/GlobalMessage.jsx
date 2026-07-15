@@ -19,12 +19,9 @@ function GlobalMessage() {
   if (!message) return null;
 
   const typeStyles = {
-    error:
-      "bg-red-500 text-white",
-    success:
-      "bg-teal-500 text-white",
-    warning:
-      "bg-amber-500 text-white",
+    error: "bg-red-500 text-white",
+    success: "bg-teal-500 text-white",
+    warning: "bg-amber-500 text-white",
   };
 
   return (

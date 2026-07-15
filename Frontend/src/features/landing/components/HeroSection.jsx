@@ -16,9 +16,7 @@ const HeroSection = () => {
           </h1>
 
           <p className="hero-quote">{hero.quote}</p>
-          <p className="hero-description">
-            {hero.description}
-          </p>
+          <p className="hero-description">{hero.description}</p>
 
           <div className="hero-actions" id="join">
             <Button to="/events" variant="solid">

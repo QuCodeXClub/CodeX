@@ -7,10 +7,10 @@ export const fetchAdminRegistrations = createAsyncThunk(
     try {
       const state = getState().adminRegistrations;
       const { page = 1, limit = 100, ...restFilters } = params;
-      
+
       const queryParams = { page, limit, ...restFilters };
       for (const key in queryParams) {
-        if (queryParams[key] === 'ALL' || queryParams[key] === '') {
+        if (queryParams[key] === "ALL" || queryParams[key] === "") {
           delete queryParams[key];
         }
       }
@@ -25,13 +25,17 @@ export const fetchAdminRegistrations = createAsyncThunk(
       }
 
       // If filters are same and we already have this page cached, we can skip fetching
-      if (!filtersChanged && state.pages[page] && state.pages[page].length > 0) {
+      if (
+        !filtersChanged &&
+        state.pages[page] &&
+        state.pages[page].length > 0
+      ) {
         return { fromCache: true, page };
       }
-      
+
       const response = await registrationService.getRegistrations(queryParams);
       const payload = response.data?.data || response.data || response;
-      
+
       return {
         fromCache: false,
         resetCache: filtersChanged,
@@ -39,7 +43,7 @@ export const fetchAdminRegistrations = createAsyncThunk(
         data: payload.registrations || (Array.isArray(payload) ? payload : []),
         page: payload.page || page,
         total: payload.total || 0,
-        totalPages: payload.totalPages || 1
+        totalPages: payload.totalPages || 1,
       };
     } catch (err) {
       return rejectWithValue(err);
@@ -48,7 +52,7 @@ export const fetchAdminRegistrations = createAsyncThunk(
   {
     condition: (_, { getState }) => {
       if (getState().adminRegistrations.loading) return false;
-    }
+    },
   }
 );
 
@@ -59,7 +63,9 @@ export const updateRegistrationStatus = createAsyncThunk(
       await registrationService.updateRegistrationStatus(id, status);
       return { id, status };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to update status');
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update status"
+      );
     }
   }
 );
@@ -71,7 +77,9 @@ export const createManualRegistration = createAsyncThunk(
       const response = await registrationService.addManualRegistration(data);
       return response.data?.data || response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to create registration');
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to create registration"
+      );
     }
   }
 );
@@ -83,7 +91,9 @@ export const createBulkRegistration = createAsyncThunk(
       const response = await registrationService.addBulkRegistration(formData);
       return response.data?.data || response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to upload CSV');
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to upload CSV"
+      );
     }
   }
 );
@@ -105,7 +115,7 @@ const adminRegistrationsSlice = createSlice({
     },
     clearCache: (state) => {
       state.pages = {};
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -115,7 +125,7 @@ const adminRegistrationsSlice = createSlice({
       .addCase(fetchAdminRegistrations.fulfilled, (state, action) => {
         state.loading = false;
         const payload = action.payload;
-        
+
         if (payload.fromCache) {
           state.currentPage = payload.page;
           return;
@@ -137,8 +147,10 @@ const adminRegistrationsSlice = createSlice({
       })
       .addCase(updateRegistrationStatus.fulfilled, (state, action) => {
         // Update the status in whichever page it exists
-        Object.keys(state.pages).forEach(pageNum => {
-          const index = state.pages[pageNum].findIndex((r) => r._id === action.payload.id);
+        Object.keys(state.pages).forEach((pageNum) => {
+          const index = state.pages[pageNum].findIndex(
+            (r) => r._id === action.payload.id
+          );
           if (index !== -1) {
             state.pages[pageNum][index].status = action.payload.status;
           }

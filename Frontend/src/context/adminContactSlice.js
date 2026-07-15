@@ -14,7 +14,7 @@ export const fetchAdminContacts = createAsyncThunk(
   {
     condition: (_, { getState }) => {
       if (getState().adminContact.loading) return false;
-    }
+    },
   }
 );
 
@@ -66,13 +66,15 @@ const adminContactSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(markMessageAsRead.fulfilled, (state, action) => {
-        const index = state.messages.findIndex(m => m._id === action.payload._id);
+        const index = state.messages.findIndex(
+          (m) => m._id === action.payload._id
+        );
         if (index !== -1) {
           state.messages[index] = action.payload;
         }
       })
       .addCase(deleteContactMessage.fulfilled, (state, action) => {
-        state.messages = state.messages.filter(m => m._id !== action.payload);
+        state.messages = state.messages.filter((m) => m._id !== action.payload);
       });
   },
 });

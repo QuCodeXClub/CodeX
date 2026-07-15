@@ -21,14 +21,10 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthResolved = true;
       localStorage.removeItem("codex_admin_auth");
-    }
+    },
   },
 });
 
-export const {
-  setLogin,
-  setLogout,
-  setAuthResolved,
-} = authSlice.actions;
+export const { setLogin, setLogout, setAuthResolved } = authSlice.actions;
 
 export default authSlice.reducer;

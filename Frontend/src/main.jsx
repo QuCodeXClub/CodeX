@@ -1,6 +1,10 @@
 import React, { lazy } from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store";
 
@@ -46,9 +50,9 @@ const router = createBrowserRouter([
       { path: "/faqs", element: <Faqs /> },
       { path: "/register", element: <Register /> },
       {
-      path: "/verify-certificate/:certificateId",
-      element: <VerifyCertificate />
-    },
+        path: "/verify-certificate/:certificateId",
+        element: <VerifyCertificate />,
+      },
       { path: "/contact", element: <Contact /> },
     ],
   },

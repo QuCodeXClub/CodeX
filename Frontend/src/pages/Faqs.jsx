@@ -6,8 +6,6 @@ const Faqs = () => {
   const activeFaqs = contentData.faqs.filter((faq) => faq.isActive);
   const [openIndex, setOpenIndex] = useState(null);
 
-
-
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };

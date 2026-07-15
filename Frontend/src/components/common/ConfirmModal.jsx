@@ -1,7 +1,13 @@
 import React from "react";
 import { AlertTriangle, X } from "lucide-react";
 
-export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {
+export default function ConfirmModal({
+  isOpen,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+}) {
   if (!isOpen) return null;
 
   return (
@@ -18,11 +24,11 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
           <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
             <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
-          
+
           <h2 className="text-xl font-bold text-slate-900 mb-2">
             {title || "Confirm Action"}
           </h2>
-          
+
           <p className="text-slate-500 mb-6 leading-relaxed text-sm">
             {message || "Are you sure you want to proceed?"}
           </p>

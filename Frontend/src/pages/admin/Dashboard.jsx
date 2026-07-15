@@ -23,9 +23,9 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 lg:p-10 font-sans text-slate-900 min-h-full">
-      <DashboardHeader 
-        onRefresh={() => dispatch(fetchDashboardMetrics())} 
-        loading={loading} 
+      <DashboardHeader
+        onRefresh={() => dispatch(fetchDashboardMetrics())}
+        loading={loading}
       />
 
       <div className="grid grid-cols-12 gap-6">

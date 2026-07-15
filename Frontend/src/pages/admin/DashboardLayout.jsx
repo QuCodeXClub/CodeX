@@ -12,7 +12,7 @@ import {
   LogOut,
   User,
   Menu,
-  X
+  X,
 } from "lucide-react";
 import axios from "axios";
 
@@ -59,14 +59,16 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         <div className="p-8 pb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -76,7 +78,7 @@ export default function DashboardLayout() {
               Admin Portal
             </p>
           </div>
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(false)}
             className="p-2 text-slate-400 hover:text-slate-600 lg:hidden"
           >

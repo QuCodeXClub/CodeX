@@ -34,15 +34,15 @@ const Events = () => {
         }}
       />
 
-     <div className="relative z-10">
-  <EventsHero events={events} loading={loading} />
+      <div className="relative z-10">
+        <EventsHero events={events} loading={loading} />
 
-  <section className="w-full max-w-[1400px] mx-auto px-4 lg:px-12 py-12 lg:py-20 border-t-2 border-gray-200">
-    <div className="w-full">
-      <EventList events={events} loading={loading} />
-    </div>
-  </section>
-</div>
+        <section className="w-full max-w-[1400px] mx-auto px-4 lg:px-12 py-12 lg:py-20 border-t-2 border-gray-200">
+          <div className="w-full">
+            <EventList events={events} loading={loading} />
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

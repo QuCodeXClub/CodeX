@@ -18,12 +18,13 @@ import {
   deleteAdminTeamMember,
 } from "../../context/adminTeamSlice";
 import { generateAcademicYears } from "../../utils/helpers";
-import { AdminTeamCardSkeleton } from "../../components/common/SkeletonLoaders";
+import { AdminTeamCardSkeleton } from "../../components/common/skeletons";
 import { TeamMemberCard } from "../../components/common/TeamMemberCard";
 
-
 export default function ManageTeam() {
-  const { members, loading, isLoaded, currentYear } = useSelector((state) => state.adminTeam);
+  const { members, loading, isLoaded, currentYear } = useSelector(
+    (state) => state.adminTeam
+  );
   const dispatch = useDispatch();
 
   const formAcademicYears = generateAcademicYears();
@@ -45,14 +46,14 @@ export default function ManageTeam() {
     formState: { errors },
     setError,
     clearErrors,
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       name: "",
       post: "",
       subTeam: "",
       academicYear: "",
-    }
+    },
   });
 
   useEffect(() => {
@@ -69,7 +70,8 @@ export default function ManageTeam() {
   };
 
   const displayedMembers = [...members].sort((a, b) => {
-    const teamDiff = (teamOrder[a.subTeam] || 99) - (teamOrder[b.subTeam] || 99);
+    const teamDiff =
+      (teamOrder[a.subTeam] || 99) - (teamOrder[b.subTeam] || 99);
     if (teamDiff !== 0) return teamDiff;
     return (a.sequenceNumber || 0) - (b.sequenceNumber || 0);
   });
@@ -111,8 +113,6 @@ export default function ManageTeam() {
 
   // Submit Handler
   const onFormSubmit = async (data) => {
-
-
     setIsSubmitting(true);
 
     try {
@@ -124,9 +124,13 @@ export default function ManageTeam() {
 
       if (!editingId) {
         const teamMembers = members.filter(
-          (m) => m.subTeam === data.subTeam && m.academicYear === data.academicYear
+          (m) =>
+            m.subTeam === data.subTeam && m.academicYear === data.academicYear
         );
-        const maxSeq = teamMembers.reduce((max, m) => Math.max(max, m.sequenceNumber || 0), 0);
+        const maxSeq = teamMembers.reduce(
+          (max, m) => Math.max(max, m.sequenceNumber || 0),
+          0
+        );
         submitData.append("sequenceNumber", maxSeq + 1);
       }
 
@@ -135,7 +139,9 @@ export default function ManageTeam() {
       }
 
       if (editingId) {
-        await dispatch(updateAdminTeamMember({ id: editingId, formData: submitData })).unwrap();
+        await dispatch(
+          updateAdminTeamMember({ id: editingId, formData: submitData })
+        ).unwrap();
       } else {
         await dispatch(addAdminTeamMember(submitData)).unwrap();
       }
@@ -144,7 +150,8 @@ export default function ManageTeam() {
     } catch (err) {
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
-          if (e.field) setError(e.field, { type: "server", message: e.message });
+          if (e.field)
+            setError(e.field, { type: "server", message: e.message });
         });
       }
     } finally {
@@ -156,7 +163,8 @@ export default function ManageTeam() {
   const handleDelete = async (id) => {
     const isConfirmed = await confirm({
       title: "Revoke Access",
-      message: "Are you sure you want to revoke this user's access? This action is permanent."
+      message:
+        "Are you sure you want to revoke this user's access? This action is permanent.",
     });
 
     if (!isConfirmed) return;
@@ -167,7 +175,6 @@ export default function ManageTeam() {
       // Handled in thunk
     }
   };
-
 
   return (
     <div className="p-8 lg:p-10 font-sans text-slate-900 min-h-full relative">
@@ -182,12 +189,16 @@ export default function ManageTeam() {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => dispatch(fetchAdminTeam({ year: filterYear, force: true }))}
+            onClick={() =>
+              dispatch(fetchAdminTeam({ year: filterYear, force: true }))
+            }
             disabled={loading}
             className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center shrink-0"
             title="Refresh Data"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`} />
+            <RefreshCw
+              className={`w-5 h-5 ${loading ? "animate-spin text-teal-500" : ""}`}
+            />
           </button>
           <div className="relative">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-teal-600 pointer-events-none" />
@@ -235,23 +246,27 @@ export default function ManageTeam() {
       ) : (
         <div className="flex flex-col gap-12">
           {Object.keys(teamOrder).map((teamName) => {
-            const teamMembers = displayedMembers.filter((m) => m.subTeam === teamName);
+            const teamMembers = displayedMembers.filter(
+              (m) => m.subTeam === teamName
+            );
             if (teamMembers.length === 0) return null;
-            
+
             return (
               <div key={teamName}>
                 <div className="flex items-center gap-4 mb-6">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">{teamName}</h2>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+                    {teamName}
+                  </h2>
                   <div className="flex-1 h-px bg-slate-200"></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                   {teamMembers.map((member) => (
-                    <TeamMemberCard 
-                      key={member._id} 
-                      member={member} 
-                      isAdmin={true} 
-                      onEdit={openEditModal} 
-                      onDelete={handleDelete} 
+                    <TeamMemberCard
+                      key={member._id}
+                      member={member}
+                      isAdmin={true}
+                      onEdit={openEditModal}
+                      onDelete={handleDelete}
                     />
                   ))}
                 </div>
@@ -286,10 +301,14 @@ export default function ManageTeam() {
                     <input
                       type="text"
                       {...register("name", { required: "Name is required" })}
-                      className={`w-full bg-white border ${errors.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      className={`w-full bg-white border ${errors.name ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                       placeholder="Full Name"
                     />
-                    {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+                    {errors.name && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.name.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -298,11 +317,17 @@ export default function ManageTeam() {
                     </label>
                     <input
                       type="text"
-                      {...register("post", { required: "Post/Role is required" })}
+                      {...register("post", {
+                        required: "Post/Role is required",
+                      })}
                       placeholder="Position"
-                      className={`w-full bg-white border ${errors.post ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      className={`w-full bg-white border ${errors.post ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                     />
-                    {errors.post && <p className="mt-1 text-xs text-red-500">{errors.post.message}</p>}
+                    {errors.post && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.post.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -310,8 +335,10 @@ export default function ManageTeam() {
                       Sub-Team / Department
                     </label>
                     <select
-                      {...register("subTeam", { required: "Sub-Team is required" })}
-                      className={`w-full bg-white border ${errors.subTeam ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      {...register("subTeam", {
+                        required: "Sub-Team is required",
+                      })}
+                      className={`w-full bg-white border ${errors.subTeam ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                     >
                       <option value="">Select Sub-Team</option>
                       <option value="Admin Team">Admin Team</option>
@@ -319,7 +346,11 @@ export default function ManageTeam() {
                       <option value="Tech Team">Tech Team</option>
                       <option value="Graphic Team">Graphic Team</option>
                     </select>
-                    {errors.subTeam && <p className="mt-1 text-xs text-red-500">{errors.subTeam.message}</p>}
+                    {errors.subTeam && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.subTeam.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -327,8 +358,10 @@ export default function ManageTeam() {
                       Academic Year
                     </label>
                     <select
-                      {...register("academicYear", { required: "Academic Year is required" })}
-                      className={`w-full bg-white border ${errors.academicYear ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-300 focus:ring-teal-500/20 focus:border-teal-500'} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      {...register("academicYear", {
+                        required: "Academic Year is required",
+                      })}
+                      className={`w-full bg-white border ${errors.academicYear ? "border-red-300 focus:ring-red-500/20 focus:border-red-500" : "border-slate-300 focus:ring-teal-500/20 focus:border-teal-500"} text-slate-900 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                     >
                       <option value="">Select Academic Year</option>
                       {formAcademicYears.map((year) => (
@@ -337,7 +370,11 @@ export default function ManageTeam() {
                         </option>
                       ))}
                     </select>
-                    {errors.academicYear && <p className="mt-1 text-xs text-red-500">{errors.academicYear.message}</p>}
+                    {errors.academicYear && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.academicYear.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -347,18 +384,26 @@ export default function ManageTeam() {
                     Profile Photo
                   </label>
                   <div className="flex items-center gap-4">
-                    <label className={`flex-1 border-2 border-dashed ${errors.photo ? 'border-red-300 bg-red-50' : 'border-slate-300 bg-slate-50 hover:bg-teal-50 hover:border-teal-400'} rounded-xl p-6 text-center cursor-pointer transition-colors group`}>
+                    <label
+                      className={`flex-1 border-2 border-dashed ${errors.photo ? "border-red-300 bg-red-50" : "border-slate-300 bg-slate-50 hover:bg-teal-50 hover:border-teal-400"} rounded-xl p-6 text-center cursor-pointer transition-colors group`}
+                    >
                       <input
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        {...register("photo", { 
-                          required: !editingId ? "Profile photo is required" : false,
-                          onChange: handleFileChange 
+                        {...register("photo", {
+                          required: !editingId
+                            ? "Profile photo is required"
+                            : false,
+                          onChange: handleFileChange,
                         })}
                       />
-                      <ImageIcon className={`w-8 h-8 mx-auto mb-2 transition-colors ${errors.photo ? 'text-red-400' : 'text-slate-400 group-hover:text-teal-500'}`} />
-                      <span className={`text-sm font-medium ${errors.photo ? 'text-red-500' : 'text-slate-500 group-hover:text-teal-600'}`}>
+                      <ImageIcon
+                        className={`w-8 h-8 mx-auto mb-2 transition-colors ${errors.photo ? "text-red-400" : "text-slate-400 group-hover:text-teal-500"}`}
+                      />
+                      <span
+                        className={`text-sm font-medium ${errors.photo ? "text-red-500" : "text-slate-500 group-hover:text-teal-600"}`}
+                      >
                         Click to browse or drag image here
                       </span>
                     </label>
@@ -372,7 +417,11 @@ export default function ManageTeam() {
                       </div>
                     )}
                   </div>
-                  {errors.photo && <p className="mt-1 text-xs text-red-500">{errors.photo.message}</p>}
+                  {errors.photo && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.photo.message}
+                    </p>
+                  )}
                 </div>
 
                 <button

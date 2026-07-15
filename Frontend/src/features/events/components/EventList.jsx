@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { PublicEventCardSkeleton } from "../../../components/common/SkeletonLoaders";
+import { PublicEventCardSkeleton } from "../../../components/common/skeletons";
 import EventCard from "../../../components/common/EventCard";
 
 const EventList = ({ events = [], loading }) => {
@@ -10,7 +10,7 @@ const EventList = ({ events = [], loading }) => {
   // Filter and Sort events dynamically based on current date
   const { upcomingEvents, pastEvents } = useMemo(() => {
     const now = new Date();
-    
+
     const upcoming = events
       .filter((event) => new Date(event.date) >= now)
       .sort((a, b) => new Date(a.date) - new Date(b.date)); // Closest dates first
@@ -29,7 +29,10 @@ const EventList = ({ events = [], loading }) => {
       <div className="flex flex-col gap-10">
         <div className="flex gap-4 border-b-2 border-gray-200 pb-2">
           {["UPCOMING", "PAST"].map((tab) => (
-            <div key={tab} className="w-32 h-10 bg-gray-200 animate-pulse rounded"></div>
+            <div
+              key={tab}
+              className="w-32 h-10 bg-gray-200 animate-pulse rounded"
+            ></div>
           ))}
         </div>
         <div className="flex flex-col gap-6">
@@ -66,13 +69,13 @@ const EventList = ({ events = [], loading }) => {
           Past Events ({pastEvents.length})
         </button>
       </div>
-      
+
       {/* Event List Section */}
       <div className="flex flex-col gap-5">
         {displayEvents.length === 0 ? (
           <div className="text-gray-500 font-bold uppercase tracking-widest text-center py-12 border-2 border-dashed border-gray-200 rounded-3xl bg-white/50">
-            {activeTab === "UPCOMING" 
-              ? "No upcoming events scheduled at the moment." 
+            {activeTab === "UPCOMING"
+              ? "No upcoming events scheduled at the moment."
               : "No past events to display."}
           </div>
         ) : (
@@ -84,26 +87,33 @@ const EventList = ({ events = [], loading }) => {
             >
               {/* Event Title */}
               <div className="flex-1 pr-4">
-                <div className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full w-fit mb-3 transition-colors ${
-                  activeTab === "UPCOMING" 
-                    ? "bg-[#e6f8fa] text-[#2ec5d4] group-hover:bg-[#2ec5d4] group-hover:text-white" 
-                    : "bg-gray-100 text-gray-500 group-hover:bg-gray-800 group-hover:text-white"
-                }`}>
+                <div
+                  className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full w-fit mb-3 transition-colors ${
+                    activeTab === "UPCOMING"
+                      ? "bg-[#e6f8fa] text-[#2ec5d4] group-hover:bg-[#2ec5d4] group-hover:text-white"
+                      : "bg-gray-100 text-gray-500 group-hover:bg-gray-800 group-hover:text-white"
+                  }`}
+                >
                   {activeTab}
                 </div>
-                <h2 className={`font-oswald text-2xl sm:text-3xl font-bold uppercase transition-colors leading-tight ${
-                  activeTab === "UPCOMING" ? "text-[#0a0a0a] group-hover:text-[#2ec5d4]" : "text-gray-700 group-hover:text-gray-900"
-                }`}>
+                <h2
+                  className={`font-oswald text-2xl sm:text-3xl font-bold uppercase transition-colors leading-tight ${
+                    activeTab === "UPCOMING"
+                      ? "text-[#0a0a0a] group-hover:text-[#2ec5d4]"
+                      : "text-gray-700 group-hover:text-gray-900"
+                  }`}
+                >
                   {event.eventName}
                 </h2>
               </div>
 
               {/* Event Details (Date/Time) and Action Arrow */}
               <div className="flex flex-wrap sm:flex-nowrap items-center gap-6 lg:gap-8 pt-4 lg:pt-0 border-t-2 lg:border-t-0 border-gray-100 lg:border-l-2 lg:pl-8">
-                
                 <div className="flex flex-col justify-center gap-2 text-gray-500 text-sm font-bold uppercase tracking-widest min-w-[160px]">
                   <div className="flex items-center gap-3">
-                    <Calendar className={`w-4 h-4 ${activeTab === "UPCOMING" ? "text-[#2ec5d4]" : "text-gray-400"}`} />
+                    <Calendar
+                      className={`w-4 h-4 ${activeTab === "UPCOMING" ? "text-[#2ec5d4]" : "text-gray-400"}`}
+                    />
                     {new Date(event.date).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short",
@@ -111,7 +121,9 @@ const EventList = ({ events = [], loading }) => {
                     })}
                   </div>
                   <div className="flex items-center gap-3">
-                    <Clock className={`w-4 h-4 ${activeTab === "UPCOMING" ? "text-[#2ec5d4]" : "text-gray-400"}`} />
+                    <Clock
+                      className={`w-4 h-4 ${activeTab === "UPCOMING" ? "text-[#2ec5d4]" : "text-gray-400"}`}
+                    />
                     {new Date(event.date).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -122,8 +134,8 @@ const EventList = ({ events = [], loading }) => {
                 {/* Arrow Button */}
                 <button
                   className={`w-12 h-12 text-white rounded-xl flex items-center justify-center transition-all group-hover:-rotate-45 shrink-0 ml-auto sm:ml-0 ${
-                    activeTab === "UPCOMING" 
-                      ? "bg-[#0a0a0a] group-hover:bg-[#2ec5d4] group-hover:text-[#0a0a0a]" 
+                    activeTab === "UPCOMING"
+                      ? "bg-[#0a0a0a] group-hover:bg-[#2ec5d4] group-hover:text-[#0a0a0a]"
                       : "bg-gray-300 group-hover:bg-gray-800"
                   }`}
                   aria-label="View event details"
@@ -138,9 +150,9 @@ const EventList = ({ events = [], loading }) => {
 
       {/* Shared Detailed Modal */}
       {selectedEvent && (
-        <EventCard 
-          event={selectedEvent} 
-          onClose={() => setSelectedEvent(null)} 
+        <EventCard
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
         />
       )}
     </div>
