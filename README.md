@@ -6,32 +6,34 @@ Live site
 
 The production site for CodeX Club is available at: https://codex.club (replace with the actual URL when deployed).
 
-Table of contents
+## Table of Contents
 
 - [Features](#features)
-- [Project structure](#project-structure)
+- [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
-- [Quick start](#quick-start)
-- [Development notes](#development-notes)
+- [Quick Start](#quick-start)
+- [Development Notes](#development-notes)
 - [Contributing](#contributing)
 - [Security](#security)
 - [License](#license)
 
-Features
+## Features
 
 - Member registration and authentication
 - Event creation, listing, and registration management
 - Team and role management for club organizers
 - Admin dashboard (create/manage events, view registrations)
 
-Project structure
+## Project Structure
 
-- `Backend/` — Node.js (Express) backend with API routes, models, and services.
-- `Frontend/` — React + Vite frontend for public pages and the member/admin portal.
-- `Database/` — database-related scripts or snapshots (if present)
-- `Testing/` — test-related helpers and test data
+- [`Backend/`](./Backend/README.md) — Node.js (Express) backend with API routes, models, and services.
+- [`Frontend/`](./Frontend/README.md) — React + Vite frontend for public pages and the member/admin portal.
+- [`Database/`](./Database/README.md) — Database-related scripts, schemas, and snapshots.
+- [`Testing/`](./Testing/README.md) — Test-related helpers and test data.
+- [`UI/`](./UI/README.md) — Design mockups, assets, and other UI materials.
+- [`docs/`](./docs/README.md) — Comprehensive project documentation (architecture, API, database).
 
-Prerequisites
+## Prerequisites
 
 - Node.js >= 18
 - npm or yarn
@@ -39,7 +41,7 @@ Prerequisites
 - MongoDB Atlas account (or use the provided local Docker MongoDB)
 - Cloudinary account (for image uploads)
 
-Quick start
+## Quick Start
 
 ### Method 1: Using Docker (Recommended)
 
@@ -82,21 +84,21 @@ npm install
 npm run dev
 ```
 
-Development notes
+## Development Notes
 
 - The Frontend uses Vite and serves on `5173`. The Backend runs via `nodemon` on `5000`.
 - Environment variables: Must be set in `Backend/.env` (MongoDB, Cloudinary, CORS).
-- For a more detailed backend setup, please refer to the [Backend Setup Guide](./Backend/SETUP_GUIDE.md).
+- For a more detailed backend setup, please refer to the [Backend README](./Backend/README.md).
 
-Contributing
+## Contributing
 
 See `CONTRIBUTING.md` for development setup, branch naming, and PR process. Please follow the `CODE_OF_CONDUCT.md` and report security issues as described in `SECURITY.md`.
 
-Security
+## Security
 
 If you discover a security vulnerability, please follow the instructions in `SECURITY.md` to report it privately.
 
-License
+## License
 
 This project is distributed under the terms listed in the `LICENSE` file.
 

@@ -58,3 +58,10 @@ You can use this interface to test endpoints directly.
 - **Security:** Helmet, CORS, Express-Rate-Limit, Express-Mongo-Sanitize
 - **File Uploads:** Multer + Cloudinary
 - **Emails:** Nodemailer
+
+## Comprehensive Documentation
+
+For a deep dive into the backend architecture, database schemas, middleware, and API endpoints, please refer to the comprehensive markdown files located in the [docs](../docs/README.md) directory:
+- [Architecture & Request Flow](../docs/architecture.md)
+- [Database Models & Relationships](../docs/database.md)
+- [API Reference](../docs/api-reference.md)
