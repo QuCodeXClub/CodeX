@@ -44,6 +44,7 @@ Protected endpoints require:
 | Events | `/events` |
 | Teams | `/teams` |
 | Certificates | `/certificates` |
+| Boarding Passes | `/boarding-passes` |
 | Contact | `/contact` |
 
 ---
@@ -634,6 +635,65 @@ GET /verify/:id
 ### Purpose
 
 Verifies certificate authenticity using its unique verification ID.
+
+---
+
+# 🎟️ Boarding Pass APIs
+
+Base Route
+
+```
+/api/v1/boarding-passes
+```
+
+---
+
+## Generate Boarding Passes
+
+### Endpoint
+
+```
+POST /generate-bulk
+```
+
+### Authentication
+
+🔒 JWT Required
+
+### Content Type
+
+```
+application/json
+```
+
+### Purpose
+
+Bulk generates boarding passes.
+
+### Features
+
+- Generate boarding passes for multiple students
+- Can optionally attach WiFi or Login credentials
+- Emails boarding pass verification links automatically
+- Stores verification IDs
+
+---
+
+## Verify Boarding Pass
+
+### Endpoint
+
+```
+GET /verify/:id
+```
+
+### Authentication
+
+🌐 Public
+
+### Purpose
+
+Verifies boarding pass authenticity using its unique verification ID and retrieves associated credential details.
 
 ---
 

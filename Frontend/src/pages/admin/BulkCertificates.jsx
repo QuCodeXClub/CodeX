@@ -13,6 +13,7 @@ import {
   Calendar,
   UserCheck,
   Upload,
+  Download,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setError, setSuccess } from "../../context/messageSlice";
@@ -123,6 +124,17 @@ export default function BulkCertificates() {
 
     reader.readAsText(file);
     e.target.value = null;
+  };
+
+  const handleDownloadTemplate = () => {
+    const csvContent = "data:text/csv;charset=utf-8,Name,Email,Position\n";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "certificate_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   //-----------------------------------------------------
@@ -325,6 +337,17 @@ export default function BulkCertificates() {
               <span className="text-xs font-semibold bg-accent/10 text-accent px-3 py-1 rounded-full">
                 {fields.length} Student(s)
               </span>
+
+              {/* CSV Download Template */}
+              <button
+                type="button"
+                onClick={handleDownloadTemplate}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm"
+                title="Download CSV Template (Name, Email, Position)"
+              >
+                <Download className="w-4 h-4" />
+                Template
+              </button>
 
               {/* CSV Upload Button */}
               <input

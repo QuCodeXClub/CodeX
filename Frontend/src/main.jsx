@@ -24,6 +24,7 @@ const Faqs = lazy(() => import("./pages/Faqs"));
 const Register = lazy(() => import("./pages/Register"));
 const About = lazy(() => import("./pages/About"));
 const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
+const VerifyBoardingPass = lazy(() => import("./pages/VerifyBoardingPass"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 // Admin only pages
@@ -33,6 +34,7 @@ const AdminRegistrations = lazy(() => import("./pages/admin/Registrations"));
 const AdminEvents = lazy(() => import("./pages/admin/ManageEvents"));
 const AdminTeam = lazy(() => import("./pages/admin/ManageTeam"));
 const BulkCertificates = lazy(() => import("./pages/admin/BulkCertificates"));
+const BulkBoardingPasses = lazy(() => import("./pages/admin/BulkBoardingPasses"));
 const ManageSessions = lazy(() => import("./pages/admin/ManageSessions"));
 const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
@@ -52,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "/verify-certificate/:certificateId",
         element: <VerifyCertificate />,
+      },
+      {
+        path: "/verify-boarding-pass/:boardingPassId",
+        element: <VerifyBoardingPass />,
       },
       { path: "/contact", element: <Contact /> },
     ],
@@ -75,6 +81,7 @@ const router = createBrowserRouter([
           { path: "events", element: <AdminEvents /> },
           { path: "team", element: <AdminTeam /> },
           { path: "certificates", element: <BulkCertificates /> },
+          { path: "boarding-passes", element: <BulkBoardingPasses /> },
           { path: "sessions", element: <ManageSessions /> },
           { path: "messages", element: <ManageContacts /> },
           { path: "profile", element: <AdminProfile /> },
