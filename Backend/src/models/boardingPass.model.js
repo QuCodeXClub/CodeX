@@ -45,6 +45,10 @@ const boardingPassSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    citeNumber: {
+      type: String,
+      trim: true,
+    },
     boardingPassId: {
       type: String,
       required: [true, "Boarding Pass ID is required"],

@@ -7,7 +7,7 @@ import { boardingPassEmail } from '../utils/emailTemplates.js';
 import crypto from 'crypto';
 
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
-  const { eventName, eventDescription, qid, wifiUser, wifiPass, loginUser, loginPass, studentsStr } = req.body;
+  const { eventName, eventDescription, qid, studentsStr } = req.body;
   
   if (!eventName || !eventDescription || !qid || !studentsStr) {
     throw new ApiError(400, 'Event Name, Event Description, QID, and students data are required');
@@ -37,10 +37,11 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
       eventName,
       eventDescription,
       qid,
-      wifiUser,
-      wifiPass,
-      loginUser,
-      loginPass,
+      wifiUser: student.wifiUser,
+      wifiPass: student.wifiPass,
+      loginUser: student.loginUser,
+      loginPass: student.loginPass,
+      citeNumber: student.citeNumber,
       boardingPassId,
     });
 
@@ -55,6 +56,7 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
       eventDescription,
       qid,
       boardingPassId,
+      citeNumber: student.citeNumber,
       verificationLink,
     });
 
