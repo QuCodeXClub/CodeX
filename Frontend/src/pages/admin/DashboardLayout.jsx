@@ -13,6 +13,7 @@ import {
   User,
   Menu,
   X,
+  Ticket,
 } from "lucide-react";
 import axios from "axios";
 
@@ -41,6 +42,7 @@ export default function DashboardLayout() {
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
+    { name: "Boarding Passes", path: "/admin/boarding-passes", icon: Ticket },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
   ];

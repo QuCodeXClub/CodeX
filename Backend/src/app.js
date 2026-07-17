@@ -69,6 +69,7 @@ import registrationRouter from "./routes/registration.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import teamRouter from "./routes/team.routes.js";
 import certificateRouter from "./routes/certificate.routes.js";
+import boardingPassRouter from "./routes/boardingPass.routes.js";
 import contactRouter from "./routes/contact.routes.js";
 
 // routes declaration
@@ -79,6 +80,7 @@ app.use("/api/v1/registrations", registrationRouter);
 app.use("/api/v1/events", eventRouter);
 app.use("/api/v1/teams", teamRouter);
 app.use("/api/v1/certificates", certificateRouter);
+app.use("/api/v1/boarding-passes", boardingPassRouter);
 app.use("/api/v1/contact", contactRouter);
 
 // swagger api documentation (only in development)

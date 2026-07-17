@@ -2,9 +2,6 @@
 
 CodeX Website is the official web platform for the CodeX coding club. It provides member registration, event listings, team management, and administrative tools for club organizers.
 
-Live site
-
-The production site for CodeX Club is available at: https://codex.club (replace with the actual URL when deployed).
 
 ## Table of Contents
 

@@ -296,6 +296,36 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
 });
 
 /**
+ * Boarding Pass Email
+ */
+const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boardingPassId, verificationLink }) => {
+
+  return {
+    html: emailLayout({
+      preheader: `Your boarding pass for ${eventName} is ready`,
+      body: `
+        ${kicker('// boarding_pass_issued')}
+        ${heading('Boarding Pass Ready.')}
+        ${paragraph(`Dear <strong>${studentName}</strong>,`)}
+        ${paragraph(`Your boarding pass for <strong>${eventName}</strong> has been generated.`)}
+        ${paragraph(`${eventDescription}`)}
+
+        ${infoTable(
+          infoRow('event', eventName) +
+          infoRow('qid', qid) +
+          infoRow('pass_id', boardingPassId)
+        )}
+
+        ${ctaButton(verificationLink, 'View Boarding Pass')}
+
+        ${paragraph('Please present this boarding pass or the pass ID above at the event.')}
+      `,
+    }),
+    text: `Your boarding pass for ${eventName} is ready\n\nBoarding Pass Ready.\n\nDear ${studentName},\n\nYour boarding pass for ${eventName} has been generated.\n\n${eventDescription}\n\nEvent: ${eventName}\nQID: ${qid}\nPass ID: ${boardingPassId}\n\nView Boarding Pass at: ${verificationLink}\n\nPlease present this boarding pass or the pass ID above at the event.\n`,
+  };
+};
+
+/**
  * Contact Form Received Email
  */
 const contactFormReceivedEmail = (userName) => ({
@@ -328,5 +358,6 @@ export {
   registrationApprovedEmail,
   registrationRejectedEmail,
   certificateEmail,
+  boardingPassEmail,
   contactFormReceivedEmail,
 };

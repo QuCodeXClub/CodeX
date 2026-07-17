@@ -24,6 +24,8 @@ tags:
     description: Team member management (public read, admin write)
   - name: Certificates
     description: Certificate generation & verification
+  - name: Boarding Passes
+    description: Boarding pass generation & verification
   - name: Contact
     description: Contact form (public submit, admin manage)
 components:
@@ -720,6 +722,70 @@ paths:
       responses:
         "201":
           description: Certificates generated and emails sent
+  /boarding-passes/verify/{boardingPassId}:
+    get:
+      tags:
+        - Boarding Passes
+      summary: Verify a boarding pass (public)
+      parameters:
+        - name: boardingPassId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique boarding pass ID
+      responses:
+        "200":
+          description: Boarding pass verified
+        "404":
+          description: Invalid boarding pass ID
+  /boarding-passes/generate-bulk:
+    post:
+      tags:
+        - Boarding Passes
+      summary: Generate bulk boarding passes & send emails (admin)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - eventName
+                - eventDescription
+                - qid
+                - studentsStr
+              properties:
+                eventName:
+                  type: string
+                  example: Hackathon 2026
+                eventDescription:
+                  type: string
+                  example: Annual coding competition
+                qid:
+                  type: string
+                  example: QID-12345
+                wifiUser:
+                  type: string
+                  example: guest_user
+                wifiPass:
+                  type: string
+                  example: guest_pass123
+                loginUser:
+                  type: string
+                  example: login_id123
+                loginPass:
+                  type: string
+                  example: secure_pass456
+                studentsStr:
+                  type: string
+                  example: '[{"name":"John","email":"john@test.com"}]'
+                  description: JSON stringified array of {name, email}
+      responses:
+        "201":
+          description: Boarding passes generated and emails sent
   /contact:
     post:
       tags:
