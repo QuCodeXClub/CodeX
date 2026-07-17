@@ -298,7 +298,7 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
 /**
  * Boarding Pass Email
  */
-const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boardingPassId, verificationLink }) => {
+const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boardingPassId, citeNumber, verificationLink }) => {
 
   return {
     html: emailLayout({
@@ -313,6 +313,7 @@ const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boar
         ${infoTable(
           infoRow('event', eventName) +
           infoRow('qid', qid) +
+          (citeNumber ? infoRow('cite', citeNumber) : '') +
           infoRow('pass_id', boardingPassId)
         )}
 
@@ -321,7 +322,7 @@ const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boar
         ${paragraph('Please present this boarding pass or the pass ID above at the event.')}
       `,
     }),
-    text: `Your boarding pass for ${eventName} is ready\n\nBoarding Pass Ready.\n\nDear ${studentName},\n\nYour boarding pass for ${eventName} has been generated.\n\n${eventDescription}\n\nEvent: ${eventName}\nQID: ${qid}\nPass ID: ${boardingPassId}\n\nView Boarding Pass at: ${verificationLink}\n\nPlease present this boarding pass or the pass ID above at the event.\n`,
+    text: `Your boarding pass for ${eventName} is ready\n\nBoarding Pass Ready.\n\nDear ${studentName},\n\nYour boarding pass for ${eventName} has been generated.\n\n${eventDescription}\n\nEvent: ${eventName}\nQID: ${qid}\n${citeNumber ? `Cite Number: ${citeNumber}\n` : ''}Pass ID: ${boardingPassId}\n\nView Boarding Pass at: ${verificationLink}\n\nPlease present this boarding pass or the pass ID above at the event.\n`,
   };
 };
 
