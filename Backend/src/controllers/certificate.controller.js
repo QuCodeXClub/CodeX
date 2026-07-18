@@ -56,9 +56,8 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     // Generate QR Code
     let qrCodeUrl = '';
     try {
-      const qrCodePath = path.join(os.tmpdir(), `qr-${certificateId}.svg`);
-      await generateQRCodeWithLogo(verificationLink, qrCodePath);
-      const qrUpload = await uploadOnCloudinary(qrCodePath, 'CodeX/certificate');
+      const dataUri = await generateQRCodeWithLogo(verificationLink);
+      const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/certificate');
       if (qrUpload) {
         qrCodeUrl = qrUpload.url;
       }

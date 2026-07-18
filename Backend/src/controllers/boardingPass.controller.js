@@ -40,9 +40,8 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
     // Generate QR Code
     let qrCodeUrl = '';
     try {
-      const qrCodePath = path.join(os.tmpdir(), `qr-pass-${boardingPassId}.svg`);
-      await generateQRCodeWithLogo(verificationLink, qrCodePath);
-      const qrUpload = await uploadOnCloudinary(qrCodePath, 'CodeX/pass');
+      const dataUri = await generateQRCodeWithLogo(verificationLink);
+      const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/pass');
       if (qrUpload) {
         qrCodeUrl = qrUpload.url;
       }

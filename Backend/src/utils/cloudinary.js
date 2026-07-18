@@ -10,16 +10,31 @@ cloudinary.config({
 const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") => {
   try {
     if (!localFilePath) return null;
-    // upload the file on cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
+    
+    const isDataUri = localFilePath.startsWith('data:');
+    const isSvgDataUri = localFilePath.startsWith('data:image/svg+xml');
+    
+    const uploadOptions = {
+      resource_type: isSvgDataUri ? "image" : "auto",
       folder: folderName,
-    });
+    };
+    
+    if (isSvgDataUri) {
+      uploadOptions.format = "svg";
+    }
+
+    // upload the file on cloudinary
+    const response = await cloudinary.uploader.upload(localFilePath, uploadOptions);
+
     // file has been uploaded successfully
-    fs.unlinkSync(localFilePath);
+    if (!isDataUri) {
+      fs.unlinkSync(localFilePath);
+    }
     return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
+    if (localFilePath && !localFilePath.startsWith('data:')) {
+      fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
+    }
     console.error("Cloudinary upload error:", error);
     return null;
   }

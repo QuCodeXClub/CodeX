@@ -15,13 +15,10 @@ const generateCustomQR = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Link is required to generate a QR code');
   }
 
-  const uniqueId = crypto.randomBytes(8).toString('hex');
-  const tempPath = path.join(os.tmpdir(), `custom-qr-${uniqueId}.svg`);
-
   try {
-    await generateQRCodeWithLogo(link, tempPath);
+    const dataUri = await generateQRCodeWithLogo(link);
     
-    const uploadedImage = await uploadOnCloudinary(tempPath, 'CodeX/qrcodes');
+    const uploadedImage = await uploadOnCloudinary(dataUri, 'CodeX/qrcodes');
     
     if (!uploadedImage) {
       throw new ApiError(500, 'Failed to upload QR code to Cloudinary');
