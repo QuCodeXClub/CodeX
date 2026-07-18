@@ -71,6 +71,7 @@ import teamRouter from "./routes/team.routes.js";
 import certificateRouter from "./routes/certificate.routes.js";
 import boardingPassRouter from "./routes/boardingPass.routes.js";
 import contactRouter from "./routes/contact.routes.js";
+import qrRouter from "./routes/qr.routes.js";
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthcheckRouter);
@@ -82,6 +83,7 @@ app.use("/api/v1/teams", teamRouter);
 app.use("/api/v1/certificates", certificateRouter);
 app.use("/api/v1/boarding-passes", boardingPassRouter);
 app.use("/api/v1/contact", contactRouter);
+app.use("/api/v1/qr", qrRouter);
 
 // swagger api documentation (only in development)
 if (process.env.NODE_ENV !== 'production') {

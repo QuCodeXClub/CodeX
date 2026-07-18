@@ -4,8 +4,11 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { boardingPassEmail } from '../utils/emailTemplates.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import crypto from 'crypto';
-
+import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
+import path from 'path';
+import os from 'os';
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
   const { eventName, eventDescription, qid, studentsStr } = req.body;
   
@@ -31,6 +34,22 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
 
     const boardingPassId = crypto.randomBytes(8).toString('hex'); // Generate unique ID
 
+    // Send email with boarding pass link
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-boarding-pass/${boardingPassId}`;
+    
+    // Generate QR Code
+    let qrCodeUrl = '';
+    try {
+      const qrCodePath = path.join(os.tmpdir(), `qr-pass-${boardingPassId}.svg`);
+      await generateQRCodeWithLogo(verificationLink, qrCodePath);
+      const qrUpload = await uploadOnCloudinary(qrCodePath, 'CodeX/pass');
+      if (qrUpload) {
+        qrCodeUrl = qrUpload.url;
+      }
+    } catch (qrError) {
+      console.error("Failed to generate/upload QR code for boarding pass:", qrError);
+    }
+
     const pass = await BoardingPass.create({
       studentName: student.name,
       studentEmail: student.email,
@@ -43,12 +62,10 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
       loginPass: student.loginPass,
       citeNumber: student.citeNumber,
       boardingPassId,
+      qrCodeImage: qrCodeUrl,
     });
 
     createdBoardingPasses.push(pass);
-
-    // Send email with boarding pass link
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-boarding-pass/${boardingPassId}`;
     
     const { html, text } = boardingPassEmail({
       studentName: student.name,

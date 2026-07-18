@@ -36,6 +36,7 @@ const AdminEvents = lazy(() => import("./pages/admin/ManageEvents"));
 const AdminTeam = lazy(() => import("./pages/admin/ManageTeam"));
 const BulkCertificates = lazy(() => import("./pages/admin/BulkCertificates"));
 const BulkBoardingPasses = lazy(() => import("./pages/admin/BulkBoardingPasses"));
+const QRGenerator = lazy(() => import("./pages/admin/QRGenerator"));
 const ManageSessions = lazy(() => import("./pages/admin/ManageSessions"));
 const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
           { path: "team", element: <AdminTeam /> },
           { path: "certificates", element: <BulkCertificates /> },
           { path: "boarding-passes", element: <BulkBoardingPasses /> },
+          { path: "qr-generator", element: <QRGenerator /> },
           { path: "sessions", element: <ManageSessions /> },
           { path: "messages", element: <ManageContacts /> },
           { path: "profile", element: <AdminProfile /> },

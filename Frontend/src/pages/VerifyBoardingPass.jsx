@@ -100,9 +100,7 @@ const VerifyBoardingPass = () => {
               {/* QR Code */}
               <div className="bg-white p-3 rounded-2xl shadow-[0_0_30px_rgba(46,197,212,0.2)]">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                    verificationURL
-                  )}`}
+                  src={boardingPass.qrCodeImage}
                   alt="Verification QR Code"
                   className="w-32 h-32 md:w-40 md:h-40"
                 />

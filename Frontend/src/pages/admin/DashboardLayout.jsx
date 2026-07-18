@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   Ticket,
-  Settings // <-- Imported Settings icon
+  Settings,
+  Scan
 } from "lucide-react";
 import axios from "axios";
 
@@ -44,9 +45,9 @@ export default function DashboardLayout() {
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
     { name: "Boarding Passes", path: "/admin/boarding-passes", icon: Ticket },
+    { name: "QR Generator", path: "/admin/qr-generator", icon: Scan },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
-    { name: "Settings", path: "/admin/settings", icon: Settings }, // <-- Added Settings route
   ];
 
   const handleLogout = async () => {

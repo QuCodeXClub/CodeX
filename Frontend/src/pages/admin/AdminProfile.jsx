@@ -15,11 +15,13 @@ import {
   Trash2,
   Eye,
   EyeOff,
+  Settings,
 } from "lucide-react";
 import { adminService } from "../../services/adminService";
 import { setLogin, setLogout } from "../../context/authSlice";
 import axios from "axios";
 import ManageSessions from "./ManageSessions";
+import AdminSettings from "./AdminSettings";
 
 export default function AdminProfile() {
   const dispatch = useDispatch();
@@ -176,6 +178,7 @@ export default function AdminProfile() {
     { id: "#profile", name: "Profile Details", icon: User },
     { id: "#password", name: "Security", icon: Key },
     { id: "#sessions", name: "Active Sessions", icon: Monitor },
+    { id: "#settings", name: "Settings", icon: Settings },
   ];
 
   return (
@@ -217,7 +220,6 @@ export default function AdminProfile() {
         {/* 1. Profile Edit */}
         {currentTab === "#profile" && (
           <div
-            id="profile"
             className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden"
           >
             <div className="p-6 border-b border-border-soft flex items-center gap-3 bg-card-hover">
@@ -381,7 +383,6 @@ export default function AdminProfile() {
         {/* 2. Change Password */}
         {currentTab === "#password" && (
           <div
-            id="password"
             className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden"
           >
             <div className="p-6 border-b border-border-soft flex items-center gap-3 bg-card-hover">
@@ -577,8 +578,15 @@ export default function AdminProfile() {
 
         {/* 3. Sessions */}
         {currentTab === "#sessions" && (
-          <div id="sessions">
+          <div>
             <ManageSessions />
+          </div>
+        )}
+
+        {/* 4. Settings */}
+        {currentTab === "#settings" && (
+          <div id="settings-tab">
+            <AdminSettings />
           </div>
         )}
       </div>

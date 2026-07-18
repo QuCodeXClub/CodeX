@@ -6,7 +6,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendEmail } from '../utils/sendEmail.js';
-import { uploadOnCloudinary, updateOnCloudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 import { adminOtpEmail, passwordChangeOtpEmail, passwordChangedSuccessEmail } from '../utils/emailTemplates.js';
 import { Session } from '../models/session.model.js';
 import { Token } from '../models/token.model.js';
@@ -234,14 +234,12 @@ const updateProfile = asyncHandler(async (req, res) => {
   if (req.file) {
     if (admin.profilePhoto) {
       // Extract public ID and update
-      const urlParts = admin.profilePhoto.split('/');
-      const filename = urlParts[urlParts.length - 1];
-      const oldPublicId = `CodeX Website/${filename.split('.')[0]}`;
+      const oldPublicId = getPublicIdFromUrl(admin.profilePhoto);
       const uploadedImage = await updateOnCloudinary(req.file.path, oldPublicId);
       if (!uploadedImage) throw new ApiError(500, 'Error updating profile photo');
       profilePhotoUrl = uploadedImage.url;
     } else {
-      const uploadedImage = await uploadOnCloudinary(req.file.path);
+      const uploadedImage = await uploadOnCloudinary(req.file.path, 'CodeX/profile');
       if (!uploadedImage) throw new ApiError(500, 'Error uploading profile photo');
       profilePhotoUrl = uploadedImage.url;
     }

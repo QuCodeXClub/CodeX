@@ -41,6 +41,9 @@ const certificateSchema = new mongoose.Schema(
       enum: ['Participant', 'Winner', '1st Runner-up', '2nd Runner-up', 'Volunteer', 'Organizer', 'Other'],
       default: 'Participant'
     },
+    qrCodeImage: {
+      type: String,
+    },
     issuedAt: {
       type: Date,
       default: Date.now,

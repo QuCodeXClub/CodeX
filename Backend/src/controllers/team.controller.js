@@ -2,7 +2,7 @@ import { TeamMember } from '../models/teamMember.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 
 const addTeamMember = asyncHandler(async (req, res) => {
   const { academicYear, subTeam, name, post, sequenceNumber } = req.body;
@@ -17,7 +17,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Photo is required');
   }
 
-  const photo = await uploadOnCloudinary(photoLocalPath);
+  const photo = await uploadOnCloudinary(photoLocalPath, 'CodeX/team');
 
   if (!photo) {
     throw new ApiError(500, 'Error while uploading photo');
@@ -53,9 +53,7 @@ const deleteTeamMember = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Team member not found');
   }
 
-  const urlParts = member.photo.split('/');
-  const filename = urlParts[urlParts.length - 1];
-  const publicId = `CodeX Website/${filename.split('.')[0]}`;
+  const publicId = getPublicIdFromUrl(member.photo);
 
   await deleteFromCloudinary(publicId);
   await member.deleteOne();
@@ -75,9 +73,7 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   let newPhotoUrl = member.photo;
 
   if (req.file) {
-    const urlParts = member.photo.split('/');
-    const filename = urlParts[urlParts.length - 1];
-    const oldPublicId = `CodeX Website/${filename.split('.')[0]}`;
+    const oldPublicId = getPublicIdFromUrl(member.photo);
 
     const uploadedImage = await updateOnCloudinary(req.file.path, oldPublicId);
     if (!uploadedImage) {

@@ -112,9 +112,7 @@ const VerifyCertificate = () => {
 
               <div className="flex flex-col items-center justify-end pb-1">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
-                    verificationURL
-                  )}`}
+                  src={certificate.qrCodeImage}
                   alt="Verification QR Code"
                   className="w-16 h-16 md:w-24 md:h-24 shadow-sm border border-[#e5e7eb] p-1 bg-white"
                 />

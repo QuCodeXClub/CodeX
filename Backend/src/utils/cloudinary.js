@@ -7,19 +7,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") => {
   try {
     if (!localFilePath) return null;
     // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
-      folder: "CodeX Website",
+      folder: folderName,
     });
     // file has been uploaded successfully
     fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
+    console.error("Cloudinary upload error:", error);
     return null;
   }
 };
@@ -62,4 +63,13 @@ const updateOnCloudinary = async (localFilePath, oldPublicId) => {
   }
 };
 
-export { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary };
+const getPublicIdFromUrl = (url) => {
+  if (!url) return null;
+  const parts = url.split('/');
+  const uploadIndex = parts.findIndex(part => part === 'upload');
+  if (uploadIndex === -1) return null;
+  const publicIdWithExt = parts.slice(uploadIndex + 2).join('/');
+  return publicIdWithExt.substring(0, publicIdWithExt.lastIndexOf('.'));
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary, getPublicIdFromUrl };

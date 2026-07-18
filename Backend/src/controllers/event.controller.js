@@ -2,7 +2,7 @@ import { Event } from '../models/event.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 
 const createEvent = asyncHandler(async (req, res) => {
   const { eventName, date, description, registrationLink } = req.body;
@@ -17,7 +17,7 @@ const createEvent = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Cover image is required');
   }
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath, 'CodeX/event');
 
   if (!coverImage) {
     throw new ApiError(500, 'Error while uploading cover image');
@@ -50,10 +50,7 @@ const deleteEvent = asyncHandler(async (req, res) => {
   }
 
   // Extract public ID from Cloudinary URL
-  // Example URL: http://res.cloudinary.com/.../image/upload/v.../CodeX Website/abxyz.jpg
-  const urlParts = event.coverImage.split('/');
-  const filename = urlParts[urlParts.length - 1];
-  const publicId = `CodeX Website/${filename.split('.')[0]}`;
+  const publicId = getPublicIdFromUrl(event.coverImage);
 
   await deleteFromCloudinary(publicId);
   await event.deleteOne();
@@ -74,9 +71,7 @@ const updateEvent = asyncHandler(async (req, res) => {
   let newCoverImageUrl = event.coverImage;
 
   if (req.file) {
-    const urlParts = event.coverImage.split('/');
-    const filename = urlParts[urlParts.length - 1];
-    const oldPublicId = `CodeX Website/${filename.split('.')[0]}`;
+    const oldPublicId = getPublicIdFromUrl(event.coverImage);
 
     const uploadedImage = await updateOnCloudinary(req.file.path, oldPublicId);
     if (!uploadedImage) {

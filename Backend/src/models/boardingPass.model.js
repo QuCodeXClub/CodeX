@@ -54,6 +54,9 @@ const boardingPassSchema = new mongoose.Schema(
       required: [true, "Boarding Pass ID is required"],
       unique: true,
     },
+    qrCodeImage: {
+      type: String,
+    },
     issuedAt: {
       type: Date,
       default: Date.now,

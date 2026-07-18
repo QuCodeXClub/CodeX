@@ -6,6 +6,9 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { certificateEmail } from '../utils/emailTemplates.js';
 import crypto from 'crypto';
+import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
+import path from 'path';
+import os from 'os';
 
 const generateBulkCertificates = asyncHandler(async (req, res) => {
   const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;
@@ -33,7 +36,7 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
       throw new ApiError(400, 'Signature image is required');
     }
 
-    const signatureImage = await uploadOnCloudinary(signatureLocalPath);
+    const signatureImage = await uploadOnCloudinary(signatureLocalPath, 'CodeX/certificate');
     if (!signatureImage) {
       throw new ApiError(500, 'Error while uploading signature image');
     }
@@ -47,6 +50,22 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
 
     const certificateId = crypto.randomBytes(8).toString('hex'); // Generate unique ID
 
+    // Send email with certificate link
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
+    
+    // Generate QR Code
+    let qrCodeUrl = '';
+    try {
+      const qrCodePath = path.join(os.tmpdir(), `qr-${certificateId}.svg`);
+      await generateQRCodeWithLogo(verificationLink, qrCodePath);
+      const qrUpload = await uploadOnCloudinary(qrCodePath, 'CodeX/certificate');
+      if (qrUpload) {
+        qrCodeUrl = qrUpload.url;
+      }
+    } catch (qrError) {
+      console.error("Failed to generate/upload QR code:", qrError);
+    }
+
     const cert = await Certificate.create({
       studentName: student.name,
       studentEmail: student.email,
@@ -56,12 +75,10 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
       signatureImage: finalSignatureUrl,
       certificateId,
       position: student.position || 'Participant',
+      qrCodeImage: qrCodeUrl,
     });
 
     createdCertificates.push(cert);
-
-    // Send email with certificate link
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
     
     const { html, text } = certificateEmail({
       studentName: student.name,
