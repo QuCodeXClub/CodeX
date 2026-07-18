@@ -72,7 +72,7 @@ export default function ManageContacts() {
           <h1 className="text-2xl font-bold text-text flex items-center gap-2">
             <MessageSquare className="w-6 h-6 text-accent" /> Inbox
           </h1>
-          <p className="text-sm text-text-text-muted mt-1">
+          <p className="text-sm text-text-muted mt-1">
             Manage incoming contact form submissions.
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function ManageContacts() {
           <button
             onClick={() => dispatch(fetchAdminContacts())}
             disabled={loading}
-            className="p-2 bg-card border border-border rounded-lg text-text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50"
+            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50"
             title="Refresh Messages"
           >
             <RefreshCw
@@ -94,7 +94,7 @@ export default function ManageContacts() {
       {/* Control Bar */}
       <div className="mb-6 max-w-md">
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-text-muted" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
           <input
             type="text"
             placeholder="Search by name, email, or subject..."
@@ -113,16 +113,16 @@ export default function ManageContacts() {
           </div>
         ) : filteredMessages.length === 0 ? (
           <div className="p-16 text-center">
-            <Mail className="w-12 h-12 text-text-text-muted mx-auto mb-4" />
+            <Mail className="w-12 h-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-bold text-text mb-1">
               No Messages
             </h3>
-            <p className="text-text-text-muted text-sm">
+            <p className="text-text-muted text-sm">
               You're all caught up! No messages found.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-border-soft">
             {filteredMessages.map((msg) => (
               <div
                 key={msg._id}
@@ -136,7 +136,7 @@ export default function ManageContacts() {
                     {!msg.isRead ? (
                       <div className="w-2.5 h-2.5 bg-accent rounded-full"></div>
                     ) : (
-                      <CheckCircle className="w-4 h-4 text-text-text-muted" />
+                      <CheckCircle className="w-4 h-4 text-text-muted" />
                     )}
                   </div>
 
@@ -146,23 +146,23 @@ export default function ManageContacts() {
                         className={`text-sm truncate ${!msg.isRead ? "font-bold text-text" : "font-medium text-text"}`}
                       >
                         {msg.name}{" "}
-                        <span className="font-normal text-text-text-muted ml-1">
+                        <span className="font-normal text-text-muted ml-1">
                           ({msg.email})
                         </span>
                       </h4>
-                      <div className="shrink-0 text-xs text-text-text-muted flex items-center gap-1.5 ml-4">
+                      <div className="shrink-0 text-xs text-text-muted flex items-center gap-1.5 ml-4">
                         <Clock className="w-3.5 h-3.5" />
                         {new Date(msg.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                     <p
-                      className={`text-sm truncate ${!msg.isRead ? "font-semibold text-text" : "text-text-text-muted"}`}
+                      className={`text-sm truncate ${!msg.isRead ? "font-semibold text-text" : "text-text-muted"}`}
                     >
                       {msg.subject}
                     </p>
                   </div>
 
-                  <div className="shrink-0 text-text-text-muted">
+                  <div className="shrink-0 text-text-muted">
                     {expandedId === msg._id ? (
                       <ChevronUp className="w-5 h-5" />
                     ) : (
@@ -183,7 +183,7 @@ export default function ManageContacts() {
                           e.stopPropagation();
                           handleDelete(msg._id);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-danger bg-danger/10 hover:bg-danger/10 rounded-lg transition-colors border border-danger/30"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-danger bg-danger/10 hover:bg-danger/20 rounded-lg transition-colors border border-danger/30"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Delete Message
                       </button>

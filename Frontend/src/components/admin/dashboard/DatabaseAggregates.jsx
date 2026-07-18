@@ -15,7 +15,7 @@ export default function DatabaseAggregates({ metrics }) {
       </div>
       <div className="flex-1 flex flex-col justify-center gap-6">
         <div className="flex justify-between items-center p-4 rounded-xl bg-card-hover border border-border-soft">
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Total Applications Received
           </span>
           <span className="text-xl font-bold text-text">
@@ -23,7 +23,7 @@ export default function DatabaseAggregates({ metrics }) {
           </span>
         </div>
         <div className="flex justify-between items-center p-4 rounded-xl bg-card-hover border border-border-soft">
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Total Events Hosted
           </span>
           <span className="text-xl font-bold text-text">
@@ -31,7 +31,7 @@ export default function DatabaseAggregates({ metrics }) {
           </span>
         </div>
         <div className="flex justify-between items-center p-4 rounded-xl bg-card-hover border border-border-soft">
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Active Team Roster
           </span>
           <span className="text-xl font-bold text-text">

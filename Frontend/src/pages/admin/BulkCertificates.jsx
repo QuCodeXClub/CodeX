@@ -200,7 +200,7 @@ export default function BulkCertificates() {
       <header className="flex items-start justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold">Credential Forge</h1>
-          <p className="text-sm text-text-text-muted mt-1">
+          <p className="text-sm text-text-muted mt-1">
             Bulk generate and email certificates.
           </p>
         </div>
@@ -229,7 +229,7 @@ export default function BulkCertificates() {
               type="text"
               {...register("eventName", { required: "Event name is required" })}
               placeholder="Hackathon 2026"
-              className="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
             {errors.eventName && (
               <p className="mt-1 text-xs text-danger">
@@ -246,7 +246,7 @@ export default function BulkCertificates() {
             <input
               type="date"
               {...register("eventDate", { required: "Event date is required" })}
-              className="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
             {errors.eventDate && (
               <p className="mt-1 text-xs text-danger">
@@ -261,14 +261,14 @@ export default function BulkCertificates() {
               Coordinator Name
             </label>
             <div className="relative">
-              <UserCheck className="absolute left-3 top-3 w-4 h-4 text-text-text-muted" />
+              <UserCheck className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
               <input
                 type="text"
                 {...register("coordinatorName", {
                   required: "Coordinator name is required",
                 })}
                 placeholder="Dr. Smith"
-                className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             {errors.coordinatorName && (
@@ -310,8 +310,8 @@ export default function BulkCertificates() {
                 </div>
               ) : (
                 <>
-                  <ImageIcon className="w-8 h-8 text-text-text-muted mb-2" />
-                  <span className="text-sm text-text-text-muted">
+                  <ImageIcon className="w-8 h-8 text-text-muted mb-2" />
+                  <span className="text-sm text-text-muted">
                     Upload Signature
                   </span>
                 </>
@@ -376,14 +376,14 @@ export default function BulkCertificates() {
               >
                 {/* Name */}
                 <div className="md:col-span-4 relative">
-                  <User className="absolute left-3 top-3 w-4 h-4 text-text-text-muted" />
+                  <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
                     placeholder="Student Name"
                     {...register(`students.${index}.name`, {
                       required: "Name is required",
                     })}
-                    className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   {errors.students?.[index]?.name && (
                     <p className="mt-1 text-xs text-danger">
@@ -394,7 +394,7 @@ export default function BulkCertificates() {
 
                 {/* Email */}
                 <div className="md:col-span-4 relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-text-text-muted" />
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="email"
                     placeholder="student@email.com"
@@ -405,7 +405,7 @@ export default function BulkCertificates() {
                         message: "Invalid email address",
                       },
                     })}
-                    className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   {errors.students?.[index]?.email && (
                     <p className="mt-1 text-xs text-danger">
@@ -420,7 +420,7 @@ export default function BulkCertificates() {
                     {...register(`students.${index}.position`, {
                       required: "Position is required",
                     })}
-                    className="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   >
                     <option value="Winner">Winner</option>
                     <option value="Runner Up">Runner Up</option>
@@ -442,7 +442,7 @@ export default function BulkCertificates() {
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="text-text-text-muted hover:text-danger disabled:opacity-40 mt-2"
+                    className="text-text-muted hover:text-danger disabled:opacity-40 mt-2 transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -458,7 +458,7 @@ export default function BulkCertificates() {
               onClick={() =>
                 append({ name: "", email: "", position: "Participant" })
               }
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card-hover hover:bg-card-hover transition-all font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-text hover:bg-card-hover transition-all font-medium"
             >
               <Plus className="w-4 h-4" />
               Add Student
@@ -466,7 +466,7 @@ export default function BulkCertificates() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-white hover:bg-accent transition-all disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-[#111111] hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed font-bold"
             >
               {loading ? (
                 <>

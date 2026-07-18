@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // <-- Added import
+import { useNavigate } from "react-router-dom";
 import {
   Loader2,
   Edit,
@@ -77,11 +77,11 @@ export default function ManageEvents() {
         <EmptyState />
       ) : (
         <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-border-soft">
             {events.map((event) => (
               <li
                 key={event._id}
-                onClick={() => navigate(`/events/${event._id}`)} // <-- Navigate to new route
+                onClick={() => navigate(`/events/${event._id}`)}
                 className="p-4 sm:p-5 hover:bg-card-hover flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors cursor-pointer group"
               >
                 {/* Event Info (Left Side) */}
@@ -94,14 +94,14 @@ export default function ManageEvents() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <ImageIcon className="w-6 h-6 text-text-text-muted" />
+                      <ImageIcon className="w-6 h-6 text-text-muted" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">
                       {event.eventName}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-sm text-text-text-muted mt-1">
+                    <div className="flex items-center gap-1.5 text-sm text-text-muted mt-1">
                       <Calendar className="w-4 h-4" />
                       {new Date(event.date).toLocaleDateString("en-US", {
                         weekday: "short",
@@ -121,18 +121,18 @@ export default function ManageEvents() {
                 {/* Actions (Right Side) */}
                 <div
                   className="flex items-center gap-2 sm:ml-auto"
-                  onClick={(e) => e.stopPropagation()} // Prevents clicking buttons from routing
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     onClick={() => openEditModal(event)}
-                    className="p-2 text-text-text-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
+                    className="p-2 text-text-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
                     title="Edit Event"
                   >
                     <Edit className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => handleDelete(event._id)}
-                    className="p-2 text-text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
+                    className="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
                     title="Delete Event"
                   >
                     <Trash2 className="w-5 h-5" />

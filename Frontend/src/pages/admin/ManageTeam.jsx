@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom"; // <-- Added for portal
 import { useForm } from "react-hook-form";
 import {
   Plus,
@@ -182,7 +183,7 @@ export default function ManageTeam() {
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-text">Team Roster</h1>
-          <p className="text-sm text-text-text-muted mt-1">
+          <p className="text-sm text-text-muted mt-1">
             Manage personnel and organizational structure.
           </p>
         </div>
@@ -193,7 +194,7 @@ export default function ManageTeam() {
               dispatch(fetchAdminTeam({ year: filterYear, force: true }))
             }
             disabled={loading}
-            className="p-2 bg-card border border-border rounded-lg text-text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center shrink-0"
+            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center shrink-0"
             title="Refresh Data"
           >
             <RefreshCw
@@ -213,12 +214,12 @@ export default function ManageTeam() {
                 </option>
               ))}
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-ink-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           <button
             onClick={openCreateModal}
-            className="flex items-center justify-center gap-2 bg-accent text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-accent transition-colors shadow-sm whitespace-nowrap"
+            className="flex items-center justify-center gap-2 bg-accent text-[#111111] px-5 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             Add Member
@@ -235,11 +236,11 @@ export default function ManageTeam() {
         </div>
       ) : displayedMembers.length === 0 ? (
         <div className="bg-card border border-border rounded-2xl p-16 text-center shadow-sm">
-          <Users className="w-12 h-12 text-text-text-muted mx-auto mb-4" />
+          <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
           <h3 className="text-lg font-bold text-text mb-1">
             No Personnel Records
           </h3>
-          <p className="text-text-text-muted text-sm">
+          <p className="text-text-muted text-sm">
             Click "Add Member" to assign new personnel.
           </p>
         </div>
@@ -276,13 +277,13 @@ export default function ManageTeam() {
         </div>
       )}
 
-      {/* Creation/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/50 backdrop-blur-sm p-4 overflow-y-auto">
+      {/* Creation/Edit Modal via Portal */}
+      {isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-panel/80 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-card rounded-2xl shadow-xl w-full max-w-2xl relative my-auto">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-text-text-muted hover:text-text-text-muted p-2 hover:bg-card-hover rounded-full transition-colors"
+              className="absolute top-4 right-4 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -399,10 +400,10 @@ export default function ManageTeam() {
                         })}
                       />
                       <ImageIcon
-                        className={`w-8 h-8 mx-auto mb-2 transition-colors ${errors.photo ? "text-danger" : "text-text-text-muted group-hover:text-accent"}`}
+                        className={`w-8 h-8 mx-auto mb-2 transition-colors ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
                       />
                       <span
-                        className={`text-sm font-medium ${errors.photo ? "text-danger" : "text-text-text-muted group-hover:text-accent"}`}
+                        className={`text-sm font-medium ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
                       >
                         Click to browse or drag image here
                       </span>
@@ -427,7 +428,7 @@ export default function ManageTeam() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 bg-accent text-white py-3 rounded-xl text-sm font-semibold transition-colors hover:bg-accent disabled:opacity-50 mt-4 shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 bg-accent text-[#111111] py-3 rounded-xl text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 mt-4 shadow-sm"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -440,7 +441,8 @@ export default function ManageTeam() {
               </form>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

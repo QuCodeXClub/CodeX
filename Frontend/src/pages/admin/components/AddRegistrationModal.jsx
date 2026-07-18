@@ -30,7 +30,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
           </h2>
           <button
             onClick={onClose}
-            className="text-text-text-muted hover:text-text-text-muted transition-colors p-2 rounded-lg hover:bg-card-hover"
+            className="text-text-muted hover:text-text transition-colors p-2 rounded-lg hover:bg-card-hover"
           >
             <XIcon className="w-5 h-5" />
           </button>
@@ -48,7 +48,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               <input
                 {...register("name", { required: "Name is required" })}
                 type="text"
-                className={`w-full border ${errors.name ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.name ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.name && (
                 <p className="text-danger text-xs mt-1">
@@ -65,7 +65,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                   required: "Father's name is required",
                 })}
                 type="text"
-                className={`w-full border ${errors.fatherName ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.fatherName ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.fatherName && (
                 <p className="text-danger text-xs mt-1">
@@ -83,7 +83,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                   pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
                 })}
                 type="email"
-                className={`w-full border ${errors.email ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.email ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.email && (
                 <p className="text-danger text-xs mt-1">
@@ -104,7 +104,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                   },
                 })}
                 type="text"
-                className={`w-full border ${errors.phone ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.phone ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.phone && (
                 <p className="text-danger text-xs mt-1">
@@ -118,7 +118,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               </label>
               <select
                 {...register("course")}
-                className="w-full border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {[
                   "B.Tech",
@@ -142,7 +142,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               </label>
               <select
                 {...register("year")}
-                className="w-full border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {["1st Year", "2nd Year", "3rd Year", "4th Year"].map((y) => (
                   <option key={y} value={y}>
@@ -157,7 +157,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               </label>
               <select
                 {...register("semester")}
-                className="w-full border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].map(
                   (s) => (
@@ -175,7 +175,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               <input
                 {...register("section", { required: "Section is required" })}
                 type="text"
-                className={`w-full border ${errors.section ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.section ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.section && (
                 <p className="text-danger text-xs mt-1">
@@ -190,7 +190,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               <input
                 {...register("set", { required: "Set is required" })}
                 type="text"
-                className={`w-full border ${errors.set ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.set ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.set && (
                 <p className="text-danger text-xs mt-1">
@@ -205,7 +205,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
               <input
                 {...register("studentId", { required: "Q-ID is required" })}
                 type="text"
-                className={`w-full border ${errors.studentId ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
+                className={`w-full bg-card text-text border ${errors.studentId ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.studentId && (
                 <p className="text-danger text-xs mt-1">
@@ -222,16 +222,16 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 onClose();
                 reset();
               }}
-              className="px-4 py-2 text-sm font-medium text-text-text-muted hover:text-text transition-colors"
+              className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-accent text-[#111111] rounded-lg text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin text-[#111111]" />}
               Register & Approve
             </button>
           </div>

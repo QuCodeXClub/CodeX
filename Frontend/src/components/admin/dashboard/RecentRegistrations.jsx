@@ -15,9 +15,9 @@ export default function RecentRegistrations({ metrics, recentLogs }) {
       </div>
       <div className="space-y-4 overflow-y-auto pr-2">
         {metrics.loading ? (
-          <p className="text-sm text-text-text-muted">Loading activity...</p>
+          <p className="text-sm text-text-muted">Loading activity...</p>
         ) : recentLogs.length === 0 ? (
-          <p className="text-sm text-text-text-muted">
+          <p className="text-sm text-text-muted">
             No recent registrations found.
           </p>
         ) : (
@@ -37,7 +37,7 @@ export default function RecentRegistrations({ metrics, recentLogs }) {
                   <span className="font-medium text-text">{log.name}</span>{" "}
                   applied for CodeX ({log.course}).
                 </p>
-                <p className="text-xs text-text-text-muted mt-1">
+                <p className="text-xs text-text-muted mt-1">
                   {new Date(log.createdAt).toLocaleDateString()}
                 </p>
               </div>

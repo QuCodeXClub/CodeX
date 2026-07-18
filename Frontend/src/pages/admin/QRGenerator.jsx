@@ -112,7 +112,7 @@ export default function QRGenerator() {
                     setLink(e.target.value);
                     if (error) dispatch(clearError());
                   }}
-                  className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-transparent"
+                  className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm text-text focus:outline-none focus:ring-2 focus:ring-accent bg-transparent"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function QRGenerator() {
             <button
               type="submit"
               disabled={loading || !link}
-              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-white hover:bg-accent transition-all disabled:opacity-60 disabled:cursor-not-allowed font-semibold w-full"
+              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-[#111111] hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed font-bold w-full"
             >
               {loading ? (
                 <>
@@ -144,6 +144,7 @@ export default function QRGenerator() {
         <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col items-center justify-center min-h-[400px]">
           {qrUrl ? (
             <div className="flex flex-col items-center space-y-8 animate-in fade-in zoom-in duration-300 w-full">
+              {/* Keep bg-white so the QR remains scannable! */}
               <div className="p-6 bg-white rounded-2xl shadow-sm border border-border relative group">
                 <div className="absolute inset-0 bg-accent/5 blur-xl -z-10 group-hover:bg-accent/20 transition-all duration-500"></div>
                 <img
@@ -195,6 +196,8 @@ export default function QRGenerator() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {history.map((item) => (
               <div key={item._id} className="bg-card-hover border border-border p-4 rounded-2xl hover:border-accent/50 transition-all duration-300 group flex flex-col h-full shadow-sm">
+                
+                {/* Keep bg-white so history QR remains scannable! */}
                 <div className="bg-white p-3 rounded-xl mb-4 relative overflow-hidden flex-shrink-0 border border-border">
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3 backdrop-blur-[2px]">
                     <button 

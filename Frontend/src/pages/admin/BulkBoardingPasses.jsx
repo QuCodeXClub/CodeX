@@ -203,7 +203,7 @@ export default function BulkBoardingPasses() {
                 type="text"
                 {...register("eventName", { required: "Event name is required" })}
                 placeholder="CodeX 2026"
-                className="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
               {errors.eventName && (
                 <p className="mt-1 text-xs text-danger">
@@ -223,7 +223,7 @@ export default function BulkBoardingPasses() {
                   type="text"
                   {...register("qid", { required: "QID is required" })}
                   placeholder="e.g. QID-12345"
-                  className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                  className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               {errors.qid && (
@@ -244,7 +244,7 @@ export default function BulkBoardingPasses() {
                   {...register("eventDescription", { required: "Description is required" })}
                   placeholder="Join us for the ultimate coding showdown..."
                   rows="2"
-                  className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                 ></textarea>
               </div>
               {errors.eventDescription && (
@@ -315,7 +315,7 @@ export default function BulkBoardingPasses() {
                     {...register(`students.${index}.name`, {
                       required: "Name is required",
                     })}
-                    className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   {errors.students?.[index]?.name && (
                     <p className="mt-1 text-xs text-danger">
@@ -336,7 +336,7 @@ export default function BulkBoardingPasses() {
                         message: "Invalid email address",
                       },
                     })}
-                    className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   {errors.students?.[index]?.email && (
                     <p className="mt-1 text-xs text-danger">
@@ -351,7 +351,7 @@ export default function BulkBoardingPasses() {
                     type="text"
                     placeholder="Cite Number (Opt)"
                     {...register(`students.${index}.citeNumber`)}
-                    className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
 
@@ -360,7 +360,7 @@ export default function BulkBoardingPasses() {
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="text-text-muted hover:text-danger disabled:opacity-40 p-2 md:p-0 md:mt-2"
+                    className="text-text-muted hover:text-danger disabled:opacity-40 p-2 md:p-0 md:mt-2 transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -374,7 +374,7 @@ export default function BulkBoardingPasses() {
                       type="text"
                       placeholder="Login ID (Opt)"
                       {...register(`students.${index}.loginUser`)}
-                      className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
 
@@ -384,7 +384,7 @@ export default function BulkBoardingPasses() {
                       type="text"
                       placeholder="Login Pass (Opt)"
                       {...register(`students.${index}.loginPass`)}
-                      className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
 
@@ -394,7 +394,7 @@ export default function BulkBoardingPasses() {
                       type="text"
                       placeholder="WiFi ID (Opt)"
                       {...register(`students.${index}.wifiUser`)}
-                      className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
 
@@ -404,7 +404,7 @@ export default function BulkBoardingPasses() {
                       type="text"
                       placeholder="WiFi Pass (Opt)"
                       {...register(`students.${index}.wifiPass`)}
-                      className="w-full rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export default function BulkBoardingPasses() {
               onClick={() =>
                 append({ name: "", email: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" })
               }
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card-hover hover:bg-card-hover transition-all font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-text hover:bg-card-hover transition-all font-medium shadow-sm"
             >
               <Plus className="w-4 h-4" />
               Add Attendee
@@ -427,7 +427,7 @@ export default function BulkBoardingPasses() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-white hover:bg-accent transition-all disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-[#111111] hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed font-bold shadow-sm"
             >
               {loading ? (
                 <>

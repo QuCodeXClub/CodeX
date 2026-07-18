@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom"; // <-- Added for portal
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { X, Link as LinkIcon, Image as ImageIcon, Loader2 } from "lucide-react";
@@ -80,12 +81,11 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
     }
   };
 
-  return (
-  <div className="fixed inset-0 z-[9999] bg-bg/80 backdrop-blur-sm overflow-y-auto">
-      {/* Min-h-full with padding ensures the modal never hits the very top edge of the screen */}
+  // Render the modal directly into the document body to prevent sidebar overlap
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-sm overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4 sm:p-6 md:p-8">
         
-        {/* The modal box itself */}
         <div className="w-full max-w-6xl bg-card border border-border rounded-2xl shadow-xl relative flex flex-col my-8">
           
           <button
@@ -97,7 +97,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
           
           <div className="p-6 md:p-8 lg:p-10 flex-1 flex flex-col">
             <h2 className="text-xl lg:text-2xl font-bold text-text border-b border-border-soft pb-4 mb-6">
-              {editingEvent ? "Edit Event Details" : "Initialize New Event"}
+              {editingEvent ? "Edit Event Details" : "Create New Event"}
             </h2>
             
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
@@ -207,7 +207,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full md:w-auto md:min-w-[200px] md:ml-auto flex items-center justify-center gap-2 bg-accent text-bg py-3 px-8 rounded-xl text-sm font-semibold transition-colors hover:opacity-90 disabled:opacity-50 shadow-sm"
+                  className="w-full md:w-auto md:min-w-[200px] md:ml-auto flex items-center justify-center gap-2 bg-accent text-[#111111] py-3 px-8 rounded-xl text-sm font-bold transition-colors hover:opacity-90 disabled:opacity-50 shadow-sm"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -222,6 +222,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body 
   );
 }

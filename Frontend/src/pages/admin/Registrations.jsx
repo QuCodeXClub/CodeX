@@ -229,10 +229,7 @@ export default function Registrations() {
   const isNewEntry = (reg) => {
     const createdAt = new Date(reg.createdAt);
     const now = new Date();
-    // highlight if created within the last 24 hours
     const within24Hours = now - createdAt < 24 * 60 * 60 * 1000;
-
-    // Only highlight if it is still PENDING
     return within24Hours && reg.status === "PENDING";
   };
 
@@ -244,7 +241,7 @@ export default function Registrations() {
           <h1 className="text-2xl font-bold text-text">
             Registration Information
           </h1>
-          <p className="text-sm text-text-text-muted mt-1">
+          <p className="text-sm text-text-muted mt-1">
             Manage and verify new applicant submissions.
           </p>
         </div>
@@ -252,7 +249,7 @@ export default function Registrations() {
           <button
             onClick={handleExportCSV}
             disabled={isExporting || loading || total === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-panel text-text-inverse rounded-lg text-sm font-medium hover:bg-bg transition-colors shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors shadow-sm disabled:opacity-50"
             title="Export to CSV"
           >
             {isExporting ? (
@@ -268,14 +265,14 @@ export default function Registrations() {
               setImportResult(null);
               setImportFile(null);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-card-hover text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors border border-border shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors shadow-sm"
           >
             <Upload className="w-4 h-4" />
             <span>Bulk Import</span>
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-accent text-[#111111] rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
           >
             <span>+ Add Student (Cash)</span>
           </button>
@@ -287,7 +284,6 @@ export default function Registrations() {
                   search: debouncedSearch,
                   status: statusFilter,
                   course: courseFilter,
-                  year: yearFilter,
                   paymentMode: paymentModeFilter,
                   page: currentPage,
                   limit: itemsPerPage,
@@ -295,7 +291,7 @@ export default function Registrations() {
               )
             }
             disabled={loading}
-            className="p-2 bg-card border border-border rounded-lg text-text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50"
+            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50"
             title="Refresh Data"
           >
             <RefreshCw
@@ -310,7 +306,7 @@ export default function Registrations() {
       {/* Control Bar */}
       <div className="flex flex-col xl:flex-row justify-between gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-text-muted" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
           <input
             type="text"
             placeholder="Search by Name, Email, or Q-ID..."
@@ -340,7 +336,7 @@ export default function Registrations() {
               <option value="B.Sc">B.Sc</option>
               <option value="M.Sc">M.Sc</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-ink-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Academic Year Filter */}
@@ -358,7 +354,7 @@ export default function Registrations() {
                 </option>
               ))}
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-ink-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Status Filter */}
@@ -374,7 +370,7 @@ export default function Registrations() {
               <option value="APPROVED">Approved</option>
               <option value="REJECTED">Rejected</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-ink-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Payment Mode Filter */}
@@ -389,7 +385,7 @@ export default function Registrations() {
               <option value="ONLINE">Online</option>
               <option value="CASH">Cash</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-ink-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
         </div>
       </div>
@@ -400,27 +396,27 @@ export default function Registrations() {
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-card-hover border-b border-border">
               <tr>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
                   Applicant
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
                   Academic Data
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
                   Verification
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-text-muted text-xs uppercase tracking-wider text-right">
+                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-line-soft">
+            <tbody className="divide-y divide-border-soft">
               {loading ? (
                 <>
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -431,7 +427,7 @@ export default function Registrations() {
                 <tr>
                   <td
                     colSpan="6"
-                    className="p-12 text-center text-text-text-muted font-medium"
+                    className="p-12 text-center text-text-muted font-medium"
                   >
                     No records found matching criteria.
                   </td>
@@ -442,7 +438,7 @@ export default function Registrations() {
                   return (
                     <tr
                       key={reg._id}
-                      className={`transition-colors ${isNew ? "bg-accent/10 hover:bg-accent/10" : "hover:bg-card-hover/50"}`}
+                      className={`transition-colors ${isNew ? "bg-accent/10 hover:bg-accent/10" : "hover:bg-card-hover"}`}
                     >
                       <td className="px-6 py-4">
                         <div className="font-medium text-text flex items-center gap-2">
@@ -453,14 +449,14 @@ export default function Registrations() {
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-text-text-muted mt-0.5">
+                        <div className="text-xs text-text-muted mt-0.5">
                           D/O, S/O: {reg.fatherName}
                         </div>
                       </td>
 
                       <td className="px-6 py-4">
                         <div className="text-text">{reg.email}</div>
-                        <div className="text-xs text-text-text-muted mt-0.5">
+                        <div className="text-xs text-text-muted mt-0.5">
                           {reg.phone}
                         </div>
                       </td>
@@ -468,13 +464,13 @@ export default function Registrations() {
                       <td className="px-6 py-4">
                         <div className="font-medium text-text">
                           {reg.course}{" "}
-                          <span className="text-text-text-muted font-normal ml-1">
+                          <span className="text-text-muted font-normal ml-1">
                             ({reg.year})
                           </span>
                         </div>
-                        <div className="text-xs text-text-text-muted mt-0.5">
+                        <div className="text-xs text-text-muted mt-0.5">
                           Q-ID:{" "}
-                          <span className="font-medium text-text-text-muted">
+                          <span className="font-medium text-text-muted">
                             {reg.studentId}
                           </span>{" "}
                           | Sec: {reg.section} | Set: {reg.set}
@@ -483,7 +479,7 @@ export default function Registrations() {
 
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1">
-                          <div className="inline-flex items-center px-2 py-1 rounded bg-card-hover border border-border text-text-text-muted font-mono text-xs w-max">
+                          <div className="inline-flex items-center px-2 py-1 rounded bg-card-hover border border-border text-text-muted font-mono text-xs w-max">
                             UTR: {reg.transactionId}
                           </div>
                           {!reg.paymentMode || reg.paymentMode === "ONLINE" ? (
@@ -491,7 +487,7 @@ export default function Registrations() {
                               ONLINE
                             </span>
                           ) : (
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded w-max border border-emerald-100">
+                            <span className="text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded w-max border border-success/20">
                               CASH
                             </span>
                           )}
@@ -504,7 +500,7 @@ export default function Registrations() {
 
                       <td className="px-6 py-4 text-right">
                         {updatingId === reg._id ? (
-                          <div className="flex justify-end pr-2 text-text-text-muted">
+                          <div className="flex justify-end pr-2 text-text-muted">
                             <Loader2 className="w-5 h-5 animate-spin" />
                           </div>
                         ) : (
@@ -525,7 +521,7 @@ export default function Registrations() {
                                 onClick={() =>
                                   handleStatusChange(reg._id, "REJECTED")
                                 }
-                                className="p-1.5 text-danger bg-danger/10 hover:bg-danger/10 rounded-md transition-colors border border-danger/30"
+                                className="p-1.5 text-danger bg-danger/10 hover:bg-danger/20 rounded-md transition-colors border border-danger/30"
                                 title="Reject"
                               >
                                 <XIcon className="w-4 h-4" />
@@ -545,7 +541,7 @@ export default function Registrations() {
         {/* Pagination Controls */}
         {!loading && total > 0 && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-card-hover">
-            <div className="text-sm text-text-text-muted">
+            <div className="text-sm text-text-muted">
               Showing{" "}
               <span className="font-medium text-text">
                 {(currentPage - 1) * itemsPerPage + 1}
@@ -563,7 +559,7 @@ export default function Registrations() {
                   dispatch(setCurrentPage(Math.max(1, currentPage - 1)))
                 }
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm font-medium text-text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
+                className="px-3 py-1 text-sm font-medium text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
               >
                 Previous
               </button>
@@ -577,7 +573,7 @@ export default function Registrations() {
                   )
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm font-medium text-text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
+                className="px-3 py-1 text-sm font-medium text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
               >
                 Next
               </button>

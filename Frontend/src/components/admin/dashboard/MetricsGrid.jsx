@@ -9,7 +9,7 @@ export default function MetricsGrid({ metrics }) {
           <div className="p-2 bg-accent/10 rounded-lg">
             <Users className="w-6 h-6 text-accent" />
           </div>
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Pending Applications
           </span>
         </div>
@@ -27,7 +27,7 @@ export default function MetricsGrid({ metrics }) {
           <div className="p-2 bg-accent/10 rounded-lg">
             <Calendar className="w-6 h-6 text-accent" />
           </div>
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Active Events
           </span>
         </div>
@@ -45,7 +45,7 @@ export default function MetricsGrid({ metrics }) {
           <div className="p-2 bg-warning/10 rounded-lg">
             <Activity className="w-6 h-6 text-warning" />
           </div>
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             Live Sessions
           </span>
         </div>
@@ -63,7 +63,7 @@ export default function MetricsGrid({ metrics }) {
           <div className="p-2 bg-text/10 rounded-lg">
             <ShieldCheck className="w-6 h-6 text-text" />
           </div>
-          <span className="text-sm font-medium text-text-text-muted">
+          <span className="text-sm font-medium text-text-muted">
             System Status
           </span>
         </div>
