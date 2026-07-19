@@ -27,6 +27,10 @@ const contactSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isReplied: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

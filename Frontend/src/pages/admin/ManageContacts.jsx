@@ -4,6 +4,7 @@ import {
   fetchAdminContacts,
   markMessageAsRead,
   deleteContactMessage,
+  replyToAdminContactMessage,
 } from "../../context/adminContactSlice";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
@@ -16,6 +17,8 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
+  Reply,
+  Send,
 } from "lucide-react";
 
 export default function ManageContacts() {
@@ -27,6 +30,9 @@ export default function ManageContacts() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+  const [replyingId, setReplyingId] = useState(null);
+  const [replyMessage, setReplyMessage] = useState("");
+  const [replyingLoading, setReplyingLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -43,6 +49,22 @@ export default function ManageContacts() {
 
     if (isConfirmed) {
       await dispatch(deleteContactMessage(id));
+    }
+  };
+
+  const handleReplySubmit = async (e, id) => {
+    e.preventDefault();
+    if (!replyMessage.trim()) return;
+
+    setReplyingLoading(true);
+    try {
+      await dispatch(replyToAdminContactMessage({ id, replyMessage })).unwrap();
+      setReplyingId(null);
+      setReplyMessage("");
+    } catch (err) {
+      console.error("Failed to send reply:", err);
+    } finally {
+      setReplyingLoading(false);
     }
   };
 
@@ -149,6 +171,11 @@ export default function ManageContacts() {
                         <span className="font-normal text-text-text-muted ml-1">
                           ({msg.email})
                         </span>
+                        {msg.isReplied && (
+                          <span className="text-[10px] uppercase tracking-wider bg-accent/10 border border-accent/20 text-accent px-2 py-0.5 rounded-full ml-2">
+                            Replied
+                          </span>
+                        )}
                       </h4>
                       <div className="shrink-0 text-xs text-text-text-muted flex items-center gap-1.5 ml-4">
                         <Clock className="w-3.5 h-3.5" />
@@ -177,17 +204,59 @@ export default function ManageContacts() {
                     <div className="mb-4 whitespace-pre-wrap text-sm text-text leading-relaxed bg-card p-4 rounded-xl border border-border">
                       {msg.message}
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (replyingId === msg._id) {
+                            setReplyingId(null);
+                          } else {
+                            setReplyingId(msg._id);
+                            setReplyMessage("");
+                          }
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-accent bg-accent/10 hover:bg-accent/20 rounded-lg transition-colors border border-accent/30"
+                      >
+                        <Reply className="w-3.5 h-3.5" /> Reply
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(msg._id);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-danger bg-danger/10 hover:bg-danger/10 rounded-lg transition-colors border border-danger/30"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-danger bg-danger/10 hover:bg-danger/20 rounded-lg transition-colors border border-danger/30"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete Message
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
                       </button>
                     </div>
+
+                    {replyingId === msg._id && (
+                      <div className="mt-4 pt-4 border-t border-border-soft animate-in slide-in-from-top-2">
+                        <form onSubmit={(e) => handleReplySubmit(e, msg._id)}>
+                          <textarea
+                            value={replyMessage}
+                            onChange={(e) => setReplyMessage(e.target.value)}
+                            placeholder="Type your reply here..."
+                            className="w-full bg-background border border-border text-text rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm min-h-[100px] mb-3"
+                            required
+                          />
+                          <div className="flex justify-end">
+                            <button
+                              type="submit"
+                              disabled={replyingLoading || !replyMessage.trim()}
+                              className="flex items-center gap-2 px-4 py-2 bg-accent text-panel font-bold text-sm rounded-lg hover:bg-accent/90 transition-colors shadow-sm disabled:opacity-50"
+                            >
+                              {replyingLoading ? (
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Send className="w-4 h-4" />
+                              )}
+                              Send Reply
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

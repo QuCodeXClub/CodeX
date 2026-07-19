@@ -16,6 +16,10 @@ class ContactService {
   async deleteMessage(id) {
     return axiosInstance.delete(`/contact/${id}`);
   }
+
+  async replyToMessage(id, replyData) {
+    return axiosInstance.post(`/contact/${id}/reply`, replyData);
+  }
 }
 
 export const contactService = new ContactService();

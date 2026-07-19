@@ -344,6 +344,28 @@ const contactFormReceivedEmail = (userName) => ({
   text: `Thank you for contacting CodeX, ${userName}\n\nWe got your message.\n\nHi ${userName},\n\nThank you for reaching out to us. We have successfully received your message and our team will get back to you as soon as possible.\n\nIn the meantime, feel free to explore our website and upcoming events.\n`,
 });
 
+/**
+ * Contact Reply Email
+ */
+const contactReplyEmail = (userName, originalSubject, replyMessage) => ({
+  html: emailLayout({
+    preheader: `Reply to your message: ${originalSubject}`,
+    body: `
+      ${kicker('// support_reply')}
+      ${heading('Message Reply.')}
+      ${paragraph(`Hi <strong>${userName}</strong>,`)}
+      ${paragraph('Thank you for reaching out to us. We have reviewed your message regarding "<strong>' + originalSubject + '</strong>" and here is our reply:')}
+      
+      <div style="margin:24px 0;padding:16px 24px;background-color:#ffffff;border-left:4px solid ${BRAND.accent};color:${BRAND.ink};font-size:14px;line-height:1.6;white-space:pre-wrap;">
+        ${replyMessage}
+      </div>
+      
+      ${paragraph('If you have any further questions, feel free to reply directly to this email.')}
+    `,
+  }),
+  text: `Reply to your message: ${originalSubject}\n\nMessage Reply.\n\nHi ${userName},\n\nThank you for reaching out to us. We have reviewed your message regarding "${originalSubject}" and here is our reply:\n\n${replyMessage}\n\nIf you have any further questions, feel free to reply directly to this email.\n`,
+});
+
 export {
   emailLayout,
   ctaButton,
@@ -361,4 +383,5 @@ export {
   certificateEmail,
   boardingPassEmail,
   contactFormReceivedEmail,
+  contactReplyEmail,
 };

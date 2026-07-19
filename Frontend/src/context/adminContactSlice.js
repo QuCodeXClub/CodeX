@@ -42,6 +42,18 @@ export const deleteContactMessage = createAsyncThunk(
   }
 );
 
+export const replyToAdminContactMessage = createAsyncThunk(
+  "adminContact/reply",
+  async ({ id, replyMessage }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/contact/${id}/reply`, { replyMessage });
+      return response.data?.data || response.data;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const adminContactSlice = createSlice({
   name: "adminContact",
   initialState: {
@@ -75,6 +87,14 @@ const adminContactSlice = createSlice({
       })
       .addCase(deleteContactMessage.fulfilled, (state, action) => {
         state.messages = state.messages.filter((m) => m._id !== action.payload);
+      })
+      .addCase(replyToAdminContactMessage.fulfilled, (state, action) => {
+        const index = state.messages.findIndex(
+          (m) => m._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
       });
   },
 });
