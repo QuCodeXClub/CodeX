@@ -125,4 +125,8 @@
     -webkit-box-reflect: below -10px
       linear-gradient(to bottom, transparent 70%, rgba(255, 255, 255, 0.3));
   }
+  
+  .hero-right-panel {
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+  }
 }
