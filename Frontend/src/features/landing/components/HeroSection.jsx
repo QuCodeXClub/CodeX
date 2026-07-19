@@ -76,8 +76,8 @@ const HeroSection = () => {
             ))}
           </div>
           <div className="flex flex-col">
-            <span className="text-accent font-sans text-[1.1rem] leading-none font-bold">500+</span>
-            <span className="text-white/50 text-[0.65rem] uppercase tracking-wider mt-1">Active Members</span>
+            <span className="text-accent font-sans text-[1.1rem] leading-none font-bold">{hero.stats.find(s => s.label === 'members')?.value}</span>
+            <span className="text-white/50 text-[0.65rem] uppercase tracking-wider mt-1">Active {hero.stats.find(s => s.label === 'members')?.label}</span>
           </div>
         </div>
       </div>
@@ -117,7 +117,7 @@ const HeroSection = () => {
         </div>
           <div className="absolute bottom-8 right-12 z-10 hidden lg:flex items-center gap-4 text-accent font-sans tracking-[0.25em] text-[0.7rem] opacity-80">
           <span className="w-[10px] h-[10px] border border-accent rotate-45"></span>
-          <span>INNOVATE. COLLABORATE. ELEVATE.</span>
+          <span>{hero.eyebrow}</span>
           <span className="w-[10px] h-[10px] border border-accent rotate-45"></span>
         </div>
       </div>
