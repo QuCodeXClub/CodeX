@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Contact } from "../models/contact.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import { contactFormReceivedEmail } from "../utils/emailTemplates.js";
+import { contactFormReceivedEmail, contactReplyEmail } from "../utils/emailTemplates.js";
 import { verifyTurnstileToken } from "../utils/turnstile.js";
 
 // @desc    Submit a contact form
@@ -98,9 +98,44 @@ const deleteMessage = asyncHandler(async (req, res) => {
   );
 });
 
+// @desc    Reply to a message
+// @route   POST /api/v1/contact/:id/reply
+// @access  Private/Admin
+const replyToMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { replyMessage } = req.body;
+
+  if (!replyMessage) {
+    throw new ApiError(400, "Reply message is required");
+  }
+
+  const message = await Contact.findById(id);
+
+  if (!message) {
+    throw new ApiError(404, "Message not found");
+  }
+
+  const { html, text } = contactReplyEmail(message.name, message.subject, replyMessage);
+
+  await sendEmail({
+    email: message.email,
+    subject: `Re: ${message.subject} - CodeX`,
+    message: html,
+    textMessage: text,
+  });
+
+  message.isReplied = true;
+  await message.save();
+
+  return res.status(200).json(
+    new ApiResponse(200, message, "Reply sent successfully")
+  );
+});
+
 export {
   submitContactForm,
   getAllContactMessages,
   markAsRead,
   deleteMessage,
+  replyToMessage,
 };
