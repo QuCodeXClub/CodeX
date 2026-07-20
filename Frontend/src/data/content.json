@@ -103,10 +103,10 @@
       "title": "Organizations We've Worked With",
       "description": "Building opportunities with organizations that support developers and innovation.",
       "list": [
-        { "name": "HackIndia" },
-        { "name": "Unstop" },
-        { "name": "Hostinger" },
-        { "name": ".xyz" }
+        { "name": "HackIndia", "description": "India's largest developer community and hackathon platform." },
+        { "name": "Unstop", "description": "Empowering students with opportunities, contests and career resources." },
+        { "name": "Hostinger", "description": "Reliable web hosting and online solutions for developers." },
+        { "name": ".xyz", "description": "A modern domain for the next generation of ideas and innovation." }
       ]
     },
     "mission": {
