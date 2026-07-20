@@ -19,7 +19,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.39.0",
     "html-react-parser": "^6.1.4",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.25.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.81.0",
