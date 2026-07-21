@@ -349,7 +349,7 @@ export default function BulkBoardingPasses() {
                   <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Cite Number (Opt)"
+                    placeholder="Desk Number (Opt)"
                     {...register(`students.${index}.citeNumber`)}
                     className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
