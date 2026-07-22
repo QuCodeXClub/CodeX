@@ -41,6 +41,7 @@ const ManageSessions = lazy(() => import("./pages/admin/ManageSessions"));
 const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminAnnouncements = lazy(() => import("./pages/admin/Announcements"));
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
           { path: "messages", element: <ManageContacts /> },
           { path: "profile", element: <AdminProfile /> },
           { path: "settings", element: <AdminSettings /> },
+          { path: "announcements", element: <AdminAnnouncements /> },
         ],
       },
     ],

@@ -15,7 +15,8 @@ import {
   X,
   Ticket,
   Settings,
-  Scan
+  Scan,
+  Megaphone
 } from "lucide-react";
 import axios from "axios";
 
@@ -46,6 +47,7 @@ export default function DashboardLayout() {
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
     { name: "Boarding Passes", path: "/admin/boarding-passes", icon: Ticket },
     { name: "QR Generator", path: "/admin/qr-generator", icon: Scan },
+    { name: "Announcements", path: "/admin/announcements", icon: Megaphone },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
   ];

@@ -368,6 +368,22 @@ const contactReplyEmail = (userName, originalSubject, replyMessage) => ({
   text: `Reply to your message: ${originalSubject}\n\nMESSAGE REPLY.\n\nHi ${userName},\n\nThank you for reaching out to us. We have reviewed your message regarding "${originalSubject}" and here is our reply:\n\n${replyMessage}\n\nIf you have any further questions, feel free to reply directly to this email.\n`,
 });
 
+/**
+ * Bulk Announcement Email
+ */
+const announcementEmail = (subject, messageHtml) => ({
+  html: emailLayout({
+    preheader: subject,
+    body: `
+      ${heading('CLUB', 'ANNOUNCEMENT')}
+      <div style="font-size:15px;line-height:1.6;color:${BRAND.ink}; margin-top: 24px;">
+        ${messageHtml}
+      </div>
+    `,
+  }),
+  text: `${subject}\n\nCLUB ANNOUNCEMENT.\n\n${messageHtml.replace(/<[^>]*>?/gm, '')}\n`,
+});
+
 export {
   emailLayout,
   ctaButton,
@@ -386,4 +402,5 @@ export {
   boardingPassEmail,
   contactFormReceivedEmail,
   contactReplyEmail,
+  announcementEmail,
 };

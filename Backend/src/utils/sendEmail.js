@@ -8,6 +8,7 @@ import { ApiError } from "./ApiError.js";
  * @param {string} options.subject - Email subject
  * @param {string} options.message - Email message body (html)
  * @param {string} options.textMessage - Email message body (plain text)
+ * @param {string|string[]} options.bcc - Blind carbon copy recipients
  */
 const sendEmail = async (options) => {
   try {
@@ -26,6 +27,7 @@ const sendEmail = async (options) => {
     const mailOptions = {
       from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
       to: options.email,
+      bcc: options.bcc,
       replyTo: process.env.FROM_EMAIL,
       subject: options.subject,
       html: options.message,

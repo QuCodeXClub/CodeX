@@ -158,8 +158,8 @@ export default function BulkBoardingPasses() {
       dispatch(
         setError(
           error?.response?.data?.message ||
-            error?.message ||
-            "Failed to generate boarding passes."
+          error?.message ||
+          "Failed to generate boarding passes."
         )
       );
       console.error(error);
@@ -344,7 +344,7 @@ export default function BulkBoardingPasses() {
                     </p>
                   )}
                 </div>
-                
+
                 <div className="md:col-span-3 relative">
                   <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
