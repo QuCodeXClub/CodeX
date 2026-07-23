@@ -15,7 +15,7 @@ const About = () => {
         }}
       ></div>
 
-      <div className="relative z-10 max-w-[1000px] mx-auto px-6 pt-16 lg:pt-24">
+      <div className="relative z-10  mx-auto px-6 pt-16 lg:pt-24">
         <header className="mb-16">
           <p className="text-accent text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
             {about.eyebrow}

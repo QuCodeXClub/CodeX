@@ -158,8 +158,8 @@ export default function BulkBoardingPasses() {
       dispatch(
         setError(
           error?.response?.data?.message ||
-            error?.message ||
-            "Failed to generate boarding passes."
+          error?.message ||
+          "Failed to generate boarding passes."
         )
       );
       console.error(error);
@@ -344,12 +344,12 @@ export default function BulkBoardingPasses() {
                     </p>
                   )}
                 </div>
-                
+
                 <div className="md:col-span-3 relative">
                   <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Cite Number (Opt)"
+                    placeholder="Desk Number (Opt)"
                     {...register(`students.${index}.citeNumber`)}
                     className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />

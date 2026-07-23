@@ -20,7 +20,7 @@ const Faqs = () => {
           backgroundSize: "40px 40px",
         }}
       ></div>
-      <div className="relative z-10 w-full max-w-[1000px] mx-auto pb-20">
+      <div className="relative z-10 w-full mx-auto pb-20">
         <div className="pt-16 px-6 lg:px-12 pb-12">
           <p className="text-accent text-xs font-bold uppercase tracking-widest mb-3">
             SYS_MODULE: KNOWLEDGE_BASE

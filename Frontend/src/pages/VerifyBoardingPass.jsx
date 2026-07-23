@@ -167,10 +167,10 @@ const VerifyBoardingPass = () => {
                 </p>
               </div>
 
-              {/* Cite Number */}
+              {/* Desk Number */}
               <div>
                 <p className="font-mono text-[10px] text-[#2EC5D4] uppercase tracking-[0.2em] mb-1">
-                  Cite / Number
+                  Desk Number
                 </p>
                 <p className="font-sans text-2xl font-bold uppercase text-[#F5F5F5]">
                   {boardingPass.citeNumber || "TBD"}

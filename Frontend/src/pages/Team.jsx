@@ -39,7 +39,7 @@ const Team = () => {
         }}
       />
 
-      <div className="relative z-10 max-w-[1920px] mx-auto px-6 pt-8 lg:pt-12">
+      <div className="relative z-10  mx-auto px-6 pt-8 lg:pt-12">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
           <div>
             <h1 className="text-2xl font-bold text-text tracking-tight">

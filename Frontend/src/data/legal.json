@@ -1,0 +1,567 @@
+{
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "July 2026",
+    "sections": [
+      {
+        "title": "1. Introduction",
+        "content": [
+          "CodeX Club ('CodeX', 'we', 'our', or 'us') is the official technical student club operating under Quantum University. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our website, register for membership, participate in events, or interact with our services.",
+          "By accessing or using the CodeX website, you acknowledge that you have read and understood this Privacy Policy and agree to the collection and use of information in accordance with this policy."
+        ]
+      },
+      {
+        "title": "2. Information We Collect",
+        "content": [
+          "Depending on the services you use, we may collect the following information."
+        ],
+        "list": [
+          "Full Name",
+          "Father's Name",
+          "University Student ID (Q ID)",
+          "Email Address",
+          "Phone Number",
+          "Course",
+          "Academic Year",
+          "Semester",
+          "Section",
+          "Set/Group",
+          "Membership Payment Mode",
+          "Transaction ID (for payment verification)",
+          "Event Registration Information",
+          "Contact Form Submissions",
+          "IP Address",
+          "Browser and Device Information",
+          "Security and Authentication Logs"
+        ]
+      },
+      {
+        "title": "3. How We Use Your Information",
+        "content": [
+          "The information collected through our website is used only for legitimate club operations and administrative purposes."
+        ],
+        "list": [
+          "Process membership registrations.",
+          "Verify student identity and eligibility.",
+          "Verify membership payments.",
+          "Manage event registrations.",
+          "Generate certificates and event boarding passes.",
+          "Communicate important announcements.",
+          "Respond to support requests and inquiries.",
+          "Maintain accurate membership records.",
+          "Improve website functionality and user experience.",
+          "Protect the platform from misuse and unauthorized access.",
+          "Comply with applicable university policies and legal obligations."
+        ]
+      },
+      {
+        "title": "4. Authentication & Cookies",
+        "content": [
+          "The administrative section of the website uses secure email and password authentication. Passwords are never stored in plain text and are securely hashed using industry-standard cryptographic hashing algorithms.",
+          "The website uses JSON Web Tokens (JWT) stored in secure cookies to authenticate authorized administrators. These cookies are essential for maintaining secure login sessions and protecting administrative resources.",
+          "Our website does not use advertising or marketing cookies. Essential authentication cookies are required for certain website functionality and disabling them may prevent administrators from accessing protected features."
+        ]
+      },
+      {
+        "title": "5. Third-Party Services",
+        "content": [
+          "To provide reliable services, we integrate trusted third-party platforms that process limited information required for their functionality."
+        ],
+        "list": [
+          "MongoDB Atlas – Database hosting.",
+          "Cloudinary – Media and image storage.",
+          "Vercel – Website hosting and deployment.",
+          "Cloudflare Turnstile – Protection against spam and automated bot submissions.",
+          "Nodemailer – Sending official emails and notifications.",
+          "GitHub – Source code management and version control."
+        ]
+      },
+      {
+        "title": "6. Membership & Payment Information",
+        "content": [
+          "CodeX Club currently charges a membership fee of ₹50. Payments may be accepted either online or offline depending on the registration process.",
+          "For online payments, only the transaction reference or payment identifier is collected for verification purposes. We do not collect, process, or store your debit card, credit card, banking credentials, UPI PIN, passwords, or other sensitive financial information.",
+          "Offline cash payments are recorded only for administrative verification."
+        ]
+      },
+      {
+        "title": "7. Data Retention",
+        "content": [
+          "Membership records, registration details, certificates, and participation history may be retained indefinitely for administrative, historical, alumni engagement, audit, and certificate verification purposes.",
+          "Security logs may be retained for a limited period to monitor unauthorized access attempts and improve platform security.",
+          "Information may be removed or anonymized where required by applicable laws or university policies."
+        ]
+      },
+      {
+        "title": "8. Data Security",
+        "content": [
+          "We implement reasonable technical and organizational safeguards to protect your personal information from unauthorized access, alteration, disclosure, or destruction."
+        ],
+        "list": [
+          "Secure HTTPS communication.",
+          "Password hashing using bcrypt.",
+          "JWT-based secure authentication.",
+          "Restricted administrative access.",
+          "Security middleware and HTTP protection headers.",
+          "Rate limiting to reduce malicious requests.",
+          "Secure cloud database infrastructure.",
+          "Routine system maintenance and monitoring."
+        ]
+      },
+      {
+        "title": "9. User Rights",
+        "content": [
+          "Subject to applicable laws and university regulations, you may request assistance regarding your personal information."
+        ],
+        "list": [
+          "Request access to your personal information.",
+          "Request correction of inaccurate information.",
+          "Request updates to your contact information.",
+          "Request clarification regarding how your data is used.",
+          "Contact the club regarding privacy-related concerns."
+        ]
+      },
+      {
+        "title": "10. Children's Privacy",
+        "content": [
+          "The CodeX website is primarily intended for students of Quantum University. We do not knowingly collect personal information from children in violation of applicable laws. If such information is identified, reasonable steps will be taken to remove it."
+        ]
+      },
+      {
+        "title": "11. External Links",
+        "content": [
+          "Our website may contain links to third-party websites, resources, or platforms. We are not responsible for the privacy practices, security, or content of external websites. Users should review the privacy policies of those websites before providing personal information."
+        ]
+      },
+      {
+        "title": "12. Policy Updates",
+        "content": [
+          "This Privacy Policy may be updated periodically to reflect changes in our services, legal requirements, or university policies. The latest version will always be published on the CodeX website along with the updated revision date.",
+          "Your continued use of the website after changes become effective constitutes acceptance of the updated Privacy Policy."
+        ]
+      },
+      {
+        "title": "13. Contact Us",
+        "content": [
+          "If you have any questions, concerns, or requests regarding this Privacy Policy or the handling of your personal information, please contact us."
+        ],
+        "list": [
+          "CodeX Club",
+          "Quantum University",
+          "Website: https://qucodex.com",
+          "Email: codex.club@quantumeducation.in"
+        ]
+      }
+    ]
+  },
+  "termsConditions": {
+    "title": "Terms & Conditions",
+    "lastUpdated": "22 July 2026",
+    "sections": [
+      {
+        "title": "1. Acceptance of Terms",
+        "content": [
+          "Welcome to the official website of CodeX Club, the technical student club operating under Quantum University. By accessing, browsing, registering, or using this website, you agree to comply with these Terms & Conditions.",
+          "If you do not agree with any part of these Terms, you should discontinue using the website immediately."
+        ]
+      },
+      {
+        "title": "2. About CodeX Club",
+        "content": [
+          "CodeX Club is an official student technical club of Quantum University that organizes workshops, hackathons, coding competitions, seminars, technical sessions, and community activities for students.",
+          "This website serves as the official platform for memberships, event registrations, announcements, certificates, and other club-related services."
+        ]
+      },
+      {
+        "title": "3. Eligibility",
+        "content": [
+          "Certain services provided through this website are intended primarily for students of Quantum University.",
+          "Some events may also be open to students from other colleges or institutions when explicitly announced by the organizers.",
+          "The club reserves the right to determine participant eligibility for any event or membership."
+        ]
+      },
+      {
+        "title": "4. User Responsibilities",
+        "content": [
+          "Users are responsible for ensuring that all information submitted through the website is accurate, complete, and up to date.",
+          "Providing false, misleading, or fraudulent information may result in rejection of registrations, cancellation of participation, suspension of membership, or permanent restriction from future activities."
+        ],
+        "list": [
+          "Provide accurate registration details.",
+          "Use your own contact information.",
+          "Respect event rules and organizers.",
+          "Comply with university regulations.",
+          "Maintain respectful communication."
+        ]
+      },
+      {
+        "title": "5. Membership",
+        "content": [
+          "Membership is subject to verification by CodeX Club.",
+          "The club currently charges a membership fee of ₹50, which may be collected either online or offline depending on the registration process.",
+          "Membership approval is not automatic and remains subject to verification by authorized club administrators."
+        ]
+      },
+      {
+        "title": "6. Event Registration",
+        "content": [
+          "Participants must complete the registration process before the announced deadline.",
+          "Late registrations may not be accepted unless specifically permitted by the organizing team.",
+          "Certain events may require active membership while others may be open to all eligible students."
+        ]
+      },
+      {
+        "title": "7. Payments & Refund Policy",
+        "content": [
+          "Membership fees and event registration fees, where applicable, are generally non-refundable.",
+          "Refunds will only be considered when explicitly announced by CodeX Club or required by applicable law.",
+          "Users are responsible for ensuring that payment details and transaction references submitted during registration are accurate."
+        ]
+      },
+      {
+        "title": "8. Team Participation",
+        "content": [
+          "Certain competitions and hackathons may require team participation.",
+          "Team formation, member limits, substitutions, and eligibility requirements shall be governed by the rules published for the respective event.",
+          "Team substitutions after registration may be permitted only with approval from the organizing committee."
+        ]
+      },
+      {
+        "title": "9. Certificates",
+        "content": [
+          "Participation certificates, appreciation certificates, and other recognitions may be issued for eligible events.",
+          "Participants must satisfy the attendance and participation requirements specified for the event.",
+          "The club reserves the right to withhold certificates where eligibility requirements are not fulfilled."
+        ]
+      },
+      {
+        "title": "10. Code of Conduct",
+        "content": [
+          "All participants are expected to maintain professional, respectful, and ethical behavior throughout club activities.",
+          "Harassment, discrimination, abusive language, cheating, plagiarism, disruptive conduct, or any behavior that negatively impacts other participants or organizers will not be tolerated."
+        ]
+      },
+      {
+        "title": "11. Intellectual Property",
+        "content": [
+          "Unless otherwise stated, all website content including logos, graphics, designs, documents, certificates, event materials, branding, and published resources are the intellectual property of CodeX Club or their respective owners.",
+          "Users may not reproduce, distribute, modify, or commercially use website content without prior written permission."
+        ]
+      },
+      {
+        "title": "12. Acceptable Use",
+        "content": [
+          "Users agree not to misuse the website or interfere with its normal operation."
+        ],
+        "list": [
+          "Do not attempt unauthorized access.",
+          "Do not submit malicious files or harmful code.",
+          "Do not impersonate another individual.",
+          "Do not exploit website vulnerabilities.",
+          "Do not misuse event registrations.",
+          "Do not engage in fraudulent activities."
+        ]
+      },
+      {
+        "title": "13. Account Security",
+        "content": [
+          "Administrative accounts are protected using secure authentication mechanisms.",
+          "Authorized administrators are responsible for maintaining the confidentiality of their login credentials and reporting any suspected unauthorized access."
+        ]
+      },
+      {
+        "title": "14. Suspension & Termination",
+        "content": [
+          "CodeX Club reserves the right to suspend, reject, or terminate memberships, registrations, or access to club services if these Terms are violated.",
+          "Serious misconduct, fraudulent activities, repeated violations, or actions damaging to the club or university community may result in permanent restrictions."
+        ]
+      },
+      {
+        "title": "15. Event Modifications",
+        "content": [
+          "The organizing committee reserves the right to modify event schedules, venues, formats, eligibility criteria, judging processes, prizes, speakers, or timelines whenever necessary.",
+          "Reasonable efforts will be made to communicate significant updates through official channels."
+        ]
+      },
+      {
+        "title": "16. Limitation of Liability",
+        "content": [
+          "While reasonable efforts are made to ensure the availability and accuracy of website content, CodeX Club does not guarantee uninterrupted access or error-free operation.",
+          "The club shall not be liable for indirect, incidental, consequential, or special damages arising from the use of this website or participation in club activities, except where prohibited by applicable law."
+        ]
+      },
+      {
+        "title": "17. Disclaimer",
+        "content": [
+          "Information published on this website is provided for general informational purposes only.",
+          "Although every effort is made to maintain accurate and current information, CodeX Club does not guarantee the completeness or accuracy of every page at all times.",
+          "Official announcements issued by CodeX Club or Quantum University shall take precedence where differences exist."
+        ]
+      },
+      {
+        "title": "18. Governing Rules",
+        "content": [
+          "These Terms & Conditions shall be interpreted in accordance with the applicable laws of India and the policies, rules, and regulations of Quantum University."
+        ]
+      },
+      {
+        "title": "19. Changes to These Terms",
+        "content": [
+          "CodeX Club may revise these Terms & Conditions periodically to reflect operational, legal, or policy changes.",
+          "The latest version will always be published on the official website together with the updated revision date."
+        ]
+      },
+      {
+        "title": "20. Contact Information",
+        "content": [
+          "For questions regarding these Terms & Conditions, please contact CodeX Club."
+        ],
+        "list": [
+          "CodeX Club",
+          "Quantum University",
+          "Website: https://qucodex.com",
+          "Email: codex.club@quantumeducation.in"
+        ]
+      }
+    ]
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "lastUpdated": "22 July 2026",
+    "sections": [
+      {
+        "title": "1. Our Commitment",
+        "content": [
+          "CodeX Club is committed to providing an accessible and inclusive digital experience for students, members, faculty, and visitors. We continuously work to improve the usability and accessibility of our website so that it can be accessed by as many people as possible."
+        ]
+      },
+      {
+        "title": "2. Accessibility Features",
+        "list": [
+          "Responsive design for desktop, tablet, and mobile devices.",
+          "Light and Dark theme support.",
+          "Alternative text for meaningful images wherever applicable.",
+          "Readable typography and sufficient spacing.",
+          "Keyboard-accessible navigation where supported.",
+          "Clear headings and content hierarchy.",
+          "Consistent navigation throughout the website."
+        ]
+      },
+      {
+        "title": "3. Browser Compatibility",
+        "content": [
+          "The website is designed to work with modern versions of major web browsers including Google Chrome, Microsoft Edge, Mozilla Firefox, Safari, and other standards-compliant browsers."
+        ]
+      },
+      {
+        "title": "4. Continuous Improvement",
+        "content": [
+          "Accessibility is an ongoing effort. As new features are added to the website, we continue reviewing and improving accessibility to provide a better experience for all users."
+        ]
+      },
+      {
+        "title": "5. Report Accessibility Issues",
+        "content": [
+          "If you encounter an accessibility issue or have suggestions for improvement, please contact CodeX Club. Your feedback helps us improve the website for everyone."
+        ],
+        "list": [
+          "Website: https://qucodex.com",
+          "Email: codex.club@quantumeducation.in"
+        ]
+      }
+    ]
+  },
+
+  "communityGuidelines": {
+    "title": "Community Guidelines",
+    "lastUpdated": "22 July 2026",
+    "sections": [
+      {
+        "title": "1. Purpose",
+        "content": [
+          "CodeX Club aims to create a welcoming, respectful, and collaborative technical community where students can learn, innovate, and grow together. These guidelines apply to all club activities, events, workshops, competitions, official communication channels, and social media interactions."
+        ]
+      },
+      {
+        "title": "2. Respect Everyone",
+        "list": [
+          "Treat everyone with respect and professionalism.",
+          "Be inclusive regardless of background, experience, or skill level.",
+          "Encourage learning and constructive discussions.",
+          "Respect organizers, volunteers, speakers, mentors, and participants."
+        ]
+      },
+      {
+        "title": "3. Professional Conduct",
+        "list": [
+          "Communicate politely and professionally.",
+          "Accept feedback respectfully.",
+          "Avoid offensive or abusive language.",
+          "Respect event rules and instructions."
+        ]
+      },
+      {
+        "title": "4. Unacceptable Behaviour",
+        "list": [
+          "Harassment or bullying.",
+          "Discrimination of any kind.",
+          "Threats or intimidation.",
+          "Hate speech.",
+          "Sharing offensive, illegal, or inappropriate content.",
+          "Cheating or plagiarism during competitions.",
+          "Impersonating another participant or organizer."
+        ]
+      },
+      {
+        "title": "5. Online Conduct",
+        "content": [
+          "Members and participants are expected to maintain respectful behaviour while interacting through official CodeX Club communication channels and social media platforms."
+        ],
+        "list": [
+          "Avoid spam or repetitive promotional content.",
+          "Do not spread misinformation.",
+          "Keep discussions relevant.",
+          "Respect privacy when sharing photographs or content."
+        ]
+      },
+      {
+        "title": "6. Team Participation",
+        "content": [
+          "Many competitions involve teamwork. Team members should collaborate honestly, contribute fairly, and communicate respectfully throughout the event."
+        ]
+      },
+      {
+        "title": "7. Event Participation",
+        "content": [
+          "Participants should arrive on time, follow organizer instructions, and maintain academic integrity during all technical activities."
+        ]
+      },
+      {
+        "title": "8. Reporting Issues",
+        "content": [
+          "Members are encouraged to report inappropriate behaviour or policy violations to CodeX Club organizers. Reports will be reviewed fairly and confidentially wherever possible."
+        ]
+      },
+      {
+        "title": "9. Consequences",
+        "content": [
+          "Violation of these Community Guidelines may result in warnings, removal from an event, cancellation of certificates, suspension of membership, or restrictions from future CodeX Club activities depending on the severity of the violation."
+        ]
+      }
+    ]
+  },
+
+  "eventPolicy": {
+    "title": "Event Policy",
+    "lastUpdated": "22 July 2026",
+    "sections": [
+      {
+        "title": "1. Eligibility",
+        "content": [
+          "Eligibility requirements vary depending on the event. Some events are exclusive to registered CodeX Club members, while others may be open to all students of Quantum University or invited institutions."
+        ]
+      },
+      {
+        "title": "2. Registration",
+        "list": [
+          "Complete registration before the announced deadline.",
+          "Provide accurate personal information.",
+          "One registration per participant unless otherwise stated.",
+          "Late registrations may not be accepted."
+        ]
+      },
+      {
+        "title": "3. Event Fees",
+        "content": [
+          "Events may be free or paid depending on the event announcement. Registration is considered complete only after any required payment has been successfully verified."
+        ]
+      },
+      {
+        "title": "4. Refund Policy",
+        "content": [
+          "Unless explicitly announced otherwise, registration fees and membership fees are non-refundable."
+        ]
+      },
+      {
+        "title": "5. Attendance",
+        "content": [
+          "Participants are expected to attend the event according to the published schedule. Attendance may be mandatory for receiving participation certificates or other recognitions."
+        ]
+      },
+      {
+        "title": "6. Team Events",
+        "content": [
+          "For team-based competitions, participants must follow the announced team size and eligibility requirements."
+        ],
+        "list": [
+          "Team substitutions require organizer approval.",
+          "Teams violating eligibility rules may be disqualified.",
+          "Each participant may join only one team unless otherwise permitted."
+        ]
+      },
+      {
+        "title": "7. Participant Responsibilities",
+        "list": [
+          "Follow all event rules.",
+          "Respect organizers and fellow participants.",
+          "Maintain fair play and academic integrity.",
+          "Protect event equipment and venue property.",
+          "Follow safety instructions whenever applicable."
+        ]
+      },
+      {
+        "title": "8. Code of Conduct",
+        "content": [
+          "Participants must maintain respectful and professional behaviour throughout the event. Any misconduct may result in immediate disciplinary action."
+        ]
+      },
+      {
+        "title": "9. Disqualification",
+        "list": [
+          "Providing false information.",
+          "Cheating or plagiarism.",
+          "Violation of event rules.",
+          "Harassment or abusive behaviour.",
+          "Damaging university or event property.",
+          "Failure to follow organizer instructions."
+        ]
+      },
+      {
+        "title": "10. Event Changes",
+        "content": [
+          "CodeX Club reserves the right to modify schedules, venues, speakers, judges, prizes, event formats, timelines, or other arrangements whenever necessary. Any significant updates will be communicated through official channels."
+        ]
+      },
+      {
+        "title": "11. Photography & Media",
+        "content": [
+          "Photographs and videos may be captured during CodeX Club events for documentation, promotional activities, social media, and official club publications. By participating, attendees consent to the use of such media unless they notify organizers in advance where practical."
+        ]
+      },
+      {
+        "title": "12. Certificates",
+        "content": [
+          "Certificates will only be issued to eligible participants who satisfy the attendance and participation requirements announced for the respective event."
+        ]
+      },
+      {
+        "title": "13. Organizer Decisions",
+        "content": [
+          "All decisions made by CodeX Club organizers regarding registrations, eligibility, judging, prizes, certificates, participation, and disciplinary matters shall be considered final."
+        ]
+      },
+      {
+        "title": "14. Contact",
+        "content": [
+          "For questions regarding any CodeX Club event, please contact us."
+        ],
+        "list": [
+          "CodeX Club",
+          "Quantum University",
+          "Website: https://qucodex.com",
+          "Email: codex.club@quantumeducation.in"
+        ]
+      }
+    ]
+  }
+}

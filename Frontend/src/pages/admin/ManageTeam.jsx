@@ -54,6 +54,7 @@ export default function ManageTeam() {
       post: "",
       subTeam: "",
       academicYear: "",
+      email: "",
     },
   });
 
@@ -93,6 +94,7 @@ export default function ManageTeam() {
       post: "",
       subTeam: "",
       academicYear: "",
+      email: "",
     });
     setPhotoFile(null);
     setImagePreview(null);
@@ -106,6 +108,7 @@ export default function ManageTeam() {
       post: member.post,
       subTeam: member.subTeam,
       academicYear: member.academicYear,
+      email: member.email || "",
     });
     setPhotoFile(null);
     setImagePreview(member.photo);
@@ -122,6 +125,9 @@ export default function ManageTeam() {
       submitData.append("post", data.post);
       submitData.append("subTeam", data.subTeam);
       submitData.append("academicYear", data.academicYear);
+      if (data.email) {
+        submitData.append("email", data.email);
+      }
 
       if (!editingId) {
         const teamMembers = members.filter(
@@ -374,6 +380,23 @@ export default function ManageTeam() {
                     {errors.academicYear && (
                       <p className="mt-1 text-xs text-danger">
                         {errors.academicYear.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-text mb-1.5">
+                      Email (Private)
+                    </label>
+                    <input
+                      type="email"
+                      {...register("email")}
+                      className={`w-full bg-card border ${errors.email ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      placeholder="Optional private email"
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-xs text-danger">
+                        {errors.email.message}
                       </p>
                     )}
                   </div>

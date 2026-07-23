@@ -5,7 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 
 const addTeamMember = asyncHandler(async (req, res) => {
-  const { academicYear, subTeam, name, post, sequenceNumber } = req.body;
+  const { academicYear, subTeam, name, post, sequenceNumber, email } = req.body;
 
   if (!academicYear || !subTeam || !name || !post) {
     throw new ApiError(400, 'All fields (academicYear, subTeam, name, post) are required');
@@ -28,6 +28,7 @@ const addTeamMember = asyncHandler(async (req, res) => {
     subTeam,
     name,
     post,
+    email,
     sequenceNumber: sequenceNumber ? Number(sequenceNumber) : 0,
     photo: photo.url,
   });
@@ -39,8 +40,8 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   const query = {};
   if (academicYear) query.academicYear = academicYear;
 
-  const members = await TeamMember.find(query).sort({ subTeam: 1, sequenceNumber: 1 });
-  
+  const members = await TeamMember.find(query).select('-email').sort({ subTeam: 1, sequenceNumber: 1 });
+
   return res.status(200).json(new ApiResponse(200, members, 'Team members fetched successfully'));
 });
 
@@ -63,7 +64,7 @@ const deleteTeamMember = asyncHandler(async (req, res) => {
 
 const updateTeamMember = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { academicYear, subTeam, name, post, sequenceNumber } = req.body;
+  const { academicYear, subTeam, name, post, sequenceNumber, email } = req.body;
   const member = await TeamMember.findById(id);
 
   if (!member) {
@@ -86,6 +87,7 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   member.subTeam = subTeam || member.subTeam;
   member.name = name || member.name;
   member.post = post || member.post;
+  member.email = email !== undefined ? email : member.email;
   member.sequenceNumber = sequenceNumber !== undefined ? Number(sequenceNumber) : member.sequenceNumber;
   member.photo = newPhotoUrl;
   await member.save();

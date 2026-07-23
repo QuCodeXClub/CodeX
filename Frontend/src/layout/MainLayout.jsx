@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import React, { useState, Suspense } from "react";
+import { Outlet, useNavigate, ScrollRestoration } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer"; // Import the new component
 import contentData from "../data/content.json";
@@ -20,6 +20,7 @@ const MainLayout = () => {
 
   return (
     <div className="app-shell">
+      <ScrollRestoration />
       <Navbar layout={layout} />
 
       {/* Ticker Section */}
@@ -31,8 +32,10 @@ const MainLayout = () => {
         </div>
       </div>
 
-      <main className="w-full max-w-[1400px] mx-auto flex-1 border-x border-border bg-bg-soft">
-        <Outlet />
+      <main className="w-full  mx-auto flex-1 border-x border-border bg-bg-soft">
+        <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div></div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <Footer layout={layout} onFooterClick={handleFooterClick} />

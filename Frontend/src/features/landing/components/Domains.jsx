@@ -83,7 +83,7 @@ const Domains = () => {
                     <div className="absolute inset-[5px] bg-gradient-to-br from-accent to-[#1a9fb0] shadow-[0_0_10px_rgba(46,197,212,0.5)]" style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}></div>
                     <Icon className="relative z-10 text-bg" size={16} strokeWidth={2.5} />
                   </div>
-                  <h3 className="font-sans text-[1.1rem] xl:text-[1.25rem] leading-[1.5] font-bold text-text transition-colors duration-300 mb-2 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">{domain.title}</h3>
+                  <h3 className="font-sans text-[1.1rem] xl:text-[1.25rem] leading-[1.3] font-bold text-text transition-colors duration-300 mb-2 tracking-tight line-clamp-2">{domain.title}</h3>
                   <p className="text-text-muted transition-colors duration-300 text-[0.75rem] font-mono leading-[1.5]">{domain.description}</p>
                 </div>
                 <div className="flex items-center justify-between mt-5 pt-2 relative">

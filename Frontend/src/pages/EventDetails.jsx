@@ -58,11 +58,11 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-bg-soft pb-20 font-jetbrains relative">
       {/* Background grid pattern */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-5 z-0"
+       <div
+        className="absolute inset-0 pointer-events-none opacity-[0.04] z-0"
         style={{
           backgroundImage:
-            "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+            "linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -93,7 +93,7 @@ export default function EventDetails() {
           )}
 
           {/* Floating Date Badge (constrained within max-width layout for alignment) */}
-          <div className="max-w-[1400px] w-full mx-auto relative h-full">
+          <div className=" w-full mx-auto relative h-full">
             <div className="absolute -bottom-8 right-4 lg:right-12 bg-card px-6 py-5 rounded-2xl border border-border shadow-xl flex flex-col items-center min-w-[120px] z-10">
               <span className="text-sm font-black text-accent uppercase tracking-widest mb-1">
                 {new Date(event.date).toLocaleDateString("en-US", {
@@ -108,7 +108,7 @@ export default function EventDetails() {
         </div>
 
         {/* Content Container (Standard padded container for text readability) */}
-        <div className="max-w-[1400px] mx-auto px-4 lg:px-12 py-16 md:py-20">
+        <div className="max-w-[1600px] mx-auto px-4 lg:px-12 py-16 md:py-20">
           
            <div className="mb-10">
           <div className="inline-flex items-center bg-accent/10 text-accent text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">

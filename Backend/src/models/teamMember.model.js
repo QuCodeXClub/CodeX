@@ -23,6 +23,11 @@ const teamMemberSchema = new mongoose.Schema(
       type: String,
       required: [true, "Post/Role is required (e.g., 'Project Lead')"], 
     },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
     sequenceNumber: {
       type: Number,
       required: [true, "Sequence number is required"],

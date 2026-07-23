@@ -34,7 +34,7 @@ const Events = () => {
       />
 
       <div className="relative z-10 pt-10">
-        <section className="w-full max-w-[1400px] mx-auto px-4 lg:px-12 ">
+        <section className="w-full  mx-auto px-4 lg:px-12 ">
           
           <div>
             <h1 className="text-2xl font-bold text-text tracking-tight ">

@@ -82,7 +82,7 @@ const Register = () => {
         }}
       ></div>
 
-      <div className="relative z-10 w-full max-w-[1200px] mx-auto pb-20 pt-16 px-4 md:px-12">
+      <div className="relative z-10 w-full  mx-auto pb-20 pt-16 px-4 md:px-12">
         <header className="mb-12">
           <p className="text-accent text-xs font-bold uppercase tracking-widest mb-3">
             {register.eyebrow}
