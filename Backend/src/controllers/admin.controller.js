@@ -13,6 +13,7 @@ import { Token } from '../models/token.model.js';
 import ms from 'ms';
 import { UAParser } from 'ua-parser-js';
 import mongoSanitize from 'express-mongo-sanitize';
+import crypto from 'crypto';
 
 const generateAuthSession = async (adminId, req) => {
   try {
@@ -84,7 +85,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     );
   }
   // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
 
   // Create new OTP token in the db
   await Token.create({
@@ -291,7 +292,7 @@ const requestPasswordChange = asyncHandler(async (req, res) => {
     );
   }
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
 
   await Token.create({
     userId: admin._id,
