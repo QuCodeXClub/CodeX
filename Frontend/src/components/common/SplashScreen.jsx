@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ASSETS } from "../../config/assets";
 
 const SplashScreen = ({ show = true }) => {
   // Initialize isEntered to true if show is true, so it doesn't start invisible and fade in on mount.
@@ -50,7 +51,7 @@ const SplashScreen = ({ show = true }) => {
           {/* Logo inside */}
           <div className="relative z-10 flex items-center justify-center h-20 w-20 md:h-24 md:w-24 bg-card rounded-[1.2rem] border-2 border-accent/60 shadow-[0_0_30px_rgba(20,184,166,0.35)] animate-[pulse_1.8s_ease-in-out_infinite]">
             <img
-              src="/codex-logo-icon.svg"
+              src={ASSETS.IMAGES.CODEX_LOGO_ICON}
               alt="CodeX Logo Icon"
               className="w-12 md:w-14 h-auto drop-shadow-sm"
             />

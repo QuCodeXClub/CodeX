@@ -2,20 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star } from "lucide-react";
 import content from "../../../data/content.json";
-import hackathonImg from "../../../assets/events/hackthon.jpg";
-import contestImg from "../../../assets/events/contest.jpg";
-import webinarImg from "../../../assets/events/webinar.jpg";
+import { ASSETS } from "../../../config/assets";
 
 const EventsHero = () => {
   const { eventsHero, layout } = content;
   const images = {
-    hackathon: hackathonImg,
-    contest: contestImg,
-    webinar: webinarImg,
+    hackathon: ASSETS.IMAGES.EVENT_HACKATHON,
+    contest: ASSETS.IMAGES.EVENT_CONTEST,
+    webinar: ASSETS.IMAGES.EVENT_WEBINAR,
   };
 
   return (
-    <section className="bg-bg transition-colors duration-300 relative overflow-hidden min-h-screen flex flex-col border-b border-border">
+    <section className="relative overflow-hidden min-h-screen flex flex-col">
       <div className="flex-1 max-w-[1400px] w-full mx-auto grid grid-cols-1 xl:grid-cols-2 gap-24 xl:gap-8 items-center px-6 lg:px-12 py-16 lg:py-24 relative z-10">
       <div className="relative z-20 xl:pr-12">
       <div className="inline-flex items-center gap-4 border border-accent/40 rounded-sm px-5 py-2 mb-10 bg-accent/5 backdrop-blur-md shadow-[0_0_15px_rgba(46,197,212,0.15)] relative">
@@ -93,6 +91,8 @@ const EventsHero = () => {
                       src={images[card.image]}
                       alt={card.title}
                       className="w-full h-full object-cover relative z-10"
+                      loading="lazy"
+                      decoding="async"
                     />
                       <div className="absolute bottom-0 left-0 right-0 p-6 z-30">
                       <h3 className="text-white font-sans text-2xl lg:text-[1.8rem] uppercase leading-tight mb-2 font-bold tracking-wide drop-shadow-lg">{card.title}</h3>

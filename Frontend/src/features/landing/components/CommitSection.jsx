@@ -24,7 +24,7 @@ const CommitSection = () => {
   const { commitSection } = contentData.landing;
   if (!commitSection) return null;
   return (
-    <section className="bg-bg transition-colors duration-300 relative overflow-hidden py-16 lg:py-24 px-6 border-b border-border" id="team">
+    <section className="relative overflow-hidden py-16 lg:py-24 px-6" id="team">
             <div className="max-w-[1400px] mx-auto bg-card rounded-[24px] border border-border shadow-[0_8px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] overflow-hidden transition-colors duration-300 relative">
           <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[1px] bg-border-soft z-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-accent rotate-45 shadow-[0_0_10px_rgba(46,197,212,0.5)]"></div>

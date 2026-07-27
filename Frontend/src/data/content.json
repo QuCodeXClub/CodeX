@@ -111,8 +111,8 @@
     },
     "mission": {
       "eyebrow": "Our Core Vision",
-      "headline": "Our mission is to create a thriving community where students transform ideas into real-world solutions.",
-      "description": "Through mentorship, live projects, hackathons, technical workshops, and competitive programming, we help members develop industry-ready skills, strengthen problem-solving abilities, and build impactful portfolios for internships, placements, and entrepreneurship.",
+      "headline": "Our Mission",
+      "description": "Our mission is to create a thriving community where students transform ideas into real-world solutions. Through mentorship, live projects, hackathons, technical workshops, and competitive programming, we help members develop industry-ready skills, strengthen problem-solving abilities, and build impactful portfolios for internships, placements, and entrepreneurship.",
       "cta": "Learn About Us"
     }
   },
@@ -174,7 +174,15 @@
     "nav": [
       {
         "label": "ABOUT",
-        "path": "/about"
+        "path": "/#about"
+      },
+      {
+        "label": "VISION",
+        "path": "/#vision"
+      },
+      {
+        "label": "DOMAINS",
+        "path": "/#domains"
       },
       {
         "label": "EVENTS",
@@ -186,11 +194,11 @@
       },
       {
         "label": "FAQS",
-        "path": "/faqs"
+        "path": "/#faqs"
       },
       {
         "label": "CONTACT",
-        "path": "/contact"
+        "path": "/#contact"
       }
     ],
     "socials": [

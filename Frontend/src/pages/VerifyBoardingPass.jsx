@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { boardingPassService } from "../services/boardingPassService";
 import VerificationLayout from "../layout/VerificationLayout";
+import { ASSETS } from "../config/assets";
 
 const VerifyBoardingPass = () => {
   const { boardingPassId } = useParams();
@@ -88,7 +89,7 @@ const VerifyBoardingPass = () => {
             {/* Stub Content */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 md:py-12 gap-6 relative z-10">
               <img
-                src="/codex-logo.svg"
+                src={ASSETS.IMAGES.CODEX_LOGO}
                 alt="CodeX Logo"
                 className="w-28 md:w-36 object-contain drop-shadow-md"
                 onError={(e) => {

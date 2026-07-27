@@ -58,8 +58,8 @@ const ContactSection = () => {
   };
 
   return (
-    <section className="bg-bg transition-colors duration-300 relative overflow-hidden py-10 lg:py-16 px-4 md:px-6 border-b border-border" id="contact">
-      <div className="max-w-[1360px] mx-auto bg-card/90 dark:bg-[#080e15]/95 rounded-[24px] border border-border/40 shadow-2xl p-6 md:p-10 lg:p-12 transition-colors duration-300">
+    <section className="relative overflow-hidden py-10 lg:py-16 px-4 md:px-6" id="contact">
+      <div className="max-w-[1360px] mx-auto bg-card/90 rounded-[24px] border border-border/40 shadow-2xl p-6 md:p-10 lg:p-12 transition-colors duration-300">
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-stretch relative z-10">
           <div className="flex flex-col justify-between h-full py-2">
             <div>
@@ -103,7 +103,7 @@ const ContactSection = () => {
               </div>
             </div>
           </div>
-          <div className="bg-bg-soft/90 dark:bg-[#0f1722]/90 border border-border/40 rounded-2xl p-6 sm:p-8 lg:p-9 shadow-xl flex flex-col justify-between">
+          <div className="bg-bg-soft/90 border border-border/40 rounded-2xl p-6 sm:p-8 lg:p-9 shadow-xl flex flex-col justify-between">
             {isSuccess ? (
               <div className="py-16 px-4 text-center flex flex-col items-center justify-center min-h-[380px]">
                 <CheckCircle className="w-16 h-16 text-accent mb-4 animate-bounce" />
@@ -116,7 +116,7 @@ const ContactSection = () => {
                 <button
                   type="button"
                   onClick={() => setIsSuccess(false)}
-                  className="px-7 py-3 rounded-full bg-accent text-white font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:bg-[#25a8b5] transition-all shadow-md cursor-pointer border-0"
+                  className="px-7 py-3 rounded-full bg-accent text-bg font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-90 transition-all shadow-md cursor-pointer border-0"
                 >
                   Send Another Message
                 </button>
@@ -138,7 +138,7 @@ const ContactSection = () => {
                       <input
                         type="text"
                         {...register("name", { required: "Name is required" })}
-                        className={`w-full bg-card dark:bg-[#0a1017] border ${
+                        className={`w-full bg-card border ${
                           errors.name ? "border-danger" : "border-border/40 focus:border-accent"
                         } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
                         placeholder="Enter your name"
@@ -162,7 +162,7 @@ const ContactSection = () => {
                           required: "Email is required",
                           pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
                         })}
-                        className={`w-full bg-card dark:bg-[#0a1017] border ${
+                        className={`w-full bg-card border ${
                           errors.email ? "border-danger" : "border-border/40 focus:border-accent"
                         } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
                         placeholder="name@example.com"
@@ -184,7 +184,7 @@ const ContactSection = () => {
                     <input
                       type="text"
                       {...register("subject", { required: "Subject is required" })}
-                      className={`w-full bg-card dark:bg-[#0a1017] border ${
+                      className={`w-full bg-card border ${
                         errors.subject ? "border-danger" : "border-border/40 focus:border-accent"
                       } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
                       placeholder="What is this regarding?"
@@ -204,7 +204,7 @@ const ContactSection = () => {
                   <textarea
                     {...register("message", { required: "Message is required" })}
                     rows={4}
-                    className={`w-full bg-card dark:bg-[#0a1017] border ${
+                    className={`w-full bg-card border ${
                       errors.message ? "border-danger" : "border-border/40 focus:border-accent"
                     } text-text rounded-xl p-4 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all resize-none`}
                     placeholder="How can we help you?"
@@ -230,10 +230,10 @@ const ContactSection = () => {
                   <button
                     type="submit"
                     disabled={loading || !turnstileToken}
-                    className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#2EC5D4] text-white font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:bg-[#25a8b5] transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2.5 border-0 cursor-pointer shrink-0"
+                    className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-accent text-bg font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-90 transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2.5 border-0 cursor-pointer shrink-0"
                   >
                     {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <Loader2 className="w-4 h-4 animate-spin text-bg" />
                     ) : (
                       <>
                         <span>SEND MESSAGE</span>
@@ -252,7 +252,7 @@ const ContactSection = () => {
             return (
               <article
                 key={index}
-                className="flex items-center gap-5 p-6 rounded-2xl bg-card/60 dark:bg-[#0a1017]/60 border border-border/30 hover:border-accent/40 transition-all duration-300"
+                className="flex items-center gap-5 p-6 rounded-2xl bg-card/60 border border-border/30 hover:border-accent/40 transition-all duration-300"
               >
                 <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
                   <Icon size={24} strokeWidth={1.75} />
