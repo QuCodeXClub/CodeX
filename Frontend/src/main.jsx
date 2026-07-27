@@ -17,12 +17,12 @@ import Home from "./pages/Home";
 const Team = lazy(() => import("./pages/Team"));
 const Events = lazy(() => import("./pages/Events"));
 const EventDetails = lazy(() => import("./pages/EventDetails")); 
-const Faqs = lazy(() => import("./pages/Faqs"));
+
 const Register = lazy(() => import("./pages/Register"));
-const About = lazy(() => import("./pages/About"));
+
 const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
 const VerifyBoardingPass = lazy(() => import("./pages/VerifyBoardingPass"));
-const Contact = lazy(() => import("./pages/Contact"));
+
 
 // New Policy Pages
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
@@ -53,15 +53,15 @@ const router = createBrowserRouter([
     errorElement: <GlobalError />,
     children: [
       { path: "/", element: <Home /> },
-      { path: "/about", element: <About /> },
+
       { path: "/team", element: <Team /> },
       { path: "/events", element: <Events /> },
       { path: "/events/:id", element: <EventDetails /> },
-      { path: "/faqs", element: <Faqs /> },
+
       { path: "/register", element: <Register /> },
       { path: "/verify-certificate/:certificateId", element: <VerifyCertificate /> },
       { path: "/verify-boarding-pass/:boardingPassId", element: <VerifyBoardingPass /> },
-      { path: "/contact", element: <Contact /> },
+
       
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
       { path: "/terms-conditions", element: <TermsConditions /> },

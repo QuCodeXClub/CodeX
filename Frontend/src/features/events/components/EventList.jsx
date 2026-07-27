@@ -87,6 +87,8 @@ const EventList = ({ events = [], loading }) => {
                       src={event.coverImage} 
                       alt={event.eventName} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-text-muted">

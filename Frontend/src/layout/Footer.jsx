@@ -1,23 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
-// Import your local SVG assets
-import githubLogo from "../assets/footer/github-logo.svg";
-import linkedinLogo from "../assets/footer/linkedin-logo.svg";
-import instagramLogo from "../assets/footer/instagram-logo.svg";
+import { ASSETS } from "../config/assets";
 
 const getSocialIcon = (name) => {
   const lowerName = name.toLowerCase();
   
   // Simple image tags. We use opacity for a clean hover effect.
   if (lowerName.includes("github")) {
-    return <img src={githubLogo} alt="GitHub" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
+    return <img src={ASSETS.IMAGES.GITHUB_LOGO} alt="GitHub" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
   }
   if (lowerName.includes("linkedin")) {
-    return <img src={linkedinLogo} alt="LinkedIn" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
+    return <img src={ASSETS.IMAGES.LINKEDIN_LOGO} alt="LinkedIn" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
   }
   if (lowerName.includes("instagram")) {
-    return <img src={instagramLogo} alt="Instagram" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
+    return <img src={ASSETS.IMAGES.INSTAGRAM_LOGO} alt="Instagram" className="w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200" />;
   }
   
   // Fallback text if an icon isn't found
@@ -46,6 +42,12 @@ const Footer = ({ layout, onFooterClick }) => {
             <p className="text-sm text-text-muted leading-relaxed max-w-sm">
               Empowering student developers through code, collaboration, and community.
             </p>
+            
+            <div className="flex items-center gap-3 mt-4">
+              <span className="text-xs text-text-muted font-sans tracking-widest uppercase">An initiative by</span>
+              <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="h-5 w-5 object-contain" />
+              <span className="text-xs text-text font-bold font-sans tracking-widest uppercase">Quantum University</span>
+            </div>
             
             <div className="flex items-center gap-4 mt-5">
               {layout?.socials?.map((link) => (
@@ -81,11 +83,8 @@ const Footer = ({ layout, onFooterClick }) => {
               Quick Links
             </h3>
             <div className="flex flex-col gap-3">
-              <Link to="/about" className="text-sm text-text-muted hover:text-accent transition-colors">About Us</Link>
               <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors">Events</Link>
               <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors">Team</Link>
-              <Link to="/faqs" className="text-sm text-text-muted hover:text-accent transition-colors">FAQs</Link>
-              <Link to="/contact" className="text-sm text-text-muted hover:text-accent transition-colors">Contact</Link>
             </div>
           </div>
 

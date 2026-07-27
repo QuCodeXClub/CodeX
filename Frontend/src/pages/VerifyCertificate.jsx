@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ASSETS } from "../config/assets";
 import { certificateService } from "../services/certificateService";
 import VerificationLayout from "../layout/VerificationLayout"; // <-- Import the new layout
 
@@ -61,7 +62,7 @@ const VerifyCertificate = () => {
           <div className="relative border-4 border-[#d1d5db] flex-1 w-full p-4 md:p-8 flex flex-col justify-between text-center bg-[#fffdf9]">
             {/* Header */}
             <div className="flex justify-between items-start w-full shrink-0">
-              <img src="/university-logo.svg" alt="University Logo" className="w-16 md:w-28 object-contain" />
+              <img src={ASSETS.IMAGES.UNIVERSITY_LOGO} alt="University Logo" className="w-16 md:w-28 object-contain" />
               <div className="flex flex-col items-center px-2 md:px-4">
                 <span className="inline-flex rounded-full border border-[#34d399] bg-[#ecfdf5] px-3 py-1 text-[8px] md:text-xs font-bold font-mono uppercase tracking-[0.2em] text-[#047857] mb-2 md:mb-4 shadow-sm">
                   ✔ Verified Authentic
@@ -73,7 +74,7 @@ const VerifyCertificate = () => {
                   of Achievement
                 </h2>
               </div>
-              <img src="/codex-logo.svg" alt="CodeX Logo" className="w-16 md:w-28 object-contain" />
+              <img src={ASSETS.IMAGES.CODEX_LOGO} alt="CodeX Logo" className="w-16 md:w-28 object-contain" />
             </div>
 
             {/* Body */}

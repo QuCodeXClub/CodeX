@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
 import contentData from "../../../data/content.json";
+import { ASSETS } from "../../../config/assets";
 
 const MissionSection = () => {
   const { mission } = contentData.landing;
@@ -20,7 +19,7 @@ const MissionSection = () => {
     return text;
   };
   return (
-    <section id="vision" className="bg-bg transition-colors duration-300 relative overflow-hidden py-16 lg:py-24 px-4 lg:px-8 min-h-[800px] flex items-center justify-center">
+    <section id="vision" className="relative overflow-hidden py-16 lg:py-24 px-4 lg:px-8 min-h-[800px] flex items-center justify-center">
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-accent/5 rounded-full blur-[150px] pointer-events-none"></div>
       <div className="relative w-full max-w-[1300px] mx-auto p-[2px] rounded-lg">
         <div 
@@ -42,15 +41,6 @@ const MissionSection = () => {
             <div className="w-16 h-[2px] bg-accent mb-8 shadow-[0_0_10px_rgba(46,197,212,0.6)]"></div>
             <p className="text-text-muted transition-colors duration-300 leading-[1.8] text-[0.95rem] font-mono mb-12 max-w-[90%]">{mission.description}
             </p>
-            <Link 
-              to="/about" 
-              className="inline-flex items-center justify-center gap-4 px-[1.5rem] py-[0.9rem] rounded-md border border-accent bg-accent/10 hover:bg-accent hover:text-bg text-accent font-sans text-[0.96rem] tracking-[0.2em] uppercase transition-all duration-300 shadow-[0_0_15px_rgba(46,197,212,0.2)] hover:shadow-[0_0_25px_rgba(46,197,212,0.5)] group"
-            >
-              <div className="w-8 h-8 rounded border border-current flex items-center justify-center group-hover:bg-bg group-hover:text-accent transition-colors">
-                 <ArrowUpRight size={18} strokeWidth={2.5} />
-              </div>
-              <span>{mission.cta}</span>
-            </Link>
           </div>
           <div className="flex-1 flex justify-center items-center relative w-full h-[400px] lg:h-[500px]">
              <svg className="absolute inset-0 w-full h-full text-accent/40 pointer-events-none" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +67,7 @@ const MissionSection = () => {
                 <polygon points="120,300 135,308 135,322 120,330 105,322 105,308" stroke="currentColor" strokeWidth="1" fill="transparent" />
              </svg>
              <div className="relative z-10 w-[240px] h-[276px] lg:w-[320px] lg:h-[368px] flex items-center justify-center filter drop-shadow-[0_0_40px_rgba(46,197,212,0.4)]">
-                  <img src="/codex-logo-icon.svg" alt="CX Logo" className="w-full h-full object-contain opacity-100 drop-shadow-[0_0_20px_rgba(46,197,212,0.6)]" />
+                  <img src={ASSETS.IMAGES.CODEX_LOGO_ICON} alt="CX Logo" className="w-full h-full object-contain opacity-100 drop-shadow-[0_0_20px_rgba(46,197,212,0.6)]" loading="lazy" decoding="async" />
              </div>
              
           </div>

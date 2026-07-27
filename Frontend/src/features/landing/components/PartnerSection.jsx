@@ -1,22 +1,19 @@
 import React from "react";
 import contentData from "../../../data/content.json";
 import { ArrowRight } from "lucide-react";
-import hackIndiaLogo from "../../../assets/partners/hackindia.svg";
-import unstopLogo from "../../../assets/partners/unstop.svg";
-import hostingerLogo from "../../../assets/partners/hostinger.svg";
-import xyzLogo from "../../../assets/partners/xyz.svg";
+import { ASSETS } from "../../../config/assets";
 
 const logoMap = {
-  "HackIndia": hackIndiaLogo,
-  "Unstop": unstopLogo,
-  "Hostinger": hostingerLogo,
-  ".xyz": xyzLogo
+  "HackIndia": ASSETS.IMAGES.PARTNER_HACKINDIA,
+  "Unstop": ASSETS.IMAGES.PARTNER_UNSTOP,
+  "Hostinger": ASSETS.IMAGES.PARTNER_HOSTINGER,
+  ".xyz": ASSETS.IMAGES.PARTNER_XYZ
 };
 const PartnerSection = () => {
   const { partners } = contentData.landing;
 
   return (
-    <section className="bg-bg transition-colors duration-300 relative overflow-hidden py-16 lg:py-24 border-b border-border" id="partners">
+    <section className="relative overflow-hidden py-16 lg:py-24" id="partners">
       <div className="absolute top-0 right-0 w-3/4 md:w-1/2 h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent/10 via-bg to-transparent pointer-events-none z-0"></div>
       <svg className="absolute top-20 right-20 w-40 h-40 text-accent/10 z-0 pointer-events-none hidden lg:block" viewBox="0 0 160 160" fill="currentColor">
         {Array.from({ length: 100 }).map((_, i) => (
@@ -60,6 +57,8 @@ const PartnerSection = () => {
                       src={logoMap[org.name]} 
                       alt={`${org.name} logo`} 
                       className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>
