@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import csv from 'csv-parser';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -6,6 +7,32 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { registrationApprovedEmail, registrationRejectedEmail } from '../utils/emailTemplates.js';
+
+const tempUploadDir = path.resolve('public/temp');
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const resolveSafeTempFilePath = (filePath) => {
+  if (!filePath || typeof filePath !== 'string') {
+    throw new ApiError(400, 'Invalid file path');
+  }
+
+  const absolutePath = path.resolve(filePath);
+  const relativePath = path.relative(tempUploadDir, absolutePath);
+
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    throw new ApiError(400, 'Invalid uploaded file path');
+  }
+
+  return absolutePath;
+};
+
+const removeTempFile = (absolutePath) => {
+  if (!absolutePath) return;
+  if (fs.existsSync(absolutePath)) {
+    fs.unlinkSync(absolutePath);
+  }
+};
 
 // Get all registrations (Admin only)
 const getAllRegistrations = asyncHandler(async (req, res) => {
@@ -16,11 +43,12 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
   if (status) query.status = status;
   if (course && course !== 'ALL') query.course = course;
   if (search) {
+    const escapedSearch = escapeRegExp(String(search).trim()).slice(0, 100);
     query.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-      { studentId: { $regex: search, $options: 'i' } },
-      { transactionId: { $regex: search, $options: 'i' } },
+      { name: { $regex: escapedSearch, $options: 'i' } },
+      { email: { $regex: escapedSearch, $options: 'i' } },
+      { studentId: { $regex: escapedSearch, $options: 'i' } },
+      { transactionId: { $regex: escapedSearch, $options: 'i' } },
     ];
   }
   
@@ -191,8 +219,9 @@ const bulkRegistration = asyncHandler(async (req, res) => {
   const results = [];
   const errors = [];
   let rowCount = 0;
+  const tempFilePath = resolveSafeTempFilePath(req.file.path);
 
-  fs.createReadStream(req.file.path)
+  fs.createReadStream(tempFilePath)
     .pipe(csv())
     .on('data', (data) => {
       rowCount++;
@@ -226,7 +255,7 @@ const bulkRegistration = asyncHandler(async (req, res) => {
       });
     })
     .on('end', async () => {
-      fs.unlinkSync(req.file.path);
+      removeTempFile(tempFilePath);
 
       if (results.length === 0) {
         return res.status(400).json(
@@ -287,7 +316,7 @@ const bulkRegistration = asyncHandler(async (req, res) => {
       );
     })
     .on('error', (error) => {
-      fs.unlinkSync(req.file.path);
+      removeTempFile(tempFilePath);
       res.status(500).json(new ApiResponse(500, null, "Error parsing CSV file"));
     });
 });

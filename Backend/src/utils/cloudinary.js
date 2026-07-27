@@ -1,5 +1,23 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import path from "path";
+
+const tempUploadDir = path.resolve("public/temp");
+
+const safeUnlinkTempFile = (filePath) => {
+  if (!filePath || filePath.startsWith('data:')) return;
+
+  const absolutePath = path.resolve(filePath);
+  const relativePath = path.relative(tempUploadDir, absolutePath);
+
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    return;
+  }
+
+  if (fs.existsSync(absolutePath)) {
+    fs.unlinkSync(absolutePath);
+  }
+};
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -27,14 +45,10 @@ const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") =
     const response = await cloudinary.uploader.upload(localFilePath, uploadOptions);
 
     // file has been uploaded successfully
-    if (!isDataUri) {
-      fs.unlinkSync(localFilePath);
-    }
+    safeUnlinkTempFile(localFilePath);
     return response;
   } catch (error) {
-    if (localFilePath && !localFilePath.startsWith('data:')) {
-      fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
-    }
+    safeUnlinkTempFile(localFilePath); // remove the locally saved temporary file as the upload operation got failed
     console.error("Cloudinary upload error:", error);
     return null;
   }
@@ -69,10 +83,10 @@ const updateOnCloudinary = async (localFilePath, oldPublicId) => {
     });
     
     // File uploaded successfully, remove local file
-    fs.unlinkSync(localFilePath);
+    safeUnlinkTempFile(localFilePath);
     return response;
   } catch (error) {
-    fs.unlinkSync(localFilePath);
+    safeUnlinkTempFile(localFilePath);
     console.error("Error updating on Cloudinary:", error);
     return null;
   }
