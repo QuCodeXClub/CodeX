@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll";
 import { Sun, Moon, ArrowRight } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 import { ASSETS } from "../config/assets";
@@ -19,7 +20,7 @@ const Navbar = ({ layout }) => {
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-bg/90 backdrop-blur-md border-b border-border transition-colors duration-300">
+    <header className="sticky top-0 z-50 w-full bg-bg shadow-sm border-b border-border transition-colors duration-300 transform-gpu">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
         
         {/* 1. Brand Logo */}
@@ -50,7 +51,22 @@ const Navbar = ({ layout }) => {
                 : "text-text-muted hover:text-text font-medium"
             }`;
             
-            return isHash ? (
+            const isHomePage = location.pathname === '/';
+            
+            return isHash && isHomePage ? (
+              <ScrollLink
+                key={item.path}
+                to={item.path.split('#')[1]}
+                spy={true}
+                smooth="easeInOutQuart"
+                duration={800}
+                offset={-80}
+                activeClass="!text-accent !font-bold"
+                className={`${className} cursor-pointer transition-all duration-300`}
+              >
+                {item.label}
+              </ScrollLink>
+            ) : isHash ? (
               <a key={item.path} href={item.path} className={className}>
                 {item.label}
               </a>
@@ -145,7 +161,23 @@ const Navbar = ({ layout }) => {
                   : "text-text hover:text-text hover:bg-card-hover"
               }`;
               
-              return isHash ? (
+              const isHomePage = location.pathname === '/';
+              
+              return isHash && isHomePage ? (
+                <ScrollLink
+                  key={item.path}
+                  to={item.path.split('#')[1]}
+                  spy={true}
+                  smooth="easeInOutQuart"
+                  duration={800}
+                  offset={-80}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  activeClass="!bg-accent/10 !text-accent !font-bold"
+                  className={`${className} cursor-pointer transition-all duration-300`}
+                >
+                  <span>{item.label}</span>
+                </ScrollLink>
+              ) : isHash ? (
                 <a
                   key={item.path}
                   href={item.path}

@@ -29,9 +29,9 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[calc(100vh-6.75rem)] flex flex-col lg:flex-row overflow-hidden" id="about">
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-accent/10 blur-[120px]"></div>
-         <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[40%] bg-gradient-to-tr from-accent/10 to-transparent skew-x-[-30deg] transform origin-bottom-left blur-[50px]"></div>
-         <div className="absolute inset-0 opacity-[0.015]" style={{
+         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/10 to-transparent pointer-events-none"></div>
+         <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[40%] bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-accent/10 to-transparent skew-x-[-30deg] transform origin-bottom-left pointer-events-none"></div>
+         <div className="absolute inset-0 opacity-[0.015] transform-gpu" style={{
             backgroundImage: `url("${ASSETS.IMAGES.HERO_PATTERN}")`,
             backgroundSize: '40px'
          }}></div>
@@ -42,9 +42,9 @@ const HeroSection = () => {
           <div className="absolute top-[45%] left-0 -translate-y-1/2 text-[clamp(8rem,26vw,18rem)] font-sans leading-none tracking-tighter text-white/[0.02] select-none pointer-events-none z-0 whitespace-nowrap">
             CODEX
           </div>
-          <h1 className="relative z-10 flex flex-wrap items-end gap-[0.3rem] font-sans text-[clamp(5.5rem,18vw,14rem)] leading-[0.85] tracking-[0.02em] text-reflect">
-            <span className="text-text drop-shadow-[0_0_30px_rgba(255,255,255,0.05)]">{hero.titlePart1}</span>
-            <span className="text-accent drop-shadow-[0_0_30px_rgba(46,197,212,0.3)]">{hero.titlePart2}</span>
+          <h1 className="relative z-10 flex flex-wrap items-end gap-[0.3rem] font-sans text-[clamp(5.5rem,18vw,14rem)] leading-[0.85] tracking-[0.02em]">
+            <span className="text-text">{hero.titlePart1}</span>
+            <span className="text-accent [text-shadow:0_0_20px_rgba(46,197,212,0.3)]">{hero.titlePart2}</span>
           </h1>
         </div>
 
@@ -76,7 +76,7 @@ const HeroSection = () => {
             const Icon = icons[stat.label] || CalendarDays;
             return (
               <article 
-                className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 lg:p-7 bg-card/60 backdrop-blur-md rounded-xl border border-border-soft shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden" 
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 lg:p-7 bg-card/95 rounded-xl border border-border-soft shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden" 
                 key={stat.label}
               >
                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>

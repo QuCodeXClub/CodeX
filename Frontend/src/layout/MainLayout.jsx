@@ -25,7 +25,7 @@ const MainLayout = () => {
       <ScrollRestoration />
       <Navbar layout={layout} />
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.main 
           key={location.pathname}
           initial={{ opacity: 0, y: 15 }}
