@@ -16,16 +16,14 @@
     "@tailwindcss/vite": "^4.3.0",
     "@tinymce/tinymce-react": "^6.3.0",
     "axios": "^1.18.1",
-    "clsx": "^2.1.1",
     "framer-motion": "^12.39.0",
-    "html-react-parser": "^6.1.4",
     "lucide-react": "^1.25.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.81.0",
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.15.1",
-    "tailwind-merge": "^3.6.0",
+    "react-scroll": "^1.9.3",
     "tinymce": "^8.7.0"
   },
   "devDependencies": {

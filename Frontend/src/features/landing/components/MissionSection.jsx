@@ -11,7 +11,7 @@ const MissionSection = () => {
       return (
         <>
           {parts[0]}
-          <span className="text-accent drop-shadow-[0_0_15px_rgba(46,197,212,0.4)]">{highlightTarget}</span>
+          <span className="text-accent [text-shadow:0_0_15px_rgba(46,197,212,0.4)]">{highlightTarget}</span>
           {parts[1]}
         </>
       );
@@ -20,7 +20,7 @@ const MissionSection = () => {
   };
   return (
     <section id="vision" className="relative overflow-hidden py-16 lg:py-24 px-4 lg:px-8 min-h-[800px] flex items-center justify-center">
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-accent/5 rounded-full blur-[150px] pointer-events-none"></div>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/5 to-transparent rounded-full pointer-events-none"></div>
       <div className="relative w-full max-w-[1300px] mx-auto p-[2px] rounded-lg">
         <div 
           className="absolute inset-0 bg-gradient-to-br from-accent/70 via-bg to-accent/70 opacity-80 transition-colors duration-300"
@@ -48,26 +48,26 @@ const MissionSection = () => {
                 <circle cx="250" cy="250" r="140" stroke="currentColor" strokeWidth="1" opacity="0.1" />
                 <circle cx="250" cy="250" r="220" stroke="currentColor" strokeWidth="1" opacity="0.05" />
                 <path d="M 50 150 L 120 150 L 180 210" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="50" cy="150" r="3" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 8px #2EC5D4)'}} />
+                <circle cx="50" cy="150" r="3" fill="#2EC5D4" opacity="0.8" />
                 <circle cx="120" cy="150" r="2" fill="currentColor" />
                 <path d="M 450 120 L 380 120 L 320 180" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="450" cy="120" r="4" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 8px #2EC5D4)'}} />
+                <circle cx="450" cy="120" r="4" fill="#2EC5D4" opacity="0.8" />
                 <path d="M 80 400 L 150 400 L 210 340" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="80" cy="400" r="4" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 8px #2EC5D4)'}} />
+                <circle cx="80" cy="400" r="4" fill="#2EC5D4" opacity="0.8" />
                 <path d="M 420 380 L 350 380 L 290 320" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="420" cy="380" r="3" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 8px #2EC5D4)'}} />
+                <circle cx="420" cy="380" r="3" fill="#2EC5D4" opacity="0.8" />
                 <path d="M 250 50 L 250 120" stroke="currentColor" strokeWidth="1.5" />
                 <path d="M 250 450 L 250 380" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="350" cy="220" r="4" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 10px #2EC5D4)'}} />
-                <circle cx="160" cy="280" r="2" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 5px #2EC5D4)'}} />
-                <circle cx="280" cy="380" r="3" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 8px #2EC5D4)'}} />
+                <circle cx="350" cy="220" r="4" fill="#2EC5D4" opacity="0.8" />
+                <circle cx="160" cy="280" r="2" fill="#2EC5D4" opacity="0.8" />
+                <circle cx="280" cy="380" r="3" fill="#2EC5D4" opacity="0.8" />
                 <circle cx="120" cy="200" r="2" fill="currentColor" opacity="0.5" />
                 <circle cx="380" cy="300" r="2" fill="currentColor" opacity="0.5" />
                 <polygon points="400,200 420,210 420,230 400,240 380,230 380,210" stroke="currentColor" strokeWidth="1" fill="transparent" />
                 <polygon points="120,300 135,308 135,322 120,330 105,322 105,308" stroke="currentColor" strokeWidth="1" fill="transparent" />
              </svg>
-             <div className="relative z-10 w-[240px] h-[276px] lg:w-[320px] lg:h-[368px] flex items-center justify-center filter drop-shadow-[0_0_40px_rgba(46,197,212,0.4)]">
-                  <img src={ASSETS.IMAGES.CODEX_LOGO_ICON} alt="CX Logo" className="w-full h-full object-contain opacity-100 drop-shadow-[0_0_20px_rgba(46,197,212,0.6)]" loading="lazy" decoding="async" />
+             <div className="relative z-10 w-[240px] h-[276px] lg:w-[320px] lg:h-[368px] flex items-center justify-center [filter:drop-shadow(0_0_20px_rgba(46,197,212,0.3))]">
+                  <img src={ASSETS.IMAGES.CODEX_LOGO_ICON} alt="CX Logo" className="w-full h-full object-contain opacity-100" loading="lazy" decoding="async" />
              </div>
              
           </div>

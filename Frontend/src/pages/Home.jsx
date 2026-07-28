@@ -1,7 +1,7 @@
 import React from "react";
 import HeroSection from "../features/landing/components/HeroSection";
 import MissionSection from "../features/landing/components/MissionSection";
-import CommitSection from "../features/landing/components/CommitSection";
+
 import PartnerSection from "../features/landing/components/PartnerSection";
 import FaqSection from "../features/landing/components/FaqSection";
 import ContactSection from "../features/landing/components/ContactSection";
@@ -13,7 +13,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen bg-bg relative transition-colors duration-300">
       {/* Global Background Pattern */}
       <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
+        className="fixed inset-0 pointer-events-none opacity-[0.03] z-0 transform-gpu"
         style={{
           backgroundImage:
             "linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px)",
@@ -27,7 +27,7 @@ const Home = () => {
         <MissionSection />
         <EventHero />
         <Domains />
-        <CommitSection />
+
         <PartnerSection />
         <FaqSection />
         <ContactSection />

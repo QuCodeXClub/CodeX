@@ -56,8 +56,8 @@ const EventsHero = () => {
              <path d="M 750 350 L 600 350 L 480 470" stroke="currentColor" strokeWidth="1.5" />
              <path d="M 150 600 L 280 600 L 350 530" stroke="currentColor" strokeWidth="1" />
              <path d="M 650 600 L 520 600 L 450 530" stroke="currentColor" strokeWidth="1" />
-             <circle cx="50" cy="400" r="4" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 10px #2EC5D4)'}} />
-             <circle cx="750" cy="350" r="4" fill="#2EC5D4" style={{filter: 'drop-shadow(0 0 10px #2EC5D4)'}} />
+             <circle cx="50" cy="400" r="4" fill="#2EC5D4" opacity="0.8" />
+             <circle cx="750" cy="350" r="4" fill="#2EC5D4" opacity="0.8" />
              <circle cx="150" cy="600" r="2" fill="currentColor" />
              <circle cx="650" cy="600" r="2" fill="currentColor" />
           </svg>
@@ -66,13 +66,13 @@ const EventsHero = () => {
                let posClasses = "";
                let zIndex = "";
                if (card.id === 1) {
-                 posClasses = "rotate-0 scale-100 -translate-y-4 shadow-[0_0_50px_rgba(46,197,212,0.4)]";
+                 posClasses = "rotate-0 scale-100 -translate-y-4 shadow-[0_15px_30px_rgba(46,197,212,0.25)]";
                  zIndex = "z-30";
                } else if (card.id === 2) {
-                 posClasses = "-translate-x-[55%] translate-y-8 -rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_0_30px_rgba(46,197,212,0.2)]";
+                 posClasses = "-translate-x-[55%] translate-y-8 -rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_10px_20px_rgba(46,197,212,0.15)]";
                  zIndex = "z-10";
                } else if (card.id === 3) {
-                 posClasses = "translate-x-[55%] translate-y-8 rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_0_30px_rgba(46,197,212,0.2)]";
+                 posClasses = "translate-x-[55%] translate-y-8 rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_10px_20px_rgba(46,197,212,0.15)]";
                  zIndex = "z-20";
                }
                return (

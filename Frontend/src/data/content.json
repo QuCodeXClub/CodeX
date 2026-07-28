@@ -26,20 +26,6 @@
         }
       ]
     },
-    "commitSection": {
-      "eyebrow": "WHY JOIN US",
-      "title": "Write the next chapter.",
-      "description": "Every great developer starts somewhere. Join CodeX to build real projects, solve meaningful problems, collaborate with passionate peers, and create experiences that shape your future.",
-      "kicker": "// member benefits",
-      "benefits": [
-        "Access to a 100+ member collaborative network",
-        "Hands-on protocol development sessions",
-        "Direct mentorship from seniors and alumni",
-        "Career-focused learning and networking",
-        "Annual hackathon with real industry exposure",
-        "Open-source project contributions and live deployments"
-      ]
-    },
     "domains": {
       "eyebrow": "explore // tech_stacks",
       "titlePart1": "Core",
