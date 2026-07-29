@@ -5,7 +5,14 @@ import { setError } from "../../../context/messageSlice";
 import { Turnstile } from "@marsidev/react-turnstile";
 import axiosInstance from "../../../services/axiosInstance";
 import contentData from "../../../data/content.json";
-import {User,Mail,FileText,Send,ArrowRight,CheckCircle,Loader2,Users,
+import {
+  User,
+  Mail,
+  FileText,
+  ArrowRight,
+  CheckCircle,
+  Loader2,
+  MessageSquare
 } from "lucide-react";
 
 const ContactSection = () => {
@@ -34,19 +41,13 @@ const ContactSection = () => {
 
   const onFormSubmit = async (data) => {
     setLoading(true);
-
     if (!turnstileToken) {
       dispatch(setError("Please complete the security check."));
       setLoading(false);
       return;
     }
-
     try {
-      const payload = {
-        ...data,
-        turnstileToken,
-      };
-
+      const payload = { ...data, turnstileToken };
       await axiosInstance.post("/contact", payload);
       setIsSuccess(true);
       reset();
@@ -57,223 +58,201 @@ const ContactSection = () => {
     }
   };
 
+  const InputField = ({ label, id, icon: Icon, error, type = "text", ...props }) => (
+    <div className="flex flex-col gap-2 group">
+      <label htmlFor={id} className="font-mono text-[0.7rem] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors flex items-center gap-2">
+        {label}
+      </label>
+      <div className="relative flex items-center">
+        {type === "textarea" ? (
+          <textarea
+            id={id}
+            {...props}
+            className={`w-full bg-card/40 backdrop-blur-sm border ${
+              error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
+            } text-text rounded-2xl p-4 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 resize-none focus:ring-4 shadow-inner`}
+          />
+        ) : (
+          <input
+            id={id}
+            type={type}
+            {...props}
+            className={`w-full bg-card/40 backdrop-blur-sm border ${
+              error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
+            } text-text rounded-2xl px-4 py-3.5 pr-11 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 focus:ring-4 shadow-inner`}
+          />
+        )}
+        {Icon && type !== "textarea" && (
+          <div className="absolute right-4 text-text-muted/40 group-focus-within:text-accent group-focus-within:scale-110 transition-all duration-300 pointer-events-none">
+            <Icon size={18} strokeWidth={2} />
+          </div>
+        )}
+      </div>
+      {error && (
+        <span className="font-mono text-[0.7rem] text-danger font-bold uppercase flex items-center gap-1.5 mt-0.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse"></div>
+          {error.message}
+        </span>
+      )}
+    </div>
+  );
+
   return (
-    <section className="relative overflow-hidden py-10 lg:py-16 px-4 md:px-6" id="contact">
-      <div className="max-w-[1360px] mx-auto bg-card/90 rounded-[24px] border border-border/40 shadow-2xl p-6 md:p-10 lg:p-12 transition-colors duration-300">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-stretch relative z-10">
-          <div className="flex flex-col justify-between h-full py-2">
-            <div>
-              <div className="flex items-center justify-between gap-4 mb-6">
-                <div>
-                  <p className="m-0 text-accent font-mono text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-2">
-                    // {contactSection.eyebrow}
-                  </p>
-                  <div className="w-12 h-[2.5px] bg-accent"></div>
-                </div>
-                <div className="hidden sm:block opacity-80 w-16 h-16 shrink-0 pointer-events-none">
-                  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-[0_8px_20px_rgba(46,197,212,0.2)]">
-                    <path d="M85 30C98.807 30 110 41.1929 110 55C110 68.8071 98.807 80 85 80C82.1643 80 79.4385 79.5276 76.9062 78.6659L65 85L70.1989 75.4674C64.6315 70.9238 60 63.454 60 55C60 41.1929 71.1929 30 85 30Z" stroke="currentColor" className="text-accent/40" strokeWidth="1.5" fill="var(--color-bg-soft)"/>
-                    <path d="M45 40C61.5685 40 75 51.1929 75 65C75 78.8071 61.5685 90 45 90C41.5283 90 38.2045 89.3791 35.1207 88.244L20 95L26.5401 84.1033C19.2982 79.1306 15 72.4831 15 65C15 51.1929 28.4315 40 45 40Z" stroke="currentColor" className="text-accent/50" strokeWidth="2" fill="var(--color-bg-soft)"/>
-                    <circle cx="33" cy="65" r="3" fill="var(--color-accent)"/>
-                    <circle cx="45" cy="65" r="3" fill="var(--color-accent)"/>
-                    <circle cx="57" cy="65" r="3" fill="var(--color-accent)"/>
-                  </svg>
-                </div>
-              </div>
-              <h2 className="font-sans text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-text leading-[1.08] mb-8">
-                {titleParts.length === 2 ? (
-                  <>
-                    {titleParts[0]}
-                    <span className="text-accent drop-shadow-[0_0_18px_rgba(46,197,212,0.4)]">
-                      {highlightPhrase}
-                    </span>
-                    {titleParts[1]}
-                  </>
-                ) : (
-                  contactSection.headline
-                )}
-              </h2>
-              <p className="text-text-muted font-mono text-base md:text-lg leading-relaxed max-w-xl mb-8">
-                {contactSection.description}
+    <section className="relative overflow-hidden py-16 lg:py-24 px-4 md:px-6" id="contact">
+      {/* Background ambient glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-accent/5 to-transparent pointer-events-none -z-10 blur-3xl rounded-full"></div>
+
+      <div className="max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20 items-center">
+          
+          {/* Left Side: Typography & Info */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-[2px] bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)]"></div>
+              <p className="m-0 text-accent font-mono text-[0.75rem] font-bold tracking-[0.25em] uppercase">
+                {contactSection.eyebrow}
               </p>
             </div>
-            <div className="pt-6 border-t border-border/20 mt-auto">
-              <div className="flex items-center gap-2 text-accent/70 font-mono text-sm md:text-base tracking-widest select-none">
-                <span>— — — — — — — — — —</span>
-              </div>
+            
+            <h2 className="font-sans text-[clamp(2.8rem,5vw,4.5rem)] font-extrabold tracking-tight text-text leading-[1.05] mb-6">
+              {titleParts.length === 2 ? (
+                <>
+                  {titleParts[0]}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/60 drop-shadow-[0_0_15px_rgba(46,197,212,0.3)]">
+                    {highlightPhrase}
+                  </span>
+                  {titleParts[1]}
+                </>
+              ) : (
+                contactSection.headline
+              )}
+            </h2>
+            
+            <p className="text-text-muted font-mono text-[0.95rem] leading-[1.8] max-w-md mb-10">
+              {contactSection.description}
+            </p>
+
+            <div className="hidden lg:flex items-center gap-4 text-border-soft opacity-60">
+              <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="29" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" />
+                <circle cx="30" cy="30" r="15" stroke="currentColor" strokeWidth="1" />
+                <path d="M30 0V60M0 30H60" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+              </svg>
             </div>
           </div>
-          <div className="bg-bg-soft/90 border border-border/40 rounded-2xl p-6 sm:p-8 lg:p-9 shadow-xl flex flex-col justify-between">
-            {isSuccess ? (
-              <div className="py-16 px-4 text-center flex flex-col items-center justify-center min-h-[380px]">
-                <CheckCircle className="w-16 h-16 text-accent mb-4 animate-bounce" />
-                <h3 className="font-sans text-2xl md:text-3xl font-bold text-text uppercase tracking-wide mb-3">
-                  Message Sent
-                </h3>
-                <p className="text-text-muted font-mono text-sm max-w-md mb-8">
-                  Thank you for reaching out! We've received your message and will get back to you shortly.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsSuccess(false)}
-                  className="px-7 py-3 rounded-full bg-accent text-bg font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-90 transition-all shadow-md cursor-pointer border-0"
-                >
-                  Send Another Message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-5">
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-border/30">
-                  <Send className="w-5 h-5 text-accent shrink-0" />
-                  <h3 className="font-mono text-sm md:text-base font-bold tracking-[0.18em] uppercase text-text">
-                    SEND US A MESSAGE
+
+          {/* Right Side: Glassmorphism Form */}
+          <div className="relative group">
+            {/* Form Glow behind */}
+            <div className="absolute -inset-1 bg-gradient-to-br from-accent/20 via-transparent to-accent/20 rounded-[2rem] blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-700"></div>
+            
+            <div className="relative bg-card/60 backdrop-blur-2xl border border-border-soft rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgb(0,0,0,0.2)] overflow-hidden">
+              {/* Decorative corner */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
+              
+              {isSuccess ? (
+                <div className="flex flex-col items-center justify-center min-h-[420px] text-center animate-in fade-in zoom-in duration-500">
+                  <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-6 relative">
+                    <div className="absolute inset-0 rounded-full border-2 border-accent/30 animate-[ping_2s_ease-in-out_infinite]"></div>
+                    <CheckCircle className="w-10 h-10 text-accent" />
+                  </div>
+                  <h3 className="font-sans text-3xl font-bold text-text uppercase tracking-wide mb-4">
+                    Message Sent
                   </h3>
+                  <p className="text-text-muted font-mono text-sm max-w-sm mb-10 leading-relaxed">
+                    Thank you for reaching out! Your transmission has been successfully routed. Our team will get back to you shortly.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsSuccess(false)}
+                    className="group flex items-center gap-3 px-8 py-4 rounded-full bg-text text-bg font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:bg-accent hover:text-bg hover:shadow-[0_0_25px_rgba(46,197,212,0.4)] transition-all duration-300 border-0 cursor-pointer"
+                  >
+                    <span>Send Another</span>
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                    <label className="block font-mono text-xs sm:text-[0.76rem] font-bold uppercase tracking-wider text-text-muted mb-2">
-                      FULL NAME
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        type="text"
-                        {...register("name", { required: "Name is required" })}
-                        className={`w-full bg-card border ${
-                          errors.name ? "border-danger" : "border-border/40 focus:border-accent"
-                        } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
-                        placeholder="Enter your name"
-                      />
-                      <User className="absolute right-3.5 w-4 h-4 text-text-muted/60 pointer-events-none" />
+              ) : (
+                <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-6 relative z-10">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                      <MessageSquare size={18} />
                     </div>
-                    {errors.name && (
-                      <p className="mt-1.5 font-mono text-xs text-danger font-bold uppercase">
-                        {errors.name.message}
-                      </p>
-                    )}
+                    <h3 className="font-mono text-lg font-bold tracking-[0.15em] uppercase text-text m-0">
+                      Drop a line
+                    </h3>
                   </div>
-                  <div>
-                    <label className="block font-mono text-xs sm:text-[0.76rem] font-bold uppercase tracking-wider text-text-muted mb-2">
-                      EMAIL ADDRESS
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        type="email"
-                        {...register("email", {
-                          required: "Email is required",
-                          pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
-                        })}
-                        className={`w-full bg-card border ${
-                          errors.email ? "border-danger" : "border-border/40 focus:border-accent"
-                        } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
-                        placeholder="name@example.com"
-                      />
-                      <Mail className="absolute right-3.5 w-4 h-4 text-text-muted/60 pointer-events-none" />
-                    </div>
-                    {errors.email && (
-                      <p className="mt-1.5 font-mono text-xs text-danger font-bold uppercase">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="block font-mono text-xs sm:text-[0.76rem] font-bold uppercase tracking-wider text-text-muted mb-2">
-                    SUBJECT
-                  </label>
-                  <div className="relative flex items-center">
-                    <input
-                      type="text"
-                      {...register("subject", { required: "Subject is required" })}
-                      className={`w-full bg-card border ${
-                        errors.subject ? "border-danger" : "border-border/40 focus:border-accent"
-                      } text-text rounded-xl px-4 py-3 pr-10 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all`}
-                      placeholder="What is this regarding?"
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <InputField
+                      id="name"
+                      label="Full Name"
+                      icon={User}
+                      placeholder="John Doe"
+                      error={errors.name}
+                      {...register("name", { required: "Name is required" })}
                     />
-                    <FileText className="absolute right-3.5 w-4 h-4 text-text-muted/60 pointer-events-none" />
-                  </div>
-                  {errors.subject && (
-                    <p className="mt-1.5 font-mono text-xs text-danger font-bold uppercase">
-                      {errors.subject.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block font-mono text-xs sm:text-[0.76rem] font-bold uppercase tracking-wider text-text-muted mb-2">
-                    MESSAGE
-                  </label>
-                  <textarea
-                    {...register("message", { required: "Message is required" })}
-                    rows={4}
-                    className={`w-full bg-card border ${
-                      errors.message ? "border-danger" : "border-border/40 focus:border-accent"
-                    } text-text rounded-xl p-4 text-sm font-mono placeholder:text-text-muted/40 outline-none transition-all resize-none`}
-                    placeholder="How can we help you?"
-                  ></textarea>
-                  {errors.message && (
-                    <p className="mt-1.5 font-mono text-xs text-danger font-bold uppercase">
-                      {errors.message.message}
-                    </p>
-                  )}
-                </div>
-                <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/30">
-                  <div className="w-full sm:w-auto flex justify-center scale-95 origin-left">
-                    <Turnstile
-                      siteKey={
-                        import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-                        "1x00000000000000000000AA"
-                      }
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      options={{ theme: "auto" }}
+                    <InputField
+                      id="email"
+                      type="email"
+                      label="Email Address"
+                      icon={Mail}
+                      placeholder="john@example.com"
+                      error={errors.email}
+                      {...register("email", {
+                        required: "Email is required",
+                        pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
+                      })}
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading || !turnstileToken}
-                    className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-accent text-bg font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-90 transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2.5 border-0 cursor-pointer shrink-0"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-bg" />
-                    ) : (
-                      <>
-                        <span>SEND MESSAGE</span>
-                        <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            )}
+                  <InputField
+                    id="subject"
+                    label="Subject"
+                    icon={FileText}
+                    placeholder="What is this regarding?"
+                    error={errors.subject}
+                    {...register("subject", { required: "Subject is required" })}
+                  />
+
+                  <InputField
+                    id="message"
+                    type="textarea"
+                    label="Message"
+                    rows={4}
+                    placeholder="How can we help you?"
+                    error={errors.message}
+                    {...register("message", { required: "Message is required" })}
+                  />
+
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
+                    <div className="w-full sm:w-auto flex justify-center scale-90 sm:scale-100 origin-left">
+                      <Turnstile
+                        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+                        onSuccess={(token) => setTurnstileToken(token)}
+                        options={{ theme: "auto" }}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading || !turnstileToken}
+                      className="w-full sm:w-auto relative group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-accent text-bg font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:shadow-[0_0_20px_rgba(46,197,212,0.4)] disabled:opacity-50 disabled:hover:shadow-none transition-all duration-300 overflow-hidden shrink-0 border-0 cursor-pointer"
+                    >
+                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+                      <span className="relative z-10">
+                        {loading ? "Sending..." : "Send Message"}
+                      </span>
+                      {loading ? (
+                        <Loader2 className="relative z-10 w-4 h-4 animate-spin" />
+                      ) : (
+                        <ArrowRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 mt-10 border-t border-border/30">
-          {contactSection.directLines.map((line, index) => {
-            const Icon = index === 0 ? Users : Mail;
-            return (
-              <article
-                key={index}
-                className="flex items-center gap-5 p-6 rounded-2xl bg-card/60 border border-border/30 hover:border-accent/40 transition-all duration-300"
-              >
-                <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
-                  <Icon size={24} strokeWidth={1.75} />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <p className="text-accent text-xs font-mono tracking-[0.2em] uppercase font-bold m-0 mb-1">
-                    {line.label}
-                  </p>
-                  <h4 className="font-sans text-lg md:text-xl font-bold text-text uppercase tracking-wide m-0 mb-1 truncate">
-                    {line.name}
-                  </h4>
-                  <a
-                    href={`mailto:${line.detail}`}
-                    className="font-mono text-sm text-text-muted hover:text-accent transition-colors truncate"
-                  >
-                    {line.detail}
-                  </a>
-                </div>
-              </article>
-            );
-          })}
         </div>
       </div>
     </section>
