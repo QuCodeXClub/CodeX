@@ -71,19 +71,7 @@
   "title": "Get in Touch",
   "headline": "Have a question or want to connect? We'd love to hear from you.",
   "description": "Whether you're interested in joining CodeX, collaborating on an event, exploring partnership opportunities, or simply have a query, our team is here to help. Reach out and we'll get back to you as soon as possible.",
-  "ctaPrimary": "Contact Us",
-  "directLines": [
-  {
-    "label": "General Inquiries",
-    "name": "CodeX Team",
-    "detail": "hi@qucodex.com"
-  },
-  {
-    "label": "Official Club Email",
-    "name": "Quantum University",
-    "detail": "codex.club@quantumeducation.in"
-  }
-]
+  "ctaPrimary": "Contact Us"
 },
 "partners": {
       "title": "Organizations We've Worked With",
