@@ -1,11 +1,13 @@
 import React from "react";
 import legal from "../data/legal.json";
+import PageContainer from "../components/common/PageContainer";
 
 const EventPolicy = () => {
   const policy = legal.eventPolicy;
 
   return (
-    <div className=" py-16 px-6 max-w-[1200px] md:px-12 text-text">
+    <div className="py-16 text-text">
+      <PageContainer>
       <h1 className="text-3xl font-bold uppercase tracking-wider">
         {policy.title}
       </h1>
@@ -41,6 +43,7 @@ const EventPolicy = () => {
           )}
         </section>
       ))}
+      </PageContainer>
     </div>
   );
 };

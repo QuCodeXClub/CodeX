@@ -27,7 +27,6 @@ const InstagramIcon = ({ className }) => (
 
 const getSocialIcon = (name) => {
   const lowerName = name.toLowerCase();
-  
   const iconClass = "w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200 group-hover:text-accent text-text";
 
   if (lowerName.includes("github")) {
@@ -40,7 +39,6 @@ const getSocialIcon = (name) => {
     return <InstagramIcon className={iconClass} />;
   }
   
-  // Fallback text if an icon isn't found
   return <span className="text-xs font-bold uppercase tracking-wider group-hover:text-accent transition-colors">{name}</span>;
 };
 
@@ -51,11 +49,12 @@ const Footer = ({ layout, onFooterClick }) => {
     : `© ${currentYear} CodeX. ALL RIGHTS RESERVED.`;
 
   return (
-    <footer className="border-t border-border bg-bg pt-16 pb-8 px-6 md:px-12">
-      <div className=" mx-auto">
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-12">
+    <footer className="relative overflow-hidden border-t border-border bg-card/20 backdrop-blur-md pt-20 pb-10 px-6 md:px-12">
+         
+      <div className="max-w-[1400px] mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-16">
           
+          {/* Column 1: Brand & Info */}
           <div className="flex flex-col gap-4 lg:col-span-2">
             <span 
               onClick={onFooterClick}
@@ -86,7 +85,7 @@ const Footer = ({ layout, onFooterClick }) => {
                     flex h-11 w-11 items-center justify-center
                     rounded-full
                     border border-border
-                    bg-card/60
+                    bg-card/80
                     backdrop-blur-sm
                     transition-all duration-300
                     hover:-translate-y-1
@@ -137,7 +136,8 @@ const Footer = ({ layout, onFooterClick }) => {
           
         </div>
 
-        <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Bottom Bar */}
+        <div className="border-t border-border/60 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-muted font-mono uppercase tracking-widest text-center md:text-left">
             {footerText}
           </p>

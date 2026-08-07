@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { eventService } from "../services/eventService";
 
 import EventList from "../features/events/components/EventList";
+import PageContainer from "../components/common/PageContainer";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -33,9 +34,8 @@ const Events = () => {
         }}
       />
 
-      <div className="relative z-10 pt-10">
-        <section className="w-full  mx-auto px-4 lg:px-12 ">
-          
+      <div className="relative z-10 pt-10 pb-20">
+        <PageContainer>
           <div>
             <h1 className="text-2xl font-bold text-text tracking-tight ">
               Events
@@ -48,7 +48,7 @@ const Events = () => {
           <div className="w-full">
             <EventList events={events} loading={loading} />
           </div>
-        </section>
+        </PageContainer>
       </div>
     </div>
   );

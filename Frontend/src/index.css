@@ -65,8 +65,9 @@
   --color-danger: #f87171;
 }
 @layer base {
-  html {
-    @apply scroll-smooth;
+  /* Custom scroll offset handling */
+  section {
+    scroll-margin-top: 5rem;
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

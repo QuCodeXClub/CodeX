@@ -98,7 +98,7 @@ const ContactSection = () => {
   );
 
   return (
-    <section className="relative overflow-hidden py-16 lg:py-24 px-4 md:px-6" id="contact">
+    <section className="relative overflow-hidden py-12 lg:py-20 px-4 md:px-6" id="contact">
       {/* Background ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-accent/5 to-transparent pointer-events-none -z-10 blur-3xl rounded-full"></div>
 

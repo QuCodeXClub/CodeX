@@ -8,6 +8,7 @@ import PersonalDetailsForm from "../components/register/PersonalDetailsForm";
 import AcademicDetailsForm from "../components/register/AcademicDetailsForm";
 import VerificationDetailsForm from "../components/register/VerificationDetailsForm";
 import contentData from "../data/content.json";
+import PageContainer from "../components/common/PageContainer";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -82,34 +83,36 @@ const Register = () => {
         }}
       ></div>
 
-      <div className="relative z-10 w-full  mx-auto pb-20 pt-16 px-4 md:px-12">
-        <header className="mb-12">
-          <p className="text-accent text-xs font-bold uppercase tracking-widest mb-3">
-            {register.eyebrow}
-          </p>
-          <h1 className="font-oswald text-5xl md:text-6xl font-bold uppercase text-text mb-3">
-            {register.titlePart1}{" "}
-            <span className="text-accent">{register.titlePart2}</span>
-          </h1>
-          <p className="text-text-muted text-sm font-medium">
-            {register.description}
-          </p>
-        </header>
+      <div className="relative z-10 w-full pt-16 pb-20">
+        <PageContainer>
+          <header className="mb-12">
+            <p className="text-accent text-xs font-bold uppercase tracking-widest mb-3">
+              {register.eyebrow}
+            </p>
+            <h1 className="font-oswald text-5xl md:text-6xl font-bold uppercase text-text mb-3">
+              {register.titlePart1}{" "}
+              <span className="text-accent">{register.titlePart2}</span>
+            </h1>
+            <p className="text-text-muted text-sm font-medium">
+              {register.description}
+            </p>
+          </header>
 
-        <form
-          onSubmit={handleSubmit(onFormSubmit)}
-          className="bg-card border-4 border-text p-6 md:p-10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
-        >
-          <PersonalDetailsForm register={formRegister} errors={errors} />
-          <AcademicDetailsForm register={formRegister} errors={errors} />
-          <VerificationDetailsForm
-            register={formRegister}
-            errors={errors}
-            setTurnstileToken={setTurnstileToken}
-            loading={loading}
-            turnstileToken={turnstileToken}
-          />
-        </form>
+          <form
+            onSubmit={handleSubmit(onFormSubmit)}
+            className="bg-card border-4 border-text p-6 md:p-10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
+          >
+            <PersonalDetailsForm register={formRegister} errors={errors} />
+            <AcademicDetailsForm register={formRegister} errors={errors} />
+            <VerificationDetailsForm
+              register={formRegister}
+              errors={errors}
+              setTurnstileToken={setTurnstileToken}
+              loading={loading}
+              turnstileToken={turnstileToken}
+            />
+          </form>
+        </PageContainer>
       </div>
     </div>
   );
