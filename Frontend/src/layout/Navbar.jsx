@@ -22,7 +22,7 @@ const Navbar = ({ layout }) => {
   return (
     <header className="sticky top-0 z-50 w-full bg-bg shadow-sm border-b border-border transition-colors duration-300 transform-gpu">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
-        
+
         {/* 1. Brand Logo */}
         <Link
           to="/"
@@ -44,15 +44,14 @@ const Navbar = ({ layout }) => {
           {layout.nav.map((item) => {
             const isActive = location.pathname === item.path;
             const isHash = item.path.includes('#');
-            
-            const className = `relative font-sans text-sm tracking-[0.1em] uppercase transition-colors whitespace-nowrap py-2 ${
-              isActive
+
+            const className = `relative font-sans text-sm tracking-[0.1em] uppercase transition-colors whitespace-nowrap py-2 ${isActive
                 ? "text-accent font-bold"
                 : "text-text-muted hover:text-text font-medium"
-            }`;
-            
+              }`;
+
             const isHomePage = location.pathname === '/';
-            
+
             return isHash && isHomePage ? (
               <ScrollLink
                 key={item.path}
@@ -83,7 +82,7 @@ const Navbar = ({ layout }) => {
 
         {/* 3. Right Actions: Meta Kicker, Theme Toggle, Desktop CTA, and Mobile Toggle */}
         <div className="flex items-center gap-3 md:gap-5 shrink-0">
-          
+
           {/* Meta Kicker - Hidden below XL screens */}
           <span className="hidden xl:inline-block text-accent font-mono text-xs tracking-wider uppercase font-semibold pr-4 border-r border-border">
             {layout.meta}
@@ -123,19 +122,16 @@ const Navbar = ({ layout }) => {
           >
             <div className="relative w-5 h-4 text-current">
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${
-                  isMobileMenuOpen ? "top-2 rotate-45" : "top-0"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "top-2 rotate-45" : "top-0"
+                  }`}
               />
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out top-2 ${
-                  isMobileMenuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out top-2 ${isMobileMenuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
+                  }`}
               />
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${
-                  isMobileMenuOpen ? "top-2 -rotate-45" : "top-4"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "top-2 -rotate-45" : "top-4"
+                  }`}
               />
             </div>
           </button>
@@ -144,25 +140,23 @@ const Navbar = ({ layout }) => {
 
       {/* 4. Mobile Menu Dropdown */}
       <div
-        className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden bg-card border-b border-border shadow-2xl absolute w-full ${
-          isMobileMenuOpen
+        className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden bg-card border-b border-border shadow-2xl absolute w-full ${isMobileMenuOpen
             ? "max-h-[400px] opacity-100"
             : "max-h-0 opacity-0 pointer-events-none"
-        }`}
+          }`}
       >
         <div className="px-4 py-6 flex flex-col gap-4">
           <nav className="flex flex-col gap-2">
             {layout.nav.map((item) => {
               const isActive = location.pathname === item.path;
               const isHash = item.path.includes('#');
-              const className = `flex items-center px-4 py-3 rounded-lg font-sans text-sm tracking-[0.15em] uppercase transition-all ${
-                isActive
+              const className = `flex items-center px-4 py-3 rounded-lg font-sans text-sm tracking-[0.15em] uppercase transition-all ${isActive
                   ? "bg-accent/10 text-accent font-bold"
                   : "text-text hover:text-text hover:bg-card-hover"
-              }`;
-              
+                }`;
+
               const isHomePage = location.pathname === '/';
-              
+
               return isHash && isHomePage ? (
                 <ScrollLink
                   key={item.path}
