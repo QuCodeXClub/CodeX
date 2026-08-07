@@ -1,4 +1,8 @@
 import "dotenv/config";
+import crypto from "node:crypto";
+if (!globalThis.crypto) {
+  globalThis.crypto = crypto;
+}
 
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! Shutting down...");

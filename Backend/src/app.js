@@ -29,9 +29,19 @@ app.use("/api", limiter);
 app.use(compression());
 
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : ["*"];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -72,6 +82,30 @@ import certificateRouter from "./routes/certificate.routes.js";
 import boardingPassRouter from "./routes/boardingPass.routes.js";
 import contactRouter from "./routes/contact.routes.js";
 import qrRouter from "./routes/qr.routes.js";
+
+// root & api v1 status endpoints
+const apiStatusHandler = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "CodeX API v1 is running smoothly",
+    version: "1.0.0",
+    endpoints: {
+      healthcheck: "/api/v1/healthcheck",
+      events: "/api/v1/events",
+      admin: "/api/v1/admin",
+      students: "/api/v1/students",
+      registrations: "/api/v1/registrations",
+      teams: "/api/v1/teams",
+      certificates: "/api/v1/certificates",
+      boardingPasses: "/api/v1/boarding-passes",
+      contact: "/api/v1/contact",
+      qr: "/api/v1/qr"
+    }
+  });
+};
+
+app.get("/", apiStatusHandler);
+app.get("/api/v1", apiStatusHandler);
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthcheckRouter);
