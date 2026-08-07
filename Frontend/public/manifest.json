@@ -5,7 +5,7 @@
   "icons": [
     {
       "src": "/codex-logo.svg",
-      "sizes": "any",
+      "sizes": "72x72 96x96 128x128 144x144 152x152 192x192 384x384 512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
@@ -13,5 +13,6 @@
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#2ec5d4",
-  "background_color": "#111827"
+  "background_color": "#111827",
+  "orientation": "portrait"
 }
