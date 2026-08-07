@@ -31,7 +31,7 @@ const Domains = () => {
   const { domains } = contentData?.landing || {};
   if (!domains || !domains.list) return null;
   return (
-    <section className="relative overflow-hidden py-10 lg:py-12 flex flex-col justify-center min-h-screen" id="domains">
+    <section className="relative overflow-hidden py-8 lg:py-16 flex flex-col justify-center" id="domains">
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-30 dark:opacity-40">
         <svg className="w-full h-full text-accent" viewBox="0 0 1200 800" fill="none">
           <path d="M 0 200 L 300 200 L 400 300 L 1200 300" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />

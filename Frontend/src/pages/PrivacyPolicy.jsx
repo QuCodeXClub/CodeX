@@ -1,10 +1,12 @@
 import legal from "../data/legal.json";
+import PageContainer from "../components/common/PageContainer";
 
 const PrivacyPolicy = () => {
   const policy = legal.privacyPolicy;
 
   return (
-    <div className=" mx-auto max-w-[1200px] px-6 py-16 text-text">
+    <div className="py-16 text-text">
+      <PageContainer>
       <h1 className="text-3xl font-bold uppercase tracking-wider">
         {policy.title}
       </h1>
@@ -37,6 +39,7 @@ const PrivacyPolicy = () => {
           )}
         </section>
       ))}
+      </PageContainer>
     </div>
   );
 };

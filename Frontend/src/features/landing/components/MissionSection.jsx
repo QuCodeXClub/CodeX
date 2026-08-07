@@ -23,7 +23,7 @@ const MissionSection = () => {
   };
 
   return (
-    <section id="vision" className="relative overflow-hidden py-16 lg:py-32 px-4 lg:px-8 flex items-center justify-center min-h-[90vh]">
+    <section id="vision" className="relative overflow-hidden py-12 lg:py-20 px-4 lg:px-8 flex items-center justify-center">
       {/* Dynamic Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/10 via-transparent to-transparent blur-3xl pointer-events-none -z-10"></div>
       

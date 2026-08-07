@@ -1,12 +1,13 @@
 import React from "react";
 import legal from "../data/legal.json";
+import PageContainer from "../components/common/PageContainer";
 
 const Accessibility = () => {
   const policy = legal.accessibility;
 
   return (
-    <div className=" mx-auto max-w-[1200px] py-16 px-6 md:px-12 text-text">
-        
+    <div className="py-16 text-text">
+      <PageContainer>
       <h1 className="text-3xl font-bold uppercase tracking-wider">
         {policy.title}
       </h1>
@@ -42,6 +43,7 @@ const Accessibility = () => {
           )}
         </section>
       ))}
+      </PageContainer>
     </div>
   );
 };

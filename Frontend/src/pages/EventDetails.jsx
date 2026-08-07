@@ -8,6 +8,7 @@ import {
   Clock,
 } from "lucide-react";
 import { eventService } from "../services/eventService";
+import PageContainer from "../components/common/PageContainer";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -58,7 +59,7 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-bg-soft pb-20 font-jetbrains relative">
       {/* Background grid pattern */}
-       <div
+      <div
         className="absolute inset-0 pointer-events-none opacity-[0.04] z-0"
         style={{
           backgroundImage:
@@ -69,7 +70,7 @@ export default function EventDetails() {
 
       {/* Main Container - Full Width utilization */}
       <div className="w-full relative z-10">
-        
+
 
 
         {/* Hero Image - Fixed Aspect Ratio and Image Cropping */}
@@ -108,60 +109,60 @@ export default function EventDetails() {
         </div>
 
         {/* Content Container (Standard padded container for text readability) */}
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-12 py-16 md:py-20">
-          
-           <div className="mb-10">
-          <div className="inline-flex items-center bg-accent/10 text-accent text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
-            Event Overview
-          </div>
+        <PageContainer className="py-16 md:py-20">
 
-          <h1 className="font-oswald font-bold text-4xl sm:text-5xl md:text-6xl text-text mb-8 leading-tight uppercase tracking-tight">
-            {event.eventName}
-          </h1>
-
-          {/* Meta Tags & Compact Register Button Row */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border-soft pb-8">
-            
-            {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-text-muted">
-              <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
-                <Calendar className="w-4 h-4 text-accent" />
-                {new Date(event.date).toLocaleDateString("en-US", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </div>
-
-              <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
-                <Clock className="w-4 h-4 text-accent" />
-                {new Date(event.date).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-
-              <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
-                <MapPin className="w-4 h-4 text-accent" />
-                Offline
-              </div>
+          <div className="mb-10">
+            <div className="inline-flex items-center bg-accent/10 text-accent text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+              Event Overview
             </div>
 
-            {/* Compact Register Button */}
-            {event.registrationLink && (
-              <a
-                href={event.registrationLink}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full md:w-auto inline-flex items-center justify-center gap-2.5 bg-accent text-text-inverse px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-sm transition-all hover:opacity-90 shadow-md active:scale-95 shrink-0"
-              >
-                Register Now
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
+            <h1 className="font-oswald font-bold text-4xl sm:text-5xl md:text-6xl text-text mb-8 leading-tight uppercase tracking-tight">
+              {event.eventName}
+            </h1>
+
+            {/* Meta Tags & Compact Register Button Row */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border-soft pb-8">
+
+              {/* Meta Info */}
+              <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-text-muted">
+                <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
+                  <Calendar className="w-4 h-4 text-accent" />
+                  {new Date(event.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </div>
+
+                <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
+                  <Clock className="w-4 h-4 text-accent" />
+                  {new Date(event.date).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="flex items-center gap-2 bg-bg px-4 py-2.5 rounded-lg border border-border shadow-sm">
+                  <MapPin className="w-4 h-4 text-accent" />
+                  Offline
+                </div>
+              </div>
+
+              {/* Compact Register Button */}
+              {event.registrationLink && (
+                <a
+                  href={event.registrationLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full md:w-auto inline-flex items-center justify-center gap-2.5 bg-accent text-text-inverse px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-sm transition-all hover:opacity-90 shadow-md active:scale-95 shrink-0"
+                >
+                  Register Now
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              )}
+            </div>
           </div>
-        </div>
 
           {/* Rich Text Wrapper */}
           <div
@@ -179,7 +180,7 @@ export default function EventDetails() {
             "
             dangerouslySetInnerHTML={{ __html: event.description }}
           />
-        </div>
+        </PageContainer>
       </div>
     </div>
   );

@@ -9,7 +9,9 @@ const ContactSection = lazy(() => import("../features/landing/components/Contact
 const Domains = lazy(() => import("../features/landing/components/Domains"));
 const EventHero = lazy(() => import("../features/landing/components/EventsHero"));
 
+
 const Home = () => {
+  
   return (
     <div className="flex flex-col min-h-screen bg-bg relative transition-colors duration-300">
       {/* Global Background Pattern */}

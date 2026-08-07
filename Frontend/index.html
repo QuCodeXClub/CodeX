@@ -1,39 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeX | Coding the Future, Today.</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="/codex-logo-icon.svg" />
-  <link rel="apple-touch-icon" href="/codex-logo-icon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2ec5d4" />
-  <meta name="description" content="CodeX - Secure Admin Portal for Event & Certificate Management" />
-  <meta property="og:title" content="CodeX Portal" />
-  <meta property="og:description" content="CodeX - Secure Admin Portal for Event & Certificate Management" />
-  <meta property="og:image" content="/codex-logo-icon.svg" />
-  <title>CodeX</title>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem('theme');
-        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      } catch (e) { }
-    })();
-  </script>
-</head>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="CodeX | Coding the Future, Today." />
+    <meta name="description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning." />
+    <meta name="theme-color" content="#2ec5d4" />
+    <meta name="author" content="CodeX" />
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qucodex.com/" />
+    <meta property="og:title" content="CodeX | Coding the Future, Today." />
+    <meta property="og:description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning." />
+    <meta property="og:image" content="https://qucodex.com/codex-logo-icon.svg" />
 
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://qucodex.com/" />
+    <meta property="twitter:title" content="CodeX | Coding the Future, Today." />
+    <meta property="twitter:description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning." />
+    <meta property="twitter:image" content="https://qucodex.com/codex-logo-icon.svg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <!-- Favicons & App Manifest -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Theme script to prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) { }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
