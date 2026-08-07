@@ -97,6 +97,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
