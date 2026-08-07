@@ -1,0 +1,17 @@
+{
+  "name": "CodeX Portal",
+  "short_name": "CodeX",
+  "description": "Secure Admin Portal for Event & Certificate Management",
+  "icons": [
+    {
+      "src": "/codex-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2ec5d4",
+  "background_color": "#111827"
+}
