@@ -1,4 +1,4 @@
-name: Deploy CodeX Backend to AWS EC2 (via AWS SSM - No SSH)
+name: Deploy CodeX Backend
 
 on:
   push:

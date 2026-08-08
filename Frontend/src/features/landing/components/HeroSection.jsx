@@ -32,7 +32,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-[calc(100vh-6.75rem)] flex flex-col lg:flex-row overflow-hidden" id="about">
+    <section className="relative min-h-[calc(100vh-6.75rem)] flex flex-col lg:flex-row overflow-hidden" id="home">
       {/* Dynamic Background Glows */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[10%] left-[5%] w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] rounded-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/15 via-accent/5 to-transparent blur-3xl opacity-60 pointer-events-none"></div>

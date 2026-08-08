@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Sun, Moon, ArrowRight } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
@@ -12,30 +12,60 @@ const Navbar = ({ layout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
+  const navRef = useRef(null);
 
   // Decoupled Custom Navigation Hooks
   const { pageNavItems } = usePageNavigation();
-  const { sectionNavItems, handleSectionClick } = useSectionNavigation();
+  const { sectionNavItems, activeSection, isHomePage, handleSectionClick } = useSectionNavigation();
 
   // Close mobile menu on location changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname, location.hash]);
 
+  // Close mobile menu when clicking outside header
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handlePointerDown = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [isMobileMenuOpen]);
+
   const toggleMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   // Unified Navigation Item Renderer for both Page Links and Section Links
-  // Identical typography, colors, hover effects, and spacing
+  // Identical typography, colors, hover effects, active highlighting, and spacing
   const renderNavItem = (item, isSection = false, isMobile = false) => {
+    const isActive = isSection
+      ? isHomePage && activeSection === item.targetId
+      : location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+
     const commonClasses = isMobile
-      ? "flex items-center px-4 py-3 rounded-lg font-sans text-xs tracking-[0.15em] uppercase text-text-muted hover:text-accent hover:bg-card-hover font-semibold transition-colors duration-200"
-      : "relative font-sans text-xs xl:text-sm tracking-[0.12em] uppercase text-text-muted hover:text-accent font-semibold transition-colors duration-200 whitespace-nowrap py-2 cursor-pointer";
+      ? `flex items-center px-4 py-3 rounded-lg font-sans text-xs tracking-[0.15em] uppercase font-semibold transition-colors duration-200 ${
+          isActive
+            ? "text-accent bg-accent/10 font-bold"
+            : "text-text-muted hover:text-accent hover:bg-card-hover"
+        }`
+      : `relative font-sans text-xs xl:text-sm tracking-[0.12em] uppercase font-semibold transition-colors duration-200 whitespace-nowrap py-2 cursor-pointer ${
+          isActive ? "text-accent font-bold" : "text-text-muted hover:text-accent"
+        }`;
 
     if (isSection) {
       return (
-        <a
-          key={item.path}
-          href={item.path}
+        <button
+          key={item.targetId}
+          type="button"
           onClick={(e) => {
             handleSectionClick(e, item);
             setIsMobileMenuOpen(false);
@@ -43,7 +73,14 @@ const Navbar = ({ layout }) => {
           className={commonClasses}
         >
           {item.label}
-        </a>
+          {!isMobile && (
+            <span
+              className={`absolute left-0 bottom-0 w-full h-[2px] rounded-full bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)] transition-all duration-300 origin-left ${
+                isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+              }`}
+            />
+          )}
+        </button>
       );
     }
 
@@ -55,12 +92,19 @@ const Navbar = ({ layout }) => {
         className={commonClasses}
       >
         {item.label}
+        {!isMobile && (
+          <span
+            className={`absolute left-0 bottom-0 w-full h-[2px] rounded-full bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)] transition-all duration-300 origin-left ${
+              isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+            }`}
+          />
+        )}
       </Link>
     );
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-bg/90 backdrop-blur-md border-b border-border/80 transition-colors duration-300">
+    <header ref={navRef} className="sticky top-0 z-50 w-full bg-bg/90 backdrop-blur-md border-b border-border/80 transition-colors duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
         
         {/* Brand Logo (Primary link to return home) */}

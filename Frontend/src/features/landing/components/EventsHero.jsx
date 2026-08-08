@@ -13,7 +13,7 @@ const EventsHero = () => {
   };
 
   return (
-    <section className="relative overflow-hidden min-h-[80vh] flex flex-col">
+    <section id="programs" className="relative overflow-hidden min-h-[80vh] flex flex-col">
       <div className="flex-1 max-w-[1400px] w-full mx-auto grid grid-cols-1 xl:grid-cols-2 gap-24 xl:gap-8 items-center px-6 lg:px-12 py-12 lg:py-20 relative z-10">
         
         {/* Left Content */}
