@@ -227,9 +227,10 @@ const ContactSection = () => {
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
                     <div className="w-full sm:w-auto flex justify-center scale-90 sm:scale-100 origin-left">
                       <Turnstile
-                        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+                        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAAD5G7REKwUjI5h-H"}
+                        action="turnstile-spin-v2"
                         onSuccess={(token) => setTurnstileToken(token)}
-                        options={{ theme: "auto" }}
+                        options={{ theme: "auto", action: "turnstile-spin-v2" }}
                       />
                     </div>
 

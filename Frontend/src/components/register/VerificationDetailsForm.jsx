@@ -53,10 +53,11 @@ export default function VerificationDetailsForm({
         <Turnstile
           siteKey={
             import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-            "1x00000000000000000000AA"
+            "0x4AAAAAAD5G7REKwUjI5h-H"
           }
+          action="turnstile-spin-v2"
           onSuccess={(token) => setTurnstileToken(token)}
-          options={{ theme: "auto" }}
+          options={{ theme: "auto", action: "turnstile-spin-v2" }}
         />
       </div>
 

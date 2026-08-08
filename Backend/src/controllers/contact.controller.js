@@ -11,13 +11,14 @@ import { verifyTurnstileToken } from "../utils/turnstile.js";
 // @access  Public
 const submitContactForm = asyncHandler(async (req, res) => {
   const { name, email, subject, message, turnstileToken } = req.body;
+  const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
 
   // 1. Verify Bot Token
   if (!turnstileToken) {
     throw new ApiError(400, "Bot verification token is missing");
   }
 
-  const isHuman = await verifyTurnstileToken(turnstileToken);
+  const isHuman = await verifyTurnstileToken(turnstileToken, clientIp);
   if (!isHuman) {
     throw new ApiError(400, "Bot verification failed. Please try again.");
   }
