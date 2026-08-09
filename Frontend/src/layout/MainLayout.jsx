@@ -19,13 +19,24 @@ const MainLayout = () => {
     }
   }, [location.pathname]);
 
-  const handleFooterClick = () => {
-    const newCount = footerClicks + 1;
-    setFooterClicks(newCount);
-    if (newCount >= 5) {
-      navigate("/admin/login");
+  // Reset click count after 2 seconds of inactivity
+  useEffect(() => {
+    if (footerClicks === 0) return;
+    const timer = setTimeout(() => {
       setFooterClicks(0);
-    }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [footerClicks]);
+
+  const handleFooterClick = () => {
+    setFooterClicks((prev) => {
+      const nextCount = prev + 1;
+      if (nextCount >= 5) {
+        navigate("/admin/login");
+        return 0;
+      }
+      return nextCount;
+    });
   };
 
   return (

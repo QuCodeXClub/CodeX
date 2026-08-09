@@ -151,7 +151,10 @@ const Footer = ({ layout, onFooterClick }) => {
 
         {/* Bottom Bar */}
         <div className="border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-text-muted font-mono uppercase tracking-wider text-center md:text-left">
+          <p 
+            onClick={onFooterClick}
+            className="text-xs text-text-muted font-mono uppercase tracking-wider text-center md:text-left select-none cursor-pointer hover:text-accent transition-colors"
+          >
             {footerText}
           </p>
           
