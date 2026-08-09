@@ -1,48 +1,59 @@
 import React from "react";
 import legal from "../data/legal.json";
 import PageContainer from "../components/common/PageContainer";
+import { Eye, Clock } from "lucide-react";
 
 const Accessibility = () => {
   const policy = legal.accessibility;
 
   return (
-    <div className="py-16 text-text">
+    <div className="py-12 bg-bg min-h-screen font-sans text-text">
       <PageContainer>
-      <h1 className="text-3xl font-bold uppercase tracking-wider">
-        {policy.title}
-      </h1>
+        <header className="mb-10 border-b border-border/80 pb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3">
+            <Eye className="w-3.5 h-3.5" />
+            <span>INCLUSIVITY & ACCESSIBILITY</span>
+          </div>
 
-      <p className="mt-2 text-sm text-text-muted">
-        Last Updated: {policy.lastUpdated}
-      </p>
+          <h1 className="text-4xl sm:text-5xl font-display font-black uppercase text-text tracking-tight">
+            {policy.title}
+          </h1>
 
-      {policy.sections.map((section, index) => (
-        <section
-          key={index}
-          className="mt-10 pt-8 border-t border-border"
-        >
-          <h2 className="text-xl font-semibold text-accent mb-4">
-            {section.title}
-          </h2>
+          <div className="flex items-center gap-2 mt-3 text-xs font-mono text-text-muted">
+            <Clock className="w-3.5 h-3.5 text-accent" />
+            <span>Last Updated: {policy.lastUpdated}</span>
+          </div>
+        </header>
 
-          {section.content?.map((paragraph, i) => (
-            <p
-              key={i}
-              className="text-text-muted leading-8 mb-4"
+        <div className="space-y-8">
+          {policy.sections.map((section, index) => (
+            <section
+              key={index}
+              className="glass-card p-6 sm:p-8 rounded-2xl border border-border/80 shadow-sm"
             >
-              {paragraph}
-            </p>
-          ))}
+              <h2 className="text-xl font-display font-bold text-accent uppercase tracking-wide mb-4">
+                {section.title}
+              </h2>
 
-          {section.list && (
-            <ul className="list-disc pl-6 space-y-2 text-text-muted">
-              {section.list.map((item, i) => (
-                <li key={i}>{item}</li>
+              {section.content?.map((paragraph, i) => (
+                <p
+                  key={i}
+                  className="mb-4 leading-relaxed text-text-muted font-sans text-sm sm:text-base"
+                >
+                  {paragraph}
+                </p>
               ))}
-            </ul>
-          )}
-        </section>
-      ))}
+
+              {section.list && (
+                <ul className="space-y-2.5 text-text-muted font-sans text-sm list-disc pl-6 marker:text-accent">
+                  {section.list.map((item, i) => (
+                    <li key={i} className="leading-relaxed">{item}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
+        </div>
       </PageContainer>
     </div>
   );

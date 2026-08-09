@@ -123,11 +123,11 @@ export default function AdminLogin() {
           >
             <div>
               <label className="block text-sm font-semibold text-text mb-1.5">
-                Email
+                Email Address
               </label>
               <div className="relative">
                 <Mail
-                  className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.email ? "text-danger" : "text-text-text-muted"}`}
+                  className={`absolute left-3.5 top-3 w-5 h-5 ${loginErrors.email ? "text-danger" : "text-text-muted"}`}
                 />
                 <input
                   type="email"
@@ -138,12 +138,12 @@ export default function AdminLogin() {
                       message: "Invalid email format",
                     },
                   })}
-                  className={`w-full bg-card border ${loginErrors.email ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-text-text-muted`}
-                  placeholder="Enter your Mail"
+                  className={`w-full bg-card border ${loginErrors.email ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 pl-11 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm placeholder:text-text-muted/40`}
+                  placeholder="Enter your Email"
                 />
               </div>
               {loginErrors.email && (
-                <p className="mt-1 text-xs text-danger">
+                <p className="mt-1 text-xs text-danger font-medium">
                   {loginErrors.email.message}
                 </p>
               )}
@@ -154,19 +154,19 @@ export default function AdminLogin() {
               </label>
               <div className="relative">
                 <Lock
-                  className={`absolute left-3 top-2.5 w-5 h-5 ${loginErrors.password ? "text-danger" : "text-text-text-muted"}`}
+                  className={`absolute left-3.5 top-3 w-5 h-5 ${loginErrors.password ? "text-danger" : "text-text-muted"}`}
                 />
                 <input
                   type="password"
                   {...registerLogin("password", {
                     required: "Password is required",
                   })}
-                  className={`w-full bg-card border ${loginErrors.password ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm placeholder:text-text-text-muted`}
+                  className={`w-full bg-card border ${loginErrors.password ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 pl-11 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm placeholder:text-text-muted/40`}
                   placeholder="••••••••"
                 />
               </div>
               {loginErrors.password && (
-                <p className="mt-1 text-xs text-danger">
+                <p className="mt-1 text-xs text-danger font-medium">
                   {loginErrors.password.message}
                 </p>
               )}
@@ -174,7 +174,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-accent text-white py-2.5 rounded-lg text-sm font-semibold transition-colors hover:bg-accent disabled:opacity-70 shadow-sm mt-2"
+              className="w-full flex items-center justify-center gap-2 bg-accent text-white py-3 px-6 rounded-xl text-sm font-semibold transition-all hover:bg-accent/90 disabled:opacity-70 shadow-md shadow-accent/20 cursor-pointer border-0 mt-2"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -195,7 +195,7 @@ export default function AdminLogin() {
             <input type="text" style={{ display: "none" }} />
             <input type="password" style={{ display: "none" }} />
             <div className="text-center mb-6">
-              <p className="text-sm text-text-text-muted">
+              <p className="text-sm text-text-muted">
                 A 6-digit code has been sent to <br />
                 <span className="font-semibold text-accent">{userEmail}</span>
               </p>
@@ -206,7 +206,7 @@ export default function AdminLogin() {
               </label>
               <div className="relative">
                 <KeyRound
-                  className={`absolute left-4 top-3.5 w-5 h-5 ${otpErrors.otp ? "text-danger" : "text-text-text-muted"}`}
+                  className={`absolute left-4 top-3.5 w-5 h-5 ${otpErrors.otp ? "text-danger" : "text-text-muted"}`}
                 />
                 <input
                   type="text"
@@ -219,12 +219,12 @@ export default function AdminLogin() {
                       message: "OTP must be exactly 6 digits",
                     },
                   })}
-                  className={`w-full bg-card-hover border ${otpErrors.otp ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-colors font-mono shadow-inner placeholder:text-text-text-muted`}
+                  className={`w-full bg-card-hover border ${otpErrors.otp ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-all font-mono shadow-inner placeholder:text-text-muted/40`}
                   placeholder="000000"
                 />
               </div>
               {otpErrors.otp && (
-                <p className="mt-1 text-xs text-danger text-center">
+                <p className="mt-1 text-xs text-danger text-center font-medium">
                   {otpErrors.otp.message}
                 </p>
               )}
@@ -232,7 +232,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-accent text-white py-2.5 rounded-lg text-sm font-semibold transition-colors hover:bg-accent disabled:opacity-70 shadow-sm"
+              className="w-full flex items-center justify-center gap-2 bg-accent text-white py-3 px-6 rounded-xl text-sm font-semibold transition-all hover:bg-accent/90 disabled:opacity-70 shadow-md shadow-accent/20 cursor-pointer border-0"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

@@ -18,25 +18,24 @@ const EventsHero = () => {
         
         {/* Left Content */}
         <div className="relative z-20 xl:pr-12">
-          <div className="inline-flex items-center gap-4 border border-accent/40 rounded-sm px-5 py-2 mb-10 bg-accent/5 backdrop-blur-md shadow-[0_0_15px_rgba(46,197,212,0.15)] relative group">
-            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-accent shadow-[0_0_8px_rgba(46,197,212,0.8)] group-hover:scale-125 transition-transform" style={{ clipPath: "polygon(100% 0, 100% 100%, 0 50%)" }}></div>
-            <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-accent shadow-[0_0_8px_rgba(46,197,212,0.8)] group-hover:scale-125 transition-transform" style={{ clipPath: "polygon(0 0, 100% 50%, 0 100%)" }}></div>
-            <span className="text-accent text-[0.75rem] uppercase tracking-[0.3em] font-mono font-bold">
-              {eventsHero.badge}
-            </span>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-6 h-[2px] bg-accent"></div>
+            <p className="m-0 text-accent text-xs md:text-sm font-mono font-bold tracking-[0.25em] uppercase">
+              // {eventsHero.badge?.replace(/^\/\/\s*/, '') || "FEATURED EVENTS"}
+            </p>
           </div>
-          <h1 className="font-sans text-[clamp(4rem,7vw,7rem)] font-bold leading-[0.85] tracking-tight uppercase mb-8 text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 transition-colors duration-300">
+          <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight uppercase mb-8 text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 transition-colors duration-300">
             {eventsHero.title.line1.split('.').map((part, i) => part.trim() ? <React.Fragment key={i}>{part}.<br/></React.Fragment> : null)}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/70 drop-shadow-[0_0_20px_rgba(46,197,212,0.5)]">
               {eventsHero.title.highlight}
             </span>
-          </h1>
+          </h2>
           <div className="flex items-center gap-2 mb-10">
             <div className="w-24 h-[2px] bg-accent shadow-[0_0_10px_rgba(46,197,212,0.8)]"></div>
             <div className="w-8 h-[2px] bg-accent/50"></div>
             <div className="w-4 h-[2px] bg-accent/20"></div>
           </div>
-          <p className="text-text-muted font-mono text-[1.05rem] leading-[1.8] max-w-[90%] mb-12 transition-colors duration-300">
+          <p className="text-text-muted font-mono text-sm md:text-base leading-[1.8] max-w-[90%] mb-12 transition-colors duration-300">
             {eventsHero.description}
           </p>
           <Link 

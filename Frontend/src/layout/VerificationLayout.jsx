@@ -1,15 +1,18 @@
 import React from "react";
+import { Printer, Copy, CheckCircle2, ShieldAlert } from "lucide-react";
 
 const VerificationLayout = ({
   isLoading,
   error,
   errorTitle = "Invalid Document",
-  loadingTitle = "Verifying",
-  loadingMessage = "Checking authenticity...",
+  loadingTitle = "Verifying Document",
+  loadingMessage = "Checking cryptographic signature & authenticity...",
   verificationURL,
   downloadText = "Download PDF",
   children,
 }) => {
+  const [copied, setCopied] = React.useState(false);
+
   const handlePrint = () => {
     window.print();
   };
@@ -17,14 +20,15 @@ const VerificationLayout = ({
   const copyVerificationLink = async () => {
     try {
       await navigator.clipboard.writeText(verificationURL);
-      alert("Verification link copied.");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       alert("Unable to copy link.");
     }
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell bg-bg min-h-screen">
       {/* Fixed Print-Specific CSS */}
       <style>{`
         @media print {
@@ -34,18 +38,12 @@ const VerificationLayout = ({
             print-color-adjust: exact !important; 
             background-color: white !important;
           }
-          
-          /* 1. Hide everything on the page without collapsing the layout completely */
           body * {
             visibility: hidden;
           }
-
-          /* 2. Show only the overlay and its children */
           #verification-overlay, #verification-overlay * {
             visibility: visible;
           }
-
-          /* 3. Pull the document to the absolute top-left corner of the paper */
           #verification-overlay {
             position: absolute !important;
             left: 0 !important;
@@ -60,54 +58,59 @@ const VerificationLayout = ({
         }
       `}</style>
 
-      {/* Main Shared Wrapper (Guarantees full height and centering for all states) */}
+      {/* Main Shared Wrapper */}
       <main
         id="verification-overlay"
-        className="w-full max-w-[1400px] mx-auto flex-1 border-x border-border bg-bg-soft min-h-screen py-12 px-4 flex flex-col items-center justify-center relative overflow-y-auto"
+        className="w-full max-w-[1400px] mx-auto flex-1 bg-bg min-h-screen py-12 px-4 flex flex-col items-center justify-center relative overflow-y-auto"
       >
         
-
-        {/* ---------------- Loading State ---------------- */}
+        {/* Loading State */}
         {isLoading ? (
-          <div className="relative z-10 flex flex-col justify-center p-8 bg-card/40 backdrop-blur-md rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-lg text-center items-center">
-            <div className="mx-auto h-16 w-16 animate-spin rounded-full border-[6px] border-border border-t-accent" />
-            <h2 className="mt-8 font-sans text-2xl font-bold uppercase tracking-[0.3em] text-text">
+          <div className="relative z-10 flex flex-col justify-center p-10 glass-card rounded-3xl border border-border/80 w-full max-w-lg text-center items-center">
+            <div className="relative w-16 h-16 mb-6">
+              <div className="absolute inset-0 rounded-full border-4 border-accent/20 border-t-accent animate-spin" />
+            </div>
+            <h2 className="font-display font-bold text-2xl uppercase tracking-wider text-text">
               {loadingTitle}
             </h2>
-            <p className="mt-4 text-text-muted text-sm font-mono uppercase tracking-widest">
+            <p className="mt-2 text-text-muted text-xs font-mono">
               {loadingMessage}
             </p>
           </div>
         ) : 
         
-        /* ---------------- Error State ---------------- */
+        /* Error State */
         error ? (
-          <div className="relative z-10 flex flex-col justify-center p-8 bg-card/40 backdrop-blur-md rounded-2xl border border-danger/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-2xl text-center">
-            <h1 className="mt-2 font-sans text-4xl lg:text-6xl uppercase tracking-[0.05em] text-danger">
+          <div className="relative z-10 flex flex-col justify-center p-10 glass-card rounded-3xl border border-danger/40 w-full max-w-xl text-center items-center">
+            <ShieldAlert className="w-16 h-16 text-danger mb-4" />
+            <h1 className="font-display font-bold text-3xl uppercase tracking-wide text-danger">
               {errorTitle}
             </h1>
-            <p className="mt-6 text-text-muted font-mono uppercase tracking-widest text-sm">
+            <p className="mt-4 text-text-muted font-mono text-xs max-w-md">
               {error}
             </p>
           </div>
         ) : 
         
-        /* ---------------- Main Layout (Success) ---------------- */
+        /* Success Layout */
         (
           <>
-            {/* Action Buttons */}
-            <div className="relative z-10 w-full max-w-[1000px] flex flex-wrap justify-end gap-4 mb-8 print:hidden">
+            {/* Action Buttons Toolbar */}
+            <div className="relative z-10 w-full max-w-[1000px] flex flex-wrap justify-end gap-3 mb-6 print:hidden">
               <button
                 onClick={handlePrint}
-                className="inline-flex items-center w-full lg:w-fit justify-center min-h-[3.25rem] px-[1.5rem] py-[0.9rem] border font-sans text-[0.96rem] tracking-[0.2em] uppercase transition-all duration-150 rounded-lg bg-text text-bg border-transparent hover:bg-text-muted hover:text-bg hover:-translate-y-[1px]"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-text-inverse font-mono text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md shadow-accent/20 cursor-pointer border-0 transition-all"
               >
-                {downloadText}
+                <Printer className="w-4 h-4" />
+                <span>{downloadText}</span>
               </button>
+              
               <button
                 onClick={copyVerificationLink}
-                className="inline-flex items-center w-full lg:w-fit justify-center min-h-[3.25rem] px-[1.5rem] py-[0.9rem] border font-sans text-[0.96rem] tracking-[0.2em] uppercase transition-all duration-150 rounded-lg bg-card text-text border-border hover:bg-card-hover hover:-translate-y-[1px]"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-card border border-border text-text font-mono text-xs font-bold uppercase tracking-wider hover:bg-card-hover hover:border-accent/40 cursor-pointer transition-all"
               >
-                Copy Link
+                {copied ? <CheckCircle2 className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4 text-accent" />}
+                <span>{copied ? "COPIED LINK" : "COPY LINK"}</span>
               </button>
             </div>
 

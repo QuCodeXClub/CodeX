@@ -49,30 +49,39 @@ const Footer = ({ layout, onFooterClick }) => {
     : `© ${currentYear} CodeX. ALL RIGHTS RESERVED.`;
 
   return (
-    <footer className="relative overflow-hidden border-t border-border bg-card/20 backdrop-blur-md pt-20 pb-10 px-6 md:px-12">
-         
+    <footer className="relative overflow-hidden border-t border-border/80 bg-card/60 backdrop-blur-xl pt-16 pb-8 px-6 md:px-12 mt-auto">
+      {/* Background Glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-accent/5 blur-[120px] pointer-events-none rounded-full" />
+
       <div className="max-w-[1400px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10 mb-12">
           
           {/* Column 1: Brand & Info */}
           <div className="flex flex-col gap-4 lg:col-span-2">
-            <span 
-              onClick={onFooterClick}
-              className="cursor-pointer select-none font-sans text-3xl uppercase tracking-widest text-text inline-block w-max"
-            >
-              CODE<span className="text-accent">X</span>
-            </span>
+            <div className="flex items-center gap-3">
+              <span 
+                onClick={onFooterClick}
+                className="cursor-pointer select-none font-display font-black text-3xl uppercase tracking-widest text-text inline-block hover:text-accent transition-colors"
+              >
+                CODE<span className="text-accent">X</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+                SYSTEM OPERATIONAL
+              </span>
+            </div>
+
             <p className="text-sm text-text-muted leading-relaxed max-w-sm">
-              Empowering student developers through code, collaboration, and community.
+              Empowering student developers through code, innovation, collaboration, and community building.
             </p>
             
-            <div className="flex items-center gap-3 mt-4">
-              <span className="text-xs text-text-muted font-sans tracking-widest uppercase">An initiative by</span>
+            <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-card-hover/50 border border-border/60 w-fit">
+              <span className="text-xs text-text-muted font-mono tracking-wider uppercase">AN INITIATIVE BY</span>
               <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="h-5 w-5 object-contain" />
-              <span className="text-xs text-text font-bold font-sans tracking-widest uppercase">Quantum University</span>
+              <span className="text-xs text-text font-bold font-sans tracking-wider uppercase">Quantum University</span>
             </div>
             
-            <div className="flex items-center gap-4 mt-5">
+            <div className="flex items-center gap-3 mt-2">
               {layout?.socials?.map((link) => (
                 <a
                   key={link.name}
@@ -82,16 +91,16 @@ const Footer = ({ layout, onFooterClick }) => {
                   aria-label={link.name}
                   className="
                     group
-                    flex h-11 w-11 items-center justify-center
-                    rounded-full
+                    flex h-10 w-10 items-center justify-center
+                    rounded-xl
                     border border-border
                     bg-card/80
                     backdrop-blur-sm
                     transition-all duration-300
                     hover:-translate-y-1
-                    hover:border-accent
+                    hover:border-accent/60
                     hover:bg-accent/10
-                    hover:shadow-lg hover:shadow-accent/20
+                    hover:shadow-md hover:shadow-accent/10
                   "
                 >
                   {getSocialIcon(link.name)}
@@ -102,49 +111,52 @@ const Footer = ({ layout, onFooterClick }) => {
 
           {/* Column 2: Quick Links */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-sans font-bold text-text uppercase tracking-widest text-xs">
-              Quick Links
+            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+              Navigation
             </h3>
-            <div className="flex flex-col gap-3">
-              <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors">Events</Link>
-              <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors">Team</Link>
+            <div className="flex flex-col gap-2.5">
+              <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
+              <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
+              <Link to="/register" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Register</Link>
             </div>
           </div>
 
           {/* Column 3: Legal & Privacy */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-sans font-bold text-text uppercase tracking-widest text-xs">
-              Legal & Privacy
+            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+              Legal & Compliance
             </h3>
-            <div className="flex flex-col gap-3">
-              <Link to="/privacy-policy" className="text-sm text-text-muted hover:text-accent transition-colors">Privacy Policy</Link>
-              <Link to="/terms-conditions" className="text-sm text-text-muted hover:text-accent transition-colors">Terms & Conditions</Link>
-              <Link to="/accessibility" className="text-sm text-text-muted hover:text-accent transition-colors">Accessibility</Link>
+            <div className="flex flex-col gap-2.5">
+              <Link to="/privacy-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Privacy Policy</Link>
+              <Link to="/terms-conditions" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Terms & Conditions</Link>
+              <Link to="/accessibility" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Accessibility</Link>
             </div>
           </div>
 
           {/* Column 4: Community */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-sans font-bold text-text uppercase tracking-widest text-xs">
-              Community
+            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+              Governance
             </h3>
-            <div className="flex flex-col gap-3">
-              <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors">Guidelines</Link>
-              <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors">Event Policy</Link>
+            <div className="flex flex-col gap-2.5">
+              <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Guidelines</Link>
+              <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Event Policy</Link>
             </div>
           </div>
           
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border/60 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-text-muted font-mono uppercase tracking-widest text-center md:text-left">
+        <div className="border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-text-muted font-mono uppercase tracking-wider text-center md:text-left">
             {footerText}
           </p>
           
           {layout?.meta && (
             <div className="flex items-center gap-3">
-              <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
               <p className="text-xs text-text-muted font-mono uppercase tracking-widest">
                 {layout.meta}
               </p>

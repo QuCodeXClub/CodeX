@@ -13,15 +13,30 @@ import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
 
+// Robust lazy loader with chunk load failure auto-retry
+const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    try {
+      return await componentImport();
+    } catch (error) {
+      const hasRefreshed = sessionStorage.getItem("codex_chunk_refreshed");
+      if (!hasRefreshed) {
+        sessionStorage.setItem("codex_chunk_refreshed", "true");
+        window.location.reload();
+      }
+      throw error;
+    }
+  });
+
 // Public pages
-const Team = lazy(() => import("./pages/Team"));
-const Events = lazy(() => import("./pages/Events"));
-const EventDetails = lazy(() => import("./pages/EventDetails")); 
+const Team = lazyWithRetry(() => import("./pages/Team"));
+const Events = lazyWithRetry(() => import("./pages/Events"));
+const EventDetails = lazyWithRetry(() => import("./pages/EventDetails")); 
 
-const Register = lazy(() => import("./pages/Register"));
+const Register = lazyWithRetry(() => import("./pages/Register"));
 
-const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
-const VerifyBoardingPass = lazy(() => import("./pages/VerifyBoardingPass"));
+const VerifyCertificate = lazyWithRetry(() => import("./pages/VerifyCertificate"));
+const VerifyBoardingPass = lazyWithRetry(() => import("./pages/VerifyBoardingPass"));
 
 
 // New Policy Pages

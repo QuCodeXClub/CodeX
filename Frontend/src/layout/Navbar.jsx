@@ -47,19 +47,24 @@ const Navbar = ({ layout }) => {
   // Unified Navigation Item Renderer for both Page Links and Section Links
   // Identical typography, colors, hover effects, active highlighting, and spacing
   const renderNavItem = (item, isSection = false, isMobile = false) => {
-    const isActive = isSection
-      ? isHomePage && activeSection === item.targetId
-      : location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+    let isActive = false;
+    if (isSection) {
+      if (isHomePage) {
+        const activeIdx = sectionNavItems.findIndex((nav) => nav.targetId === activeSection);
+        const currentIdx = sectionNavItems.findIndex((nav) => nav.targetId === item.targetId);
+        isActive = activeIdx !== -1 ? currentIdx <= activeIdx : currentIdx === 0;
+      }
+    } else {
+      isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+    }
 
     const commonClasses = isMobile
-      ? `flex items-center px-4 py-3 rounded-lg font-sans text-xs tracking-[0.15em] uppercase font-semibold transition-colors duration-200 ${
-          isActive
-            ? "text-accent bg-accent/10 font-bold"
-            : "text-text-muted hover:text-accent hover:bg-card-hover"
-        }`
-      : `relative font-sans text-xs xl:text-sm tracking-[0.12em] uppercase font-semibold transition-colors duration-200 whitespace-nowrap py-2 cursor-pointer ${
-          isActive ? "text-accent font-bold" : "text-text-muted hover:text-accent"
-        }`;
+      ? `flex items-center px-4 py-3 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold transition-all duration-200 ${isActive
+        ? "text-accent bg-accent/10 font-bold border-l-2 border-accent"
+        : "text-text-muted hover:text-accent hover:bg-card-hover"
+      }`
+      : `relative font-sans text-xs xl:text-sm tracking-wider uppercase font-semibold transition-colors duration-200 whitespace-nowrap py-2 cursor-pointer ${isActive ? "text-accent font-bold" : "text-text-muted hover:text-accent"
+      }`;
 
     if (isSection) {
       return (
@@ -75,9 +80,8 @@ const Navbar = ({ layout }) => {
           {item.label}
           {!isMobile && (
             <span
-              className={`absolute left-0 bottom-0 w-full h-[2px] rounded-full bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)] transition-all duration-300 origin-left ${
-                isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
-              }`}
+              className={`absolute left-0 bottom-0 w-full h-[2.5px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] transition-all duration-300 origin-left ${isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                }`}
             />
           )}
         </button>
@@ -94,9 +98,8 @@ const Navbar = ({ layout }) => {
         {item.label}
         {!isMobile && (
           <span
-            className={`absolute left-0 bottom-0 w-full h-[2px] rounded-full bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)] transition-all duration-300 origin-left ${
-              isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
-            }`}
+            className={`absolute left-0 bottom-0 w-full h-[2.5px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] transition-all duration-300 origin-left ${isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+              }`}
           />
         )}
       </Link>
@@ -104,22 +107,27 @@ const Navbar = ({ layout }) => {
   };
 
   return (
-    <header ref={navRef} className="sticky top-0 z-50 w-full bg-bg/90 backdrop-blur-md border-b border-border/80 transition-colors duration-300">
+    <header ref={navRef} className="sticky top-0 z-50 w-full bg-bg/85 backdrop-blur-xl border-b border-border/80 transition-all duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
-        
-        {/* Brand Logo (Primary link to return home) */}
+
+        {/* Brand Logo */}
         <Link
           to="/"
+          onClick={(e) => {
+            handleSectionClick(e, { label: "HOME", targetId: "home" });
+          }}
           className="flex items-center gap-3 shrink-0 group"
           aria-label="CodeX Club home"
         >
-          <img
-            src={ASSETS.IMAGES.CODEX_LOGO_ICON}
-            alt="CodeX Club logo"
-            className="h-7 md:h-8 object-contain transition-transform duration-300 group-hover:scale-105"
-          />
-          <span className="font-sans font-bold text-lg md:text-xl tracking-[0.2em] text-text group-hover:text-accent transition-colors">
-            CODEX
+          <div className="relative p-1.5 rounded-xl bg-accent/10 border border-accent/20 group-hover:border-accent/50 group-hover:shadow-[0_0_15px_var(--color-accent-glow)] transition-all duration-300">
+            <img
+              src={ASSETS.IMAGES.CODEX_LOGO_ICON}
+              alt="CodeX Club logo"
+              className="h-6 md:h-7 object-contain transition-transform duration-300 group-hover:scale-110"
+            />
+          </div>
+          <span className="font-display font-extrabold text-lg md:text-2xl tracking-[0.15em] text-text group-hover:text-accent transition-colors">
+            CODE<span className="text-accent">X</span>
           </span>
         </Link>
 
@@ -131,7 +139,7 @@ const Navbar = ({ layout }) => {
           </div>
 
           {/* 2. Subtle Visual Separator */}
-          <div className="h-3.5 w-[1px] bg-border/60 mx-1 xl:mx-2 select-none" />
+          <div className="h-4 w-[1px] bg-border/60 mx-1 xl:mx-2 select-none" />
 
           {/* 3. Standalone Page Links */}
           <div className="flex items-center gap-5 xl:gap-7">
@@ -140,24 +148,23 @@ const Navbar = ({ layout }) => {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3 md:gap-5 shrink-0">
-          
-          {/* Meta Kicker */}
-          {layout?.meta && (
-            <span className="hidden xl:inline-block text-accent font-mono text-xs tracking-wider uppercase font-semibold pr-4 border-r border-border/60">
-              {layout.meta}
-            </span>
-          )}
+        <div className="flex items-center gap-3 md:gap-4 shrink-0">
+
+          {/* Meta Status Indicator */}
+          <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs tracking-wider uppercase font-semibold">
+            <span className="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+            <span>{layout?.meta || "CODEX CLUB"}</span>
+          </div>
 
           {/* Theme Toggle Button */}
           <button
             type="button"
             onClick={toggleTheme}
-            className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer text-text hover:bg-card-hover hover:shadow-sm"
+            className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer text-text bg-card-hover/80 border border-border hover:border-accent/40 hover:text-accent hover:shadow-md"
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDark ? (
-              <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent" />
+              <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent animate-spin-slow" />
             ) : (
               <Moon className="w-4 h-4 md:w-5 md:h-5 text-text" />
             )}
@@ -167,7 +174,7 @@ const Navbar = ({ layout }) => {
           <button
             type="button"
             onClick={() => navigate("/register")}
-            className="flex items-center justify-center gap-1.5 md:gap-2 h-8 md:h-10 px-3.5 md:px-6 rounded-full bg-accent text-bg font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-90 active:scale-95 transition-all shadow-md shadow-accent/20 cursor-pointer border-0"
+            className="flex items-center justify-center gap-2 h-9 md:h-10 px-4 md:px-6 rounded-xl bg-accent text-text-inverse font-sans text-xs md:text-sm font-bold tracking-wider uppercase hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-accent/25 hover:shadow-accent/40 cursor-pointer border-0"
           >
             <span>{layout?.cta || "JOIN US"}</span>
             <ArrowRight className="hidden md:block w-4 h-4 stroke-[2.5]" />
@@ -183,19 +190,16 @@ const Navbar = ({ layout }) => {
           >
             <div className="relative w-5 h-4 text-current">
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${
-                  isMobileMenuOpen ? "top-2 rotate-45" : "top-0"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "top-2 rotate-45" : "top-0"
+                  }`}
               />
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out top-2 ${
-                  isMobileMenuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out top-2 ${isMobileMenuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
+                  }`}
               />
               <span
-                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${
-                  isMobileMenuOpen ? "top-2 -rotate-45" : "top-4"
-                }`}
+                className={`absolute block w-5 h-[2px] bg-current transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "top-2 -rotate-45" : "top-4"
+                  }`}
               />
             </div>
           </button>
@@ -204,17 +208,16 @@ const Navbar = ({ layout }) => {
 
       {/* Mobile Menu Dropdown */}
       <div
-        className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden bg-bg/95 backdrop-blur-xl border-b border-border shadow-xl absolute w-full left-0 ${
-          isMobileMenuOpen
-            ? "max-h-[450px] opacity-100 py-4"
-            : "max-h-0 opacity-0 py-0 pointer-events-none"
-        }`}
+        className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden bg-bg/95 backdrop-blur-xl border-b border-border shadow-xl absolute w-full left-0 ${isMobileMenuOpen
+          ? "max-h-[450px] opacity-100 py-4"
+          : "max-h-0 opacity-0 py-0 pointer-events-none"
+          }`}
       >
         <div className="px-4 flex flex-col gap-1">
           <nav className="flex flex-col gap-1">
             {/* 1. Homepage Section Links */}
             {sectionNavItems.map((item) => renderNavItem(item, true, true))}
-            
+
             {/* 2. Mobile Subtle Divider */}
             <div className="h-[1px] w-full bg-border/40 my-2" />
 

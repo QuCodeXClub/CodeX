@@ -39,21 +39,20 @@ const MissionSection = () => {
           
           {/* Left Content */}
           <div className="flex-1 lg:max-w-[55%] relative z-20 flex flex-col">
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-accent text-[0.75rem] tracking-[0.34em] uppercase font-bold">
-                {mission.eyebrow}
-              </span>
-              <div className="h-[2px] w-12 bg-accent shadow-[0_0_8px_rgba(46,197,212,0.8)]"></div>
-              <div className="w-[4px] h-[4px] border border-accent rounded-full shadow-[0_0_8px_rgba(46,197,212,0.8)] animate-pulse"></div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-6 h-[2px] bg-accent"></div>
+              <p className="m-0 text-accent text-xs md:text-sm font-mono font-bold tracking-[0.25em] uppercase">
+                // {mission.eyebrow?.replace(/^\/\/\s*/, '') || "OUR VISION"}
+              </p>
             </div>
             
-            <h2 className="font-serif text-[clamp(2.5rem,4vw,4rem)] leading-[1.1] mb-8 text-text transition-colors duration-300">
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-8 text-text transition-colors duration-300">
               {formatHeadline(mission.headline)}
             </h2>
             
             <div className="w-16 h-[2px] bg-accent/80 mb-8 shadow-[0_0_10px_rgba(46,197,212,0.6)]"></div>
             
-            <p className="text-text-muted transition-colors duration-300 leading-[1.8] text-[1rem] font-mono mb-12 lg:pr-10">
+            <p className="text-text-muted transition-colors duration-300 leading-[1.8] text-sm md:text-base font-mono mb-12 lg:pr-10">
               {mission.description}
             </p>
           </div>

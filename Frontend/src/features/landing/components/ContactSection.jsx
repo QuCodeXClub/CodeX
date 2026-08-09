@@ -68,18 +68,16 @@ const ContactSection = () => {
           <textarea
             id={id}
             {...props}
-            className={`w-full bg-card/40 backdrop-blur-sm border ${
-              error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
-            } text-text rounded-2xl p-4 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 resize-none focus:ring-4 shadow-inner`}
+            className={`w-full bg-card/40 backdrop-blur-sm border ${error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
+              } text-text rounded-2xl p-4 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 resize-none focus:ring-4 shadow-inner`}
           />
         ) : (
           <input
             id={id}
             type={type}
             {...props}
-            className={`w-full bg-card/40 backdrop-blur-sm border ${
-              error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
-            } text-text rounded-2xl px-4 py-3.5 pr-11 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 focus:ring-4 shadow-inner`}
+            className={`w-full bg-card/40 backdrop-blur-sm border ${error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
+              } text-text rounded-2xl px-4 py-3.5 pr-11 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 focus:ring-4 shadow-inner`}
           />
         )}
         {Icon && type !== "textarea" && (
@@ -104,17 +102,17 @@ const ContactSection = () => {
 
       <div className="max-w-[1200px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20 items-center">
-          
+
           {/* Left Side: Typography & Info */}
           <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-[2px] bg-accent shadow-[0_0_8px_rgba(46,197,212,0.6)]"></div>
-              <p className="m-0 text-accent font-mono text-[0.75rem] font-bold tracking-[0.25em] uppercase">
-                {contactSection.eyebrow}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-6 h-[2px] bg-accent"></div>
+              <p className="m-0 text-accent font-mono text-xs md:text-sm font-bold tracking-[0.25em] uppercase">
+                // {contactSection.eyebrow?.replace(/^\/\/\s*/, '') || "GET IN TOUCH"}
               </p>
             </div>
-            
-            <h2 className="font-sans text-[clamp(2.8rem,5vw,4.5rem)] font-extrabold tracking-tight text-text leading-[1.05] mb-6">
+
+            <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-text leading-[1.1] mb-6">
               {titleParts.length === 2 ? (
                 <>
                   {titleParts[0]}
@@ -127,8 +125,8 @@ const ContactSection = () => {
                 contactSection.headline
               )}
             </h2>
-            
-            <p className="text-text-muted font-mono text-[0.95rem] leading-[1.8] max-w-md mb-10">
+
+            <p className="text-text-muted font-mono text-sm md:text-base leading-[1.8] max-w-md mb-10">
               {contactSection.description}
             </p>
 
@@ -145,11 +143,11 @@ const ContactSection = () => {
           <div className="relative group">
             {/* Form Glow behind */}
             <div className="absolute -inset-1 bg-gradient-to-br from-accent/20 via-transparent to-accent/20 rounded-[2rem] blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-700"></div>
-            
+
             <div className="relative bg-card/60 backdrop-blur-2xl border border-border-soft rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_40px_rgb(0,0,0,0.2)] overflow-hidden">
               {/* Decorative corner */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
-              
+
               {isSuccess ? (
                 <div className="flex flex-col items-center justify-center min-h-[420px] text-center animate-in fade-in zoom-in duration-500">
                   <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mb-6 relative">
@@ -228,7 +226,6 @@ const ContactSection = () => {
                     <div className="w-full sm:w-auto flex justify-center scale-90 sm:scale-100 origin-left">
                       <Turnstile
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAAD5G7REKwUjI5h-H"}
-                        action="turnstile-spin-v2"
                         onSuccess={(token) => setTurnstileToken(token)}
                         options={{ theme: "auto", action: "turnstile-spin-v2" }}
                       />

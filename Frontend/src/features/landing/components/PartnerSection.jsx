@@ -32,11 +32,11 @@ const PartnerSection = () => {
           <div className="max-w-[45rem]">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-6 h-[2px] bg-accent"></div>
-              <p className="m-0 text-accent text-[0.75rem] font-mono font-bold tracking-[0.2em] uppercase">
+              <p className="m-0 text-accent text-xs md:text-sm font-mono font-bold tracking-[0.25em] uppercase">
                 // OUR PARTNERS
               </p>
             </div>
-            <h2 className="font-sans text-[clamp(2rem,5vw,4rem)] font-bold leading-[1] tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 mb-4">
+            <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 mb-4">
               ORGANIZATIONS<br/>WE'VE WORKED WITH
             </h2>
             <p className="font-mono text-text-muted transition-colors duration-300 text-sm md:text-base leading-[1.8] max-w-[36rem]">

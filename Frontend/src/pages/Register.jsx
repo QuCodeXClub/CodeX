@@ -9,13 +9,19 @@ import AcademicDetailsForm from "../components/register/AcademicDetailsForm";
 import VerificationDetailsForm from "../components/register/VerificationDetailsForm";
 import contentData from "../data/content.json";
 import PageContainer from "../components/common/PageContainer";
+import { Sparkles } from "lucide-react";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
   const [turnstileToken, setTurnstileToken] = useState(null);
-  const { register } = contentData;
+  const registerContent = contentData?.register || {
+    eyebrow: "REGISTRATION",
+    titlePart1: "Join The",
+    titlePart2: "Club",
+    description: "Initialize your profile and secure your position in the CodeX network.",
+  };
 
   const {
     register: formRegister,
@@ -73,34 +79,28 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-bg-soft relative font-jetbrains flex flex-col">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.04] z-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--color-text) 1px, transparent 1px), linear-gradient(90deg, var(--color-text) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      ></div>
-
-      <div className="relative z-10 w-full pt-16 pb-20">
+    <div className="min-h-screen bg-bg relative font-sans flex flex-col">
+      <div className="relative z-10 w-full pt-10 pb-20">
         <PageContainer>
-          <header className="mb-12">
-            <p className="text-accent text-xs font-bold uppercase tracking-widest mb-3">
-              {register.eyebrow}
-            </p>
-            <h1 className="font-oswald text-5xl md:text-6xl font-bold uppercase text-text mb-3">
-              {register.titlePart1}{" "}
-              <span className="text-accent">{register.titlePart2}</span>
+          <header className="mb-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{registerContent.eyebrow}</span>
+            </div>
+            
+            <h1 className="font-display text-4xl sm:text-6xl font-black uppercase text-text mb-3 tracking-tight">
+              {registerContent.titlePart1}{" "}
+              <span className="text-accent">{registerContent.titlePart2}</span>
             </h1>
-            <p className="text-text-muted text-sm font-medium">
-              {register.description}
+
+            <p className="text-text-muted text-sm sm:text-base font-normal leading-relaxed">
+              {registerContent.description}
             </p>
           </header>
 
           <form
             onSubmit={handleSubmit(onFormSubmit)}
-            className="bg-card border-4 border-text p-6 md:p-10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
+            className="glass-card p-6 sm:p-10 rounded-3xl border border-border/80 shadow-2xl space-y-10"
           >
             <PersonalDetailsForm register={formRegister} errors={errors} />
             <AcademicDetailsForm register={formRegister} errors={errors} />

@@ -19,16 +19,17 @@ const FaqSection = () => {
       <div className="relative z-10 w-full mx-auto max-w-[900px]">
         {/* Compressed header spacing */}
         <div className="px-4 lg:px-8 pb-8 text-center flex flex-col items-center">
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-accent text-[0.7rem] tracking-[0.3em] uppercase font-bold">KNOWLEDGE_BASE</span>
-            <div className="h-[2px] w-8 bg-accent shadow-[0_0_8px_rgba(46,197,212,0.8)]"></div>
-            <div className="w-[4px] h-[4px] border border-accent rounded-full shadow-[0_0_8px_rgba(46,197,212,0.8)] animate-pulse"></div>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-6 h-[2px] bg-accent"></div>
+            <p className="m-0 text-accent text-xs md:text-sm font-mono font-bold tracking-[0.25em] uppercase">
+              // KNOWLEDGE BASE
+            </p>
+            <div className="w-6 h-[2px] bg-accent"></div>
           </div>
-          {/* Slightly smaller heading font sizes */}
-          <h2 className="font-sans text-[clamp(2rem,4vw,3.5rem)] font-bold uppercase text-transparent bg-clip-text bg-gradient-to-b from-text to-text/60 mb-3 drop-shadow-sm">
+          <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold uppercase leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-text to-text/60 mb-3 drop-shadow-sm">
             Frequently Asked Questions
           </h2>
-          <p className="text-text-muted text-[0.9rem] font-mono max-w-lg leading-relaxed">
+          <p className="text-text-muted text-sm md:text-base font-mono max-w-lg leading-[1.8]">
             Clear answers to your most pressing questions about the Codex Club.
           </p>
         </div>
