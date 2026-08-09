@@ -29,9 +29,14 @@ export default function DashboardLayout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Close sidebar on route change (mobile)
+  const contentRef = React.useRef(null);
+
+  // Close sidebar and reset scroll to top on route change
   useEffect(() => {
     setIsSidebarOpen(false);
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
   }, [location.pathname]);
 
   const navItems = [
@@ -142,7 +147,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <div className="relative z-10 flex-1 overflow-y-auto">
+        <div ref={contentRef} className="relative z-10 flex-1 overflow-y-auto">
           <Outlet />
         </div>
       </main>

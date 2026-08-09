@@ -12,7 +12,6 @@ export default defineConfig({
       "react",
       "react-dom",
       "react-router-dom",
-      "framer-motion",
       "lucide-react",
       "@reduxjs/toolkit",
       "react-redux",
