@@ -37,7 +37,7 @@ export const updateAdminEvent = createAsyncThunk(
   "adminEvents/update",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(`/events/${id}`, formData, {
+      const response = await axiosInstance.put(`/events/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response;
