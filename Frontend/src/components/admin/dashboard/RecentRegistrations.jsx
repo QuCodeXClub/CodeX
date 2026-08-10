@@ -3,41 +3,43 @@ import { Link } from "react-router-dom";
 
 export default function RecentRegistrations({ metrics, recentLogs }) {
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm flex flex-col h-[320px]">
-      <div className="flex items-center justify-between mb-6 shrink-0">
-        <h3 className="font-bold text-text">Recent Registrations</h3>
+    <div className="bg-card/85 backdrop-blur-xl rounded-2xl p-6 border border-border/80 shadow-lg flex flex-col h-[320px]">
+      <div className="flex items-center justify-between mb-5 shrink-0">
+        <h3 className="font-display font-bold text-text uppercase tracking-wide text-sm">
+          RECENT <span className="text-accent">REGISTRATIONS</span>
+        </h3>
         <Link
           to="/admin/registrations"
-          className="text-xs font-medium text-accent hover:underline"
+          className="text-xs font-mono font-semibold text-accent hover:underline uppercase tracking-wider"
         >
-          View All
+          View All &rarr;
         </Link>
       </div>
-      <div className="space-y-4 overflow-y-auto pr-2">
+      <div className="space-y-3.5 overflow-y-auto pr-2">
         {metrics.loading ? (
-          <p className="text-sm text-text-muted">Loading activity...</p>
+          <p className="text-xs font-mono text-text-muted">Loading activity...</p>
         ) : recentLogs.length === 0 ? (
-          <p className="text-sm text-text-muted">
+          <p className="text-xs font-mono text-text-muted">
             No recent registrations found.
           </p>
         ) : (
           recentLogs.map((log) => (
-            <div key={log._id} className="flex gap-4">
+            <div key={log._id} className="flex gap-3 items-start p-2.5 rounded-xl bg-card-hover/40 border border-border/40 hover:border-accent/30 transition-all">
               <div
-                className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                className={`mt-1.5 w-2 h-2 rounded-full shrink-0 shadow-sm ${
                   log.status === "APPROVED"
-                    ? "bg-accent"
+                    ? "bg-emerald-500 shadow-emerald-500/50"
                     : log.status === "REJECTED"
-                      ? "bg-danger"
-                      : "bg-warning"
+                      ? "bg-danger shadow-danger/50"
+                      : "bg-warning shadow-warning/50 animate-pulse"
                 }`}
-              ></div>
+              />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-text truncate">
-                  <span className="font-medium text-text">{log.name}</span>{" "}
-                  applied for CodeX ({log.course}).
+                <p className="text-xs text-text truncate leading-snug">
+                  <span className="font-semibold text-text">{log.name}</span>{" "}
+                  applied for <span className="font-mono text-accent">{log.course || "CodeX"}</span>
                 </p>
-                <p className="text-xs text-text-muted mt-1">
+                <p className="text-[10px] font-mono text-text-muted mt-0.5">
                   {new Date(log.createdAt).toLocaleDateString()}
                 </p>
               </div>

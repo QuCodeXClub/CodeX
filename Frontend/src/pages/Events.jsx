@@ -25,7 +25,7 @@ const Events = () => {
   }, []);
 
   return (
-    <div className="events-page flex flex-col min-h-screen bg-bg relative font-sans">
+    <div className="events-page flex flex-col min-h-screen bg-transparent relative font-sans">
       <div className="relative z-10 pt-8 pb-20">
         <PageContainer>
           <header className="mb-10">

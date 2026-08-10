@@ -93,8 +93,27 @@
     border-radius: 9999px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent);
+  ::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.65) sepia(1) saturate(5) hue-rotate(150deg);
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  ::-webkit-calendar-picker-indicator:hover {
+    filter: invert(0.85) sepia(1) saturate(7) hue-rotate(150deg);
+    transform: scale(1.1);
+  }
+
+  /* TinyMCE Modal & Floating Dropdown Z-Index Fix */
+  .tox-tinymce-aux,
+  .tox-pop,
+  .tox-menu,
+  .tox-dialog-wrap,
+  .tox-fullscreen,
+  .tox-silver-sink {
+    z-index: 999999 !important;
   }
 
   body {
@@ -104,6 +123,19 @@
       linear-gradient(var(--color-border-soft) 1px, transparent 1px),
       linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
     background-size: 100% 100%, 48px 48px, 48px 48px;
+  }
+
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    color-scheme: dark;
+    cursor: pointer;
+  }
+  
+  :root:not(.dark) input[type="date"],
+  :root:not(.dark) input[type="datetime-local"],
+  :root:not(.dark) input[type="time"] {
+    color-scheme: light;
   }
 
   a {
@@ -143,25 +175,30 @@
   }
 
   .glass-card {
-    @apply bg-card/75 backdrop-blur-xl border border-border/80 shadow-lg transition-all duration-300;
+    @apply bg-card/85 backdrop-blur-xl border border-border/80 shadow-lg transition-all duration-300;
   }
 
   .glass-card-hover {
-    @apply hover:bg-card-hover hover:border-accent/40 hover:shadow-xl hover:shadow-accent/5;
+    @apply hover:bg-card-hover/90 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10;
+  }
+
+  .glass-panel {
+    @apply bg-card/90 backdrop-blur-2xl border border-border/70 shadow-2xl;
   }
 
   .tech-grid-bg {
     background-image: linear-gradient(var(--color-border-soft) 1px, transparent 1px),
                       linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-size: 40px 40px;
   }
 
   .tech-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase tracking-wider bg-accent/10 text-accent border border-accent/20;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase tracking-wider bg-accent/10 text-accent border border-accent/30 shadow-sm;
   }
 
   .hero-right-panel {
     clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
   }
 }
+
 

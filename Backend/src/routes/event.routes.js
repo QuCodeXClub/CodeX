@@ -14,6 +14,7 @@ router.use(verifyJWT);
 router.route('/').post(upload.single('coverImage'), createEvent);
 router.route('/:id')
   .patch(upload.single('coverImage'), updateEvent)
+  .put(upload.single('coverImage'), updateEvent)
   .delete(deleteEvent);
 
 export default router;

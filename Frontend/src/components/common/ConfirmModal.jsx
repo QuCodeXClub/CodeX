@@ -41,10 +41,7 @@ export default function ConfirmModal({
               Cancel
             </button>
             <button
-              onClick={() => {
-                onConfirm();
-                onCancel(); // Close modal immediately after confirm starts
-              }}
+              onClick={onConfirm}
               className="flex-1 px-4 py-2.5 text-white font-medium bg-danger hover:bg-danger rounded-lg transition-colors"
             >
               Confirm

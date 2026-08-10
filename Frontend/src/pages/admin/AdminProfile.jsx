@@ -64,11 +64,15 @@ export default function AdminProfile() {
   useEffect(() => {
     if (user) {
       const adminObj = user.admin || user;
-      setFormData({
-        name: adminObj.name || "",
-        mobileNumber: adminObj.mobileNumber || "",
+      const newName = adminObj.name || "";
+      const newMobile = adminObj.mobileNumber || "";
+      const newPhoto = adminObj.profilePhoto || null;
+
+      setFormData((prev) => {
+        if (prev.name === newName && prev.mobileNumber === newMobile) return prev;
+        return { name: newName, mobileNumber: newMobile };
       });
-      setPreviewPhoto(adminObj.profilePhoto || null);
+      setPreviewPhoto((prev) => (prev === newPhoto ? prev : newPhoto));
     }
   }, [user]);
 
@@ -81,6 +85,17 @@ export default function AdminProfile() {
     if (file) {
       setProfilePhoto(file);
       setPreviewPhoto(URL.createObjectURL(file));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/v1/admin/logout", {}, { withCredentials: true });
+    } catch (error) {
+      console.error("Backend logout failed or session already cleared:", error);
+    } finally {
+      dispatch(setLogout());
+      navigate("/admin/login");
     }
   };
 
@@ -182,32 +197,36 @@ export default function AdminProfile() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-6 md:p-10 space-y-8">
+    <div className="max-w-5xl mx-auto p-6 md:p-10 space-y-8 font-sans text-text min-h-full">
       {/* Page Header with Tabs */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-4 border-b border-border/60">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-border/60">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-text">
-            Account Settings
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <User className="w-3.5 h-3.5" />
+            <span>ACCOUNT & SECURITY</span>
+          </div>
+          <h1 className="text-3xl font-display font-black tracking-tight text-text uppercase">
+            ACCOUNT <span className="text-accent">SETTINGS</span>
           </h1>
-          <p className="mt-2 text-sm text-text-text-muted">
-            Manage your personal profile, security, and active sessions.
+          <p className="mt-1 text-xs sm:text-sm text-text-muted">
+            Manage your personal profile, multi-factor security, and active nodes.
           </p>
         </div>
 
         {/* Horizontal Tabs (Top Right) */}
-        <div className="flex space-x-1 bg-card-hover/80 p-1.5 rounded-xl w-full lg:w-max overflow-x-auto border border-border/60 shrink-0">
+        <div className="flex space-x-1.5 bg-card/85 backdrop-blur-xl p-1.5 rounded-xl w-full lg:w-max overflow-x-auto border border-border/80 shadow-md shrink-0">
           {tabs.map((tab) => (
             <a
               key={tab.id}
               href={tab.id}
-              className={`flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium uppercase tracking-wider rounded-lg transition-all whitespace-nowrap ${
                 currentTab === tab.id
-                  ? "bg-card text-accent shadow-sm ring-1 ring-slate-900/5 font-semibold"
-                  : "text-text-text-muted hover:text-text hover:bg-card-hover/50"
+                  ? "bg-accent/15 text-accent border border-accent/30 shadow-sm font-bold"
+                  : "text-text-muted hover:text-text hover:bg-card-hover/50"
               }`}
             >
               <tab.icon
-                className={`w-4 h-4 ${currentTab === tab.id ? "text-accent" : "text-text-text-muted"}`}
+                className={`w-3.5 h-3.5 ${currentTab === tab.id ? "text-accent" : "text-text-muted"}`}
               />
               {tab.name}
             </a>
@@ -220,7 +239,7 @@ export default function AdminProfile() {
         {/* 1. Profile Edit */}
         {currentTab === "#profile" && (
           <div
-            className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden"
+            className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 overflow-hidden"
           >
             <div className="p-6 border-b border-border-soft flex items-center gap-3 bg-card-hover">
               <User className="text-accent w-5 h-5" />
@@ -356,11 +375,20 @@ export default function AdminProfile() {
                     {message.text}
                   </div>
                 )}
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/60">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-danger bg-danger/10 border border-danger/30 rounded-xl hover:bg-danger hover:text-white transition-all shadow-sm cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log Out of Console
+                  </button>
+
                   <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-accent border border-transparent rounded-lg shadow-sm hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white bg-accent rounded-xl shadow-md shadow-accent/20 hover:bg-accent/90 transition-all disabled:opacity-50 cursor-pointer border-0"
                   >
                     {loading ? (
                       <>

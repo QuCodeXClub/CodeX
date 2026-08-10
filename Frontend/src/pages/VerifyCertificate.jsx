@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { ASSETS } from "../config/assets";
 import { certificateService } from "../services/certificateService";
@@ -13,12 +13,7 @@ const VerifyCertificate = () => {
 
   const verificationURL = `${window.location.origin}/verify-certificate/${certificateId}`;
 
-  useEffect(() => {
-    fetchCertificate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [certificateId]);
-
-  const fetchCertificate = async () => {
+  const fetchCertificate = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -37,7 +32,11 @@ const VerifyCertificate = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [certificateId]);
+
+  useEffect(() => {
+    fetchCertificate();
+  }, [fetchCertificate]);
 
   const formatDate = (date) => {
     if (!date) return "-";

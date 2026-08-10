@@ -74,26 +74,32 @@ export default function QRGenerator() {
     <div className="p-8 lg:p-10 font-sans text-text min-h-full animate-in fade-in duration-500">
       
       {/* Page Header */}
-      <header className="flex items-start justify-between mb-8 gap-4">
+      <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
-          <h1 className="text-2xl font-bold">QR Generator</h1>
-          <p className="text-sm text-text-muted mt-1">
-            Create branded CodeX QR codes instantly.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <QrCode className="w-3.5 h-3.5" />
+            <span>DYNAMIC ENCODING</span>
+          </div>
+          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+            QR <span className="text-accent">GENERATOR</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            Create high-definition, branded CodeX QR codes instantly.
           </p>
         </div>
-        <div className="hidden sm:block p-3 rounded-xl bg-accent/10">
-          <QrCode className="w-8 h-8 text-accent" />
+        <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+          <QrCode className="w-7 h-7 text-accent" />
         </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Form Section */}
-        <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 h-fit">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-            <div className="p-2 bg-accent/10 rounded-lg text-accent">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8 h-fit">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/60">
+            <div className="p-2 bg-accent/10 rounded-xl border border-accent/20 text-accent">
               <QrCode className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-semibold text-text">New QR Code</h2>
+            <h2 className="text-lg font-display font-bold uppercase text-text">New QR Code</h2>
           </div>
           
           <form onSubmit={handleGenerate} className="space-y-6">

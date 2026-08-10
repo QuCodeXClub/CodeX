@@ -22,7 +22,12 @@ export default function EventDetails() {
     const fetchEvent = async () => {
       try {
         const response = await eventService.getEvents();
-        const foundEvent = response.data.find((e) => e._id === id);
+        const eventsList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+          ? response.data
+          : response?.data?.events || [];
+        const foundEvent = eventsList.find((e) => e._id === id || e.id === id);
         setEvent(foundEvent);
       } catch (error) {
         console.error("Failed to fetch event details:", error);
