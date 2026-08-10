@@ -6,7 +6,7 @@ export default function AdminSettings() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+    <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 overflow-hidden">
       <div className="p-6 border-b border-border-soft flex items-center gap-3 bg-card-hover">
         <Settings className="text-accent w-5 h-5" />
         <h2 className="font-semibold text-text">Preferences & Appearance</h2>

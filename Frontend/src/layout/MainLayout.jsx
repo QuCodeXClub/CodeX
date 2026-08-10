@@ -40,11 +40,24 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="app-shell flex flex-col min-h-screen">
+    <div className="app-shell flex flex-col min-h-screen bg-bg relative font-sans text-text overflow-x-clip">
+      {/* Background Grid Pattern (Same as Welcome Page & Admin Portal) */}
+      <div
+        className="fixed inset-0 pointer-events-none opacity-[0.035] z-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(#2ec5d4 1px, transparent 1px), linear-gradient(90deg, #2ec5d4 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+      {/* Ambient Top & Bottom Glow Blobs */}
+      <div className="fixed top-0 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
+      <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
+
       <Navbar layout={layout} />
 
-      <Suspense fallback={<div className="flex h-[60vh] items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div></div>}>
-        <main className="w-full mx-auto flex-1 border-x border-border bg-bg-soft">
+      <Suspense fallback={<div className="flex h-[60vh] items-center justify-center relative z-10"><div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div></div>}>
+        <main className="w-full mx-auto flex-1 border-x border-border/80 bg-transparent relative z-10">
           <Outlet />
         </main>
       </Suspense>

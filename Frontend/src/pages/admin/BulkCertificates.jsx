@@ -197,15 +197,21 @@ export default function BulkCertificates() {
 
   return (
     <div className="p-8 lg:p-10 font-sans text-text min-h-full">
-      <header className="flex items-start justify-between mb-8 gap-4">
+      <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
-          <h1 className="text-2xl font-bold">Credential Forge</h1>
-          <p className="text-sm text-text-muted mt-1">
-            Bulk generate and email certificates.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <Award className="w-3.5 h-3.5" />
+            <span>CERTIFICATE PORTAL</span>
+          </div>
+          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+            CREDENTIAL <span className="text-accent">FORGE</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            Bulk generate, verify, and email cryptographic completion certificates.
           </p>
         </div>
-        <div className="hidden sm:block p-3 rounded-xl bg-accent/10">
-          <Award className="w-8 h-8 text-accent" />
+        <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+          <Award className="w-7 h-7 text-accent" />
         </div>
       </header>
 
@@ -214,25 +220,25 @@ export default function BulkCertificates() {
         className="grid grid-cols-1 lg:grid-cols-12 gap-8"
       >
         {/* Left Panel : Event Details */}
-        <div className="lg:col-span-4 bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 h-fit space-y-6">
-          <h2 className="flex items-center gap-2 text-lg font-bold border-b border-border-soft pb-4">
+        <div className="lg:col-span-4 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8 h-fit space-y-6">
+          <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4">
             <Calendar className="w-5 h-5 text-accent" />
             Event Details
           </h2>
 
           {/* Event Name */}
           <div>
-            <label className="block text-sm font-semibold text-text mb-2">
+            <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
               Event Name
             </label>
             <input
               type="text"
               {...register("eventName", { required: "Event name is required" })}
-              placeholder="Hackathon 2026"
-              className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="CodeX Workshop 2026"
+              className="w-full bg-card-hover/60 border border-border/80 text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all shadow-sm font-sans placeholder:text-text-muted/50"
             />
             {errors.eventName && (
-              <p className="mt-1 text-xs text-danger">
+              <p className="mt-1 text-xs text-danger font-medium">
                 {errors.eventName.message}
               </p>
             )}
@@ -240,16 +246,17 @@ export default function BulkCertificates() {
 
           {/* Event Date */}
           <div>
-            <label className="block text-sm font-semibold text-text mb-2">
-              Event Date
+            <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider flex items-center justify-between">
+              <span>Event Date</span>
+              <span className="text-[10px] text-accent font-normal">CYAN CALENDAR</span>
             </label>
             <input
               type="date"
               {...register("eventDate", { required: "Event date is required" })}
-              className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full bg-card-hover/60 border border-border/80 text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all shadow-sm font-mono"
             />
             {errors.eventDate && (
-              <p className="mt-1 text-xs text-danger">
+              <p className="mt-1 text-xs text-danger font-medium">
                 {errors.eventDate.message}
               </p>
             )}
@@ -326,9 +333,9 @@ export default function BulkCertificates() {
         </div>
 
         {/* Right Panel : Student Details */}
-        <div className="lg:col-span-8 bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8">
-          <div className="flex items-center justify-between border-b border-border-soft pb-4 mb-6">
-            <h2 className="flex items-center gap-2 text-lg font-bold">
+        <div className="lg:col-span-8 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
+          <div className="flex items-center justify-between border-b border-border/60 pb-4 mb-6">
+            <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text">
               <Users className="w-5 h-5 text-accent" />
               Student Details
             </h2>

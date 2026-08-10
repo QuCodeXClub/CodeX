@@ -79,7 +79,7 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-bg relative font-sans flex flex-col">
+    <div className="min-h-screen bg-transparent relative font-sans flex flex-col">
       <div className="relative z-10 w-full pt-10 pb-20">
         <PageContainer>
           <header className="mb-10 max-w-3xl">

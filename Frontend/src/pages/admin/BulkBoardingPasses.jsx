@@ -31,7 +31,6 @@ export default function BulkBoardingPasses() {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -170,15 +169,21 @@ export default function BulkBoardingPasses() {
 
   return (
     <div className="p-8 lg:p-10 font-sans text-text min-h-full">
-      <header className="flex items-start justify-between mb-8 gap-4">
+      <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
-          <h1 className="text-2xl font-bold">Boarding Pass Forge</h1>
-          <p className="text-sm text-text-muted mt-1">
-            Bulk generate and email boarding passes.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <Ticket className="w-3.5 h-3.5" />
+            <span>ACCESS CONTROL</span>
+          </div>
+          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+            BOARDING PASS <span className="text-accent">FORGE</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            Bulk generate, verify, and email event access boarding passes.
           </p>
         </div>
-        <div className="hidden sm:block p-3 rounded-xl bg-accent/10">
-          <Ticket className="w-8 h-8 text-accent" />
+        <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+          <Ticket className="w-7 h-7 text-accent" />
         </div>
       </header>
 
@@ -187,8 +192,8 @@ export default function BulkBoardingPasses() {
         className="space-y-8"
       >
         {/* Top Section : Event Details */}
-        <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8">
-          <h2 className="flex items-center gap-2 text-lg font-bold border-b border-border-soft pb-4 mb-6">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
+          <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4 mb-6">
             <Calendar className="w-5 h-5 text-accent" />
             Event Details
           </h2>
@@ -257,8 +262,8 @@ export default function BulkBoardingPasses() {
         </div>
 
         {/* Bottom Section : Student Details */}
-        <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-soft pb-4 mb-6 gap-4">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-4 mb-6 gap-4">
             <div className="flex items-center gap-3">
               <h2 className="flex items-center gap-2 text-lg font-bold">
                 <Users className="w-5 h-5 text-accent" />

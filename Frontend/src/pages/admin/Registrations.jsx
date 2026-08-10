@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import {
   Search,
   Filter,
@@ -81,13 +80,11 @@ export default function Registrations() {
     courseFilter,
     paymentModeFilter,
     currentPage,
+    itemsPerPage,
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [importFile, setImportFile] = useState(null);
-  const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState(null);
 
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
@@ -219,7 +216,7 @@ export default function Registrations() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       alert("Failed to fetch full data for export.");
     } finally {
       setIsExporting(false);
@@ -236,13 +233,17 @@ export default function Registrations() {
   return (
     <div className="p-8 lg:p-10 font-sans text-text min-h-full">
       {/* Header */}
-      <header className="mb-8 flex items-center justify-between">
+      <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-text">
-            Registration Information
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <FileText className="w-3.5 h-3.5" />
+            <span>APPLICANT REGISTRY</span>
+          </div>
+          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+            REGISTRATION <span className="text-accent">DATABASE</span>
           </h1>
-          <p className="text-sm text-text-muted mt-1">
-            Manage and verify new applicant submissions.
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
+            Manage, audit, and verify student applicant records in real-time.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -391,32 +392,32 @@ export default function Registrations() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-card-hover border-b border-border">
+      <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg overflow-hidden">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead className="bg-card-hover/90 border-b border-border/80">
               <tr>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Applicant
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Academic Data
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Verification
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 font-semibold text-text-muted text-xs uppercase tracking-wider text-right">
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-soft">
+            <tbody className="divide-y divide-border/40">
               {loading ? (
                 <>
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -438,82 +439,78 @@ export default function Registrations() {
                   return (
                     <tr
                       key={reg._id}
-                      className={`transition-colors ${isNew ? "bg-accent/10 hover:bg-accent/10" : "hover:bg-card-hover"}`}
+                      className={`transition-colors ${isNew ? "bg-accent/10 hover:bg-accent/15" : "hover:bg-card-hover/60"}`}
                     >
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-text flex items-center gap-2">
-                          {reg.name}
+                      <td className="px-3 sm:px-4 py-3 max-w-[170px] align-top">
+                        <div className="font-semibold text-text flex items-center gap-1.5 flex-wrap">
+                          <span className="break-words">{reg.name}</span>
                           {isNew && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-accent/10 text-accent tracking-wider">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-accent/20 text-accent tracking-wider border border-accent/30 shrink-0">
                               NEW
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-text-muted mt-0.5">
+                        <div className="text-[11px] text-text-muted mt-0.5 truncate" title={`D/O, S/O: ${reg.fatherName}`}>
                           D/O, S/O: {reg.fatherName}
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="text-text">{reg.email}</div>
-                        <div className="text-xs text-text-muted mt-0.5">
+                      <td className="px-3 sm:px-4 py-3 max-w-[180px] align-top">
+                        <div className="text-text font-medium text-xs break-all" title={reg.email}>{reg.email}</div>
+                        <div className="text-[11px] font-mono text-text-muted mt-0.5">
                           {reg.phone}
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-text">
+                      <td className="px-3 sm:px-4 py-3 align-top">
+                        <div className="font-semibold text-text">
                           {reg.course}{" "}
-                          <span className="text-text-muted font-normal ml-1">
+                          <span className="text-text-muted font-normal text-xs">
                             ({reg.year})
                           </span>
                         </div>
-                        <div className="text-xs text-text-muted mt-0.5">
-                          Q-ID:{" "}
-                          <span className="font-medium text-text-muted">
-                            {reg.studentId}
-                          </span>{" "}
-                          | Sec: {reg.section} | Set: {reg.set}
+                        <div className="text-[11px] font-mono text-text-muted mt-0.5 whitespace-nowrap">
+                          Q-ID: <span className="font-semibold text-text">{reg.studentId}</span> | Sec: {reg.section} | Set: {reg.set}
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1">
-                          <div className="inline-flex items-center px-2 py-1 rounded bg-card-hover border border-border text-text-muted font-mono text-xs w-max">
+                      <td className="px-3 sm:px-4 py-3 align-top">
+                        <div className="flex flex-col gap-1 items-start">
+                          <div className="inline-flex items-center px-2 py-0.5 rounded bg-card-hover border border-border/80 text-text-muted font-mono text-[11px] max-w-[140px] truncate" title={`UTR: ${reg.transactionId}`}>
                             UTR: {reg.transactionId}
                           </div>
                           {!reg.paymentMode || reg.paymentMode === "ONLINE" ? (
-                            <span className="text-[10px] font-bold text-text bg-text/10 px-2 py-0.5 rounded w-max border border-text/20">
+                            <span className="text-[9px] font-mono font-bold text-text bg-text/10 px-2 py-0.5 rounded border border-text/20 uppercase">
                               ONLINE
                             </span>
                           ) : (
-                            <span className="text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded w-max border border-success/20">
+                            <span className="text-[9px] font-mono font-bold text-success bg-success/10 px-2 py-0.5 rounded border border-success/20 uppercase">
                               CASH
                             </span>
                           )}
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-3 sm:px-4 py-3 align-top">
                         <StatusBadge status={reg.status} />
                       </td>
 
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-3 sm:px-4 py-3 text-right align-top whitespace-nowrap">
                         {updatingId === reg._id ? (
                           <div className="flex justify-end pr-2 text-text-muted">
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
                         ) : (
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-1.5">
                             {reg.status !== "APPROVED" && (
                               <button
                                 onClick={() =>
                                   handleStatusChange(reg._id, "APPROVED")
                                 }
-                                className="p-1.5 text-accent bg-accent/10 hover:bg-accent/20 rounded-md transition-colors border border-accent/30"
+                                className="p-1.5 text-accent bg-accent/10 hover:bg-accent/20 rounded-lg transition-all border border-accent/30 cursor-pointer"
                                 title="Approve"
                               >
-                                <Check className="w-4 h-4" />
+                                <Check className="w-3.5 h-3.5" />
                               </button>
                             )}
                             {reg.status !== "REJECTED" && (
@@ -521,10 +518,10 @@ export default function Registrations() {
                                 onClick={() =>
                                   handleStatusChange(reg._id, "REJECTED")
                                 }
-                                className="p-1.5 text-danger bg-danger/10 hover:bg-danger/20 rounded-md transition-colors border border-danger/30"
+                                className="p-1.5 text-danger bg-danger/10 hover:bg-danger/20 rounded-lg transition-all border border-danger/30 cursor-pointer"
                                 title="Reject"
                               >
-                                <XIcon className="w-4 h-4" />
+                                <XIcon className="w-3.5 h-3.5" />
                               </button>
                             )}
                           </div>

@@ -26,7 +26,7 @@ export const createAdminEvent = createAsyncThunk(
       const response = await axiosInstance.post("/events", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data;
+      return response;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -37,10 +37,10 @@ export const updateAdminEvent = createAsyncThunk(
   "adminEvents/update",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(`/events/${id}`, formData, {
+      const response = await axiosInstance.put(`/events/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data;
+      return response;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -81,6 +81,18 @@ const adminEventsSlice = createSlice({
       .addCase(fetchAdminEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(createAdminEvent.fulfilled, (state, action) => {
+        const created = action.payload?.data || action.payload;
+        if (created && created._id) {
+          state.events = [created, ...state.events];
+        }
+      })
+      .addCase(updateAdminEvent.fulfilled, (state, action) => {
+        const updated = action.payload?.data || action.payload;
+        if (updated && updated._id) {
+          state.events = state.events.map((e) => (e._id === updated._id ? updated : e));
+        }
       })
       .addCase(deleteAdminEvent.fulfilled, (state, action) => {
         state.events = state.events.filter((e) => e._id !== action.payload);

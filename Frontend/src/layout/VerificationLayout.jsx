@@ -28,7 +28,7 @@ const VerificationLayout = ({
   };
 
   return (
-    <div className="app-shell bg-bg min-h-screen">
+    <div className="app-shell bg-transparent min-h-screen relative font-sans text-text">
       {/* Fixed Print-Specific CSS */}
       <style>{`
         @media print {

@@ -76,71 +76,97 @@ export default function ManageEvents() {
       ) : events.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
-          <ul className="divide-y divide-border-soft">
-            {events.map((event) => (
-              <li
-                key={event._id}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+          {events.map((event) => (
+            <div
+              key={event._id}
+              className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-lg hover:border-accent/40 hover:shadow-accent/10 transition-all flex flex-col group relative"
+            >
+              {/* Cover Image Banner */}
+              <div
+                className="w-full h-44 bg-card-hover relative border-b border-border/60 overflow-hidden cursor-pointer"
                 onClick={() => navigate(`/events/${event._id}`)}
-                className="p-4 sm:p-5 hover:bg-card-hover flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors cursor-pointer group"
               >
-                {/* Event Info (Left Side) */}
-                <div className="flex items-center gap-4 flex-1 overflow-hidden">
-                  <div className="w-16 h-16 rounded-lg bg-card-hover border border-border overflow-hidden shrink-0 flex items-center justify-center">
-                    {event.coverImage ? (
-                      <img
-                        src={event.coverImage}
-                        alt={event.eventName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <ImageIcon className="w-6 h-6 text-text-muted" />
-                    )}
+                {event.coverImage ? (
+                  <img
+                    src={event.coverImage}
+                    alt={event.eventName}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-text-muted bg-card">
+                    <ImageIcon className="w-10 h-10 mb-2 opacity-40 text-accent" />
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-text-muted">
+                      NO COVER BANNER
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">
-                      {event.eventName}
-                    </h3>
-                    <div className="flex items-center gap-1.5 text-sm text-text-muted mt-1">
-                      <Calendar className="w-4 h-4" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-transparent to-transparent opacity-80 pointer-events-none" />
+              </div>
+
+              {/* Card Body */}
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3
+                    onClick={() => navigate(`/events/${event._id}`)}
+                    className="text-base font-display font-bold text-text truncate group-hover:text-accent transition-colors cursor-pointer uppercase tracking-tight"
+                  >
+                    {event.eventName}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted mt-2">
+                    <Calendar className="w-3.5 h-3.5 text-accent" />
+                    <span>
                       {new Date(event.date).toLocaleDateString("en-US", {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
-                      {" • "}
+                    </span>
+                    <span>•</span>
+                    <span>
                       {new Date(event.date).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
-                    </div>
+                    </span>
                   </div>
                 </div>
 
-                {/* Actions (Right Side) */}
-                <div
-                  className="flex items-center gap-2 sm:ml-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                {/* Card Footer Actions */}
+                <div className="pt-4 border-t border-border/60 mt-4 flex items-center justify-between">
                   <button
-                    onClick={() => openEditModal(event)}
-                    className="p-2 text-text-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
-                    title="Edit Event"
+                    onClick={() => navigate(`/events/${event._id}`)}
+                    className="text-xs font-mono font-bold text-accent hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
                   >
-                    <Edit className="w-5 h-5" />
+                    View Details &rarr;
                   </button>
-                  <button
-                    onClick={() => handleDelete(event._id)}
-                    className="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                    title="Delete Event"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditModal(event);
+                      }}
+                      className="p-2 text-text-muted hover:text-accent hover:bg-accent/10 rounded-xl transition-all border border-transparent hover:border-accent/30 cursor-pointer"
+                      title="Edit Event"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(event._id);
+                      }}
+                      className="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all border border-transparent hover:border-danger/30 cursor-pointer"
+                      title="Delete Event"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

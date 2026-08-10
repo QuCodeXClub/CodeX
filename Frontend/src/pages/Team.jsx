@@ -59,7 +59,7 @@ const Team = () => {
   };
 
   return (
-    <div className="team-page min-h-screen bg-bg relative font-sans pb-24">
+    <div className="team-page min-h-screen bg-transparent relative font-sans pb-24">
       <div className="relative z-10 pt-8 lg:pt-12">
         <PageContainer>
           <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-border/80 pb-8">

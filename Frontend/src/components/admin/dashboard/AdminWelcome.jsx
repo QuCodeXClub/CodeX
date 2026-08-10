@@ -2,13 +2,15 @@ import React from "react";
 
 export default function AdminWelcome() {
   return (
-    <div className="bg-card rounded-2xl p-8 text-text border border-border relative overflow-hidden shadow-sm">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-accent opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+    <div className="bg-card/85 backdrop-blur-xl rounded-2xl p-7 text-text border border-border/80 relative overflow-hidden shadow-lg group hover:border-accent/40 transition-all">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-accent opacity-15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
       <div className="relative z-10">
-        <p className="text-text-muted text-sm mb-1">Welcome back,</p>
-        <h2 className="text-3xl font-bold mb-4">Admin User</h2>
-        <p className="text-text-muted text-sm leading-relaxed max-w-[85%]">
-          Here's what's happening with Codex today.
+        <p className="text-text-muted text-xs font-mono font-semibold uppercase tracking-wider mb-1">Welcome back,</p>
+        <h2 className="text-2xl font-display font-black text-text mb-2 uppercase tracking-wide">
+          ADMIN <span className="text-accent">COMMAND</span>
+        </h2>
+        <p className="text-text-muted text-xs leading-relaxed">
+          Platform telemetry and administrative console status for CodeX Developer Club.
         </p>
       </div>
     </div>

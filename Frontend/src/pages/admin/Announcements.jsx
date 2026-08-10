@@ -57,10 +57,11 @@ export default function Announcements() {
       };
 
       const response = await axiosInstance.post("/admin/announcement", payload);
+      const resData = response?.data || response;
 
-      setSuccessMessage(response.data.message || "Announcement sent successfully!");
-      if (response.data.data?.recipientCount !== undefined) {
-        setRecipientCount(response.data.data.recipientCount);
+      setSuccessMessage(resData?.message || "Announcement sent successfully!");
+      if (resData?.data?.recipientCount !== undefined || resData?.recipientCount !== undefined) {
+        setRecipientCount(resData?.data?.recipientCount ?? resData?.recipientCount);
       }
       reset(); // clear form
       setTimeout(() => setSuccessMessage(""), 5000);
@@ -77,10 +78,16 @@ export default function Announcements() {
     <div className="p-8 lg:p-10 font-sans text-text min-h-full relative flex flex-col">
 
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 shrink-0">
+      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-text">Announcements</h1>
-          <p className="text-sm text-text-muted mt-1">Target audience and send bulk emails.</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <Send className="w-3.5 h-3.5" />
+            <span>BULK MESSAGING</span>
+          </div>
+          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+            ANNOUNCEMENT <span className="text-accent">CENTER</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">Target specific demographics and dispatch bulk email announcements.</p>
         </div>
       </header>
 
@@ -90,7 +97,10 @@ export default function Announcements() {
           {successMessage && (
             <div className="px-4 py-3 bg-success/10 border border-success/20 rounded-xl flex items-center gap-2 shadow-sm">
               <CheckCircle2 className="w-5 h-5 text-success" />
-              <span className="text-success text-sm font-bold">{successMessage} ({recipientCount} recipients)</span>
+              <span className="text-success text-sm font-bold">
+                {successMessage}
+                {recipientCount !== null && ` (${recipientCount} recipients)`}
+              </span>
             </div>
           )}
 
@@ -187,7 +197,7 @@ export default function Announcements() {
         </div>
 
         {/* Composer Section */}
-        <div className="flex-1 flex flex-col min-h-0 bg-card border border-border rounded-2xl shadow-sm">
+        <div className="flex-1 flex flex-col min-h-0 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg">
           <div className="p-6 border-b border-border-soft flex items-center justify-between shrink-0">
             <h2 className="text-lg font-bold text-text">Compose Message</h2>
             <span className="text-xs bg-bg border border-border-soft px-3 py-1.5 rounded-md text-text-muted font-medium">HTML Supported</span>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { boardingPassService } from "../services/boardingPassService";
 import VerificationLayout from "../layout/VerificationLayout";
@@ -13,12 +13,7 @@ const VerifyBoardingPass = () => {
 
   const verificationURL = `${window.location.origin}/verify-boarding-pass/${boardingPassId}`;
 
-  useEffect(() => {
-    fetchBoardingPass();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardingPassId]);
-
-  const fetchBoardingPass = async () => {
+  const fetchBoardingPass = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -38,7 +33,11 @@ const VerifyBoardingPass = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [boardingPassId]);
+
+  useEffect(() => {
+    fetchBoardingPass();
+  }, [fetchBoardingPass]);
 
   return (
     <VerificationLayout
@@ -184,7 +183,7 @@ const VerifyBoardingPass = () => {
                   Boarding Pass ID
                 </p>
                 <p className="font-mono text-lg font-bold text-[#F5F5F5]">
-                  {boardingPass.boardingPassId.split('-')[0]} 
+                  {(boardingPass.boardingPassId || boardingPassId || "").split('-')[0]} 
                 </p>
               </div>
 

@@ -12,17 +12,7 @@ const EventHero = lazy(() => import("../features/landing/components/EventsHero")
 
 const Home = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-bg relative transition-colors duration-300 font-sans">
-      {/* Background Grid Pattern (Same as Admin Portal) */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(#2ec5d4 1px, transparent 1px), linear-gradient(90deg, #2ec5d4 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      ></div>
-      
+    <div className="flex flex-col min-h-screen relative font-sans">
       {/* Sections */}
       <div className="relative z-10">
         <HeroSection />

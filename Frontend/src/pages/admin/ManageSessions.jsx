@@ -93,35 +93,35 @@ export default function ManageSessions() {
           {sessions.map((session) => (
             <div
               key={session._id}
-              className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:shadow-md transition-shadow"
+              className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-accent/40 hover:shadow-accent/5 transition-all"
             >
               <div className="flex items-start gap-4">
                 {/* Device Icon */}
-                <div className="w-12 h-12 bg-card-hover border border-border-soft rounded-xl flex items-center justify-center text-text-text-muted shrink-0">
+                <div className="w-12 h-12 bg-card-hover/80 border border-border/60 rounded-xl flex items-center justify-center text-accent shrink-0 shadow-sm">
                   {session.device?.toUpperCase() === "MOBILE" ? (
-                    <Smartphone className="w-6 h-6 text-text-text-muted" />
+                    <Smartphone className="w-5 h-5 text-accent" />
                   ) : (
-                    <Monitor className="w-6 h-6 text-text-text-muted" />
+                    <Monitor className="w-5 h-5 text-accent" />
                   )}
                 </div>
 
                 {/* Session Details */}
                 <div>
-                  <h3 className="text-lg font-bold text-text flex items-center gap-2">
+                  <h3 className="text-base font-display font-bold text-text uppercase flex items-center gap-2">
                     {session.os || "Unknown OS"}
-                    <span className="text-text-text-muted">/</span>
+                    <span className="text-text-muted">/</span>
                     <span className="text-accent">
                       {session.browser || "Unknown Browser"}
                     </span>
                   </h3>
 
                   <div className="mt-1.5 space-y-1">
-                    <p className="text-sm font-medium text-text-text-muted flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-text-text-muted" />
+                    <p className="text-xs font-mono text-text-muted flex items-center gap-2">
+                      <Globe className="w-3.5 h-3.5 text-accent" />
                       IP: {formatIP(session.ipAddress)}
                     </p>
-                    <p className="text-sm font-medium text-text-text-muted flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-text-text-muted" />
+                    <p className="text-xs font-mono text-text-muted flex items-center gap-2">
+                      <Activity className="w-3.5 h-3.5 text-accent" />
                       Est: {new Date(session.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -132,7 +132,7 @@ export default function ManageSessions() {
               <button
                 onClick={() => handleKill(session._id)}
                 disabled={updatingId === session._id}
-                className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-danger/10 hover:bg-danger/10 text-danger rounded-lg text-sm font-semibold transition-colors border border-danger/30 hover:border-danger/30 shrink-0 disabled:opacity-50"
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-danger/10 hover:bg-danger text-danger hover:text-white rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all border border-danger/30 shrink-0 disabled:opacity-50 cursor-pointer shadow-sm"
               >
                 {updatingId === session._id ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
