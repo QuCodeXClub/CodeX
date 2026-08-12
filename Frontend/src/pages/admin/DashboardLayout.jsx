@@ -13,8 +13,7 @@ import {
   X,
   Ticket,
   Scan,
-  Megaphone,
-  KeyRound,
+  Megaphone
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -39,7 +38,6 @@ export default function DashboardLayout() {
       end: true,
     },
     { name: "Registrations", path: "/admin/registrations", icon: Users },
-    { name: "Special UTRs", path: "/admin/special-utrs", icon: KeyRound },
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },
@@ -102,10 +100,9 @@ export default function DashboardLayout() {
               to={item.path}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? "bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] font-semibold"
-                    : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
+                `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
+                  ? "bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] font-semibold"
+                  : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
                 }`
               }
             >

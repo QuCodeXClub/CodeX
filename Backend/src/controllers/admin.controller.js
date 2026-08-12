@@ -1,6 +1,5 @@
 import { Admin } from '../models/admin.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
-import { SpecialUtr } from '../models/specialUtr.model.js';
 import { Event } from '../models/event.model.js';
 import { TeamMember } from '../models/teamMember.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -384,24 +383,9 @@ const getCurrentAdmin = asyncHandler(async (req, res) => {
 });
 
 const getDashboardMetrics = asyncHandler(async (req, res) => {
-  const [
-    pendingApps,
-    totalApps,
-    onlineApps,
-    cashApps,
-    specialApps,
-    unusedSpecialUtrs,
-    activeEvents,
-    liveSessions,
-    teamSize,
-    recentLogs
-  ] = await Promise.all([
+  const [pendingApps, totalApps, activeEvents, liveSessions, teamSize, recentLogs] = await Promise.all([
     StudentRegistration.countDocuments({ status: "PENDING" }),
     StudentRegistration.countDocuments(),
-    StudentRegistration.countDocuments({ paymentMode: "ONLINE" }),
-    StudentRegistration.countDocuments({ paymentMode: "CASH" }),
-    StudentRegistration.countDocuments({ paymentMode: "SPECIAL" }),
-    SpecialUtr.countDocuments({ isUsed: false }),
     Event.countDocuments(),
     Session.countDocuments(),
     TeamMember.countDocuments(),
@@ -413,10 +397,6 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
       metrics: {
         pendingApps,
         totalApps,
-        onlineApps,
-        cashApps,
-        specialApps,
-        unusedSpecialUtrs,
         activeEvents,
         liveSessions,
         teamSize,

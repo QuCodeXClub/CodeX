@@ -31,7 +31,7 @@ const lazyWithRetry = (componentImport) =>
 // Public pages
 const Team = lazyWithRetry(() => import("./pages/Team"));
 const Events = lazyWithRetry(() => import("./pages/Events"));
-const EventDetails = lazyWithRetry(() => import("./pages/EventDetails")); 
+const EventDetails = lazyWithRetry(() => import("./pages/EventDetails"));
 
 const Register = lazyWithRetry(() => import("./pages/Register"));
 
@@ -60,7 +60,6 @@ const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminAnnouncements = lazy(() => import("./pages/admin/Announcements"));
-const SpecialUtrs = lazy(() => import("./pages/admin/SpecialUtrs"));
 
 const router = createBrowserRouter([
   {
@@ -78,7 +77,7 @@ const router = createBrowserRouter([
       { path: "/verify-certificate/:certificateId", element: <VerifyCertificate /> },
       { path: "/verify-boarding-pass/:boardingPassId", element: <VerifyBoardingPass /> },
 
-      
+
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
       { path: "/terms-conditions", element: <TermsConditions /> },
       { path: "/community-guidelines", element: <CommunityGuidelines /> },
@@ -99,7 +98,6 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: "dashboard", element: <AdminDashboard /> },
           { path: "registrations", element: <AdminRegistrations /> },
-          { path: "special-utrs", element: <SpecialUtrs /> },
           { path: "events", element: <AdminEvents /> },
           { path: "team", element: <AdminTeam /> },
           { path: "certificates", element: <BulkCertificates /> },

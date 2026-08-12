@@ -68,7 +68,7 @@ const studentRegistrationSchema = new mongoose.Schema(
     paymentMode: {
       type: String,
       enum: {
-        values: ['ONLINE', 'CASH', 'SPECIAL'],
+        values: ['ONLINE', 'CASH'],
         message: '{VALUE} is not a valid payment mode'
       },
       default: 'ONLINE',

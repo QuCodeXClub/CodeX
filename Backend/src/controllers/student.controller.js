@@ -1,5 +1,4 @@
 import { StudentRegistration } from '../models/studentRegistration.model.js';
-import { SpecialUtr } from '../models/specialUtr.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -42,36 +41,21 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'All fields are required');
   }
 
-  const normalizedUtr = transactionId.toString().trim().toUpperCase();
-
-  // 3. Check if Student ID (Q ID) is already registered
-  const existingStudent = await StudentRegistration.findOne({ studentId });
-  if (existingStudent) {
-    throw new ApiError(400, 'Student ID (Q ID) is already registered');
-  }
-
-  // 4. Check if transactionId matches an unused Special UTR (Admin Fixed UTR)
-  const specialUtrDoc = await SpecialUtr.findOne({
-    code: normalizedUtr,
-    isUsed: false,
+  // 3. Check for existing registration with same transactionId or studentId
+  const existingRegistration = await StudentRegistration.findOne({
+    $or: [{ transactionId }, { studentId }]
   });
 
-  let paymentMode = 'ONLINE';
-  let initialStatus = 'PENDING';
-
-  if (specialUtrDoc) {
-    // Valid Special UTR provided by Admin
-    paymentMode = 'SPECIAL';
-    initialStatus = 'APPROVED'; // Special UTR entries are pre-verified via Cash
-  } else {
-    // Normal UTR check for duplicates
-    const existingTx = await StudentRegistration.findOne({ transactionId: normalizedUtr });
-    if (existingTx) {
-      throw new ApiError(400, 'Transaction ID / UTR already used for another registration');
+  if (existingRegistration) {
+    if (existingRegistration.studentId === studentId) {
+      throw new ApiError(400, 'Student ID (Q ID) is already registered');
+    }
+    if (existingRegistration.transactionId === transactionId) {
+      throw new ApiError(400, 'Transaction ID already used for another registration');
     }
   }
 
-  // 5. Create Registration
+  // 4. Create Registration
   const registration = await StudentRegistration.create({
     name,
     fatherName,
@@ -83,25 +67,11 @@ const registerStudent = asyncHandler(async (req, res) => {
     studentId,
     email,
     phone,
-    transactionId: normalizedUtr,
-    paymentMode,
-    status: initialStatus,
+    transactionId,
   });
 
-  // 6. If Special UTR was used, mark it as used and link to registration
-  if (specialUtrDoc) {
-    specialUtrDoc.isUsed = true;
-    specialUtrDoc.usedBy = registration._id;
-    specialUtrDoc.usedAt = new Date();
-    await specialUtrDoc.save();
-  }
-
-  const successMessage = paymentMode === 'SPECIAL'
-    ? 'Special Registration completed and pre-approved successfully!'
-    : 'Registration submitted successfully. Please wait for admin approval.';
-
   return res.status(201).json(
-    new ApiResponse(201, registration, successMessage)
+    new ApiResponse(201, registration, 'Registration submitted successfully. Please wait for admin approval.')
   );
 });
 
