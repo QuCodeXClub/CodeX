@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no" />
+  <title>CodeX</title>
+  <style>
+    /* Reset & Base styles */
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 100% !important;
+      width: 100% !important;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    table, td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+    img {
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+      -ms-interpolation-mode: bicubic;
+      max-width: 100% !important;
+    }
+    table {
+      border-collapse: collapse !important;
+    }
+    a[x-apple-data-detectors] {
+      color: inherit !important;
+      text-decoration: none !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+    }
+
+    /* Gmail App & Web Responsive Overrides */
+    u + .body .outer-td {
+      padding: 10px 4px !important;
+    }
+    u + .body .email-card {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    u + .body .body-td {
+      padding: 16px 14px !important;
+    }
+
+    /* Mobile Responsive Styles (<= 600px) */
+    @media screen and (max-width: 600px) {
+      .outer-td {
+        padding: 16px 12px !important;
+      }
+      .email-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 6px !important;
+      }
+      .header-td {
+        padding: 16px 20px 12px 14px !important;
+      }
+      .header-col-left {
+        font-size: 20px !important;
+      }
+      .header-col-left a {
+        font-size: 20px !important;
+      }
+      .header-col-right {
+        font-size: 9.5px !important;
+        letter-spacing: 0.12em !important;
+      }
+      .accent-td {
+        padding: 0 20px !important;
+      }
+      .body-td {
+        padding: 20px 20px !important;
+      }
+      .body-td p, .email-paragraph {
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 10px !important;
+      }
+      .email-kicker {
+        font-size: 10px !important;
+        margin-bottom: 4px !important;
+      }
+      .footer-divider-td {
+        padding: 0 20px !important;
+      }
+      .footer-td {
+        padding: 16px 20px !important;
+      }
+      .footer-col-left {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin-bottom: 4px !important;
+        font-size: 10px !important;
+      }
+      .footer-col-right {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-size: 10px !important;
+      }
+      .email-heading {
+        font-size: 16px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.01em !important;
+        margin-bottom: 10px !important;
+        word-break: break-word !important;
+      }
+      .otp-td {
+        padding: 0 !important;
+      }
+      .otp-box {
+        font-size: 18px !important;
+        letter-spacing: 0.14em !important;
+        text-indent: 0.14em !important;
+        padding: 10px 16px !important;
+        white-space: nowrap !important;
+        word-break: normal !important;
+        display: inline-block !important;
+        width: auto !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .info-table {
+        margin: 12px 0 !important;
+      }
+      .info-row {
+        display: block !important;
+        width: 100% !important;
+      }
+      .info-label {
+        display: block !important;
+        width: 100% !important;
+        padding: 6px 0 2px 0 !important;
+        border-bottom: none !important;
+        font-size: 10px !important;
+        box-sizing: border-box !important;
+      }
+      .info-value {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 0 6px 0 !important;
+        font-size: 12px !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+      }
+      .cta-table {
+        width: 100% !important;
+        margin: 14px 0 !important;
+      }
+      .cta-cell {
+        width: 100% !important;
+        text-align: center !important;
+      }
+      .cta-btn {
+        display: block !important;
+        width: 100% !important;
+        padding: 12px 14px !important;
+        font-size: 13px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+      }
+      .status-box {
+        padding: 12px 14px !important;
+        margin-top: 14px !important;
+      }
+      .status-title {
+        font-size: 10px !important;
+        margin-bottom: 4px !important;
+      }
+      .status-item {
+        font-size: 11px !important;
+        margin-bottom: 3px !important;
+      }
+      .reply-box {
+        padding: 12px 14px !important;
+        margin: 12px 0 !important;
+        font-size: 12px !important;
+        word-break: break-word !important;
+      }
+      .dark-badge {
+        font-size: 10px !important;
+        padding: 6px 12px !important;
+        margin-top: 10px !important;
+      }
+    }
+  </style>
+</head>
+<body class="body" style="margin:0;padding:0;background-color:#f9f9f9;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a1a;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Your CodeX admin login OTP is 295877</div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9f9f9;width:100%;margin:0;padding:0;table-layout:fixed;">
+    <tr>
+      <td align="center" class="outer-td" style="padding:32px 20px;">
+        <!--[if mso]>
+        <table role="presentation" align="center" width="600" style="width:600px;">
+        <tr>
+        <td>
+        <![endif]-->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.06);overflow:hidden;margin:0 auto;">
+          
+          <!-- Header (Prominent Brand Banner) -->
+          <tr>
+            <td class="header-td" style="padding:28px 32px 18px 26px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:0;padding:0;border-collapse:collapse;border-spacing:0;">
+                <tr>
+                  <td class="header-col-left" valign="middle" style="padding:0;margin:0;">
+                    <a href="https://qucodex.club" target="_blank" style="font-size:24px;font-weight:900;color:#1a1a1a;text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block;margin:0;padding:0;">Code<span style="color:#2EC5D4;">X</span></a>
+                  </td>
+                  <td class="header-col-right" align="right" valign="middle" style="padding:0;margin:0;font-size:11.5px;letter-spacing:0.14em;color:#999999;text-transform:uppercase;font-weight:700;">BUILD &middot; LEARN &middot; CONNECT</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Accent Line -->
+          <tr>
+            <td class="accent-td" style="padding:0 32px;">
+              <div style="height:2px;background-color:#2EC5D4;width:100%;"></div>
+            </td>
+          </tr>
+
+          <!-- Body content -->
+          <tr>
+            <td class="body-td" style="padding:28px 32px;">
+              
+      <h1 class="email-heading" style="margin:0 0 14px;padding:0;font-size:18px;font-weight:800;line-height:1.25;letter-spacing:-0.01em;color:#1a1a1a;text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">VERIFY <span style="color:#2EC5D4;">EMAIL.</span></h1>
+      <p class="email-paragraph" style="margin:0 0 16px;padding:0;font-size:14px;line-height:1.6;color:#555555;word-break:break-word;overflow-wrap:break-word;">Use the verification code below to continue signing in to your CodeX account.</p>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
+        <tr>
+          <td align="center" class="otp-td">
+            <div class="otp-box" style="display:inline-block;padding:16px 28px;border:2px solid #b5e0ea;border-radius:8px;font-size:28px;font-weight:900;letter-spacing:0.25em;text-indent:0.25em;color:#1a1a1a;text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">295877</div>
+          </td>
+        </tr>
+      </table>
+
+      
+<div class="status-box" style="margin:24px 0 0;padding:18px 22px;background-color:#f4fafe;border-radius:8px;box-sizing:border-box;">
+  <p class="status-title" style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:0.12em;color:#2EC5D4;text-transform:uppercase;word-break:break-word;">Auth Status</p>
+  <p class="status-item" style="margin:0 0 6px;font-size:14px;color:#1a1a1a;font-weight:500;word-break:break-word;">&#10003; Verification code generated successfully</p><p class="status-item" style="margin:0 0 6px;font-size:14px;color:#1a1a1a;font-weight:500;word-break:break-word;">&#10003; Valid for 10 minutes</p><p class="status-item" style="margin:0 0 6px;font-size:14px;color:#1a1a1a;font-weight:500;word-break:break-word;">&#10003; Never share this code with anyone</p>
+</div>
+
+      
+      <p style="margin:24px 0 0;font-size:13px;color:#999999;line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
+    
+            </td>
+          </tr>
+
+          <!-- Footer Divider -->
+          <tr>
+            <td class="footer-divider-td" style="padding:0 32px;">
+              <div style="height:1px;background-color:#e0e0e0;width:100%;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="footer-td" style="padding:20px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:0;padding:0;border-collapse:collapse;border-spacing:0;">
+                <tr>
+                  <td class="footer-col-left" style="padding:0;margin:0;font-size:11.5px;color:#999999;">
+                    &copy; 2026 CodeX Club
+                  </td>
+                  <td class="footer-col-right" align="right" style="padding:0;margin:0;font-size:11.5px;color:#999999;">
+                    Building Developers. Building Innovation.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!--[if mso]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

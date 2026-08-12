@@ -22,8 +22,9 @@ export const killAdminSession = createAsyncThunk(
   "adminSessions/kill",
   async (id, { rejectWithValue }) => {
     try {
-      await adminService.killSession(id);
-      return id;
+      const response = await adminService.killSession(id);
+      const updatedSession = response.data?.data || response.data;
+      return { id, updatedSession };
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -38,7 +39,14 @@ const adminSessionsSlice = createSlice({
     error: null,
     isLoaded: false,
   },
-  reducers: {},
+  reducers: {
+    clearSessions: (state) => {
+      state.sessions = [];
+      state.isLoaded = false;
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminSessions.pending, (state) => {
@@ -54,9 +62,22 @@ const adminSessionsSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(killAdminSession.fulfilled, (state, action) => {
-        state.sessions = state.sessions.filter((s) => s._id !== action.payload);
+        const { id, updatedSession } = action.payload;
+        const index = state.sessions.findIndex((s) => s._id === id);
+        if (index !== -1) {
+          if (updatedSession && typeof updatedSession === "object" && updatedSession.status) {
+            state.sessions[index] = { ...state.sessions[index], ...updatedSession };
+          } else {
+            state.sessions[index] = {
+              ...state.sessions[index],
+              status: "REVOKED",
+              loggedOutAt: new Date().toISOString(),
+            };
+          }
+        }
       });
   },
 });
 
+export const { clearSessions } = adminSessionsSlice.actions;
 export default adminSessionsSlice.reducer;
