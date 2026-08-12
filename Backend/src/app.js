@@ -82,6 +82,7 @@ import certificateRouter from "./routes/certificate.routes.js";
 import boardingPassRouter from "./routes/boardingPass.routes.js";
 import contactRouter from "./routes/contact.routes.js";
 import qrRouter from "./routes/qr.routes.js";
+import specialUtrRouter from "./routes/specialUtr.routes.js";
 
 // root & api v1 status endpoints
 const apiStatusHandler = (req, res) => {
@@ -99,7 +100,8 @@ const apiStatusHandler = (req, res) => {
       certificates: "/api/v1/certificates",
       boardingPasses: "/api/v1/boarding-passes",
       contact: "/api/v1/contact",
-      qr: "/api/v1/qr"
+      qr: "/api/v1/qr",
+      specialUtr: "/api/v1/special-utr"
     }
   });
 };
@@ -118,6 +120,7 @@ app.use("/api/v1/certificates", certificateRouter);
 app.use("/api/v1/boarding-passes", boardingPassRouter);
 app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/qr", qrRouter);
+app.use("/api/v1/special-utr", specialUtrRouter);
 
 // swagger api documentation (only in development)
 if (process.env.NODE_ENV !== 'production') {

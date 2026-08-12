@@ -60,6 +60,7 @@ const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminAnnouncements = lazy(() => import("./pages/admin/Announcements"));
+const SpecialUtrs = lazy(() => import("./pages/admin/SpecialUtrs"));
 
 const router = createBrowserRouter([
   {
@@ -98,6 +99,7 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: "dashboard", element: <AdminDashboard /> },
           { path: "registrations", element: <AdminRegistrations /> },
+          { path: "special-utrs", element: <SpecialUtrs /> },
           { path: "events", element: <AdminEvents /> },
           { path: "team", element: <AdminTeam /> },
           { path: "certificates", element: <BulkCertificates /> },

@@ -1,5 +1,6 @@
 import { Admin } from '../models/admin.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
+import { SpecialUtr } from '../models/specialUtr.model.js';
 import { Event } from '../models/event.model.js';
 import { TeamMember } from '../models/teamMember.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -122,8 +123,9 @@ const verifyOtp = asyncHandler(async (req, res) => {
   mongoSanitize.sanitize(req.body);
 
   const { email, otp } = req.body;
+  const cleanedOtp = otp ? otp.toString().trim().replace(/\s+/g, '') : '';
 
-  if (!email || !otp) {
+  if (!email || !cleanedOtp) {
     throw new ApiError(400, 'Email and OTP are required');
   }
 
@@ -143,7 +145,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'OTP not requested or has expired');
   }
 
-  const isOtpValid = await tokenDoc.isTokenCorrect(otp);
+  const isOtpValid = await tokenDoc.isTokenCorrect(cleanedOtp);
 
   // Since MongoDB TTL thread runs every 60 seconds, we manually check the expiry as a fallback
   if (!isOtpValid || tokenDoc.expiresAt < new Date()) {
@@ -324,8 +326,9 @@ const requestPasswordChange = asyncHandler(async (req, res) => {
 
 const changePassword = asyncHandler(async (req, res) => {
   const { newPassword, otp } = req.body;
+  const cleanedOtp = otp ? otp.toString().trim().replace(/\s+/g, '') : '';
 
-  if (!newPassword || !otp) {
+  if (!newPassword || !cleanedOtp) {
     throw new ApiError(400, 'New password and OTP are required');
   }
 
@@ -346,7 +349,7 @@ const changePassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'OTP not requested or has expired');
   }
 
-  const isOtpValid = await tokenDoc.isTokenCorrect(otp);
+  const isOtpValid = await tokenDoc.isTokenCorrect(cleanedOtp);
 
   if (!isOtpValid || tokenDoc.expiresAt < new Date()) {
     throw new ApiError(400, 'Invalid or expired OTP');
@@ -381,9 +384,24 @@ const getCurrentAdmin = asyncHandler(async (req, res) => {
 });
 
 const getDashboardMetrics = asyncHandler(async (req, res) => {
-  const [pendingApps, totalApps, activeEvents, liveSessions, teamSize, recentLogs] = await Promise.all([
+  const [
+    pendingApps,
+    totalApps,
+    onlineApps,
+    cashApps,
+    specialApps,
+    unusedSpecialUtrs,
+    activeEvents,
+    liveSessions,
+    teamSize,
+    recentLogs
+  ] = await Promise.all([
     StudentRegistration.countDocuments({ status: "PENDING" }),
     StudentRegistration.countDocuments(),
+    StudentRegistration.countDocuments({ paymentMode: "ONLINE" }),
+    StudentRegistration.countDocuments({ paymentMode: "CASH" }),
+    StudentRegistration.countDocuments({ paymentMode: "SPECIAL" }),
+    SpecialUtr.countDocuments({ isUsed: false }),
     Event.countDocuments(),
     Session.countDocuments(),
     TeamMember.countDocuments(),
@@ -395,6 +413,10 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
       metrics: {
         pendingApps,
         totalApps,
+        onlineApps,
+        cashApps,
+        specialApps,
+        unusedSpecialUtrs,
         activeEvents,
         liveSessions,
         teamSize,

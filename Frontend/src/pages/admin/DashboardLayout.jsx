@@ -13,7 +13,8 @@ import {
   X,
   Ticket,
   Scan,
-  Megaphone
+  Megaphone,
+  KeyRound,
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -38,6 +39,7 @@ export default function DashboardLayout() {
       end: true,
     },
     { name: "Registrations", path: "/admin/registrations", icon: Users },
+    { name: "Special UTRs", path: "/admin/special-utrs", icon: KeyRound },
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
     { name: "Certificates", path: "/admin/certificates", icon: FileText },

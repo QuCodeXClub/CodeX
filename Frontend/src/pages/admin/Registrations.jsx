@@ -385,6 +385,7 @@ export default function Registrations() {
               <option value="ALL">All Payments</option>
               <option value="ONLINE">Online</option>
               <option value="CASH">Cash</option>
+              <option value="SPECIAL">Special Registration (Fixed UTR)</option>
             </select>
             <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
@@ -398,98 +399,103 @@ export default function Registrations() {
             <thead className="bg-card-hover/90 border-b border-border/80">
               <tr>
                 <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
-                  Applicant
+                  Student Info
+                </th>
+                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
+                  Academic Details
                 </th>
                 <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Contact
                 </th>
                 <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
-                  Academic Data
-                </th>
-                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
-                  Verification
+                  Payment / UTR
                 </th>
                 <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider text-right">
+                <th className="px-3 sm:px-4 py-3 text-right font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/40">
-              {loading ? (
-                <>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <TableRowSkeleton key={i} />
-                  ))}
-                </>
+            <tbody className="divide-y divide-border/60">
+              {loading && currentData.length === 0 ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} />
+                ))
               ) : currentData.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="6"
-                    className="p-12 text-center text-text-muted font-medium"
-                  >
-                    No records found matching criteria.
+                  <td colSpan="6" className="text-center py-12 text-text-muted">
+                    No registrations found matching your criteria.
                   </td>
                 </tr>
               ) : (
-                currentData.map((reg) => {
-                  const isNew = isNewEntry(reg);
-                  return (
-                    <tr
-                      key={reg._id}
-                      className={`transition-colors ${isNew ? "bg-accent/10 hover:bg-accent/15" : "hover:bg-card-hover/60"}`}
-                    >
-                      <td className="px-3 sm:px-4 py-3 max-w-[170px] align-top">
-                        <div className="font-semibold text-text flex items-center gap-1.5 flex-wrap">
-                          <span className="break-words">{reg.name}</span>
-                          {isNew && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-accent/20 text-accent tracking-wider border border-accent/30 shrink-0">
-                              NEW
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[11px] text-text-muted mt-0.5 truncate" title={`D/O, S/O: ${reg.fatherName}`}>
-                          D/O, S/O: {reg.fatherName}
-                        </div>
-                      </td>
+                currentData.map((reg) => (
+                  <tr
+                    key={reg._id}
+                    className="hover:bg-card-hover/60 transition-colors"
+                  >
+                    <td className="px-3 sm:px-4 py-3 align-top">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-text">{reg.name}</span>
+                        <span className="text-xs text-text-muted font-normal">
+                          F: {reg.fatherName}
+                        </span>
+                      </div>
+                    </td>
 
-                      <td className="px-3 sm:px-4 py-3 max-w-[180px] align-top">
-                        <div className="text-text font-medium text-xs break-all" title={reg.email}>{reg.email}</div>
-                        <div className="text-[11px] font-mono text-text-muted mt-0.5">
+                    <td className="px-3 sm:px-4 py-3 align-top">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-accent font-mono">
+                          {reg.studentId}
+                        </span>
+                        <span className="text-xs text-text-muted">
+                          {reg.course} ({reg.year})
+                        </span>
+                        <span className="text-[11px] text-text-muted/70">
+                          Sem: {reg.semester} | Sec: {reg.section} | Set: {reg.set}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-3 sm:px-4 py-3 align-top">
+                      <div className="flex flex-col gap-0.5">
+                        <a
+                          href={`mailto:${reg.email}`}
+                          className="text-xs text-text-muted hover:text-accent flex items-center gap-1.5 transition-colors"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span className="truncate max-w-[140px]">{reg.email}</span>
+                        </a>
+                        <span className="text-xs text-text-muted font-mono">
                           {reg.phone}
-                        </div>
-                      </td>
+                        </span>
+                      </div>
+                    </td>
 
-                      <td className="px-3 sm:px-4 py-3 align-top">
-                        <div className="font-semibold text-text">
-                          {reg.course}{" "}
-                          <span className="text-text-muted font-normal text-xs">
-                            ({reg.year})
+                    <td className="px-3 sm:px-4 py-3 align-top">
+                      <div className="flex flex-col gap-1 items-start">
+                        <div
+                          className="inline-flex items-center px-2 py-0.5 rounded bg-card-hover border border-border/80 text-text-muted font-mono text-[11px] max-w-[140px] truncate"
+                          title={`UTR: ${reg.transactionId}`}
+                        >
+                          UTR: {reg.transactionId}
+                        </div>
+                        {reg.paymentMode === "SPECIAL" ? (
+                          <span className="text-[9px] font-mono font-bold text-purple-400 bg-purple-500/15 px-2 py-0.5 rounded border border-purple-500/30 uppercase">
+                            SPECIAL UTR
                           </span>
-                        </div>
-                        <div className="text-[11px] font-mono text-text-muted mt-0.5 whitespace-nowrap">
-                          Q-ID: <span className="font-semibold text-text">{reg.studentId}</span> | Sec: {reg.section} | Set: {reg.set}
-                        </div>
-                      </td>
-
-                      <td className="px-3 sm:px-4 py-3 align-top">
-                        <div className="flex flex-col gap-1 items-start">
-                          <div className="inline-flex items-center px-2 py-0.5 rounded bg-card-hover border border-border/80 text-text-muted font-mono text-[11px] max-w-[140px] truncate" title={`UTR: ${reg.transactionId}`}>
-                            UTR: {reg.transactionId}
-                          </div>
-                          {!reg.paymentMode || reg.paymentMode === "ONLINE" ? (
-                            <span className="text-[9px] font-mono font-bold text-text bg-text/10 px-2 py-0.5 rounded border border-text/20 uppercase">
-                              ONLINE
-                            </span>
-                          ) : (
-                            <span className="text-[9px] font-mono font-bold text-success bg-success/10 px-2 py-0.5 rounded border border-success/20 uppercase">
-                              CASH
-                            </span>
-                          )}
-                        </div>
-                      </td>
+                        ) : reg.paymentMode === "CASH" ? (
+                          <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30 uppercase">
+                            CASH
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 uppercase">
+                            ONLINE
+                          </span>
+                        )}
+                      </div>
+                    </td>
 
                       <td className="px-3 sm:px-4 py-3 align-top">
                         <StatusBadge status={reg.status} />
@@ -528,9 +534,8 @@ export default function Registrations() {
                         )}
                       </td>
                     </tr>
-                  );
-                })
-              )}
+                  ))
+                )}
             </tbody>
           </table>
         </div>

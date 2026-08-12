@@ -24,6 +24,14 @@ export default function DatabaseAggregates({ metrics }) {
             {metrics.loading ? "-" : metrics.totalApps}
           </span>
         </div>
+        <div className="flex justify-between items-center p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
+          <span className="text-xs font-sans font-semibold text-purple-400">
+            Special Registrations (Fixed UTR)
+          </span>
+          <span className="text-lg font-display font-black text-purple-300">
+            {metrics.loading ? "-" : (metrics.specialApps || 0)}
+          </span>
+        </div>
         <div className="flex justify-between items-center p-3.5 rounded-xl bg-card-hover/80 border border-border/60">
           <span className="text-xs font-sans text-text-muted">
             Total Events Hosted

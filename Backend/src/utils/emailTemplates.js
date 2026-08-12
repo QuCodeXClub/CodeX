@@ -162,7 +162,7 @@ const adminOtpEmail = (otp) => ({
         <tr>
           <td align="center">
             <div style="display:inline-block;padding:20px 40px;border:2px solid #b5e0ea;border-radius:8px;font-size:36px;font-weight:900;letter-spacing:0.4em;color:${BRAND.ink};text-align:center;">
-              ${otp.toString().split('').join(' ')}
+              ${otp}
             </div>
           </td>
         </tr>
@@ -194,7 +194,7 @@ const passwordChangeOtpEmail = (otp) => ({
         <tr>
           <td align="center">
             <div style="display:inline-block;padding:20px 40px;border:2px solid #b5e0ea;border-radius:8px;font-size:36px;font-weight:900;letter-spacing:0.4em;color:${BRAND.ink};text-align:center;">
-              ${otp.toString().split('').join(' ')}
+              ${otp}
             </div>
           </td>
         </tr>

@@ -53,11 +53,7 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
   }
   
   if (paymentMode && paymentMode !== 'ALL') {
-    if (paymentMode === 'ONLINE') {
-        query.paymentMode = { $ne: 'CASH' };
-    } else {
-        query.paymentMode = paymentMode;
-    }
+    query.paymentMode = paymentMode;
   }
   
   if (academicYear && academicYear !== 'ALL') {
