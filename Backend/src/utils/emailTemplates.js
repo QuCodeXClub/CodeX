@@ -45,10 +45,12 @@ const emailLayout = ({ preheader = '', body }) => `
             <td style="padding:32px 40px 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td>
-                    <span style="font-size:22px;font-weight:900;letter-spacing:0.15em;color:${BRAND.ink};">CODE<span style="color:${BRAND.accent};">X</span></span>
+                  <td valign="middle">
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:24px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                      Code<span style="color:${BRAND.accent};">X</span>
+                    </a>
                   </td>
-                  <td align="right" style="font-size:10px;letter-spacing:0.15em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
+                  <td align="right" valign="middle" style="font-size:10px;letter-spacing:0.15em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
                     BUILD &middot; LEARN &middot; CONNECT
                   </td>
                 </tr>
@@ -160,7 +162,7 @@ const adminOtpEmail = (otp) => ({
         <tr>
           <td align="center">
             <div style="display:inline-block;padding:20px 40px;border:2px solid #b5e0ea;border-radius:8px;font-size:36px;font-weight:900;letter-spacing:0.4em;color:${BRAND.ink};text-align:center;">
-              ${otp.toString().split('').join(' ')}
+              ${otp}
             </div>
           </td>
         </tr>
@@ -192,7 +194,7 @@ const passwordChangeOtpEmail = (otp) => ({
         <tr>
           <td align="center">
             <div style="display:inline-block;padding:20px 40px;border:2px solid #b5e0ea;border-radius:8px;font-size:36px;font-weight:900;letter-spacing:0.4em;color:${BRAND.ink};text-align:center;">
-              ${otp.toString().split('').join(' ')}
+              ${otp}
             </div>
           </td>
         </tr>

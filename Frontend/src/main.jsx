@@ -31,7 +31,7 @@ const lazyWithRetry = (componentImport) =>
 // Public pages
 const Team = lazyWithRetry(() => import("./pages/Team"));
 const Events = lazyWithRetry(() => import("./pages/Events"));
-const EventDetails = lazyWithRetry(() => import("./pages/EventDetails")); 
+const EventDetails = lazyWithRetry(() => import("./pages/EventDetails"));
 
 const Register = lazyWithRetry(() => import("./pages/Register"));
 
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
       { path: "/verify-certificate/:certificateId", element: <VerifyCertificate /> },
       { path: "/verify-boarding-pass/:boardingPassId", element: <VerifyBoardingPass /> },
 
-      
+
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
       { path: "/terms-conditions", element: <TermsConditions /> },
       { path: "/community-guidelines", element: <CommunityGuidelines /> },

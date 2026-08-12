@@ -16,6 +16,13 @@ const Register = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
+
+  const resetSecurityCheck = () => {
+    setTurnstileToken(null);
+    setTurnstileKey((prev) => prev + 1);
+  };
+
   const registerContent = contentData?.register || {
     eyebrow: "REGISTRATION",
     titlePart1: "Join The",
@@ -62,13 +69,52 @@ const Register = () => {
       await registrationService.registerStudent(payload);
       setIsSuccess(true);
     } catch (err) {
-      if (err.response?.data?.errors?.length > 0) {
-        err.response.data.errors.forEach((e) => {
-          if (e.field)
+      // 1. Extract error response structure (axiosInstance unwraps error.response.data on rejection)
+      const errorData = err?.response?.data || err;
+      const message =
+        errorData?.message ||
+        (typeof err === "string" ? err : "Registration submission failed.");
+      const errorsArray = errorData?.errors || [];
+
+      let mappedField = false;
+
+      // 2. Map structured errors array if returned by backend
+      if (Array.isArray(errorsArray) && errorsArray.length > 0) {
+        errorsArray.forEach((e) => {
+          if (e.field) {
             setFormError(e.field, { type: "server", message: e.message });
+            mappedField = true;
+          }
         });
       }
-      setTurnstileToken(null);
+
+      // 3. Fallback: Map single backend error message to specific form input field
+      if (!mappedField && message) {
+        const lowerMsg = message.toLowerCase();
+        if (
+          lowerMsg.includes("student id") ||
+          lowerMsg.includes("qid") ||
+          lowerMsg.includes("studentid")
+        ) {
+          setFormError("studentId", { type: "server", message });
+        } else if (
+          lowerMsg.includes("transaction id") ||
+          lowerMsg.includes("transactionid") ||
+          lowerMsg.includes("utr")
+        ) {
+          setFormError("transactionId", { type: "server", message });
+        } else if (lowerMsg.includes("email")) {
+          setFormError("email", { type: "server", message });
+        } else if (lowerMsg.includes("phone")) {
+          setFormError("phone", { type: "server", message });
+        }
+      }
+
+      // 4. Always notify user via global message toast banner
+      dispatch(setError(message));
+
+      // 5. Cleanly reset turnstile widget key so user can re-verify without page refresh or form reset
+      resetSecurityCheck();
     } finally {
       setLoading(false);
     }
@@ -110,6 +156,7 @@ const Register = () => {
               setTurnstileToken={setTurnstileToken}
               loading={loading}
               turnstileToken={turnstileToken}
+              turnstileKey={turnstileKey}
             />
           </form>
         </PageContainer>

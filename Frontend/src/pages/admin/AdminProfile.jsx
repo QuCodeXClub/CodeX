@@ -555,7 +555,15 @@ export default function AdminProfile() {
                       type="text"
                       name="otp"
                       value={pwdData.otp}
-                      onChange={handlePwdChange}
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        setPwdData((prev) => ({ ...prev, otp: cleaned }));
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+                        setPwdData((prev) => ({ ...prev, otp: pasted }));
+                      }}
                       className="block w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-colors text-center tracking-widest font-mono text-lg"
                       maxLength={6}
                       required

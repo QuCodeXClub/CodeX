@@ -296,9 +296,8 @@ export default function Registrations() {
             title="Refresh Data"
           >
             <RefreshCw
-              className={`w-5 h-5 ${
-                loading ? "animate-spin text-accent" : ""
-              }`}
+              className={`w-5 h-5 ${loading ? "animate-spin text-accent" : ""
+                }`}
             />
           </button>
         </div>

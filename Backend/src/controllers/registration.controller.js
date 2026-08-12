@@ -51,15 +51,15 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
       { transactionId: { $regex: escapedSearch, $options: 'i' } },
     ];
   }
-  
+
   if (paymentMode && paymentMode !== 'ALL') {
     if (paymentMode === 'ONLINE') {
-        query.paymentMode = { $ne: 'CASH' };
+      query.paymentMode = { $ne: 'CASH' };
     } else {
-        query.paymentMode = paymentMode;
+      query.paymentMode = paymentMode;
     }
   }
-  
+
   if (academicYear && academicYear !== 'ALL') {
     const [startYear] = academicYear.split("-");
     const startDate = new Date(`${startYear}-06-01T00:00:00.000Z`);
@@ -265,7 +265,7 @@ const bulkRegistration = asyncHandler(async (req, res) => {
 
       const emails = results.map(r => r.email);
       const studentIds = results.map(r => r.studentId);
-      
+
       const existingStudents = await StudentRegistration.find({
         $or: [
           { email: { $in: emails } },

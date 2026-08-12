@@ -34,6 +34,7 @@ export default function AdminLogin() {
   const {
     register: registerOtp,
     handleSubmit: handleSubmitOtp,
+    setValue: setValueOtp,
     formState: { errors: otpErrors },
     setError: setOtpError,
   } = useForm();
@@ -218,7 +219,19 @@ export default function AdminLogin() {
                       value: /^[0-9]{6}$/,
                       message: "OTP must be exactly 6 digits",
                     },
+                    onChange: (e) => {
+                      const cleaned = e.target.value.replace(/\D/g, "");
+                      setValueOtp("otp", cleaned, { shouldValidate: true });
+                    },
                   })}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData
+                      .getData("text")
+                      .replace(/\D/g, "")
+                      .slice(0, 6);
+                    setValueOtp("otp", pastedData, { shouldValidate: true });
+                  }}
                   className={`w-full bg-card-hover border ${otpErrors.otp ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 text-center text-2xl tracking-[0.5em] focus:outline-none focus:ring-2 transition-all font-mono shadow-inner placeholder:text-text-muted/40`}
                   placeholder="000000"
                 />

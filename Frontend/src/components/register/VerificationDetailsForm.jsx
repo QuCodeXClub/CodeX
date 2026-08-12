@@ -11,6 +11,7 @@ export default function VerificationDetailsForm({
   setTurnstileToken,
   loading,
   turnstileToken,
+  turnstileKey,
 }) {
   const [isQrZoomed, setIsQrZoomed] = useState(false);
 
@@ -79,6 +80,7 @@ export default function VerificationDetailsForm({
           <ShieldCheck className="w-4 h-4 text-accent" /> Security Verification Required
         </div>
         <Turnstile
+          key={turnstileKey}
           siteKey={
             import.meta.env.VITE_TURNSTILE_SITE_KEY ||
             "0x4AAAAAAD5G7REKwUjI5h-H"
