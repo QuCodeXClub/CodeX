@@ -36,7 +36,7 @@ const PartnerSection = () => {
                 // OUR PARTNERS
               </p>
             </div>
-            <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 mb-4">
+            <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 mb-4">
               ORGANIZATIONS<br/>WE'VE WORKED WITH
             </h2>
             <p className="font-mono text-text-muted transition-colors duration-300 text-sm md:text-base leading-[1.8] max-w-[36rem]">

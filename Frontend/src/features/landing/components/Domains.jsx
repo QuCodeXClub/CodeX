@@ -44,7 +44,7 @@ const Domains = () => {
             </p>
             <div className="w-6 h-[2px] bg-accent"></div>
           </div>
-          <h2 className="font-bold text-3xl md:text-4xl lg:text-5xl text-text uppercase tracking-tight leading-[1.1] mb-4">
+          <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl text-text uppercase tracking-tight leading-[1.1] mb-4">
             {domains.titlePart1}{" "}
             <span className="text-accent">
               {domains.titlePart2}

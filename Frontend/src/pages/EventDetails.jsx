@@ -65,7 +65,7 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-bg pb-20 font-sans relative">
+    <div className="min-h-screen bg-transparent pb-20 font-sans relative">
       <div className="w-full relative z-10">
         
         {/* Top Navigation Bar */}

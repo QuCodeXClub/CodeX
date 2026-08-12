@@ -26,7 +26,7 @@ const FaqSection = () => {
             </p>
             <div className="w-6 h-[2px] bg-accent"></div>
           </div>
-          <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold uppercase leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-text to-text/60 mb-3 drop-shadow-sm">
+          <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl uppercase leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-text to-text/60 mb-3 drop-shadow-sm">
             Frequently Asked Questions
           </h2>
           <p className="text-text-muted text-sm md:text-base font-mono max-w-lg leading-[1.8]">

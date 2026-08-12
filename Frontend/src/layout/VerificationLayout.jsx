@@ -59,9 +59,9 @@ const VerificationLayout = ({
       `}</style>
 
       {/* Main Shared Wrapper */}
-      <main
+      <div
         id="verification-overlay"
-        className="w-full max-w-[1400px] mx-auto flex-1 bg-bg min-h-screen py-12 px-4 flex flex-col items-center justify-center relative overflow-y-auto"
+        className="w-full max-w-[1400px] mx-auto flex-1 bg-transparent min-h-[calc(100vh-10rem)] py-12 px-4 flex flex-col items-center justify-center relative"
       >
         
         {/* Loading State */}
@@ -118,7 +118,7 @@ const VerificationLayout = ({
             {children}
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 };

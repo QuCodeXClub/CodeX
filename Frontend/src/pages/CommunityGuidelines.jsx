@@ -7,7 +7,7 @@ const CommunityGuidelines = () => {
   const policy = legal.communityGuidelines;
 
   return (
-    <div className="py-12 bg-bg min-h-screen font-sans text-text">
+    <div className="py-12 bg-transparent min-h-screen font-sans text-text">
       <PageContainer>
         <header className="mb-10 border-b border-border/80 pb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3">

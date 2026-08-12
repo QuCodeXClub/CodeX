@@ -46,7 +46,7 @@ const MissionSection = () => {
               </p>
             </div>
             
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-8 text-text transition-colors duration-300">
+            <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.1] mb-8 text-text transition-colors duration-300">
               {formatHeadline(mission.headline)}
             </h2>
             
