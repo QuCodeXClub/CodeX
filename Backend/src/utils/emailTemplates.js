@@ -223,20 +223,20 @@ const emailLayout = ({ preheader = '', body }) => `
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bg};width:100%;margin:0;padding:0;">
     <tr>
-      <td align="center" class="outer-td" style="padding:40px 16px;">
+      <td align="center" class="outer-td" style="padding:12px 6px;">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);overflow:hidden;margin:0 auto;">
           
           <!-- Header -->
           <tr>
-            <td class="header-td" style="padding:32px 40px 20px;">
+            <td class="header-td" style="padding:20px 20px 14px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="header-col-left" valign="middle">
-                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:24px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:20px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
                       Code<span style="color:${BRAND.accent};">X</span>
                     </a>
                   </td>
-                  <td class="header-col-right" align="right" valign="middle" style="font-size:10px;letter-spacing:0.15em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
+                  <td class="header-col-right" align="right" valign="middle" style="font-size:9px;letter-spacing:0.12em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
                     BUILD &middot; LEARN &middot; CONNECT
                   </td>
                 </tr>
@@ -246,34 +246,34 @@ const emailLayout = ({ preheader = '', body }) => `
 
           <!-- Accent Line -->
           <tr>
-            <td class="accent-td" style="padding:0 40px;">
+            <td class="accent-td" style="padding:0 20px;">
               <div style="height:2px;background-color:${BRAND.accent};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Body content -->
           <tr>
-            <td class="body-td" style="padding:40px 40px;">
+            <td class="body-td" style="padding:20px 20px;">
               ${body}
             </td>
           </tr>
 
           <!-- Footer Divider -->
           <tr>
-            <td class="footer-divider-td" style="padding:0 40px;">
+            <td class="footer-divider-td" style="padding:0 20px;">
               <div style="height:1px;background-color:${BRAND.lineSoft};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td class="footer-td" style="padding:32px 40px;">
+            <td class="footer-td" style="padding:16px 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td class="footer-col-left" style="font-size:11px;color:${BRAND.muted};">
+                  <td class="footer-col-left" style="font-size:10px;color:${BRAND.muted};">
                     &copy; ${new Date().getFullYear()} CodeX Club
                   </td>
-                  <td class="footer-col-right" align="right" style="font-size:11px;color:${BRAND.muted};">
+                  <td class="footer-col-right" align="right" style="font-size:10px;color:${BRAND.muted};">
                     Building Developers. Building Innovation.
                   </td>
                 </tr>
@@ -290,43 +290,43 @@ const emailLayout = ({ preheader = '', body }) => `
 `;
 
 const ctaButton = (href, label) => `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;max-width:100%;" class="cta-table">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;width:100%;max-width:100%;" class="cta-table">
   <tr>
     <td align="center" style="background-color:${BRAND.accent};border-radius:4px;" class="cta-cell">
-      <a href="${href}" target="_blank" style="font-size:14px;font-weight:bold;letter-spacing:0.05em;color:#ffffff;text-decoration:none;display:inline-block;padding:14px 28px;max-width:100%;box-sizing:border-box;word-break:break-word;" class="cta-btn">${label}</a>
+      <a href="${href}" target="_blank" style="font-size:13px;font-weight:bold;letter-spacing:0.05em;color:#ffffff;text-decoration:none;display:inline-block;padding:12px 22px;max-width:100%;box-sizing:border-box;word-break:break-word;" class="cta-btn">${label}</a>
     </td>
   </tr>
 </table>
 `;
 
 const kicker = (text) =>
-  `<p class="email-kicker" style="margin:0 0 8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};font-weight:600;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-kicker" style="margin:0 0 6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};font-weight:600;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const heading = (line1, line2) =>
-  `<h1 class="email-heading" style="margin:0 0 24px;font-size:36px;font-weight:900;line-height:1.15;letter-spacing:0.02em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">
+  `<h1 class="email-heading" style="margin:0 0 16px;font-size:22px;font-weight:900;line-height:1.2;letter-spacing:0.01em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">
     ${line1}<br/>
     ${line2 ? `<span style="color:${BRAND.accent};">${line2}.</span>` : ''}
   </h1>`;
 
 const paragraph = (text) =>
-  `<p class="email-paragraph" style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-paragraph" style="margin:0 0 12px;font-size:13px;line-height:1.55;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const infoRow = (label, value) =>
   `<tr class="info-row">
-    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:12px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};width:35%;vertical-align:top;" class="info-label">${label}</td>
-    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:14px;color:${BRAND.ink};font-weight:bold;width:65%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
+    <td style="padding:10px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:10px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};width:35%;vertical-align:top;" class="info-label">${label}</td>
+    <td style="padding:10px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:12px;color:${BRAND.ink};font-weight:bold;width:65%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
   </tr>`;
 
 const infoTable = (rows) =>
-  `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;max-width:100%;" class="info-table">${rows}</table>`;
+  `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;width:100%;max-width:100%;" class="info-table">${rows}</table>`;
 
 const darkBadge = (text) =>
-  `<span class="dark-badge" style="display:inline-block;margin-top:16px;padding:8px 16px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
+  `<span class="dark-badge" style="display:inline-block;margin-top:12px;padding:6px 12px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:10px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
 
 const statusBox = (title, items) => `
-<div class="status-box" style="margin:32px 0 0;padding:24px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
-  <p class="status-title" style="margin:0 0 12px;font-size:11px;font-weight:bold;letter-spacing:0.15em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
-  ${items.map(item => `<p class="status-item" style="margin:0 0 8px;font-size:13px;color:${BRAND.ink};word-break:break-word;">&#10003; ${item}</p>`).join('')}
+<div class="status-box" style="margin:20px 0 0;padding:16px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
+  <p class="status-title" style="margin:0 0 8px;font-size:10px;font-weight:bold;letter-spacing:0.15em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
+  ${items.map(item => `<p class="status-item" style="margin:0 0 6px;font-size:11px;color:${BRAND.ink};word-break:break-word;">&#10003; ${item}</p>`).join('')}
 </div>
 `;
 
