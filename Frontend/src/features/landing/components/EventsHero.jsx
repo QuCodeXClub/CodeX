@@ -24,7 +24,7 @@ const EventsHero = () => {
               // {eventsHero.badge?.replace(/^\/\/\s*/, '') || "FEATURED EVENTS"}
             </p>
           </div>
-          <h2 className="font-sans text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight uppercase mb-8 text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 transition-colors duration-300">
+          <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-tight uppercase mb-8 text-transparent bg-clip-text bg-gradient-to-br from-text to-text/70 transition-colors duration-300">
             {eventsHero.title.line1.split('.').map((part, i) => part.trim() ? <React.Fragment key={i}>{part}.<br/></React.Fragment> : null)}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent/70 drop-shadow-[0_0_20px_rgba(46,197,212,0.5)]">
               {eventsHero.title.highlight}
