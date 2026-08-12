@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function PersonalDetailsForm({ register, errors }) {
+export default function PersonalDetailsForm({ register, errors, clearErrors }) {
   const inputBaseStyle = "w-full bg-card border border-border text-text rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-sm tracking-wide shadow-sm placeholder:text-text-muted/40";
   const errorInputStyle = "w-full bg-card border border-danger text-text rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-danger/30 focus:border-danger transition-all font-sans text-sm tracking-wide shadow-sm";
 
@@ -53,6 +53,9 @@ export default function PersonalDetailsForm({ register, errors }) {
             {...register("email", {
               required: "Email is required",
               pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" },
+              onChange: () => {
+                if (clearErrors) clearErrors("email");
+              },
             })}
             className={errors.email ? errorInputStyle : inputBaseStyle}
             placeholder="name@example.com"
@@ -74,6 +77,9 @@ export default function PersonalDetailsForm({ register, errors }) {
               pattern: {
                 value: /^[0-9]{10}$/,
                 message: "Must be a 10-digit number",
+              },
+              onChange: () => {
+                if (clearErrors) clearErrors("phone");
               },
             })}
             className={errors.phone ? errorInputStyle : inputBaseStyle}

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function AcademicDetailsForm({ register, errors }) {
+export default function AcademicDetailsForm({ register, errors, clearErrors }) {
   const inputBaseStyle = "w-full bg-card border border-border text-text rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-sm tracking-wide shadow-sm placeholder:text-text-muted/40 cursor-pointer";
   const errorInputStyle = "w-full bg-card border border-danger text-text rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-danger/30 focus:border-danger transition-all font-sans text-sm tracking-wide shadow-sm";
 
@@ -18,6 +18,9 @@ export default function AcademicDetailsForm({ register, errors }) {
             type="text"
             {...register("studentId", {
               required: "University ID is required",
+              onChange: () => {
+                if (clearErrors) clearErrors("studentId");
+              },
             })}
             className={errors.studentId ? errorInputStyle : inputBaseStyle}
             placeholder="Enter Student QID"
