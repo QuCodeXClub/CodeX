@@ -1,4 +1,4 @@
-# CodeX
+# Code X
 
 CodeX Website is the official web platform for the CodeX coding club. It provides member registration, event listings, team management, and administrative tools for club organizers.
 
