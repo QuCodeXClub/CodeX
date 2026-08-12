@@ -66,10 +66,22 @@ const emailLayout = ({ preheader = '', body }) => `
       line-height: inherit !important;
     }
 
+    /* Gmail App & Web Responsive Overrides */
+    u + .body .outer-td {
+      padding: 10px 4px !important;
+    }
+    u + .body .email-card {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    u + .body .body-td {
+      padding: 16px 14px !important;
+    }
+
     /* Mobile Responsive Styles (<= 600px) */
     @media screen and (max-width: 600px) {
       .outer-td {
-        padding: 12px 6px !important;
+        padding: 10px 4px !important;
       }
       .email-card {
         width: 100% !important;
@@ -77,7 +89,7 @@ const emailLayout = ({ preheader = '', body }) => `
         border-radius: 6px !important;
       }
       .header-td {
-        padding: 20px 16px 14px 16px !important;
+        padding: 18px 14px 12px 14px !important;
       }
       .header-col-left {
         display: block !important;
@@ -86,7 +98,7 @@ const emailLayout = ({ preheader = '', body }) => `
         margin-bottom: 4px !important;
       }
       .header-col-left a {
-        font-size: 20px !important;
+        font-size: 18px !important;
       }
       .header-col-right {
         display: block !important;
@@ -96,25 +108,25 @@ const emailLayout = ({ preheader = '', body }) => `
         letter-spacing: 0.1em !important;
       }
       .accent-td {
-        padding: 0 16px !important;
+        padding: 0 14px !important;
       }
       .body-td {
-        padding: 20px 16px !important;
+        padding: 18px 14px !important;
       }
       .body-td p, .email-paragraph {
         font-size: 13px !important;
-        line-height: 1.55 !important;
-        margin-bottom: 12px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 10px !important;
       }
       .email-kicker {
         font-size: 10px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
       }
       .footer-divider-td {
-        padding: 0 16px !important;
+        padding: 0 14px !important;
       }
       .footer-td {
-        padding: 16px 16px !important;
+        padding: 14px 14px !important;
       }
       .footer-col-left {
         display: block !important;
@@ -130,20 +142,20 @@ const emailLayout = ({ preheader = '', body }) => `
         font-size: 10px !important;
       }
       .email-heading {
-        font-size: 22px !important;
+        font-size: 20px !important;
         line-height: 1.2 !important;
         letter-spacing: 0.01em !important;
-        margin-bottom: 14px !important;
+        margin-bottom: 12px !important;
         word-break: break-word !important;
       }
       .otp-td {
         padding: 0 !important;
       }
       .otp-box {
-        font-size: 19px !important;
-        letter-spacing: 0.15em !important;
-        text-indent: 0.15em !important;
-        padding: 10px 16px !important;
+        font-size: 18px !important;
+        letter-spacing: 0.12em !important;
+        text-indent: 0.12em !important;
+        padding: 10px 14px !important;
         white-space: nowrap !important;
         word-break: normal !important;
         display: inline-block !important;
@@ -152,7 +164,7 @@ const emailLayout = ({ preheader = '', body }) => `
         box-sizing: border-box !important;
       }
       .info-table {
-        margin: 14px 0 !important;
+        margin: 12px 0 !important;
       }
       .info-row {
         display: block !important;
@@ -161,7 +173,7 @@ const emailLayout = ({ preheader = '', body }) => `
       .info-label {
         display: block !important;
         width: 100% !important;
-        padding: 8px 0 2px 0 !important;
+        padding: 6px 0 2px 0 !important;
         border-bottom: none !important;
         font-size: 10px !important;
         box-sizing: border-box !important;
@@ -169,7 +181,7 @@ const emailLayout = ({ preheader = '', body }) => `
       .info-value {
         display: block !important;
         width: 100% !important;
-        padding: 0 0 8px 0 !important;
+        padding: 0 0 6px 0 !important;
         font-size: 12px !important;
         border-bottom: 1px solid ${BRAND.lineSoft} !important;
         word-break: break-word !important;
@@ -178,7 +190,7 @@ const emailLayout = ({ preheader = '', body }) => `
       }
       .cta-table {
         width: 100% !important;
-        margin: 16px 0 !important;
+        margin: 14px 0 !important;
       }
       .cta-cell {
         width: 100% !important;
@@ -187,52 +199,57 @@ const emailLayout = ({ preheader = '', body }) => `
       .cta-btn {
         display: block !important;
         width: 100% !important;
-        padding: 12px 16px !important;
+        padding: 12px 14px !important;
         font-size: 13px !important;
         box-sizing: border-box !important;
         text-align: center !important;
       }
       .status-box {
-        padding: 14px 16px !important;
-        margin-top: 16px !important;
+        padding: 12px 14px !important;
+        margin-top: 14px !important;
       }
       .status-title {
         font-size: 10px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
       }
       .status-item {
         font-size: 11px !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 3px !important;
       }
       .reply-box {
-        padding: 14px 16px !important;
-        margin: 14px 0 !important;
+        padding: 12px 14px !important;
+        margin: 12px 0 !important;
         font-size: 12px !important;
         word-break: break-word !important;
       }
       .dark-badge {
         font-size: 10px !important;
         padding: 6px 12px !important;
-        margin-top: 12px !important;
+        margin-top: 10px !important;
       }
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background-color:${BRAND.bg};font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:${BRAND.ink};-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+<body class="body" style="margin:0;padding:0;background-color:${BRAND.bg};font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:${BRAND.ink};-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}</div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bg};width:100%;margin:0;padding:0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bg};width:100%;margin:0;padding:0;table-layout:fixed;">
     <tr>
-      <td align="center" class="outer-td" style="padding:12px 6px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);overflow:hidden;margin:0 auto;">
+      <td align="center" class="outer-td" style="padding:10px 4px;">
+        <!--[if mso]>
+        <table role="presentation" align="center" width="600" style="width:600px;">
+        <tr>
+        <td>
+        <![endif]-->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);overflow:hidden;margin:0 auto;">
           
           <!-- Header -->
           <tr>
-            <td class="header-td" style="padding:20px 20px 14px;">
+            <td class="header-td" style="padding:18px 16px 12px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="header-col-left" valign="middle">
-                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:20px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:18px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
                       Code<span style="color:${BRAND.accent};">X</span>
                     </a>
                   </td>
@@ -246,28 +263,28 @@ const emailLayout = ({ preheader = '', body }) => `
 
           <!-- Accent Line -->
           <tr>
-            <td class="accent-td" style="padding:0 20px;">
+            <td class="accent-td" style="padding:0 16px;">
               <div style="height:2px;background-color:${BRAND.accent};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Body content -->
           <tr>
-            <td class="body-td" style="padding:20px 20px;">
+            <td class="body-td" style="padding:18px 16px;">
               ${body}
             </td>
           </tr>
 
           <!-- Footer Divider -->
           <tr>
-            <td class="footer-divider-td" style="padding:0 20px;">
+            <td class="footer-divider-td" style="padding:0 16px;">
               <div style="height:1px;background-color:${BRAND.lineSoft};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td class="footer-td" style="padding:16px 20px;">
+            <td class="footer-td" style="padding:14px 16px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="footer-col-left" style="font-size:10px;color:${BRAND.muted};">
@@ -282,6 +299,11 @@ const emailLayout = ({ preheader = '', body }) => `
           </tr>
 
         </table>
+        <!--[if mso]>
+        </td>
+        </tr>
+        </table>
+        <![endif]-->
       </td>
     </tr>
   </table>

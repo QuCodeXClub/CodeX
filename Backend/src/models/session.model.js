@@ -31,6 +31,14 @@ const sessionSchema = new mongoose.Schema(
       type: String,
       required: [true, "IP address is required for security tracking"],
     },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'LOGGED_OUT', 'REVOKED', 'EXPIRED'],
+      default: 'ACTIVE',
+    },
+    loggedOutAt: {
+      type: Date,
+    },
     expiresAt: {
       type: Date,
       required: [true, "Session expiration date is required"],
@@ -39,7 +47,7 @@ const sessionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Automatically remove expired sessions
-sessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// Automatically remove old session history after 7 days
+sessionSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 });
 
 export const Session = mongoose.model('Session', sessionSchema);

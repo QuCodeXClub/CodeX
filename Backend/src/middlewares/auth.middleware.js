@@ -26,8 +26,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
     const session = await Session.findById(decodedToken.sessionId);
 
-    if (!session || session.token !== token) {
-      throw new ApiError(401, 'Session expired or invalid');
+    if (!session || session.status !== 'ACTIVE' || session.token !== token) {
+      throw new ApiError(401, 'Session expired, logged out, or revoked');
     }
 
     const admin = await Admin.findById(decodedToken?._id).select('-password');
