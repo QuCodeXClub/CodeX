@@ -45,10 +45,18 @@ const emailLayout = ({ preheader = '', body }) => `
             <td style="padding:32px 40px 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td>
-                    <span style="font-size:22px;font-weight:900;letter-spacing:0.15em;color:${BRAND.ink};">CODE<span style="color:${BRAND.accent};">X</span></span>
+                  <td valign="middle">
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="text-decoration:none;">
+                      <img
+                        src="https://res.cloudinary.com/fswmfdcp/image/upload/f_png,w_260,q_auto/v1784629536/codex-logo_hvgbdh.png"
+                        alt="CodeX Logo"
+                        width="130"
+                        height="auto"
+                        style="display:block;width:130px;max-width:130px;height:auto;border:0;outline:none;"
+                      />
+                    </a>
                   </td>
-                  <td align="right" style="font-size:10px;letter-spacing:0.15em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
+                  <td align="right" valign="middle" style="font-size:10px;letter-spacing:0.15em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
                     BUILD &middot; LEARN &middot; CONNECT
                   </td>
                 </tr>
