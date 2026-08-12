@@ -51,9 +51,15 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
     }
   };
 
+  const getPlainText = (html) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   const onSubmit = async (data) => {
     setDescError("");
-    if (!description || !description.replace(/<[^>]*>/g, "").trim()) {
+    if (!description || !getPlainText(description).trim()) {
       setDescError("Event description is required.");
       return;
     }

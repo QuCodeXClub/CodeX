@@ -69,7 +69,7 @@ const emailLayout = ({ preheader = '', body }) => `
     /* Mobile Responsive Styles (<= 600px) */
     @media screen and (max-width: 600px) {
       .outer-td {
-        padding: 16px 8px !important;
+        padding: 12px 6px !important;
       }
       .email-card {
         width: 100% !important;
@@ -77,61 +77,82 @@ const emailLayout = ({ preheader = '', body }) => `
         border-radius: 6px !important;
       }
       .header-td {
-        padding: 24px 20px 16px 20px !important;
+        padding: 20px 16px 14px 16px !important;
       }
       .header-col-left {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
+      }
+      .header-col-left a {
+        font-size: 20px !important;
       }
       .header-col-right {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
+        font-size: 9px !important;
+        letter-spacing: 0.1em !important;
       }
       .accent-td {
-        padding: 0 20px !important;
+        padding: 0 16px !important;
       }
       .body-td {
-        padding: 28px 20px !important;
+        padding: 20px 16px !important;
+      }
+      .body-td p, .email-paragraph {
+        font-size: 13px !important;
+        line-height: 1.55 !important;
+        margin-bottom: 12px !important;
+      }
+      .email-kicker {
+        font-size: 10px !important;
+        margin-bottom: 6px !important;
       }
       .footer-divider-td {
-        padding: 0 20px !important;
+        padding: 0 16px !important;
       }
       .footer-td {
-        padding: 24px 20px !important;
+        padding: 16px 16px !important;
       }
       .footer-col-left {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
+        font-size: 10px !important;
       }
       .footer-col-right {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
+        font-size: 10px !important;
       }
       .email-heading {
-        font-size: 26px !important;
-        line-height: 1.25 !important;
+        font-size: 22px !important;
+        line-height: 1.2 !important;
         letter-spacing: 0.01em !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 14px !important;
         word-break: break-word !important;
       }
       .otp-td {
         padding: 0 !important;
       }
       .otp-box {
-        font-size: 24px !important;
-        letter-spacing: 0.25em !important;
-        padding: 14px 16px !important;
-        width: 100% !important;
+        font-size: 19px !important;
+        letter-spacing: 0.15em !important;
+        text-indent: 0.15em !important;
+        padding: 10px 16px !important;
+        white-space: nowrap !important;
+        word-break: normal !important;
+        display: inline-block !important;
+        width: auto !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
       }
       .info-table {
-        margin: 16px 0 !important;
+        margin: 14px 0 !important;
       }
       .info-row {
         display: block !important;
@@ -140,21 +161,24 @@ const emailLayout = ({ preheader = '', body }) => `
       .info-label {
         display: block !important;
         width: 100% !important;
-        padding: 10px 0 2px 0 !important;
+        padding: 8px 0 2px 0 !important;
         border-bottom: none !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
+        box-sizing: border-box !important;
       }
       .info-value {
         display: block !important;
         width: 100% !important;
-        padding: 0 0 10px 0 !important;
-        font-size: 13px !important;
+        padding: 0 0 8px 0 !important;
+        font-size: 12px !important;
+        border-bottom: 1px solid ${BRAND.lineSoft} !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
       }
       .cta-table {
         width: 100% !important;
-        margin: 20px 0 !important;
+        margin: 16px 0 !important;
       }
       .cta-cell {
         width: 100% !important;
@@ -163,22 +187,33 @@ const emailLayout = ({ preheader = '', body }) => `
       .cta-btn {
         display: block !important;
         width: 100% !important;
-        padding: 14px 16px !important;
+        padding: 12px 16px !important;
+        font-size: 13px !important;
         box-sizing: border-box !important;
         text-align: center !important;
       }
       .status-box {
-        padding: 16px !important;
-        margin-top: 20px !important;
+        padding: 14px 16px !important;
+        margin-top: 16px !important;
+      }
+      .status-title {
+        font-size: 10px !important;
+        margin-bottom: 6px !important;
       }
       .status-item {
-        font-size: 12px !important;
+        font-size: 11px !important;
+        margin-bottom: 4px !important;
       }
       .reply-box {
-        padding: 16px !important;
-        margin: 16px 0 !important;
-        font-size: 13px !important;
+        padding: 14px 16px !important;
+        margin: 14px 0 !important;
+        font-size: 12px !important;
         word-break: break-word !important;
+      }
+      .dark-badge {
+        font-size: 10px !important;
+        padding: 6px 12px !important;
+        margin-top: 12px !important;
       }
     }
   </style>
@@ -265,7 +300,7 @@ const ctaButton = (href, label) => `
 `;
 
 const kicker = (text) =>
-  `<p style="margin:0 0 8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};font-weight:600;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-kicker" style="margin:0 0 8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};font-weight:600;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const heading = (line1, line2) =>
   `<h1 class="email-heading" style="margin:0 0 24px;font-size:36px;font-weight:900;line-height:1.15;letter-spacing:0.02em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">
@@ -274,7 +309,7 @@ const heading = (line1, line2) =>
   </h1>`;
 
 const paragraph = (text) =>
-  `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-paragraph" style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const infoRow = (label, value) =>
   `<tr class="info-row">
@@ -286,11 +321,11 @@ const infoTable = (rows) =>
   `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;width:100%;max-width:100%;" class="info-table">${rows}</table>`;
 
 const darkBadge = (text) =>
-  `<span style="display:inline-block;margin-top:16px;padding:8px 16px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
+  `<span class="dark-badge" style="display:inline-block;margin-top:16px;padding:8px 16px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
 
 const statusBox = (title, items) => `
 <div class="status-box" style="margin:32px 0 0;padding:24px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
-  <p style="margin:0 0 12px;font-size:11px;font-weight:bold;letter-spacing:0.15em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
+  <p class="status-title" style="margin:0 0 12px;font-size:11px;font-weight:bold;letter-spacing:0.15em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
   ${items.map(item => `<p class="status-item" style="margin:0 0 8px;font-size:13px;color:${BRAND.ink};word-break:break-word;">&#10003; ${item}</p>`).join('')}
 </div>
 `;
@@ -312,9 +347,7 @@ const adminOtpEmail = (otp) => ({
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
         <tr>
           <td align="center" class="otp-td">
-            <div class="otp-box" style="display:inline-block;padding:18px 36px;border:2px solid #b5e0ea;border-radius:8px;font-size:32px;font-weight:900;letter-spacing:0.3em;color:${BRAND.ink};text-align:center;max-width:100%;box-sizing:border-box;word-break:break-all;">
-              ${otp}
-            </div>
+            <div class="otp-box" style="display:inline-block;padding:16px 28px;border:2px solid #b5e0ea;border-radius:8px;font-size:28px;font-weight:900;letter-spacing:0.25em;text-indent:0.25em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
           </td>
         </tr>
       </table>
@@ -344,9 +377,7 @@ const passwordChangeOtpEmail = (otp) => ({
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
         <tr>
           <td align="center" class="otp-td">
-            <div class="otp-box" style="display:inline-block;padding:18px 36px;border:2px solid #b5e0ea;border-radius:8px;font-size:32px;font-weight:900;letter-spacing:0.3em;color:${BRAND.ink};text-align:center;max-width:100%;box-sizing:border-box;word-break:break-all;">
-              ${otp}
-            </div>
+            <div class="otp-box" style="display:inline-block;padding:16px 28px;border:2px solid #b5e0ea;border-radius:8px;font-size:28px;font-weight:900;letter-spacing:0.25em;text-indent:0.25em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
           </td>
         </tr>
       </table>
@@ -521,6 +552,17 @@ const contactReplyEmail = (userName, originalSubject, replyMessage) => ({
   text: `Reply to your message: ${originalSubject}\n\nMESSAGE REPLY.\n\nHi ${userName},\n\nThank you for reaching out to us. We have reviewed your message regarding "${originalSubject}" and here is our reply:\n\n${replyMessage}\n\nIf you have any further questions, feel free to reply directly to this email.\n`,
 });
 
+const stripHtmlTags = (html) => {
+  if (!html) return '';
+  let text = html;
+  let prev;
+  do {
+    prev = text;
+    text = text.replace(/<[^>]*>?/gm, '');
+  } while (text !== prev);
+  return text;
+};
+
 /**
  * Bulk Announcement Email
  */
@@ -534,7 +576,7 @@ const announcementEmail = (subject, messageHtml) => ({
       </div>
     `,
   }),
-  text: `${subject}\n\nCLUB ANNOUNCEMENT.\n\n${messageHtml.replace(/<[^>]*>?/gm, '')}\n`,
+  text: `${subject}\n\nCLUB ANNOUNCEMENT.\n\n${stripHtmlTags(messageHtml)}\n`,
 });
 
 export {
