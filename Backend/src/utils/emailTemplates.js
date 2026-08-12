@@ -81,7 +81,7 @@ const emailLayout = ({ preheader = '', body }) => `
     /* Mobile Responsive Styles (<= 600px) */
     @media screen and (max-width: 600px) {
       .outer-td {
-        padding: 10px 4px !important;
+        padding: 16px 12px !important;
       }
       .email-card {
         width: 100% !important;
@@ -89,29 +89,23 @@ const emailLayout = ({ preheader = '', body }) => `
         border-radius: 6px !important;
       }
       .header-td {
-        padding: 18px 14px 12px 14px !important;
+        padding: 16px 20px 12px 14px !important;
       }
       .header-col-left {
-        display: block !important;
-        width: 100% !important;
-        text-align: center !important;
-        margin-bottom: 4px !important;
+        font-size: 20px !important;
       }
       .header-col-left a {
-        font-size: 18px !important;
+        font-size: 20px !important;
       }
       .header-col-right {
-        display: block !important;
-        width: 100% !important;
-        text-align: center !important;
-        font-size: 9px !important;
-        letter-spacing: 0.1em !important;
+        font-size: 9.5px !important;
+        letter-spacing: 0.12em !important;
       }
       .accent-td {
-        padding: 0 14px !important;
+        padding: 0 20px !important;
       }
       .body-td {
-        padding: 18px 14px !important;
+        padding: 20px 20px !important;
       }
       .body-td p, .email-paragraph {
         font-size: 13px !important;
@@ -123,10 +117,10 @@ const emailLayout = ({ preheader = '', body }) => `
         margin-bottom: 4px !important;
       }
       .footer-divider-td {
-        padding: 0 14px !important;
+        padding: 0 20px !important;
       }
       .footer-td {
-        padding: 14px 14px !important;
+        padding: 16px 20px !important;
       }
       .footer-col-left {
         display: block !important;
@@ -142,10 +136,10 @@ const emailLayout = ({ preheader = '', body }) => `
         font-size: 10px !important;
       }
       .email-heading {
-        font-size: 20px !important;
-        line-height: 1.2 !important;
-        letter-spacing: 0.01em !important;
-        margin-bottom: 12px !important;
+        font-size: 16px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.01em !important;
+        margin-bottom: 10px !important;
         word-break: break-word !important;
       }
       .otp-td {
@@ -153,9 +147,9 @@ const emailLayout = ({ preheader = '', body }) => `
       }
       .otp-box {
         font-size: 18px !important;
-        letter-spacing: 0.12em !important;
-        text-indent: 0.12em !important;
-        padding: 10px 14px !important;
+        letter-spacing: 0.14em !important;
+        text-indent: 0.14em !important;
+        padding: 10px 16px !important;
         white-space: nowrap !important;
         word-break: normal !important;
         display: inline-block !important;
@@ -235,27 +229,23 @@ const emailLayout = ({ preheader = '', body }) => `
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${BRAND.bg};width:100%;margin:0;padding:0;table-layout:fixed;">
     <tr>
-      <td align="center" class="outer-td" style="padding:10px 4px;">
+      <td align="center" class="outer-td" style="padding:32px 20px;">
         <!--[if mso]>
         <table role="presentation" align="center" width="600" style="width:600px;">
         <tr>
         <td>
         <![endif]-->
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);overflow:hidden;margin:0 auto;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.06);overflow:hidden;margin:0 auto;">
           
-          <!-- Header -->
+          <!-- Header (Prominent Brand Banner) -->
           <tr>
-            <td class="header-td" style="padding:18px 16px 12px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <td class="header-td" style="padding:28px 32px 18px 26px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:0;padding:0;border-collapse:collapse;border-spacing:0;">
                 <tr>
-                  <td class="header-col-left" valign="middle">
-                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:18px;font-weight:800;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                      Code<span style="color:${BRAND.accent};">X</span>
-                    </a>
+                  <td class="header-col-left" valign="middle" style="padding:0;margin:0;">
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:24px;font-weight:900;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block;margin:0;padding:0;">Code<span style="color:${BRAND.accent};">X</span></a>
                   </td>
-                  <td class="header-col-right" align="right" valign="middle" style="font-size:9px;letter-spacing:0.12em;color:${BRAND.muted};text-transform:uppercase;font-weight:600;">
-                    BUILD &middot; LEARN &middot; CONNECT
-                  </td>
+                  <td class="header-col-right" align="right" valign="middle" style="padding:0;margin:0;font-size:11.5px;letter-spacing:0.14em;color:${BRAND.muted};text-transform:uppercase;font-weight:700;">BUILD &middot; LEARN &middot; CONNECT</td>
                 </tr>
               </table>
             </td>
@@ -263,34 +253,34 @@ const emailLayout = ({ preheader = '', body }) => `
 
           <!-- Accent Line -->
           <tr>
-            <td class="accent-td" style="padding:0 16px;">
+            <td class="accent-td" style="padding:0 32px;">
               <div style="height:2px;background-color:${BRAND.accent};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Body content -->
           <tr>
-            <td class="body-td" style="padding:18px 16px;">
+            <td class="body-td" style="padding:28px 32px;">
               ${body}
             </td>
           </tr>
 
           <!-- Footer Divider -->
           <tr>
-            <td class="footer-divider-td" style="padding:0 16px;">
+            <td class="footer-divider-td" style="padding:0 32px;">
               <div style="height:1px;background-color:${BRAND.lineSoft};width:100%;"></div>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td class="footer-td" style="padding:14px 16px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <td class="footer-td" style="padding:20px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:0;padding:0;border-collapse:collapse;border-spacing:0;">
                 <tr>
-                  <td class="footer-col-left" style="font-size:10px;color:${BRAND.muted};">
+                  <td class="footer-col-left" style="padding:0;margin:0;font-size:11.5px;color:${BRAND.muted};">
                     &copy; ${new Date().getFullYear()} CodeX Club
                   </td>
-                  <td class="footer-col-right" align="right" style="font-size:10px;color:${BRAND.muted};">
+                  <td class="footer-col-right" align="right" style="padding:0;margin:0;font-size:11.5px;color:${BRAND.muted};">
                     Building Developers. Building Innovation.
                   </td>
                 </tr>
@@ -312,43 +302,40 @@ const emailLayout = ({ preheader = '', body }) => `
 `;
 
 const ctaButton = (href, label) => `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;width:100%;max-width:100%;" class="cta-table">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0;width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;" class="cta-table">
   <tr>
-    <td align="center" style="background-color:${BRAND.accent};border-radius:4px;" class="cta-cell">
-      <a href="${href}" target="_blank" style="font-size:13px;font-weight:bold;letter-spacing:0.05em;color:#ffffff;text-decoration:none;display:inline-block;padding:12px 22px;max-width:100%;box-sizing:border-box;word-break:break-word;" class="cta-btn">${label}</a>
+    <td align="center" style="background-color:${BRAND.accent};border-radius:6px;padding:0;" class="cta-cell">
+      <a href="${href}" target="_blank" style="font-size:15px;font-weight:bold;letter-spacing:0.05em;color:#ffffff;text-decoration:none;display:inline-block;padding:14px 28px;max-width:100%;box-sizing:border-box;word-break:break-word;" class="cta-btn">${label}</a>
     </td>
   </tr>
 </table>
 `;
 
 const kicker = (text) =>
-  `<p class="email-kicker" style="margin:0 0 6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};font-weight:600;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-kicker" style="margin:0 0 8px;padding:0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.accent};font-weight:700;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const heading = (line1, line2) =>
-  `<h1 class="email-heading" style="margin:0 0 16px;font-size:22px;font-weight:900;line-height:1.2;letter-spacing:0.01em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">
-    ${line1}<br/>
-    ${line2 ? `<span style="color:${BRAND.accent};">${line2}.</span>` : ''}
-  </h1>`;
+  `<h1 class="email-heading" style="margin:0 0 14px;padding:0;font-size:18px;font-weight:800;line-height:1.25;letter-spacing:-0.01em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">${line1}${line2 ? ` <span style="color:${BRAND.accent};">${line2}.</span>` : ''}</h1>`;
 
 const paragraph = (text) =>
-  `<p class="email-paragraph" style="margin:0 0 12px;font-size:13px;line-height:1.55;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-paragraph" style="margin:0 0 16px;padding:0;font-size:14px;line-height:1.6;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
 const infoRow = (label, value) =>
   `<tr class="info-row">
-    <td style="padding:10px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:10px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.muted};width:35%;vertical-align:top;" class="info-label">${label}</td>
-    <td style="padding:10px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:12px;color:${BRAND.ink};font-weight:bold;width:65%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
+    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:13px;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.muted};width:35%;vertical-align:top;" class="info-label">${label}</td>
+    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:15px;color:${BRAND.ink};font-weight:bold;width:65%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
   </tr>`;
 
 const infoTable = (rows) =>
-  `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;width:100%;max-width:100%;" class="info-table">${rows}</table>`;
+  `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0;width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;" class="info-table">${rows}</table>`;
 
 const darkBadge = (text) =>
-  `<span class="dark-badge" style="display:inline-block;margin-top:12px;padding:6px 12px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:10px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
+  `<span class="dark-badge" style="display:inline-block;margin-top:16px;padding:8px 16px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12.5px;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
 
 const statusBox = (title, items) => `
-<div class="status-box" style="margin:20px 0 0;padding:16px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
-  <p class="status-title" style="margin:0 0 8px;font-size:10px;font-weight:bold;letter-spacing:0.15em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
-  ${items.map(item => `<p class="status-item" style="margin:0 0 6px;font-size:11px;color:${BRAND.ink};word-break:break-word;">&#10003; ${item}</p>`).join('')}
+<div class="status-box" style="margin:24px 0 0;padding:18px 22px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
+  <p class="status-title" style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:0.12em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
+  ${items.map(item => `<p class="status-item" style="margin:0 0 6px;font-size:14px;color:${BRAND.ink};font-weight:500;word-break:break-word;">&#10003; ${item}</p>`).join('')}
 </div>
 `;
 
@@ -380,7 +367,7 @@ const adminOtpEmail = (otp) => ({
       'Never share this code with anyone'
     ])}
       
-      <p style="margin:32px 0 0;font-size:12px;color:${BRAND.muted};line-height:1.5;text-align:center;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
+      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
     `,
   }),
   text: `Your CodeX admin login OTP is ${otp}\n\nVERIFY EMAIL.\n\nUse the verification code below to continue signing in to your CodeX account.\n\n${otp}\n\nAuth Status:\n- Verification code generated successfully\n- Valid for 10 minutes\n- Never share this code with anyone\n`,
@@ -410,7 +397,7 @@ const passwordChangeOtpEmail = (otp) => ({
       'If you didn\'t request this, secure your account'
     ])}
       
-      <p style="margin:32px 0 0;font-size:12px;color:${BRAND.muted};line-height:1.5;text-align:center;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
+      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
     `,
   }),
   text: `Your CodeX password change OTP is ${otp}\n\nPASSWORD RESET.\n\nYou requested to change your admin password. Your one-time password is:\n${otp}\n\nThis OTP is valid for 10 minutes. If you did not request to change your password, please secure your account immediately.\n`,
@@ -431,7 +418,7 @@ const passwordChangedSuccessEmail = () => ({
       'Account secured'
     ])}
       
-      <p style="margin:32px 0 0;font-size:12px;color:${BRAND.muted};line-height:1.5;text-align:center;word-break:break-word;">If you did not make this change, please contact the developer team immediately to recover your account.</p>
+      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you did not make this change, please contact the developer team immediately to recover your account.</p>
     `,
   }),
   text: `Your CodeX password was successfully changed\n\nPASSWORD CHANGED.\n\nYour CodeX admin account password has been successfully updated.\n\nIf you did not make this change, please contact the developer team immediately to recover your account.\n`,

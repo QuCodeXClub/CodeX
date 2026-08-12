@@ -52,10 +52,10 @@ jobs:
           aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --comment "Pull latest container image and deploy via Docker Compose" \
+            --comment "Pull latest container image and deploy via Docker Compose with automatic service restart" \
             --parameters 'commands=[
               "cd /home/ubuntu/codex/backend",
               "sudo docker compose pull",
-              "sudo docker compose up -d --remove-orphans",
+              "sudo docker compose up -d --force-recreate --remove-orphans",
               "sudo docker image prune -f"
             ]'

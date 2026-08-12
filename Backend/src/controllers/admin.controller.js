@@ -237,32 +237,21 @@ const getAdminSessions = asyncHandler(async (req, res) => {
 const killSession = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
+  if (req.sessionId && req.sessionId.toString() === id) {
+    throw new ApiError(400, 'Cannot revoke your current active session. Use Logout instead.');
+  }
+
   const session = await Session.findOne({ _id: id, adminId: req.admin._id });
 
   if (!session) {
     throw new ApiError(404, 'Session not found');
   }
 
-  if (session.status === 'ACTIVE') {
-    session.status = 'REVOKED';
-    session.loggedOutAt = new Date();
-    await session.save();
-  } else {
-    // Permanently remove log entry if already inactive
-    await Session.findByIdAndDelete(id);
-  }
+  session.status = 'REVOKED';
+  session.loggedOutAt = new Date();
+  await session.save();
 
-  if (req.sessionId && req.sessionId.toString() === id) {
-    const options = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      path: '/',
-    };
-    res.clearCookie('accessToken', options);
-  }
-
-  return res.status(200).json(new ApiResponse(200, {}, 'Session updated successfully'));
+  return res.status(200).json(new ApiResponse(200, session, 'Session revoked successfully'));
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -425,7 +414,7 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
     StudentRegistration.countDocuments({ status: "PENDING" }),
     StudentRegistration.countDocuments(),
     Event.countDocuments(),
-    Session.countDocuments(),
+    Session.countDocuments({ status: "ACTIVE" }),
     TeamMember.countDocuments(),
     StudentRegistration.find().sort({ createdAt: -1 }).limit(5)
   ]);

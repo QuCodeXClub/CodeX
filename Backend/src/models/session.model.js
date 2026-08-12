@@ -51,3 +51,16 @@ const sessionSchema = new mongoose.Schema(
 sessionSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 });
 
 export const Session = mongoose.model('Session', sessionSchema);
+
+// Explicitly drop legacy expiresAt_1 TTL index from MongoDB database if it exists
+mongoose.connection.on('connected', async () => {
+  try {
+    const collection = mongoose.connection.collection('sessions');
+    const indexes = await collection.indexes();
+    if (indexes.some((idx) => idx.name === 'expiresAt_1')) {
+      await collection.dropIndex('expiresAt_1');
+    }
+  } catch {
+    // Index dropped or not present
+  }
+});

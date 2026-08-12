@@ -205,26 +205,29 @@ export default function ManageSessions() {
                 </div>
 
                 {/* Action Button */}
-                <button
-                  onClick={() => handleKill(session)}
-                  disabled={updatingId === session._id}
-                  className={`w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all shrink-0 disabled:opacity-50 cursor-pointer shadow-sm ${
-                    isActive
-                      ? "bg-danger/10 hover:bg-danger text-danger hover:text-white border border-danger/30"
-                      : "bg-border/20 hover:bg-danger/10 text-text-muted hover:text-danger border border-border/40"
-                  }`}
-                >
-                  {updatingId === session._id ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-4 h-4" />
-                  )}
-                  {updatingId === session._id
-                    ? "Updating..."
-                    : isActive
-                    ? "Revoke Access"
-                    : "Delete Log"}
-                </button>
+                {session.isCurrent ? (
+                  <span className="text-xs font-mono font-bold text-accent px-3.5 py-1.5 bg-accent/10 border border-accent/30 rounded-lg shrink-0 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                    This Device (Active)
+                  </span>
+                ) : isActive ? (
+                  <button
+                    onClick={() => handleKill(session)}
+                    disabled={updatingId === session._id}
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all shrink-0 disabled:opacity-50 cursor-pointer shadow-sm bg-danger/10 hover:bg-danger text-danger hover:text-white border border-danger/30"
+                  >
+                    {updatingId === session._id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ShieldAlert className="w-4 h-4" />
+                    )}
+                    {updatingId === session._id ? "Revoking..." : "Revoke Access"}
+                  </button>
+                ) : (
+                  <span className="text-xs font-mono text-text-muted px-3 py-1.5 bg-card/60 border border-border/50 rounded-lg shrink-0">
+                    Retained (7-Day Log)
+                  </span>
+                )}
               </div>
             );
           })}
