@@ -90,7 +90,7 @@ export default function AdminProfile() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/v1/admin/logout", {}, { withCredentials: true });
+      await adminService.logoutAdmin();
     } catch (error) {
       console.error("Backend logout failed or session already cleared:", error);
     } finally {
