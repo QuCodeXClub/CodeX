@@ -1,13 +1,14 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import HeroSection from "../features/landing/components/HeroSection";
+import lazyWithRetry from "../utils/lazyWithRetry";
 
-// Lazy load below-the-fold sections to improve initial load time
-const MissionSection = lazy(() => import("../features/landing/components/MissionSection"));
-const PartnerSection = lazy(() => import("../features/landing/components/PartnerSection"));
-const FaqSection = lazy(() => import("../features/landing/components/FaqSection"));
-const ContactSection = lazy(() => import("../features/landing/components/ContactSection"));
-const Domains = lazy(() => import("../features/landing/components/Domains"));
-const EventHero = lazy(() => import("../features/landing/components/EventsHero"));
+// Lazy load below-the-fold sections to improve initial load time with auto-retry on build updates
+const MissionSection = lazyWithRetry(() => import("../features/landing/components/MissionSection"));
+const PartnerSection = lazyWithRetry(() => import("../features/landing/components/PartnerSection"));
+const FaqSection = lazyWithRetry(() => import("../features/landing/components/FaqSection"));
+const ContactSection = lazyWithRetry(() => import("../features/landing/components/ContactSection"));
+const Domains = lazyWithRetry(() => import("../features/landing/components/Domains"));
+const EventHero = lazyWithRetry(() => import("../features/landing/components/EventsHero"));
 
 
 const Home = () => {

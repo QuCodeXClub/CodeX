@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -12,21 +12,7 @@ import AdminLayout from "./layout/AdminLayout";
 import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
-
-// Robust lazy loader with chunk load failure auto-retry
-const lazyWithRetry = (componentImport) =>
-  lazy(async () => {
-    try {
-      return await componentImport();
-    } catch (error) {
-      const hasRefreshed = sessionStorage.getItem("codex_chunk_refreshed");
-      if (!hasRefreshed) {
-        sessionStorage.setItem("codex_chunk_refreshed", "true");
-        window.location.reload();
-      }
-      throw error;
-    }
-  });
+import lazyWithRetry from "./utils/lazyWithRetry";
 
 // Public pages
 const Team = lazyWithRetry(() => import("./pages/Team"));
@@ -40,26 +26,26 @@ const VerifyBoardingPass = lazyWithRetry(() => import("./pages/VerifyBoardingPas
 
 
 // New Policy Pages
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsConditions = lazy(() => import("./pages/TermsConditions"));
-const CommunityGuidelines = lazy(() => import("./pages/CommunityGuidelines"));
-const EventPolicy = lazy(() => import("./pages/EventPolicy"));
-const Accessibility = lazy(() => import("./pages/Accessibility"));
+const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"));
+const TermsConditions = lazyWithRetry(() => import("./pages/TermsConditions"));
+const CommunityGuidelines = lazyWithRetry(() => import("./pages/CommunityGuidelines"));
+const EventPolicy = lazyWithRetry(() => import("./pages/EventPolicy"));
+const Accessibility = lazyWithRetry(() => import("./pages/Accessibility"));
 
 // Admin only pages
-const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
-const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
-const AdminRegistrations = lazy(() => import("./pages/admin/Registrations"));
-const AdminEvents = lazy(() => import("./pages/admin/ManageEvents"));
-const AdminTeam = lazy(() => import("./pages/admin/ManageTeam"));
-const BulkCertificates = lazy(() => import("./pages/admin/BulkCertificates"));
-const BulkBoardingPasses = lazy(() => import("./pages/admin/BulkBoardingPasses"));
-const QRGenerator = lazy(() => import("./pages/admin/QRGenerator"));
-const ManageSessions = lazy(() => import("./pages/admin/ManageSessions"));
-const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
-const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
-const AdminAnnouncements = lazy(() => import("./pages/admin/Announcements"));
+const AdminLogin = lazyWithRetry(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazyWithRetry(() => import("./pages/admin/Dashboard"));
+const AdminRegistrations = lazyWithRetry(() => import("./pages/admin/Registrations"));
+const AdminEvents = lazyWithRetry(() => import("./pages/admin/ManageEvents"));
+const AdminTeam = lazyWithRetry(() => import("./pages/admin/ManageTeam"));
+const BulkCertificates = lazyWithRetry(() => import("./pages/admin/BulkCertificates"));
+const BulkBoardingPasses = lazyWithRetry(() => import("./pages/admin/BulkBoardingPasses"));
+const QRGenerator = lazyWithRetry(() => import("./pages/admin/QRGenerator"));
+const ManageSessions = lazyWithRetry(() => import("./pages/admin/ManageSessions"));
+const ManageContacts = lazyWithRetry(() => import("./pages/admin/ManageContacts"));
+const AdminProfile = lazyWithRetry(() => import("./pages/admin/AdminProfile"));
+const AdminSettings = lazyWithRetry(() => import("./pages/admin/AdminSettings"));
+const AdminAnnouncements = lazyWithRetry(() => import("./pages/admin/Announcements"));
 
 const router = createBrowserRouter([
   {
