@@ -225,7 +225,7 @@ const ContactSection = () => {
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
                     <div className="w-full sm:w-auto flex justify-center scale-90 sm:scale-100 origin-left">
                       <Turnstile
-                        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAAD5G7REKwUjI5h-H"}
+                        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => setTurnstileToken(token)}
                         onError={(err) => {
                           console.warn("Turnstile widget error:", err);
