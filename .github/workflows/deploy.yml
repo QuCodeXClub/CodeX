@@ -55,7 +55,8 @@ jobs:
             --comment "Pull latest container image and deploy via Docker Compose with automatic service restart" \
             --parameters 'commands=[
               "cd /home/ubuntu/codex/backend",
-              "sudo docker compose pull",
+              "echo \"${{ secrets.DOCKERHUB_TOKEN }}\" | sudo docker login -u \"${{ secrets.DOCKERHUB_USERNAME }}\" --password-stdin",
+              "sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/codex-backend:latest",
               "sudo docker compose up -d --force-recreate --remove-orphans",
               "sudo docker image prune -f"
             ]'
