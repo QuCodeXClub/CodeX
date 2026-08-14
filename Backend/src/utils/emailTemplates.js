@@ -5,8 +5,11 @@
  *   - Background: #f9f9f9
  *   - Card:       #ffffff
  *   - Ink:        #1a1a1a  (dark gray/black)
+ *   - Text:       #4a4a4a  (readable body text)
  *   - Accent:     #2EC5D4  (light blue)
  *   - AccentPale: #f4fafe
+ *   - LineSoft:   #e5e7eb
+ *   - Muted:      #888888
  *   - Fonts:      Helvetica Neue, Helvetica, Arial, sans-serif
  */
 
@@ -14,11 +17,11 @@ const BRAND = {
   bg: '#f9f9f9',
   card: '#ffffff',
   ink: '#1a1a1a',
-  text: '#555555',
+  text: '#4a4a4a',
   accent: '#2EC5D4',
   accentPale: '#f4fafe',
-  lineSoft: '#e0e0e0',
-  muted: '#999999',
+  lineSoft: '#e5e7eb',
+  muted: '#888888',
 };
 
 const emailLayout = ({ preheader = '', body }) => `
@@ -40,6 +43,7 @@ const emailLayout = ({ preheader = '', body }) => `
       width: 100% !important;
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
     }
     table, td {
       mso-table-lspace: 0pt;
@@ -68,34 +72,46 @@ const emailLayout = ({ preheader = '', body }) => `
 
     /* Gmail App & Web Responsive Overrides */
     u + .body .outer-td {
-      padding: 10px 4px !important;
+      padding: 16px 10px !important;
     }
     u + .body .email-card {
       width: 100% !important;
       max-width: 100% !important;
     }
+    u + .body .header-td {
+      padding: 20px 20px 14px 20px !important;
+    }
+    u + .body .accent-td {
+      padding: 0 20px !important;
+    }
     u + .body .body-td {
-      padding: 16px 14px !important;
+      padding: 24px 20px !important;
+    }
+    u + .body .footer-divider-td {
+      padding: 0 20px !important;
+    }
+    u + .body .footer-td {
+      padding: 18px 20px !important;
     }
 
     /* Mobile Responsive Styles (<= 600px) */
     @media screen and (max-width: 600px) {
       .outer-td {
-        padding: 16px 12px !important;
+        padding: 16px 10px !important;
       }
       .email-card {
         width: 100% !important;
         max-width: 100% !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
       }
       .header-td {
-        padding: 16px 20px 12px 14px !important;
+        padding: 20px 20px 14px 20px !important;
       }
       .header-col-left {
-        font-size: 20px !important;
+        font-size: 22px !important;
       }
       .header-col-left a {
-        font-size: 20px !important;
+        font-size: 22px !important;
       }
       .header-col-right {
         font-size: 9.5px !important;
@@ -105,51 +121,50 @@ const emailLayout = ({ preheader = '', body }) => `
         padding: 0 20px !important;
       }
       .body-td {
-        padding: 20px 20px !important;
+        padding: 24px 20px !important;
       }
       .body-td p, .email-paragraph {
-        font-size: 13px !important;
-        line-height: 1.5 !important;
-        margin-bottom: 10px !important;
+        font-size: 14px !important;
+        line-height: 1.55 !important;
+        margin-bottom: 14px !important;
       }
       .email-kicker {
-        font-size: 10px !important;
-        margin-bottom: 4px !important;
+        font-size: 11px !important;
+        margin-bottom: 6px !important;
       }
       .footer-divider-td {
         padding: 0 20px !important;
       }
       .footer-td {
-        padding: 16px 20px !important;
+        padding: 18px 20px !important;
       }
       .footer-col-left {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
-        margin-bottom: 4px !important;
-        font-size: 10px !important;
+        margin-bottom: 6px !important;
+        font-size: 11px !important;
       }
       .footer-col-right {
         display: block !important;
         width: 100% !important;
         text-align: center !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
       }
       .email-heading {
-        font-size: 16px !important;
-        line-height: 1.25 !important;
+        font-size: 18px !important;
+        line-height: 1.3 !important;
         letter-spacing: -0.01em !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
         word-break: break-word !important;
       }
       .otp-td {
         padding: 0 !important;
       }
       .otp-box {
-        font-size: 18px !important;
-        letter-spacing: 0.14em !important;
-        text-indent: 0.14em !important;
-        padding: 10px 16px !important;
+        font-size: 22px !important;
+        letter-spacing: 0.18em !important;
+        padding: 12px 20px !important;
         white-space: nowrap !important;
         word-break: normal !important;
         display: inline-block !important;
@@ -158,33 +173,38 @@ const emailLayout = ({ preheader = '', body }) => `
         box-sizing: border-box !important;
       }
       .info-table {
-        margin: 12px 0 !important;
+        margin: 16px 0 !important;
       }
       .info-row {
         display: block !important;
         width: 100% !important;
+        margin-bottom: 8px !important;
       }
       .info-label {
         display: block !important;
         width: 100% !important;
-        padding: 6px 0 2px 0 !important;
+        padding: 0 0 2px 0 !important;
         border-bottom: none !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         box-sizing: border-box !important;
       }
       .info-value {
         display: block !important;
         width: 100% !important;
-        padding: 0 0 6px 0 !important;
-        font-size: 12px !important;
+        padding: 0 0 8px 0 !important;
+        font-size: 14px !important;
         border-bottom: 1px solid ${BRAND.lineSoft} !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
         box-sizing: border-box !important;
       }
+      .info-row:last-child .info-value {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+      }
       .cta-table {
         width: 100% !important;
-        margin: 14px 0 !important;
+        margin: 18px 0 !important;
       }
       .cta-cell {
         width: 100% !important;
@@ -193,33 +213,36 @@ const emailLayout = ({ preheader = '', body }) => `
       .cta-btn {
         display: block !important;
         width: 100% !important;
-        padding: 12px 14px !important;
-        font-size: 13px !important;
+        padding: 13px 16px !important;
+        font-size: 14px !important;
         box-sizing: border-box !important;
         text-align: center !important;
       }
       .status-box {
-        padding: 12px 14px !important;
-        margin-top: 14px !important;
+        padding: 14px 16px !important;
+        margin-top: 18px !important;
       }
       .status-title {
-        font-size: 10px !important;
-        margin-bottom: 4px !important;
+        font-size: 11px !important;
+        margin-bottom: 6px !important;
       }
       .status-item {
-        font-size: 11px !important;
-        margin-bottom: 3px !important;
+        font-size: 12.5px !important;
+        margin-bottom: 4px !important;
+      }
+      .status-item:last-child {
+        margin-bottom: 0 !important;
       }
       .reply-box {
-        padding: 12px 14px !important;
-        margin: 12px 0 !important;
-        font-size: 12px !important;
+        padding: 16px 18px !important;
+        margin: 16px 0 !important;
+        font-size: 13.5px !important;
         word-break: break-word !important;
       }
       .dark-badge {
-        font-size: 10px !important;
+        font-size: 11px !important;
         padding: 6px 12px !important;
-        margin-top: 10px !important;
+        margin-top: 12px !important;
       }
     }
   </style>
@@ -237,15 +260,15 @@ const emailLayout = ({ preheader = '', body }) => `
         <![endif]-->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;width:100%;background-color:${BRAND.card};border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.06);overflow:hidden;margin:0 auto;">
           
-          <!-- Header (Prominent Brand Banner) -->
+          <!-- Header (Brand Banner) -->
           <tr>
-            <td class="header-td" style="padding:28px 32px 18px 26px;">
+            <td class="header-td" style="padding:28px 32px 20px 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:0;padding:0;border-collapse:collapse;border-spacing:0;">
                 <tr>
                   <td class="header-col-left" valign="middle" style="padding:0;margin:0;">
-                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:24px;font-weight:900;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block;margin:0;padding:0;">Code<span style="color:${BRAND.accent};">X</span></a>
+                    <a href="${process.env.FRONTEND_URL || 'https://qucodex.club'}" target="_blank" style="font-size:24px;font-weight:900;color:${BRAND.ink};text-decoration:none;letter-spacing:-0.5px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;display:inline-block;margin:0;padding:0;line-height:1;">Code<span style="color:${BRAND.accent};">X</span></a>
                   </td>
-                  <td class="header-col-right" align="right" valign="middle" style="padding:0;margin:0;font-size:11.5px;letter-spacing:0.14em;color:${BRAND.muted};text-transform:uppercase;font-weight:700;">BUILD &middot; LEARN &middot; CONNECT</td>
+                  <td class="header-col-right" align="right" valign="middle" style="padding:0;margin:0;font-size:11px;letter-spacing:0.14em;color:${BRAND.muted};text-transform:uppercase;font-weight:700;line-height:1;">BUILD &middot; LEARN &middot; CONNECT</td>
                 </tr>
               </table>
             </td>
@@ -302,40 +325,40 @@ const emailLayout = ({ preheader = '', body }) => `
 `;
 
 const ctaButton = (href, label) => `
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0;width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;" class="cta-table">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0;width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;" class="cta-table">
   <tr>
     <td align="center" style="background-color:${BRAND.accent};border-radius:6px;padding:0;" class="cta-cell">
-      <a href="${href}" target="_blank" style="font-size:15px;font-weight:bold;letter-spacing:0.05em;color:#ffffff;text-decoration:none;display:inline-block;padding:14px 28px;max-width:100%;box-sizing:border-box;word-break:break-word;" class="cta-btn">${label}</a>
+      <a href="${href}" target="_blank" style="font-size:14px;font-weight:700;letter-spacing:0.04em;color:#ffffff;text-decoration:none;display:inline-block;padding:13px 28px;max-width:100%;box-sizing:border-box;word-break:break-word;line-height:1.2;" class="cta-btn">${label}</a>
     </td>
   </tr>
 </table>
 `;
 
 const kicker = (text) =>
-  `<p class="email-kicker" style="margin:0 0 8px;padding:0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.accent};font-weight:700;word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
+  `<p class="email-kicker" style="margin:0 0 6px;padding:0;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.accent};font-weight:700;word-break:break-word;overflow-wrap:break-word;line-height:1.3;">${text}</p>`;
 
 const heading = (line1, line2) =>
-  `<h1 class="email-heading" style="margin:0 0 14px;padding:0;font-size:18px;font-weight:800;line-height:1.25;letter-spacing:-0.01em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">${line1}${line2 ? ` <span style="color:${BRAND.accent};">${line2}.</span>` : ''}</h1>`;
+  `<h1 class="email-heading" style="margin:0 0 12px;padding:0;font-size:19px;font-weight:800;line-height:1.3;letter-spacing:-0.01em;color:${BRAND.ink};text-transform:uppercase;word-break:break-word;overflow-wrap:break-word;">${line1}${line2 ? ` <span style="color:${BRAND.accent};">${line2}.</span>` : ''}</h1>`;
 
 const paragraph = (text) =>
   `<p class="email-paragraph" style="margin:0 0 16px;padding:0;font-size:14px;line-height:1.6;color:${BRAND.text};word-break:break-word;overflow-wrap:break-word;">${text}</p>`;
 
-const infoRow = (label, value) =>
+const infoRow = (label, value, isLast = false) =>
   `<tr class="info-row">
-    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:13px;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.muted};width:35%;vertical-align:top;" class="info-label">${label}</td>
-    <td style="padding:12px 0;border-bottom:1px solid ${BRAND.lineSoft};font-size:15px;color:${BRAND.ink};font-weight:bold;width:65%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
+    <td style="padding:10px 0;${isLast ? '' : `border-bottom:1px solid ${BRAND.lineSoft};`}font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${BRAND.muted};width:36%;vertical-align:top;" class="info-label">${label}</td>
+    <td style="padding:10px 0;${isLast ? '' : `border-bottom:1px solid ${BRAND.lineSoft};`}font-size:14px;color:${BRAND.ink};font-weight:600;width:64%;vertical-align:top;word-break:break-word;overflow-wrap:break-word;" class="info-value">${value}</td>
   </tr>`;
 
 const infoTable = (rows) =>
   `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0;width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;" class="info-table">${rows}</table>`;
 
 const darkBadge = (text) =>
-  `<span class="dark-badge" style="display:inline-block;margin-top:16px;padding:8px 16px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12.5px;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
+  `<span class="dark-badge" style="display:inline-block;margin-top:14px;padding:6px 14px;background-color:${BRAND.accentPale};color:${BRAND.accent};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;max-width:100%;box-sizing:border-box;word-break:break-word;">${text}</span>`;
 
 const statusBox = (title, items) => `
-<div class="status-box" style="margin:24px 0 0;padding:18px 22px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
-  <p class="status-title" style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:0.12em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;">${title}</p>
-  ${items.map(item => `<p class="status-item" style="margin:0 0 6px;font-size:14px;color:${BRAND.ink};font-weight:500;word-break:break-word;">&#10003; ${item}</p>`).join('')}
+<div class="status-box" style="margin:20px 0 0;padding:16px 20px;background-color:${BRAND.accentPale};border-radius:8px;box-sizing:border-box;">
+  <p class="status-title" style="margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:0.1em;color:${BRAND.accent};text-transform:uppercase;word-break:break-word;line-height:1.2;">${title}</p>
+  ${items.map((item, idx) => `<p class="status-item" style="margin:0 0 ${idx === items.length - 1 ? '0' : '6px'};font-size:13.5px;color:${BRAND.ink};font-weight:500;word-break:break-word;line-height:1.4;">&#10003; ${item}</p>`).join('')}
 </div>
 `;
 
@@ -353,10 +376,10 @@ const adminOtpEmail = (otp) => ({
       ${heading('VERIFY', 'EMAIL')}
       ${paragraph('Use the verification code below to continue signing in to your CodeX account.')}
 
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
         <tr>
           <td align="center" class="otp-td">
-            <div class="otp-box" style="display:inline-block;padding:16px 28px;border:2px solid #b5e0ea;border-radius:8px;font-size:28px;font-weight:900;letter-spacing:0.25em;text-indent:0.25em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
+            <div class="otp-box" style="display:inline-block;padding:14px 28px;background-color:${BRAND.accentPale};border:2px solid ${BRAND.accent};border-radius:8px;font-size:26px;font-weight:900;letter-spacing:0.2em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
           </td>
         </tr>
       </table>
@@ -367,7 +390,7 @@ const adminOtpEmail = (otp) => ({
       'Never share this code with anyone'
     ])}
       
-      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
+      <p style="margin:16px 0 0;font-size:12.5px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
     `,
   }),
   text: `Your CodeX admin login OTP is ${otp}\n\nVERIFY EMAIL.\n\nUse the verification code below to continue signing in to your CodeX account.\n\n${otp}\n\nAuth Status:\n- Verification code generated successfully\n- Valid for 10 minutes\n- Never share this code with anyone\n`,
@@ -383,10 +406,10 @@ const passwordChangeOtpEmail = (otp) => ({
       ${heading('PASSWORD', 'RESET')}
       ${paragraph('You requested to change your admin password. Use the verification code below to proceed.')}
 
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
         <tr>
           <td align="center" class="otp-td">
-            <div class="otp-box" style="display:inline-block;padding:16px 28px;border:2px solid #b5e0ea;border-radius:8px;font-size:28px;font-weight:900;letter-spacing:0.25em;text-indent:0.25em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
+            <div class="otp-box" style="display:inline-block;padding:14px 28px;background-color:${BRAND.accentPale};border:2px solid ${BRAND.accent};border-radius:8px;font-size:26px;font-weight:900;letter-spacing:0.2em;color:${BRAND.ink};text-align:center;white-space:nowrap;max-width:100%;box-sizing:border-box;">${otp}</div>
           </td>
         </tr>
       </table>
@@ -397,7 +420,7 @@ const passwordChangeOtpEmail = (otp) => ({
       'If you didn\'t request this, secure your account'
     ])}
       
-      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
+      <p style="margin:16px 0 0;font-size:12.5px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you didn't request this verification, you can safely ignore this email.</p>
     `,
   }),
   text: `Your CodeX password change OTP is ${otp}\n\nPASSWORD RESET.\n\nYou requested to change your admin password. Your one-time password is:\n${otp}\n\nThis OTP is valid for 10 minutes. If you did not request to change your password, please secure your account immediately.\n`,
@@ -418,7 +441,7 @@ const passwordChangedSuccessEmail = () => ({
       'Account secured'
     ])}
       
-      <p style="margin:24px 0 0;font-size:13px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you did not make this change, please contact the developer team immediately to recover your account.</p>
+      <p style="margin:16px 0 0;font-size:12.5px;color:${BRAND.muted};line-height:1.5;text-align:left;word-break:break-word;">If you did not make this change, please contact the developer team immediately to recover your account.</p>
     `,
   }),
   text: `Your CodeX password was successfully changed\n\nPASSWORD CHANGED.\n\nYour CodeX admin account password has been successfully updated.\n\nIf you did not make this change, please contact the developer team immediately to recover your account.\n`,
@@ -477,7 +500,7 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
       ${infoTable(
       infoRow('Event', eventName) +
       infoRow('Position', position) +
-      infoRow('Certificate ID', certificateId)
+      infoRow('Certificate ID', certificateId, true)
     )}
 
       ${ctaButton(verificationLink, 'View Certificate')}
@@ -492,6 +515,12 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
  * Boarding Pass Email
  */
 const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boardingPassId, citeNumber, verificationLink }) => {
+  const rows = [
+    infoRow('Event', eventName),
+    infoRow('QID', qid),
+    ...(citeNumber ? [infoRow('Desk', citeNumber)] : []),
+    infoRow('Pass ID', boardingPassId, true)
+  ].join('');
 
   return {
     html: emailLayout({
@@ -502,12 +531,7 @@ const boardingPassEmail = ({ studentName, eventName, eventDescription, qid, boar
         ${paragraph(`Your boarding pass for <strong>${eventName}</strong> has been generated.`)}
         ${paragraph(`${eventDescription}`)}
 
-        ${infoTable(
-        infoRow('Event', eventName) +
-        infoRow('QID', qid) +
-        (citeNumber ? infoRow('Desk', citeNumber) : '') +
-        infoRow('Pass ID', boardingPassId)
-      )}
+        ${infoTable(rows)}
 
         ${ctaButton(verificationLink, 'View Boarding Pass')}
 
@@ -551,7 +575,7 @@ const contactReplyEmail = (userName, originalSubject, replyMessage) => ({
       ${paragraph(`Hi <strong>${userName}</strong>,`)}
       ${paragraph('Thank you for reaching out to us. We have reviewed your message regarding "<strong>' + originalSubject + '</strong>" and here is our reply:')}
       
-      <div class="reply-box" style="margin:24px 0;padding:24px;background-color:${BRAND.accentPale};border-radius:8px;border-left:4px solid ${BRAND.accent};color:${BRAND.ink};font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;">
+      <div class="reply-box" style="margin:20px 0;padding:20px;background-color:${BRAND.accentPale};border-radius:8px;border-left:4px solid ${BRAND.accent};color:${BRAND.ink};font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;">
         ${replyMessage}
       </div>
       
@@ -580,7 +604,7 @@ const announcementEmail = (subject, messageHtml) => ({
     preheader: subject,
     body: `
       ${heading('CLUB', 'ANNOUNCEMENT')}
-      <div style="font-size:15px;line-height:1.6;color:${BRAND.ink};margin-top:24px;word-break:break-word;overflow-wrap:break-word;">
+      <div style="font-size:14.5px;line-height:1.65;color:${BRAND.ink};margin-top:20px;word-break:break-word;overflow-wrap:break-word;">
         ${messageHtml}
       </div>
     `,
@@ -608,4 +632,3 @@ export {
   contactReplyEmail,
   announcementEmail,
 };
-
