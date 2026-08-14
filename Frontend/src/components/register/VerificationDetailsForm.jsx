@@ -78,23 +78,20 @@ export default function VerificationDetailsForm({
         </div>
       </div>
 
-      {/* Security Verification */}
-      <div className="mb-8 flex flex-col items-center border border-border/80 rounded-2xl p-6 bg-card-hover shadow-sm">
-        <div className="flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-widest text-text-muted">
-          <ShieldCheck className="w-4 h-4 text-accent" /> Security Verification Required
-        </div>
-        <Turnstile
-          key={turnstileKey}
-          siteKey={
-            import.meta.env.VITE_TURNSTILE_SITE_KEY}
-          onSuccess={(token) => setTurnstileToken(token)}
-          onError={(err) => {
-            console.warn("Turnstile verification widget warning:", err);
-            setTurnstileToken("auto-verified-token");
-          }}
-          onExpire={() => setTurnstileToken("auto-verified-token")}
-          options={{ theme: "auto", action: "turnstile-spin-v2" }}
-        />
+      {/* Security Protection (Invisible Turnstile) */}
+      <Turnstile
+        key={turnstileKey}
+        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+        onSuccess={(token) => setTurnstileToken(token)}
+        onError={(err) => {
+          console.warn("Turnstile verification widget warning:", err);
+          setTurnstileToken("auto-verified-token");
+        }}
+        onExpire={() => setTurnstileToken("auto-verified-token")}
+        options={{ theme: "auto", action: "turnstile-spin-v2", mode: "invisible" }}
+      />
+      <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
+        <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Protected by Cloudflare Turnstile
       </div>
 
       {/* Submit Button */}

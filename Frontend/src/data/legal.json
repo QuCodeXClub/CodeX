@@ -71,7 +71,7 @@
           "MongoDB Atlas – Database hosting.",
           "Cloudinary – Media and image storage.",
           "Vercel – Website hosting and deployment.",
-          "Cloudflare Turnstile – Protection against spam and automated bot submissions.",
+          "Cloudflare Turnstile – Invisible bot protection and automated security verification subject to Cloudflare's Turnstile Privacy Addendum.",
           "Nodemailer – Sending official emails and notifications.",
           "GitHub – Source code management and version control."
         ]
