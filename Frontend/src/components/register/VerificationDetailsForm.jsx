@@ -86,9 +86,7 @@ export default function VerificationDetailsForm({
         <Turnstile
           key={turnstileKey}
           siteKey={
-            import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-            "0x4AAAAAAD5G7REKwUjI5h-H"
-          }
+            import.meta.env.VITE_TURNSTILE_SITE_KEY}
           onSuccess={(token) => setTurnstileToken(token)}
           onError={(err) => {
             console.warn("Turnstile verification widget warning:", err);
