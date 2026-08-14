@@ -223,7 +223,7 @@ const ContactSection = () => {
                   />
 
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
-                    <div className="w-full sm:w-auto flex justify-center scale-90 sm:scale-100 origin-left">
+                    <div className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
                       <Turnstile
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => setTurnstileToken(token)}
@@ -232,8 +232,9 @@ const ContactSection = () => {
                           setTurnstileToken("auto-verified-token");
                         }}
                         onExpire={() => setTurnstileToken("auto-verified-token")}
-                        options={{ theme: "auto", action: "turnstile-spin-v2" }}
+                        options={{ theme: "auto", action: "turnstile-spin-v2", mode: "invisible" }}
                       />
+                      <span>Protected by Cloudflare Turnstile</span>
                     </div>
 
                     <button
