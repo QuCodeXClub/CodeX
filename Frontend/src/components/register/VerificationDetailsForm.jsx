@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShieldCheck, Loader2, ZoomIn, X } from "lucide-react";
+import { ShieldCheck, Loader2, ZoomIn, X, QrCode } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
-
-// Adjust this path if your folder structure is different
-import qrImage from "../../assets/qr.jpeg";
 
 export default function VerificationDetailsForm({
   register,
@@ -32,14 +29,11 @@ export default function VerificationDetailsForm({
         {/* Clickable QR Code Thumbnail */}
         <div
           onClick={() => setIsQrZoomed(true)}
-          className="group relative bg-white p-3 rounded-2xl border border-border shrink-0 shadow-sm cursor-pointer hover:shadow-lg transition-all self-center md:self-start"
+          className="group relative bg-card p-3 rounded-2xl border border-border shrink-0 shadow-sm cursor-pointer hover:shadow-lg transition-all self-center md:self-start w-32 h-32 md:w-40 md:h-40 flex items-center justify-center"
           title="Click to enlarge"
         >
-          <img
-            src={qrImage}
-            alt="CodeX Treasurer QR Code"
-            className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg group-hover:opacity-90 transition-opacity"
-          />
+          <QrCode className="w-16 h-16 text-text-muted/40" />
+          
           {/* Hover overlay hint */}
           <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1">
             <ZoomIn className="w-6 h-6" />
@@ -54,7 +48,7 @@ export default function VerificationDetailsForm({
             1. Transfer the required membership fee (₹50) to the CodeX Treasurer account.
           </p>
           <div className="text-xs font-bold uppercase tracking-wider text-accent mb-4 px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 w-fit">
-            UPI ID: 8439864539@ibl
+            UPI ID: COMING SOON
           </div>
 
           <label className="block text-xs font-semibold text-accent mb-2 uppercase tracking-wider">
@@ -140,13 +134,13 @@ export default function VerificationDetailsForm({
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-accent text-white py-4 px-8 rounded-xl font-semibold text-sm uppercase tracking-wider hover:bg-accent/90 transition-all shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 disabled:opacity-50 flex justify-center items-center gap-3 cursor-pointer border-0"
+        disabled={true}
+        className="w-full bg-accent text-white py-4 px-8 rounded-xl font-semibold text-sm uppercase tracking-wider hover:bg-accent/90 transition-all shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 disabled:opacity-50 flex justify-center items-center gap-3 cursor-not-allowed border-0"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
-          "Complete Registration"
+          "Coming Soon"
         )}
       </button>
 
@@ -175,16 +169,12 @@ export default function VerificationDetailsForm({
             </h4>
             
             <div className="text-xs font-bold font-mono tracking-wider text-accent my-2 px-3 py-1 rounded-lg bg-accent/10 border border-accent/20">
-              UPI: 8439864539@ibl
+              UPI: COMING SOON
             </div>
 
-            {/* Container for QR Image kept white so scanning sensors can safely read the QR contrast */}
-            <div className="p-3.5 bg-white rounded-2xl border border-border shadow-inner mt-2 mb-4">
-              <img
-                src={qrImage}
-                alt="CodeX Treasurer QR Code Large"
-                className="w-64 h-64 md:w-72 md:h-72 object-contain rounded-xl"
-              />
+            {/* Container for QR Placeholder */}
+            <div className="p-3.5 bg-card-hover rounded-2xl border border-border shadow-inner mt-2 mb-4 w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
+              <QrCode className="w-32 h-32 text-text-muted/30" />
             </div>
 
             <p className="text-xs text-text-muted/70">
