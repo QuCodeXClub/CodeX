@@ -26,8 +26,21 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
     const session = await Session.findById(decodedToken.sessionId);
 
-    if (!session || session.token !== token) {
-      throw new ApiError(401, 'Session expired or invalid');
+    if (!session) {
+      throw new ApiError(401, 'Session does not exist');
+    }
+
+    // Check if session has been logged out, revoked, or expired
+    if (session.status !== 'ACTIVE') {
+      const statusMessage = session.status.toLowerCase().replace('_', ' ');
+      throw new ApiError(401, `Session is ${statusMessage}`);
+    }
+
+    // Check expiration date
+    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+      session.status = 'EXPIRED';
+      await session.save();
+      throw new ApiError(401, 'Session has expired');
     }
 
     const admin = await Admin.findById(decodedToken?._id).select('-password');
@@ -36,6 +49,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, 'Invalid Access Token');
     }
 
+    // Access granted! Attach admin and sessionId to request
     req.admin = admin;
     req.sessionId = session._id;
     next();

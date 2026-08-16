@@ -19,6 +19,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     phone,
     transactionId,
     turnstileToken,
+    acceptedTerms,
   } = req.body;
   const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
 
@@ -39,6 +40,10 @@ const registerStudent = asyncHandler(async (req, res) => {
     )
   ) {
     throw new ApiError(400, 'All fields are required');
+  }
+
+  if (acceptedTerms === false || acceptedTerms === 'false') {
+    throw new ApiError(400, 'You must accept the Terms and Conditions to register');
   }
 
   // 3. Check for existing registration with same transactionId or studentId

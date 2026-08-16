@@ -51,6 +51,7 @@ const Register = () => {
       set: "",
       studentId: "",
       transactionId: "",
+      acceptedTerms: false,
     },
   });
 
@@ -105,6 +106,8 @@ const Register = () => {
           setFormError("email", { type: "server", message });
         } else if (lowerMsg.includes("phone")) {
           setFormError("phone", { type: "server", message });
+        } else if (lowerMsg.includes("terms") || lowerMsg.includes("condition")) {
+          setFormError("acceptedTerms", { type: "server", message });
         }
       }
 

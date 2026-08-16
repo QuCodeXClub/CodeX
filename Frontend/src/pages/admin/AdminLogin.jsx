@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   AlertCircle,
   Home,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export default function AdminLogin() {
@@ -23,6 +25,7 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register: registerLogin,
@@ -158,13 +161,25 @@ export default function AdminLogin() {
                   className={`absolute left-3.5 top-3 w-5 h-5 ${loginErrors.password ? "text-danger" : "text-text-muted"}`}
                 />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   {...registerLogin("password", {
                     required: "Password is required",
                   })}
-                  className={`w-full bg-card border ${loginErrors.password ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 pl-11 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm placeholder:text-text-muted/40`}
+                  className={`w-full bg-card border ${loginErrors.password ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-border focus:ring-accent/30 focus:border-accent"} text-text rounded-xl p-3 pl-11 pr-11 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm placeholder:text-text-muted/40`}
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-3 text-text-muted hover:text-text focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 text-accent" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
               {loginErrors.password && (
                 <p className="mt-1 text-xs text-danger font-medium">

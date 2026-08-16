@@ -90,7 +90,7 @@ export default function AdminProfile() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/v1/admin/logout", {}, { withCredentials: true });
+      await adminService.logoutAdmin();
     } catch (error) {
       console.error("Backend logout failed or session already cleared:", error);
     } finally {
@@ -442,10 +442,10 @@ export default function AdminProfile() {
                           onClick={() =>
                             togglePasswordVisibility("oldPassword")
                           }
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-text-muted hover:text-text-text-muted focus:outline-none"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted hover:text-accent focus:outline-none transition-colors"
                         >
                           {showPasswords.oldPassword ? (
-                            <EyeOff className="w-4 h-4" />
+                            <EyeOff className="w-4 h-4 text-accent" />
                           ) : (
                             <Eye className="w-4 h-4" />
                           )}
@@ -470,10 +470,10 @@ export default function AdminProfile() {
                           onClick={() =>
                             togglePasswordVisibility("newPassword")
                           }
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-text-muted hover:text-text-text-muted focus:outline-none"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted hover:text-accent focus:outline-none transition-colors"
                         >
                           {showPasswords.newPassword ? (
-                            <EyeOff className="w-4 h-4" />
+                            <EyeOff className="w-4 h-4 text-accent" />
                           ) : (
                             <Eye className="w-4 h-4" />
                           )}
@@ -500,10 +500,10 @@ export default function AdminProfile() {
                           onClick={() =>
                             togglePasswordVisibility("confirmPassword")
                           }
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-text-muted hover:text-text-text-muted focus:outline-none"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted hover:text-accent focus:outline-none transition-colors"
                         >
                           {showPasswords.confirmPassword ? (
-                            <EyeOff className="w-4 h-4" />
+                            <EyeOff className="w-4 h-4 text-accent" />
                           ) : (
                             <Eye className="w-4 h-4" />
                           )}

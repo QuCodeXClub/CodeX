@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { ShieldCheck, Loader2, ZoomIn, X } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -78,25 +79,62 @@ export default function VerificationDetailsForm({
         </div>
       </div>
 
-      {/* Security Verification */}
-      <div className="mb-8 flex flex-col items-center border border-border/80 rounded-2xl p-6 bg-card-hover shadow-sm">
-        <div className="flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-widest text-text-muted">
-          <ShieldCheck className="w-4 h-4 text-accent" /> Security Verification Required
-        </div>
-        <Turnstile
-          key={turnstileKey}
-          siteKey={
-            import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-            "0x4AAAAAAD5G7REKwUjI5h-H"
-          }
-          onSuccess={(token) => setTurnstileToken(token)}
-          onError={(err) => {
-            console.warn("Turnstile verification widget warning:", err);
-            setTurnstileToken("auto-verified-token");
-          }}
-          onExpire={() => setTurnstileToken("auto-verified-token")}
-          options={{ theme: "auto", action: "turnstile-spin-v2" }}
-        />
+      {/* Terms and Conditions Checkbox */}
+      <div className="mb-6">
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <input
+            type="checkbox"
+            {...register("acceptedTerms", {
+              required: "You must accept the Terms & Conditions and Privacy Policy to proceed",
+              onChange: () => {
+                if (clearErrors) clearErrors("acceptedTerms");
+              },
+            })}
+            className="mt-1 h-4 w-4 rounded border-border text-accent focus:ring-accent/30 focus:ring-2 bg-card accent-accent cursor-pointer transition-all shrink-0"
+          />
+          <span className="text-xs sm:text-sm text-text-muted leading-relaxed">
+            I have read and agree to the{" "}
+            <Link
+              to="/terms-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline hover:text-accent/80 font-medium transition-colors"
+            >
+              Terms & Conditions
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline hover:text-accent/80 font-medium transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
+        {errors.acceptedTerms && (
+          <p className="mt-1.5 text-xs text-danger font-semibold">
+            {errors.acceptedTerms.message}
+          </p>
+        )}
+      </div>
+
+      {/* Security Protection (Invisible Turnstile) */}
+      <Turnstile
+        key={turnstileKey}
+        siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+        onSuccess={(token) => setTurnstileToken(token)}
+        onError={(err) => {
+          console.warn("Turnstile verification widget warning:", err);
+          setTurnstileToken("auto-verified-token");
+        }}
+        onExpire={() => setTurnstileToken("auto-verified-token")}
+        options={{ theme: "auto", action: "turnstile-spin-v2", mode: "invisible" }}
+      />
+      <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
+        <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Protected by Cloudflare Turnstile
       </div>
 
       {/* Submit Button */}

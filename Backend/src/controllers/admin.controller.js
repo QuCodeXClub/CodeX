@@ -183,48 +183,75 @@ const verifyOtp = asyncHandler(async (req, res) => {
 
 const logoutAdmin = asyncHandler(async (req, res) => {
   if (req.sessionId) {
-    await Session.findByIdAndDelete(req.sessionId);
+    await Session.findByIdAndUpdate(req.sessionId, {
+      status: 'LOGGED_OUT',
+      loggedOutAt: new Date(),
+    });
+  } else {
+    const token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ', '');
+    if (token) {
+      await Session.findOneAndUpdate(
+        { token },
+        { status: 'LOGGED_OUT', loggedOutAt: new Date() }
+      );
+    }
   }
 
   const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    path: '/',
   };
 
   return res
     .status(200)
     .clearCookie('accessToken', options)
-    .json(new ApiResponse(200, {}, 'Admin logged out'));
+    .json(new ApiResponse(200, {}, 'Admin logged out successfully'));
 });
 
-// @desc    Get all active sessions for current admin
+// @desc    Get all sessions for current admin with status tags
 // @route   GET /api/v1/admin/sessions
 // @access  Private/Admin
 const getAdminSessions = asyncHandler(async (req, res) => {
-  const sessions = await Session.find({ adminId: req.admin._id }).sort({ createdAt: -1 });
+  // Update expired active sessions
+  await Session.updateMany(
+    { adminId: req.admin._id, status: 'ACTIVE', expiresAt: { $lt: new Date() } },
+    { status: 'EXPIRED' }
+  );
 
-  return res.status(200).json(new ApiResponse(200, sessions, 'Active sessions fetched successfully'));
+  const rawSessions = await Session.find({ adminId: req.admin._id }).sort({ createdAt: -1 });
+
+  const sessions = rawSessions.map((session) => {
+    const obj = session.toObject();
+    obj.isCurrent = req.sessionId ? session._id.toString() === req.sessionId.toString() : false;
+    return obj;
+  });
+
+  return res.status(200).json(new ApiResponse(200, sessions, 'Sessions fetched successfully'));
 });
 
-// @desc    Kill a specific session
+// @desc    Kill or delete a specific session
 // @route   DELETE /api/v1/admin/sessions/:id
 // @access  Private/Admin
 const killSession = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  // Ensure they don't accidentally kill their current active session using this endpoint
-  // (though they could just logout instead)
-  if (req.sessionId.toString() === id) {
-    throw new ApiError(400, "Cannot kill your current active session from this endpoint. Please use logout instead.");
+  if (req.sessionId && req.sessionId.toString() === id) {
+    throw new ApiError(400, 'Cannot revoke your current active session. Use Logout instead.');
   }
 
-  const session = await Session.findOneAndDelete({ _id: id, adminId: req.admin._id });
+  const session = await Session.findOne({ _id: id, adminId: req.admin._id });
 
   if (!session) {
-    throw new ApiError(404, 'Session not found or already deleted');
+    throw new ApiError(404, 'Session not found');
   }
 
-  return res.status(200).json(new ApiResponse(200, {}, 'Session killed successfully'));
+  session.status = 'REVOKED';
+  session.loggedOutAt = new Date();
+  await session.save();
+
+  return res.status(200).json(new ApiResponse(200, session, 'Session revoked successfully'));
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -387,7 +414,7 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
     StudentRegistration.countDocuments({ status: "PENDING" }),
     StudentRegistration.countDocuments(),
     Event.countDocuments(),
-    Session.countDocuments(),
+    Session.countDocuments({ status: "ACTIVE" }),
     TeamMember.countDocuments(),
     StudentRegistration.find().sort({ createdAt: -1 }).limit(5)
   ]);
