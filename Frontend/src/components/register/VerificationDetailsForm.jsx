@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { ShieldCheck, Loader2, ZoomIn, X } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -76,6 +77,48 @@ export default function VerificationDetailsForm({
             </p>
           )}
         </div>
+      </div>
+
+      {/* Terms and Conditions Checkbox */}
+      <div className="mb-6">
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <input
+            type="checkbox"
+            {...register("acceptedTerms", {
+              required: "You must accept the Terms & Conditions and Privacy Policy to proceed",
+              onChange: () => {
+                if (clearErrors) clearErrors("acceptedTerms");
+              },
+            })}
+            className="mt-1 h-4 w-4 rounded border-border text-accent focus:ring-accent/30 focus:ring-2 bg-card accent-accent cursor-pointer transition-all shrink-0"
+          />
+          <span className="text-xs sm:text-sm text-text-muted leading-relaxed">
+            I have read and agree to the{" "}
+            <Link
+              to="/terms-conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline hover:text-accent/80 font-medium transition-colors"
+            >
+              Terms & Conditions
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline hover:text-accent/80 font-medium transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
+        {errors.acceptedTerms && (
+          <p className="mt-1.5 text-xs text-danger font-semibold">
+            {errors.acceptedTerms.message}
+          </p>
+        )}
       </div>
 
       {/* Security Protection (Invisible Turnstile) */}
