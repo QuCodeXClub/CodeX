@@ -33,7 +33,8 @@ const generateCustomQR = asyncHandler(async (req, res) => {
 
     return res.status(201).json(new ApiResponse(201, customQr, 'QR code generated and uploaded successfully'));
   } catch (error) {
-    throw new ApiError(500, `Failed to generate QR code: ${error.message}`);
+    console.error("Failed to generate QR code:", error);
+    throw new ApiError(500, 'Failed to generate QR code');
   }
 });
 

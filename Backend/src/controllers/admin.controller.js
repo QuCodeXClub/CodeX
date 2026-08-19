@@ -50,7 +50,7 @@ const generateAuthSession = async (adminId, req) => {
     return token;
   } catch (error) {
     console.error("Session Generation Error:", error);
-    throw new ApiError(500, `Something went wrong while generating session: ${error.message}`);
+    throw new ApiError(500, 'Something went wrong while generating session');
   }
 };
 
@@ -63,10 +63,11 @@ const loginAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Email and password are required');
   }
 
-  const admin = await Admin.findOne({ email });
+  const normalizedEmail = email ? email.toString().toLowerCase().trim() : '';
+  const admin = await Admin.findOne({ email: normalizedEmail });
 
   if (!admin) {
-    throw new ApiError(404, 'Admin does not exist');
+    throw new ApiError(401, 'Invalid credentials');
   }
 
   const isPasswordValid = await admin.isPasswordCorrect(password);
@@ -128,10 +129,11 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Email and OTP are required');
   }
 
-  const admin = await Admin.findOne({ email });
+  const normalizedEmail = email ? email.toString().toLowerCase().trim() : '';
+  const admin = await Admin.findOne({ email: normalizedEmail });
 
   if (!admin) {
-    throw new ApiError(404, 'Admin not found');
+    throw new ApiError(400, 'Invalid or expired OTP');
   }
 
   const tokenDoc = await Token.findOne({

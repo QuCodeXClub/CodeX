@@ -47,10 +47,16 @@ const errorHandler = (err, req, res, next) => {
     error = new ApiError(statusCode, message, error?.errors || [], err.stack);
   }
 
+  // Sanitize message in production for 500 server errors
+  let finalMessage = error.message;
+  if (process.env.NODE_ENV === "production" && (error.statusCode === 500 || !error.statusCode)) {
+    finalMessage = "An unexpected server error occurred. Our team has been notified.";
+  }
+
   // Construct standard professional response explicitly to avoid leaking raw object properties
   const response = {
     success: false,
-    message: error.message,
+    message: finalMessage,
     errors: error.errors || [],
     ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {}), // Stack trace only in development
   };
