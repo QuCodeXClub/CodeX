@@ -17,6 +17,7 @@ import {
   LogOut,
   ShieldAlert,
   Clock,
+  User,
 } from "lucide-react";
 import { SessionCardSkeleton } from "../../components/common/skeletons";
 
@@ -184,6 +185,14 @@ export default function ManageSessions() {
                       </h3>
                       {renderStatusBadge(session)}
                     </div>
+
+                    {session.adminId && (
+                      <div className="text-xs font-mono font-medium text-text-muted flex items-center gap-1.5 mt-1 mb-1 bg-card-hover/50 px-2 py-0.5 rounded-md border border-border/40 w-fit">
+                        <User className="w-3.5 h-3.5 text-accent shrink-0" />
+                        <span className="font-semibold text-text">{session.adminId.name || "Admin"}</span>
+                        <span>({session.adminId.email || "N/A"})</span>
+                      </div>
+                    )}
 
                     <div className="mt-1.5 space-y-1">
                       <p className="text-xs font-mono text-text-muted flex items-center gap-2">
