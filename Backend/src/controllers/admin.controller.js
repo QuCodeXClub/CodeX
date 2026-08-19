@@ -210,17 +210,19 @@ const logoutAdmin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'Admin logged out successfully'));
 });
 
-// @desc    Get all sessions for current admin with status tags
+// @desc    Get all sessions for all admins with status tags
 // @route   GET /api/v1/admin/sessions
 // @access  Private/Admin
 const getAdminSessions = asyncHandler(async (req, res) => {
   // Update expired active sessions
   await Session.updateMany(
-    { adminId: req.admin._id, status: 'ACTIVE', expiresAt: { $lt: new Date() } },
+    { status: 'ACTIVE', expiresAt: { $lt: new Date() } },
     { status: 'EXPIRED' }
   );
 
-  const rawSessions = await Session.find({ adminId: req.admin._id }).sort({ createdAt: -1 });
+  const rawSessions = await Session.find()
+    .populate('adminId', 'name email profilePhoto')
+    .sort({ createdAt: -1 });
 
   const sessions = rawSessions.map((session) => {
     const obj = session.toObject();
@@ -231,7 +233,7 @@ const getAdminSessions = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, sessions, 'Sessions fetched successfully'));
 });
 
-// @desc    Kill or delete a specific session
+// @desc    Kill or delete a specific session across any admin account
 // @route   DELETE /api/v1/admin/sessions/:id
 // @access  Private/Admin
 const killSession = asyncHandler(async (req, res) => {
@@ -241,7 +243,7 @@ const killSession = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Cannot revoke your current active session. Use Logout instead.');
   }
 
-  const session = await Session.findOne({ _id: id, adminId: req.admin._id });
+  const session = await Session.findById(id);
 
   if (!session) {
     throw new ApiError(404, 'Session not found');
@@ -250,6 +252,8 @@ const killSession = asyncHandler(async (req, res) => {
   session.status = 'REVOKED';
   session.loggedOutAt = new Date();
   await session.save();
+
+  await session.populate('adminId', 'name email profilePhoto');
 
   return res.status(200).json(new ApiResponse(200, session, 'Session revoked successfully'));
 });
