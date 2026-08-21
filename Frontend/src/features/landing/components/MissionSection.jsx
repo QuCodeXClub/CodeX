@@ -1,7 +1,6 @@
 import React from "react";
 import contentData from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
-import { ArrowRight } from "lucide-react";
 
 const MissionSection = () => {
   const { mission } = contentData.landing;

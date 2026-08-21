@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Plus, RefreshCw, Sparkles } from "lucide-react";
+import { Calendar, Plus, RefreshCw } from "lucide-react";
 
 export default function EventHeader({ openCreateModal, onRefresh, loading }) {
   return (

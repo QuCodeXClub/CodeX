@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { History, Award, Ticket, Megaphone, ShieldCheck } from "lucide-react";
+import { History, Award, Ticket, Megaphone } from "lucide-react";
 import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
 import IssuedBoardingPassesModal from "./components/IssuedBoardingPassesModal";
 import AnnouncementsHistoryModal from "./components/AnnouncementsHistoryModal";

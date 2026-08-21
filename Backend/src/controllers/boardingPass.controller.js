@@ -2,12 +2,6 @@ import { BoardingPass } from '../models/boardingPass.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { boardingPassEmail } from '../utils/emailTemplates.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
-import crypto from 'crypto';
-import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
-import path from 'path';
-import os from 'os';
 import { queueService } from '../services/queueService.js';
 
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {

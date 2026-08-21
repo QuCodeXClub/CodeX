@@ -4,9 +4,6 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
 import { CustomQR } from '../models/customQR.model.js';
-import crypto from 'crypto';
-import path from 'path';
-import os from 'os';
 
 const generateCustomQR = asyncHandler(async (req, res) => {
   const { link } = req.body;

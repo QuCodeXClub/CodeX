@@ -2,14 +2,6 @@ import { Certificate } from '../models/certificate.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
-import { sendEmail } from '../utils/sendEmail.js';
-import { certificateEmail } from '../utils/emailTemplates.js';
-import crypto from 'crypto';
-import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
-import path from 'path';
-import os from 'os';
-
 import { queueService } from '../services/queueService.js';
 
 const generateBulkCertificates = asyncHandler(async (req, res) => {

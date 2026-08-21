@@ -1,6 +1,5 @@
 import { TeamMember } from '../models/teamMember.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
-import { sendEmail } from '../utils/sendEmail.js';
 import { announcementEmail } from '../utils/emailTemplates.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
