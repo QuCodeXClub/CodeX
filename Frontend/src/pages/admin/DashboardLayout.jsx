@@ -13,7 +13,9 @@ import {
   X,
   Ticket,
   Scan,
-  Megaphone
+  Megaphone,
+  Cpu,
+  History,
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -44,6 +46,8 @@ export default function DashboardLayout() {
     { name: "Boarding Passes", path: "/admin/boarding-passes", icon: Ticket },
     { name: "QR Generator", path: "/admin/qr-generator", icon: Scan },
     { name: "Announcements", path: "/admin/announcements", icon: Megaphone },
+    { name: "Task Queue", path: "/admin/tasks", icon: Cpu },
+    { name: "Audit History", path: "/admin/history", icon: History },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
   ];

@@ -53,10 +53,10 @@ const registerStudent = asyncHandler(async (req, res) => {
 
   if (existingRegistration) {
     if (existingRegistration.studentId === studentId) {
-      throw new ApiError(400, 'Student ID (Q ID) is already registered');
+      throw new ApiError(400, 'A registration with this Student ID (Q-ID) already exists');
     }
     if (existingRegistration.transactionId === transactionId) {
-      throw new ApiError(400, 'Transaction ID already used for another registration');
+      throw new ApiError(400, 'A registration with this Transaction UTR already exists');
     }
   }
 

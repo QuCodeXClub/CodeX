@@ -46,6 +46,8 @@ const ManageContacts = lazyWithRetry(() => import("./pages/admin/ManageContacts"
 const AdminProfile = lazyWithRetry(() => import("./pages/admin/AdminProfile"));
 const AdminSettings = lazyWithRetry(() => import("./pages/admin/AdminSettings"));
 const AdminAnnouncements = lazyWithRetry(() => import("./pages/admin/Announcements"));
+const BackgroundJobs = lazyWithRetry(() => import("./pages/admin/BackgroundJobs"));
+const AuditHistory = lazyWithRetry(() => import("./pages/admin/AuditHistory"));
 
 const router = createBrowserRouter([
   {
@@ -91,6 +93,8 @@ const router = createBrowserRouter([
           { path: "qr-generator", element: <QRGenerator /> },
           { path: "sessions", element: <ManageSessions /> },
           { path: "messages", element: <ManageContacts /> },
+          { path: "tasks", element: <BackgroundJobs /> },
+          { path: "history", element: <AuditHistory /> },
           { path: "profile", element: <AdminProfile /> },
           { path: "settings", element: <AdminSettings /> },
           { path: "announcements", element: <AdminAnnouncements /> },

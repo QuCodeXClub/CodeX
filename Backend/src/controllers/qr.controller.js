@@ -21,10 +21,10 @@ const generateCustomQR = asyncHandler(async (req, res) => {
     const uploadedImage = await uploadOnCloudinary(dataUri, 'CodeX/qrcodes');
     
     if (!uploadedImage) {
-      throw new ApiError(500, 'Failed to upload QR code to Cloudinary');
+      throw new ApiError(500, 'Failed to upload QR code image');
     }
 
-    const qrCodeUrl = uploadedImage.url;
+    const qrCodeUrl = uploadedImage.secure_url || uploadedImage.url;
 
     const customQr = await CustomQR.create({
       link,

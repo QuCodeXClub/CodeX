@@ -10,6 +10,8 @@ import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
 import path from 'path';
 import os from 'os';
 
+import { queueService } from '../services/queueService.js';
+
 const generateBulkCertificates = asyncHandler(async (req, res) => {
   const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;
   
@@ -43,60 +45,28 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     finalSignatureUrl = signatureImage.url;
   }
 
-  const createdCertificates = [];
+  const validStudents = students.filter(s => s && s.name && s.email);
 
-  for (const student of students) {
-    if (!student.name || !student.email) continue;
-
-    const certificateId = crypto.randomBytes(8).toString('hex'); // Generate unique ID
-
-    // Send email with certificate link
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
-    
-    // Generate QR Code
-    let qrCodeUrl = '';
-    try {
-      const dataUri = await generateQRCodeWithLogo(verificationLink);
-      const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/certificate');
-      if (qrUpload) {
-        qrCodeUrl = qrUpload.url;
-      }
-    } catch (qrError) {
-      console.error("Failed to generate/upload QR code:", qrError);
-    }
-
-    const cert = await Certificate.create({
-      studentName: student.name,
-      studentEmail: student.email,
+  const bulkJobs = validStudents.map((student) => ({
+    type: 'CERTIFICATE_BULK',
+    payload: {
       eventName,
       eventDate,
       coordinatorName,
-      signatureImage: finalSignatureUrl,
-      certificateId,
-      position: student.position || 'Participant',
-      qrCodeImage: qrCodeUrl,
-    });
+      student,
+      finalSignatureUrl,
+    },
+  }));
 
-    createdCertificates.push(cert);
-    
-    const { html, text } = certificateEmail({
-      studentName: student.name,
-      eventName,
-      certificateId,
-      verificationLink,
-      position: student.position || 'Participant',
-    });
+  await queueService.enqueueJobBatch(bulkJobs);
 
-    // Send async without blocking
-    sendEmail({
-      email: student.email,
-      subject: `Your Certificate for ${eventName}`,
-      message: html,
-      textMessage: text,
-    }).catch(err => console.error("Failed to send certificate email to", student.email, ":", err));
-  }
-
-  return res.status(201).json(new ApiResponse(201, { count: createdCertificates.length }, 'Certificates generated and emails sent successfully'));
+  return res.status(202).json(
+    new ApiResponse(
+      202,
+      { count: validStudents.length },
+      `Successfully queued ${validStudents.length} certificate jobs. Processing in the background with rate limiting.`
+    )
+  );
 });
 
 const verifyCertificate = asyncHandler(async (req, res) => {
@@ -125,4 +95,43 @@ const getLatestSignature = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, { signatureUrl: latestCertificate.signatureImage }, 'Latest signature fetched successfully'));
 });
 
-export { generateBulkCertificates, verifyCertificate, getLatestSignature };
+const getAllCertificates = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
+  const search = req.query.search || '';
+
+  const query = {};
+  if (search) {
+    query.$or = [
+      { studentName: { $regex: search.trim(), $options: 'i' } },
+      { studentEmail: { $regex: search.trim(), $options: 'i' } },
+      { eventName: { $regex: search.trim(), $options: 'i' } },
+      { certificateId: { $regex: search.trim(), $options: 'i' } },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [certificates, total] = await Promise.all([
+    Certificate.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Certificate.countDocuments(query),
+  ]);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        certificates,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      'Certificates fetched successfully'
+    )
+  );
+});
+
+export { generateBulkCertificates, verifyCertificate, getLatestSignature, getAllCertificates };

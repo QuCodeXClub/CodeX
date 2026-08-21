@@ -58,10 +58,11 @@ export const fetchAdminRegistrations = createAsyncThunk(
 
 export const updateRegistrationStatus = createAsyncThunk(
   "adminRegistrations/updateStatus",
-  async ({ id, status }, { rejectWithValue }) => {
+  async ({ id, status, rejectionReason, reason }, { rejectWithValue }) => {
     try {
-      await registrationService.updateRegistrationStatus(id, status);
-      return { id, status };
+      const finalReason = rejectionReason || reason || "";
+      await registrationService.updateRegistrationStatus(id, status, finalReason);
+      return { id, status, rejectionReason: finalReason };
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to update status"

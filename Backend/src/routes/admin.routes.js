@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { loginAdmin, verifyOtp, logoutAdmin, updateProfile, requestPasswordChange, changePassword, getAdminSessions, killSession , getCurrentAdmin, getDashboardMetrics} from '../controllers/admin.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
-import { sendAnnouncement } from '../controllers/announcement.controller.js';
+import { sendAnnouncement, getAnnouncementsHistory } from '../controllers/announcement.controller.js';
 
 const router = Router();
 
@@ -19,5 +19,6 @@ router.route('/sessions/:id').delete(verifyJWT, killSession);
 router.route("/current").get(verifyJWT, getCurrentAdmin);
 router.route("/dashboard").get(verifyJWT, getDashboardMetrics);
 router.route("/announcement").post(verifyJWT, sendAnnouncement);
+router.route("/announcements-history").get(verifyJWT, getAnnouncementsHistory);
 
 export default router;

@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Send, Loader2, CheckCircle2, AlertCircle, Filter, Users, GraduationCap } from "lucide-react";
+import { Send, Loader2, CheckCircle2, AlertCircle, Filter, Users, GraduationCap, History } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
 import { generateAcademicYears } from "../../utils/helpers";
+import AnnouncementsHistoryModal from "./components/AnnouncementsHistoryModal";
 
 export default function Announcements() {
+  const navigate = useNavigate();
   const formAcademicYears = generateAcademicYears();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [recipientCount, setRecipientCount] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   const {
     register,
@@ -89,6 +93,13 @@ export default function Announcements() {
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">Target specific demographics and dispatch bulk email announcements.</p>
         </div>
+        <button
+          onClick={() => navigate("/admin/history?tab=announcements")}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-bold hover:bg-indigo-500/20 transition-all shadow-md self-start md:self-auto cursor-pointer"
+        >
+          <History className="w-4 h-4" />
+          <span>Sent Announcements History</span>
+        </button>
       </header>
 
       {/* Toasts */}
@@ -242,6 +253,11 @@ export default function Announcements() {
           </div>
         </div>
       </form>
+
+      {/* History Modal Popup */}
+      {showHistoryModal && (
+        <AnnouncementsHistoryModal onClose={() => setShowHistoryModal(false)} />
+      )}
     </div>
   );
 }

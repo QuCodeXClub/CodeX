@@ -13,8 +13,7 @@ process.on("uncaughtException", (err) => {
 import connectDB from "./config/db.js";
 import app from "./app.js";
 import { seedAdmin } from "./utils/seedAdmin.js";
-
-
+import { queueService } from "./services/queueService.js";
 
 const PORT = process.env.PORT || 5000;
 let server;
@@ -22,6 +21,7 @@ let server;
 connectDB()
   .then(async () => {
     await seedAdmin();
+    queueService.startWorker(70);
     server = app.listen(PORT, () => {
       console.log(`Server is running at: ${process.env.SERVER_URL || `http://localhost:${PORT}`}`);
     });

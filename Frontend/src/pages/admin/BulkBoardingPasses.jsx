@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   Ticket,
@@ -16,14 +17,18 @@ import {
   KeyRound,
   Upload,
   Download,
+  History,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setError, setSuccess } from "../../context/messageSlice";
 import { boardingPassService } from "../../services/boardingPassService";
+import IssuedBoardingPassesModal from "./components/IssuedBoardingPassesModal";
 
 export default function BulkBoardingPasses() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
 
   const {
@@ -36,8 +41,7 @@ export default function BulkBoardingPasses() {
     defaultValues: {
       eventName: "",
       eventDescription: "",
-      qid: "",
-      students: [{ name: "", email: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
+      students: [{ name: "", email: "", qid: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
     },
   });
 
@@ -62,11 +66,35 @@ export default function BulkBoardingPasses() {
       if (rows.length === 0) return;
 
       let startIndex = 0;
+      let headerMap = {
+        name: -1,
+        email: -1,
+        qid: -1,
+        loginUser: -1,
+        loginPass: -1,
+        wifiUser: -1,
+        wifiPass: -1,
+        citeNumber: -1,
+      };
+
+      const firstRowCols = rows[0]
+        .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+        .map((col) => col.replace(/^"|"$/g, "").trim().toLowerCase());
+
       if (
-        rows[0].toLowerCase().includes("name") ||
-        rows[0].toLowerCase().includes("email")
+        firstRowCols.some(c => c.includes("name") || c.includes("email") || c.includes("qid"))
       ) {
         startIndex = 1;
+        firstRowCols.forEach((col, idx) => {
+          if (col === "name" || col.includes("student name")) headerMap.name = idx;
+          else if (col === "email" || col.includes("student email")) headerMap.email = idx;
+          else if (col === "qid" || col.includes("q_id") || col.includes("q id") || col === "id") headerMap.qid = idx;
+          else if (col.includes("loginid") || col.includes("login_id") || col.includes("loginuser")) headerMap.loginUser = idx;
+          else if (col.includes("loginpass") || col.includes("login_pass")) headerMap.loginPass = idx;
+          else if (col.includes("wifiid") || col.includes("wifi_id") || col.includes("wifiuser")) headerMap.wifiUser = idx;
+          else if (col.includes("wifipass") || col.includes("wifi_pass")) headerMap.wifiPass = idx;
+          else if (col.includes("citenumber") || col.includes("cite") || col.includes("desk")) headerMap.citeNumber = idx;
+        });
       }
 
       const parsedStudents = [];
@@ -77,15 +105,28 @@ export default function BulkBoardingPasses() {
           .map((col) => col.replace(/^"|"$/g, "").trim());
 
         if (cols.length >= 2) {
-          parsedStudents.push({
-            name: cols[0] || "",
-            email: cols[1] || "",
-            loginUser: cols[2] || "",
-            loginPass: cols[3] || "",
-            wifiUser: cols[4] || "",
-            wifiPass: cols[5] || "",
-            citeNumber: cols[6] || "",
-          });
+          const name = headerMap.name !== -1 ? cols[headerMap.name] : cols[0];
+          const email = headerMap.email !== -1 ? cols[headerMap.email] : cols[1];
+          const qid = headerMap.qid !== -1 ? cols[headerMap.qid] : (headerMap.name === -1 && cols.length > 2 ? cols[2] : "");
+
+          let loginUser = headerMap.loginUser !== -1 ? cols[headerMap.loginUser] : (headerMap.name === -1 ? cols[3] : "");
+          let loginPass = headerMap.loginPass !== -1 ? cols[headerMap.loginPass] : (headerMap.name === -1 ? cols[4] : "");
+          let wifiUser = headerMap.wifiUser !== -1 ? cols[headerMap.wifiUser] : (headerMap.name === -1 ? cols[5] : "");
+          let wifiPass = headerMap.wifiPass !== -1 ? cols[headerMap.wifiPass] : (headerMap.name === -1 ? cols[6] : "");
+          let citeNumber = headerMap.citeNumber !== -1 ? cols[headerMap.citeNumber] : (headerMap.name === -1 ? cols[7] : "");
+
+          if (name || email) {
+            parsedStudents.push({
+              name: name || "",
+              email: email || "",
+              qid: qid || "",
+              loginUser: loginUser || "",
+              loginPass: loginPass || "",
+              wifiUser: wifiUser || "",
+              wifiPass: wifiPass || "",
+              citeNumber: citeNumber || "",
+            });
+          }
         }
       }
 
@@ -112,7 +153,7 @@ export default function BulkBoardingPasses() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber\n";
+    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -131,11 +172,11 @@ export default function BulkBoardingPasses() {
     try {
       const validStudents = data.students.filter(
         (student) =>
-          student.name.trim() && student.email.trim()
+          student.name?.trim() && student.email?.trim() && student.qid?.trim()
       );
 
       if (validStudents.length === 0) {
-        dispatch(setError("Please provide at least one valid student."));
+        dispatch(setError("Please provide at least one valid student with Name, Email, and QID."));
         setLoading(false);
         return;
       }
@@ -143,7 +184,6 @@ export default function BulkBoardingPasses() {
       const submitData = {
         eventName: data.eventName,
         eventDescription: data.eventDescription,
-        qid: data.qid,
         studentsStr: JSON.stringify(validStudents)
       };
 
@@ -182,8 +222,18 @@ export default function BulkBoardingPasses() {
             Bulk generate, verify, and email event access boarding passes.
           </p>
         </div>
-        <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
-          <Ticket className="w-7 h-7 text-accent" />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/admin/history?tab=boarding-passes")}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold hover:bg-cyan-500/20 transition-all shadow-md cursor-pointer"
+          >
+            <History className="w-4 h-4" />
+            <span>Issued Boarding Passes History</span>
+          </button>
+          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+            <Ticket className="w-7 h-7 text-accent" />
+          </div>
         </div>
       </header>
 
@@ -198,7 +248,7 @@ export default function BulkBoardingPasses() {
             Event Details
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             {/* Event Name */}
             <div>
               <label className="block text-sm font-semibold text-text mb-2">
@@ -217,29 +267,8 @@ export default function BulkBoardingPasses() {
               )}
             </div>
 
-            {/* QID */}
-            <div>
-              <label className="block text-sm font-semibold text-text mb-2">
-                QID
-              </label>
-              <div className="relative">
-                <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                <input
-                  type="text"
-                  {...register("qid", { required: "QID is required" })}
-                  placeholder="e.g. QID-12345"
-                  className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-              {errors.qid && (
-                <p className="mt-1 text-xs text-danger">
-                  {errors.qid.message}
-                </p>
-              )}
-            </div>
-
             {/* Event Description */}
-            <div className="md:col-span-2 lg:col-span-3">
+            <div>
               <label className="block text-sm font-semibold text-text mb-2">
                 Event Description
               </label>
@@ -248,7 +277,7 @@ export default function BulkBoardingPasses() {
                 <textarea
                   {...register("eventDescription", { required: "Description is required" })}
                   placeholder="Join us for the ultimate coding showdown..."
-                  rows="2"
+                  rows="1"
                   className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                 ></textarea>
               </div>
@@ -312,7 +341,7 @@ export default function BulkBoardingPasses() {
                 className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start bg-card-hover border border-border rounded-xl p-5"
               >
                 {/* Row 1: Core Info */}
-                <div className="md:col-span-4 relative">
+                <div className="md:col-span-3 relative">
                   <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
@@ -329,7 +358,7 @@ export default function BulkBoardingPasses() {
                   )}
                 </div>
 
-                <div className="md:col-span-4 relative">
+                <div className="md:col-span-3 relative">
                   <Mail className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="email"
@@ -354,7 +383,24 @@ export default function BulkBoardingPasses() {
                   <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Desk Number (Opt)"
+                    placeholder="QID (Required)"
+                    {...register(`students.${index}.qid`, {
+                      required: "QID is required",
+                    })}
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  {errors.students?.[index]?.qid && (
+                    <p className="mt-1 text-xs text-danger">
+                      {errors.students[index].qid.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="md:col-span-2 relative">
+                  <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
+                  <input
+                    type="text"
+                    placeholder="Desk No (Opt)"
                     {...register(`students.${index}.citeNumber`)}
                     className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
@@ -422,7 +468,7 @@ export default function BulkBoardingPasses() {
             <button
               type="button"
               onClick={() =>
-                append({ name: "", email: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" })
+                append({ name: "", email: "", qid: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" })
               }
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-text hover:bg-card-hover transition-all font-medium shadow-sm"
             >
@@ -449,6 +495,11 @@ export default function BulkBoardingPasses() {
           </div>
         </div>
       </form>
+
+      {/* History Modal Popup */}
+      {showHistoryModal && (
+        <IssuedBoardingPassesModal onClose={() => setShowHistoryModal(false)} />
+      )}
     </div>
   );
 }
