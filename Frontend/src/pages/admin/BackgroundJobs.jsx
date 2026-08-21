@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Activity,
   RefreshCw,
   Search,
-  Filter,
   CheckCircle2,
   Clock,
   AlertTriangle,

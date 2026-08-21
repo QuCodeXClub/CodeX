@@ -8,7 +8,6 @@ import {
   Mail,
   User,
   ShieldCheck,
-  RefreshCw,
   Copy,
   Check,
   Sparkles,

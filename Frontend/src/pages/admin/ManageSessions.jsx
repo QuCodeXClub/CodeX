@@ -8,12 +8,10 @@ import { useConfirm } from "../../context/ConfirmContext";
 import {
   Monitor,
   Smartphone,
-  Trash2,
   Globe,
   Activity,
   Loader2,
   RefreshCw,
-  CheckCircle2,
   LogOut,
   ShieldAlert,
   Clock,

@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 const generateBulkCertificates = asyncHandler(async (req, res) => {
   const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;

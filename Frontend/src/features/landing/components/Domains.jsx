@@ -8,7 +8,6 @@ import {
   Shield,
   Smartphone,
   GitBranch,
-  ArrowRight,
   Paintbrush
 } from "lucide-react";
 

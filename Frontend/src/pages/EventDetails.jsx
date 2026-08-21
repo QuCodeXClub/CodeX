@@ -7,7 +7,6 @@ import {
   MapPin,
   Clock,
   ArrowLeft,
-  Share2,
 } from "lucide-react";
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
