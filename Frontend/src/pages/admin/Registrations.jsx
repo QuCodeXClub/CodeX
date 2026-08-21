@@ -3,11 +3,6 @@ import {
   Search,
   Filter,
   Loader2,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Mail,
-  MoreVertical,
   Check,
   X as XIcon,
   RefreshCw,
@@ -30,6 +25,7 @@ import { generateAcademicYears } from "../../utils/helpers";
 import StatusBadge from "./components/StatusBadge";
 import AddRegistrationModal from "./components/AddRegistrationModal";
 import ImportRegistrationModal from "./components/ImportRegistrationModal";
+import RejectRegistrationModal from "./components/RejectRegistrationModal";
 
 export default function Registrations() {
   const { pages, currentPage, total, totalPages, loading } = useSelector(
@@ -85,14 +81,22 @@ export default function Registrations() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [rejectingRegistration, setRejectingRegistration] = useState(null);
 
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
 
   const handleStatusChange = async (id, newStatus) => {
+    const registration = currentData.find((r) => r._id === id);
+
+    if (newStatus === "REJECTED") {
+      setRejectingRegistration(registration || { _id: id });
+      return;
+    }
+
     const isConfirmed = await confirm({
-      title: "Update Status",
-      message: `Are you sure you want to mark this registration as ${newStatus}? The system will dispatch an automated email to the candidate.`,
+      title: "Approve Registration",
+      message: `Are you sure you want to approve registration for ${registration?.name || "this student"}? An approval email will be sent automatically.`,
     });
 
     if (!isConfirmed) return;
@@ -102,13 +106,33 @@ export default function Registrations() {
       await dispatch(
         updateRegistrationStatus({
           id,
-          status: newStatus,
+          status: "APPROVED",
         })
       ).unwrap();
     } catch {
       // Error handled in thunk
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleConfirmReject = async (reason) => {
+    if (!rejectingRegistration) return;
+    const id = rejectingRegistration._id;
+    setUpdatingId(id);
+    try {
+      await dispatch(
+        updateRegistrationStatus({
+          id,
+          status: "REJECTED",
+          rejectionReason: reason,
+        })
+      ).unwrap();
+    } catch {
+      // Error handled in thunk
+    } finally {
+      setUpdatingId(null);
+      setRejectingRegistration(null);
     }
   };
 
@@ -590,6 +614,14 @@ export default function Registrations() {
         <ImportRegistrationModal
           onClose={() => setShowImportModal(false)}
           onImport={handleBulkImport}
+        />
+      )}
+      {/* Reject Modal */}
+      {rejectingRegistration && (
+        <RejectRegistrationModal
+          registration={rejectingRegistration}
+          onClose={() => setRejectingRegistration(null)}
+          onConfirm={handleConfirmReject}
         />
       )}
     </div>

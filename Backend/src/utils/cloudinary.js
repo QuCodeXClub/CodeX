@@ -23,6 +23,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
 });
 
 const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") => {
@@ -35,6 +36,7 @@ const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") =
     const uploadOptions = {
       resource_type: isSvgDataUri ? "image" : "auto",
       folder: folderName,
+      secure: true,
     };
     
     if (isSvgDataUri) {
@@ -43,6 +45,12 @@ const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") =
 
     // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, uploadOptions);
+
+    if (response) {
+      const secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      response.url = secureUrl;
+      response.secure_url = secureUrl;
+    }
 
     // file has been uploaded successfully
     safeUnlinkTempFile(localFilePath);
@@ -80,8 +88,15 @@ const updateOnCloudinary = async (localFilePath, oldPublicId) => {
       overwrite: true,
       invalidate: true,
       resource_type: "auto",
+      secure: true,
     });
     
+    if (response) {
+      const secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      response.url = secureUrl;
+      response.secure_url = secureUrl;
+    }
+
     // File uploaded successfully, remove local file
     safeUnlinkTempFile(localFilePath);
     return response;

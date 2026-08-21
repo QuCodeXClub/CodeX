@@ -3,7 +3,7 @@ import { eventService } from "../services/eventService";
 
 import EventList from "../features/events/components/EventList";
 import PageContainer from "../components/common/PageContainer";
-import { CalendarDays, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const Events = () => {
   const [events, setEvents] = useState([]);

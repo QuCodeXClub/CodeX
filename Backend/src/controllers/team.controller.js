@@ -8,19 +8,19 @@ const addTeamMember = asyncHandler(async (req, res) => {
   const { academicYear, subTeam, name, post, sequenceNumber, email } = req.body;
 
   if (!academicYear || !subTeam || !name || !post) {
-    throw new ApiError(400, 'All fields (academicYear, subTeam, name, post) are required');
+    throw new ApiError(400, 'Academic year, category, member name, and position are required');
   }
 
   const photoLocalPath = req.file?.path;
 
   if (!photoLocalPath) {
-    throw new ApiError(400, 'Photo is required');
+    throw new ApiError(400, 'Member photo is required');
   }
 
   const photo = await uploadOnCloudinary(photoLocalPath, 'CodeX/team');
 
   if (!photo) {
-    throw new ApiError(500, 'Error while uploading photo');
+    throw new ApiError(500, 'Failed to upload member photo');
   }
 
   const member = await TeamMember.create({

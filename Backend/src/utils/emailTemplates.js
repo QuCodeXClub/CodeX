@@ -472,19 +472,29 @@ const registrationApprovedEmail = (studentName) => ({
 /**
  * Registration Rejected Email
  */
-const registrationRejectedEmail = (studentName) => ({
-  html: emailLayout({
-    preheader: `CodeX registration update for ${studentName}`,
-    body: `
-      ${heading('REGISTRATION', 'UPDATE')}
-      ${paragraph(`Dear <strong>${studentName}</strong>,`)}
-      ${paragraph('We regret to inform you that your registration for CodeX could not be approved at this time.')}
-      ${paragraph('If you believe this is a mistake, please contact our support team or resubmit your registration with the correct details.')}
-      ${darkBadge('Status: Rejected')}
-    `,
-  }),
-  text: `CodeX registration update for ${studentName}\n\nREGISTRATION UPDATE.\n\nDear ${studentName},\n\nWe regret to inform you that your registration for CodeX could not be approved at this time.\n\nIf you believe this is a mistake, please contact our support team or resubmit your registration with the correct details.\n`,
-});
+const registrationRejectedEmail = (studentName, reason = '') => {
+  const reasonHtml = reason
+    ? `<div style="margin:16px 0;padding:16px 20px;background-color:#fff1f2;border:1px solid #fecdd3;border-left:4px solid #e11d48;border-radius:8px;color:#9f1239;font-size:13.5px;line-height:1.5;">
+        <strong style="color:#881337;display:block;margin-bottom:4px;text-transform:uppercase;font-size:11px;letter-spacing:0.05em;">Reason for Rejection:</strong>
+        ${reason}
+      </div>`
+    : '';
+
+  return {
+    html: emailLayout({
+      preheader: `CodeX registration update for ${studentName}`,
+      body: `
+        ${heading('REGISTRATION', 'UPDATE')}
+        ${paragraph(`Dear <strong>${studentName}</strong>,`)}
+        ${paragraph('We regret to inform you that your registration for CodeX could not be approved at this time.')}
+        ${reasonHtml}
+        ${paragraph('If you believe this is a mistake, please contact our support team or resubmit your registration with the correct details.')}
+        ${darkBadge('Status: Rejected')}
+      `,
+    }),
+    text: `CodeX registration update for ${studentName}\n\nREGISTRATION UPDATE.\n\nDear ${studentName},\n\nWe regret to inform you that your registration for CodeX could not be approved at this time.\n\n${reason ? `Reason for Rejection: ${reason}\n\n` : ''}If you believe this is a mistake, please contact our support team or resubmit your registration with the correct details.\n`,
+  };
+};
 
 /**
  * Certificate Email

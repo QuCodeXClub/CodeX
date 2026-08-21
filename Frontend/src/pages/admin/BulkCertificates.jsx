@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   Award,
@@ -14,16 +15,20 @@ import {
   UserCheck,
   Upload,
   Download,
+  History,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setError, setSuccess } from "../../context/messageSlice";
 import { certificateService } from "../../services/certificateService";
+import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
 
 export default function BulkCertificates() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [signaturePreview, setSignaturePreview] = useState(null);
   const [previousSignatureUrl, setPreviousSignatureUrl] = useState(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
 
   useEffect(() => {
@@ -185,8 +190,8 @@ export default function BulkCertificates() {
       dispatch(
         setError(
           error?.response?.data?.message ||
-            error?.message ||
-            "Failed to generate certificates."
+          error?.message ||
+          "Failed to generate certificates."
         )
       );
       console.error(error);
@@ -210,8 +215,18 @@ export default function BulkCertificates() {
             Bulk generate, verify, and email cryptographic completion certificates.
           </p>
         </div>
-        <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
-          <Award className="w-7 h-7 text-accent" />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/admin/history?tab=certificates")}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition-all shadow-md cursor-pointer"
+          >
+            <History className="w-4 h-4" />
+            <span>Issued Certificates History</span>
+          </button>
+          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+            <Award className="w-7 h-7 text-accent" />
+          </div>
         </div>
       </header>
 
@@ -429,12 +444,13 @@ export default function BulkCertificates() {
                     })}
                     className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   >
+                    <option value="Participant">Participant</option>
                     <option value="Winner">Winner</option>
                     <option value="Runner Up">Runner Up</option>
-                    <option value="Participant">Participant</option>
+                    <option value="1st Runner-up">1st Runner-up</option>
+                    <option value="2nd Runner-up">2nd Runner-up</option>
                     <option value="Volunteer">Volunteer</option>
                     <option value="Organizer">Organizer</option>
-                    <option value="Coordinator">Coordinator</option>
                   </select>
                   {errors.students?.[index]?.position && (
                     <p className="mt-1 text-xs text-danger">
@@ -490,6 +506,11 @@ export default function BulkCertificates() {
           </div>
         </div>
       </form>
+
+      {/* History Modal Popup */}
+      {showHistoryModal && (
+        <IssuedCertificatesModal onClose={() => setShowHistoryModal(false)} />
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ const boardingPassSchema = new mongoose.Schema(
       required: [true, "Student email is required"],
       lowercase: true,
       trim: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email address']
+      match: [/^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,}$/, 'Please provide a valid email address']
     },
     eventName: {
       type: String,

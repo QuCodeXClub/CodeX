@@ -101,7 +101,8 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
 // Update registration status (Admin only)
 const updateRegistrationStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, reason, rejectionReason } = req.body;
+  const finalReason = rejectionReason || reason || '';
 
   if (!['APPROVED', 'REJECTED'].includes(status)) {
     throw new ApiError(400, 'Invalid status');
@@ -113,11 +114,14 @@ const updateRegistrationStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Registration not found');
   }
 
-  if (registration.status === status) {
+  if (registration.status === status && status !== 'REJECTED') {
     throw new ApiError(400, `Registration is already ${status}`);
   }
 
   registration.status = status;
+  if (status === 'REJECTED' && finalReason) {
+    registration.rejectionReason = finalReason;
+  }
   await registration.save();
 
   // Send email notification
@@ -132,11 +136,11 @@ const updateRegistrationStatus = asyncHandler(async (req, res) => {
       textMessage: text,
     }).catch(err => console.error("Failed to send approval email:", err));
   } else if (status === 'REJECTED') {
-    const { html, text } = registrationRejectedEmail(registration.name);
+    const { html, text } = registrationRejectedEmail(registration.name, finalReason);
     // Send email (async)
     sendEmail({
       email: registration.email,
-      subject: 'CodeX Registration Update',
+      subject: 'CodeX Registration Update - Application Rejected',
       message: html,
       textMessage: text,
     }).catch(err => console.error("Failed to send rejection email:", err));

@@ -55,6 +55,46 @@ class AdminService {
       },
     });
   }
+
+  async getBlocklist(params = {}) {
+    return axiosInstance.get("/admin/blocklist", { params });
+  }
+
+  async getBlocklistStats() {
+    return axiosInstance.get("/admin/blocklist/stats");
+  }
+
+  async addBlockedEmail(data) {
+    return axiosInstance.post("/admin/blocklist", data);
+  }
+
+  async removeBlockedEmail(id) {
+    return axiosInstance.delete(`/admin/blocklist/${id}`);
+  }
+
+  async getBackgroundJobs(params = {}) {
+    return axiosInstance.get("/admin/jobs", { params });
+  }
+
+  async getJobStats() {
+    return axiosInstance.get("/admin/jobs/stats");
+  }
+
+  async retryJob(id) {
+    return axiosInstance.post(`/admin/jobs/${id}/retry`);
+  }
+
+  async deleteJob(id) {
+    return axiosInstance.delete(`/admin/jobs/${id}`);
+  }
+
+  async clearCompletedJobs() {
+    return axiosInstance.delete("/admin/jobs/clear-completed");
+  }
+
+  async getAnnouncementsHistory(params = {}) {
+    return axiosInstance.get("/admin/announcements-history", { params });
+  }
 }
 
 export const adminService = new AdminService();

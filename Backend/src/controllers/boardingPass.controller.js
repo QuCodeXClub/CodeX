@@ -2,18 +2,13 @@ import { BoardingPass } from '../models/boardingPass.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { sendEmail } from '../utils/sendEmail.js';
-import { boardingPassEmail } from '../utils/emailTemplates.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
-import crypto from 'crypto';
-import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
-import path from 'path';
-import os from 'os';
+import { queueService } from '../services/queueService.js';
+
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
-  const { eventName, eventDescription, qid, studentsStr } = req.body;
+  const { eventName, eventDescription, studentsStr } = req.body;
   
-  if (!eventName || !eventDescription || !qid || !studentsStr) {
-    throw new ApiError(400, 'Event Name, Event Description, QID, and students data are required');
+  if (!eventName || !eventDescription || !studentsStr) {
+    throw new ApiError(400, 'Event Name, Event Description, and students data are required');
   }
 
   let students;
@@ -27,65 +22,32 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Students array is required');
   }
 
-  const createdBoardingPasses = [];
+  const validStudents = students.filter(
+    (student) => student && student.name && student.email && student.qid && student.qid.trim()
+  );
 
-  for (const student of students) {
-    if (!student.name || !student.email) continue;
-
-    const boardingPassId = crypto.randomBytes(8).toString('hex'); // Generate unique ID
-
-    // Send email with boarding pass link
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-boarding-pass/${boardingPassId}`;
-    
-    // Generate QR Code
-    let qrCodeUrl = '';
-    try {
-      const dataUri = await generateQRCodeWithLogo(verificationLink);
-      const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/pass');
-      if (qrUpload) {
-        qrCodeUrl = qrUpload.url;
-      }
-    } catch (qrError) {
-      console.error("Failed to generate/upload QR code for boarding pass:", qrError);
-    }
-
-    const pass = await BoardingPass.create({
-      studentName: student.name,
-      studentEmail: student.email,
-      eventName,
-      eventDescription,
-      qid,
-      wifiUser: student.wifiUser,
-      wifiPass: student.wifiPass,
-      loginUser: student.loginUser,
-      loginPass: student.loginPass,
-      citeNumber: student.citeNumber,
-      boardingPassId,
-      qrCodeImage: qrCodeUrl,
-    });
-
-    createdBoardingPasses.push(pass);
-    
-    const { html, text } = boardingPassEmail({
-      studentName: student.name,
-      eventName,
-      eventDescription,
-      qid,
-      boardingPassId,
-      citeNumber: student.citeNumber,
-      verificationLink,
-    });
-
-    // Send async without blocking
-    sendEmail({
-      email: student.email,
-      subject: `Your Boarding Pass for ${eventName}`,
-      message: html,
-      textMessage: text,
-    }).catch(err => console.error("Failed to send boarding pass email to", student.email, ":", err));
+  if (validStudents.length === 0) {
+    throw new ApiError(400, 'No valid student records provided with Name, Email, and QID');
   }
 
-  return res.status(201).json(new ApiResponse(201, { count: createdBoardingPasses.length }, 'Boarding passes generated and emails sent successfully'));
+  const bulkJobs = validStudents.map((student) => ({
+    type: 'BOARDING_PASS_BULK',
+    payload: {
+      eventName,
+      eventDescription,
+      student,
+    },
+  }));
+
+  await queueService.enqueueJobBatch(bulkJobs);
+
+  return res.status(202).json(
+    new ApiResponse(
+      202,
+      { count: validStudents.length },
+      `Successfully queued ${validStudents.length} boarding pass jobs. Processing in the background with rate-limited email delivery.`
+    )
+  );
 });
 
 const verifyBoardingPass = asyncHandler(async (req, res) => {
@@ -104,4 +66,47 @@ const verifyBoardingPass = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, boardingPass, 'Boarding pass verified successfully'));
 });
 
-export { generateBulkBoardingPasses, verifyBoardingPass };
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const getAllBoardingPasses = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+
+  const query = {};
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
+    query.$or = [
+      { studentName: { $regex: safeSearch, $options: 'i' } },
+      { studentEmail: { $regex: safeSearch, $options: 'i' } },
+      { eventName: { $regex: safeSearch, $options: 'i' } },
+      { qid: { $regex: safeSearch, $options: 'i' } },
+      { boardingPassId: { $regex: safeSearch, $options: 'i' } },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [boardingPasses, total] = await Promise.all([
+    BoardingPass.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    BoardingPass.countDocuments(query),
+  ]);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        boardingPasses,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      'Boarding passes fetched successfully'
+    )
+  );
+});
+
+export { generateBulkBoardingPasses, verifyBoardingPass, getAllBoardingPasses };

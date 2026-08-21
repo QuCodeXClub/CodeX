@@ -4,9 +4,6 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
 import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
 import { CustomQR } from '../models/customQR.model.js';
-import crypto from 'crypto';
-import path from 'path';
-import os from 'os';
 
 const generateCustomQR = asyncHandler(async (req, res) => {
   const { link } = req.body;
@@ -21,10 +18,10 @@ const generateCustomQR = asyncHandler(async (req, res) => {
     const uploadedImage = await uploadOnCloudinary(dataUri, 'CodeX/qrcodes');
     
     if (!uploadedImage) {
-      throw new ApiError(500, 'Failed to upload QR code to Cloudinary');
+      throw new ApiError(500, 'Failed to upload QR code image');
     }
 
-    const qrCodeUrl = uploadedImage.url;
+    const qrCodeUrl = uploadedImage.secure_url || uploadedImage.url;
 
     const customQr = await CustomQR.create({
       link,

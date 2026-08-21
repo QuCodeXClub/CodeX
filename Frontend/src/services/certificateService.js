@@ -14,6 +14,10 @@ class CertificateService {
   async getLatestSignature() {
     return axiosInstance.get("/certificates/latest-signature");
   }
+
+  async getAllCertificates(params = {}) {
+    return axiosInstance.get("/certificates", { params });
+  }
 }
 
 export const certificateService = new CertificateService();

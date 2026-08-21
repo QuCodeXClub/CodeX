@@ -9,8 +9,8 @@ class RegistrationService {
     return axiosInstance.get("/registrations", { params });
   }
 
-  async updateRegistrationStatus(id, status) {
-    return axiosInstance.patch(`/registrations/${id}/status`, { status });
+  async updateRegistrationStatus(id, status, rejectionReason = '') {
+    return axiosInstance.patch(`/registrations/${id}/status`, { status, rejectionReason, reason: rejectionReason });
   }
 
   async addManualRegistration(studentData) {
