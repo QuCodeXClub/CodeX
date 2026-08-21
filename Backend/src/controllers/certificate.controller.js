@@ -95,18 +95,21 @@ const getLatestSignature = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, { signatureUrl: latestCertificate.signatureImage }, 'Latest signature fetched successfully'));
 });
 
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const getAllCertificates = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
-  const search = req.query.search || '';
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
 
   const query = {};
-  if (search) {
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
     query.$or = [
-      { studentName: { $regex: search.trim(), $options: 'i' } },
-      { studentEmail: { $regex: search.trim(), $options: 'i' } },
-      { eventName: { $regex: search.trim(), $options: 'i' } },
-      { certificateId: { $regex: search.trim(), $options: 'i' } },
+      { studentName: { $regex: safeSearch, $options: 'i' } },
+      { studentEmail: { $regex: safeSearch, $options: 'i' } },
+      { eventName: { $regex: safeSearch, $options: 'i' } },
+      { certificateId: { $regex: safeSearch, $options: 'i' } },
     ];
   }
 

@@ -72,19 +72,22 @@ const verifyBoardingPass = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, boardingPass, 'Boarding pass verified successfully'));
 });
 
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const getAllBoardingPasses = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
-  const search = req.query.search || '';
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
 
   const query = {};
-  if (search) {
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
     query.$or = [
-      { studentName: { $regex: search.trim(), $options: 'i' } },
-      { studentEmail: { $regex: search.trim(), $options: 'i' } },
-      { eventName: { $regex: search.trim(), $options: 'i' } },
-      { qid: { $regex: search.trim(), $options: 'i' } },
-      { boardingPassId: { $regex: search.trim(), $options: 'i' } },
+      { studentName: { $regex: safeSearch, $options: 'i' } },
+      { studentEmail: { $regex: safeSearch, $options: 'i' } },
+      { eventName: { $regex: safeSearch, $options: 'i' } },
+      { qid: { $regex: safeSearch, $options: 'i' } },
+      { boardingPassId: { $regex: safeSearch, $options: 'i' } },
     ];
   }
 

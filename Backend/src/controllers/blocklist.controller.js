@@ -3,23 +3,27 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Get paginated list of blocked emails with search & filtering
  */
 const getBlocklist = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
-  const search = req.query.search || '';
-  const type = req.query.type || '';
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+  const rawType = typeof req.query.type === 'string' ? req.query.type.trim() : '';
 
   const query = {};
 
-  if (search) {
-    query.email = { $regex: search.trim(), $options: 'i' };
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
+    query.email = { $regex: safeSearch, $options: 'i' };
   }
 
-  if (type) {
-    query.type = type;
+  const allowedTypes = ['BOUNCE', 'COMPLAINT', 'MANUAL'];
+  if (rawType && allowedTypes.includes(rawType)) {
+    query.type = rawType;
   }
 
   const skip = (page - 1) * limit;

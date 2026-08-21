@@ -3,32 +3,37 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Get paginated list of background jobs with filtering & search
  */
 const getBackgroundJobs = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
-  const status = req.query.status || '';
-  const type = req.query.type || '';
-  const search = req.query.search || '';
+  const rawStatus = typeof req.query.status === 'string' ? req.query.status.trim() : '';
+  const rawType = typeof req.query.type === 'string' ? req.query.type.trim() : '';
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
 
   const query = {};
 
-  if (status) {
-    query.status = status;
+  const allowedStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'SUPPRESSED'];
+  if (rawStatus && allowedStatuses.includes(rawStatus)) {
+    query.status = rawStatus;
   }
 
-  if (type) {
-    query.type = type;
+  const allowedTypes = ['EMAIL_SEND', 'CERTIFICATE_BULK', 'BOARDING_PASS_BULK', 'ANNOUNCEMENT_BULK'];
+  if (rawType && allowedTypes.includes(rawType)) {
+    query.type = rawType;
   }
 
-  if (search) {
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
     query.$or = [
-      { type: { $regex: search.trim(), $options: 'i' } },
-      { 'payload.email': { $regex: search.trim(), $options: 'i' } },
-      { 'payload.student.email': { $regex: search.trim(), $options: 'i' } },
-      { 'payload.eventName': { $regex: search.trim(), $options: 'i' } },
+      { type: { $regex: safeSearch, $options: 'i' } },
+      { 'payload.email': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.student.email': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.eventName': { $regex: safeSearch, $options: 'i' } },
     ];
   }
 
