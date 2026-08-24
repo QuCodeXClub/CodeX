@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { ArrowRight } from "lucide-react";
 import contentData from "../../../data/content.json";
+import { optimizeCloudinaryUrl } from "../../../utils/helpers";
 
 // Import local logos
 import techThriveLogo from "../../../assets/about/techthrive-logo.svg";
@@ -8,126 +9,144 @@ import techSprintLogo from "../../../assets/about/techsprint-logo.svg";
 import qHackathonLogo from "../../../assets/about/qhackathon-logo.svg";
 
 const eventLogos = {
-  "techthrive": techThriveLogo,
-  "techsprint": techSprintLogo,
+  techthrive: techThriveLogo,
+  techsprint: techSprintLogo,
   "q-hackathon": qHackathonLogo,
 };
+
+const ROTATION_INTERVAL = 6000; // 6 seconds per slide loop
 
 const AboutFlagshipEvents = () => {
   const { flagshipEvents } = contentData.about;
   const events = flagshipEvents.events;
 
   const [selectedEventIndex, setSelectedEventIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const ROTATION_INTERVAL = 6000; // 6 seconds per tab
-  const UPDATE_INTERVAL = 30; // Update progress every 30ms
-
-  // Reset progress when a new event is selected manually or automatically
+  // Handle continuous auto-rotation loop
   useEffect(() => {
-    setProgress(0);
-  }, [selectedEventIndex]);
+    if (isHovered || events.length <= 1) return;
 
-  // Handle auto-rotation
-  useEffect(() => {
-    if (isHovered) return;
+    const timer = setInterval(() => {
+      setSelectedEventIndex((prevIndex) => (prevIndex + 1) % events.length);
+    }, ROTATION_INTERVAL);
 
-    const progressTimer = setInterval(() => {
-      setProgress((prev) => {
-        const nextProgress = prev + (UPDATE_INTERVAL / ROTATION_INTERVAL) * 100;
-        if (nextProgress >= 100) {
-          setSelectedEventIndex((prevIndex) => (prevIndex + 1) % events.length);
-          return 0;
-        }
-        return nextProgress;
-      });
-    }, UPDATE_INTERVAL);
+    return () => clearInterval(timer);
+  }, [events.length, isHovered, selectedEventIndex]);
 
-    return () => clearInterval(progressTimer);
-  }, [events.length, isHovered]);
-
-  const selectedEvent = events[selectedEventIndex] || events[0];
+  const handleTabClick = (index) => {
+    setSelectedEventIndex(index);
+  };
 
   return (
-    <section id="events" className="relative pt-4 pb-12 lg:pt-2 lg:pb-8 px-6 lg:px-16 overflow-hidden flex flex-col justify-center min-h-0 lg:min-h-[calc(100vh-80px)]">
+    <section
+      id="events"
+      className="relative pt-6 pb-14 md:pt-4 md:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden flex flex-col justify-center [content-visibility:auto] [contain-intrinsic-size:650px]"
+    >
       <div className="max-w-6xl mx-auto w-full">
-
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center mb-8 lg:mb-6">
+        <div className="flex flex-col items-center text-center mb-8 md:mb-10">
           <span className="block text-accent font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 drop-shadow-sm">
             {flagshipEvents.eyebrow}
           </span>
           <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-text uppercase">
-            {flagshipEvents.titlePart1} <span className="text-accent">{flagshipEvents.titlePart2}</span>
+            {flagshipEvents.titlePart1}{" "}
+            <span className="text-accent">{flagshipEvents.titlePart2}</span>
           </h2>
           <p className="mt-4 text-text-muted font-sans text-base sm:text-lg max-w-2xl">
             {flagshipEvents.description}
           </p>
         </div>
-
       </div>
 
-      {/* Detailed Event Panel — wider, matches page max-width */}
+      {/* Detailed Event Panel */}
       <div className="w-full max-w-7xl mx-auto mb-6">
         <div
-          className="relative bg-card/80 backdrop-blur-xl border border-border rounded-[2rem] overflow-hidden min-h-[480px] md:min-h-[550px] lg:min-h-[500px] flex w-full transition-all duration-700 ease-in-out shadow-lg group/panel"
+          className="relative bg-card/95 border border-border rounded-[2rem] overflow-hidden min-h-[440px] sm:min-h-[480px] md:min-h-[520px] flex w-full shadow-lg group/panel transform-gpu"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-
-          {/* Top Progress Bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-border/50 z-30">
+          {/* Top Progress Bar - Continuous Infinite Loop */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-border/40 z-30 overflow-hidden">
             <div
-              className="h-full bg-accent transition-all duration-100 ease-linear"
-              style={{ width: `${progress}%` }}
+              key={selectedEventIndex}
+              className="h-full bg-accent origin-left w-full transform-gpu"
+              style={{
+                animation: `progressGrow ${ROTATION_INTERVAL}ms linear forwards`,
+                animationPlayState: isHovered ? "paused" : "running",
+              }}
             />
           </div>
 
-          {/* Background Images */}
-          <div className="absolute inset-0">
-            {events.map((event, index) => (
-              <div
-                key={`img-${event.id}`}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${selectedEventIndex === index ? "opacity-100 z-10" : "opacity-0 z-0"
+          {/* Background Images with optimized Cloudinary WebP URLs */}
+          <div className="absolute inset-0 pointer-events-none">
+            {events.map((event, index) => {
+              const isSelected = selectedEventIndex === index;
+              const optimizedSrc = optimizeCloudinaryUrl(
+                event.image?.src ||
+                  "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg",
+                1200
+              );
+
+              return (
+                <div
+                  key={`img-${event.id}`}
+                  className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                    isSelected ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                   }`}
-              >
-                <img
-                  src={event.image?.src || "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg"}
-                  alt={event.image?.alt || event.name}
-                  className="w-full h-full object-cover transform group-hover/panel:scale-[1.03] transition-transform duration-[10000ms] ease-out"
-                />
-              </div>
-            ))}
+                  aria-hidden={!isSelected}
+                >
+                  <img
+                    src={optimizedSrc}
+                    alt={event.image?.alt || event.name}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="w-full h-full object-cover transform-gpu group-hover/panel:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
+              );
+            })}
             {/* Dark Gradient Backdrop */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-20 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/40 z-20 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 z-20 pointer-events-none" />
           </div>
 
           {/* Content Area Overlay */}
-          <div className="relative z-30 w-full p-8 md:p-10 lg:p-12 flex flex-col justify-end">
+          <div className="relative z-30 w-full p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-end">
             {events.map((event, index) => {
-              const isActive = selectedEventIndex === index;
-              if (!isActive) return null;
+              const isSelected = selectedEventIndex === index;
+              const logoSrc = eventLogos[event.id];
 
               return (
                 <div
                   key={`content-${event.id}`}
-                  className="flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-3xl"
+                  className={`flex flex-col max-w-3xl transition-all duration-400 ease-out ${
+                    isSelected
+                      ? "opacity-100 translate-y-0 relative z-10 pointer-events-auto"
+                      : "opacity-0 translate-y-3 absolute inset-x-6 sm:inset-x-8 md:inset-x-10 lg:inset-x-12 bottom-6 sm:bottom-8 md:bottom-10 lg:bottom-12 z-0 pointer-events-none"
+                  }`}
+                  aria-hidden={!isSelected}
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <img src={eventLogos[event.id]} alt={`${event.name} Logo`} className="h-10 md:h-12 object-contain drop-shadow-lg" />
-                  </div>
+                  {logoSrc && (
+                    <div className="flex items-center gap-4 mb-3 sm:mb-4">
+                      <img
+                        src={logoSrc}
+                        alt={`${event.name} Logo`}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-9 sm:h-11 md:h-12 object-contain drop-shadow"
+                      />
+                    </div>
+                  )}
 
-                  <span className="inline-block px-3 py-1.5 rounded-md bg-accent/20 border border-accent/30 text-xs font-mono font-semibold text-white uppercase tracking-widest w-fit mb-3 backdrop-blur-md">
+                  <span className="inline-block px-3 py-1 rounded-md bg-accent/20 border border-accent/40 text-xs font-mono font-semibold text-white uppercase tracking-widest w-fit mb-3">
                     {event.tagline || "Flagship Event"}
                   </span>
 
-                  <h3 className="font-display font-black text-4xl md:text-6xl text-white uppercase mb-3 tracking-tight drop-shadow-md">
+                  <h3 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white uppercase mb-3 tracking-tight drop-shadow-md">
                     {event.name}
                   </h3>
 
-                  <p className="text-white/90 font-sans text-base md:text-lg leading-relaxed mb-6 drop-shadow-sm max-w-2xl">
+                  <p className="text-white/90 font-sans text-sm sm:text-base md:text-lg leading-relaxed mb-6 drop-shadow-sm max-w-2xl">
                     {event.description}
                   </p>
 
@@ -137,9 +156,10 @@ const AboutFlagshipEvents = () => {
                         href={event.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent text-white font-sans text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] transition-all duration-300 hover:-translate-y-1 group/btn border border-accent/50"
+                        className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-accent text-white font-sans text-xs sm:text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] transition-all duration-300 hover:-translate-y-0.5 group/btn border border-accent/50 cursor-pointer"
                       >
-                        Visit Website <ArrowRight className="w-5 h-5 transition-transform group-hover/btn:translate-x-1.5" />
+                        Visit Website{" "}
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover/btn:translate-x-1.5" />
                       </a>
                     </div>
                   )}
@@ -147,32 +167,51 @@ const AboutFlagshipEvents = () => {
               );
             })}
           </div>
-
         </div>
       </div>
 
-      {/* Tab Selector Row — narrower, max-w-6xl */}
+      {/* Tab Selector Row */}
       <div className="w-full max-w-6xl mx-auto">
-        <div className="flex w-full justify-between gap-2 sm:gap-4">
+        <div
+          className="flex w-full justify-between gap-2 sm:gap-4"
+          role="tablist"
+          aria-label="Flagship Events Tabs"
+        >
           {events.map((event, index) => {
             const isActive = selectedEventIndex === index;
+            const logoSrc = eventLogos[event.id];
+
             return (
               <button
                 key={event.id}
-                onClick={() => setSelectedEventIndex(index)}
-                className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 h-20 sm:h-24 rounded-2xl transition-all duration-300 border backdrop-blur-xl ${isActive
-                    ? "bg-accent/10 border-accent/50 shadow-[0_0_16px_var(--color-accent-glow)] -translate-y-0.5"
-                    : "bg-card/50 border-border/50 hover:bg-card hover:border-accent/30"
-                  }`}
+                type="button"
+                onClick={() => handleTabClick(index)}
+                className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 h-20 sm:h-24 rounded-2xl transition-all duration-200 border cursor-pointer ${
+                  isActive
+                    ? "bg-accent/10 border-accent shadow-[0_0_14px_var(--color-accent-glow)] -translate-y-0.5"
+                    : "bg-card/70 border-border/70 hover:bg-card hover:border-accent/40"
+                }`}
                 aria-selected={isActive}
                 role="tab"
+                id={`tab-${event.id}`}
+                aria-controls={`panel-${event.id}`}
               >
-                <img
-                  src={eventLogos[event.id]}
-                  alt={`${event.name} Logo`}
-                  className={`h-6 sm:h-8 mb-1.5 object-contain transition-all duration-300 ${isActive ? "drop-shadow-[0_0_10px_var(--color-accent)] scale-110" : "opacity-70"}`}
-                />
-                <span className={`font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-tight sm:tracking-wider transition-colors duration-300 text-center ${isActive ? "text-accent" : "text-text-muted"}`}>
+                {logoSrc && (
+                  <img
+                    src={logoSrc}
+                    alt={`${event.name} Logo`}
+                    loading="lazy"
+                    decoding="async"
+                    className={`h-5 sm:h-7 md:h-8 mb-1.5 object-contain transition-transform duration-200 ${
+                      isActive ? "scale-110" : "opacity-75"
+                    }`}
+                  />
+                )}
+                <span
+                  className={`font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-tight sm:tracking-wider transition-colors duration-200 text-center ${
+                    isActive ? "text-accent" : "text-text-muted"
+                  }`}
+                >
                   {event.name}
                 </span>
               </button>
@@ -180,9 +219,8 @@ const AboutFlagshipEvents = () => {
           })}
         </div>
       </div>
-
     </section>
   );
 };
 
-export default AboutFlagshipEvents;
+export default memo(AboutFlagshipEvents);

@@ -48,6 +48,37 @@ const Navbar = ({ layout }) => {
 
   const toggleMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
+  const handleAboutSectionClick = (e, targetId) => {
+    if (e) e.preventDefault();
+    setIsMobileMenuOpen(false);
+    setIsAboutExpanded(false);
+
+    if (location.pathname === "/about") {
+      if (targetId === "hero" || targetId === "about") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const el = document.getElementById(targetId);
+        if (el) {
+          const navbarOffset = window.innerWidth < 768 ? 64 : 80;
+          const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = Math.max(0, Math.floor(elementPosition - navbarOffset));
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+      }
+    } else {
+      navigate(`/about#${targetId}`, { state: { scrollTo: targetId } });
+    }
+  };
+
+  const handleMainAboutClick = (e) => {
+    setIsMobileMenuOpen(false);
+    setIsAboutExpanded(false);
+    if (location.pathname === "/about") {
+      if (e) e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   // Unified Navigation Item Renderer for both Page Links and Section Links
   // Identical typography, colors, hover effects, active highlighting, and spacing
   const renderNavItem = (item, isSection = false, isMobile = false) => {
@@ -174,6 +205,7 @@ const Navbar = ({ layout }) => {
             <div className="relative group py-2">
               <Link
                 to="/about"
+                onClick={handleMainAboutClick}
                 className={`relative font-sans text-xs xl:text-sm tracking-wider uppercase font-semibold transition-colors duration-200 whitespace-nowrap cursor-pointer flex items-center gap-1 ${location.pathname === '/about' ? "text-accent font-bold" : "text-text-muted hover:text-accent"}`}
               >
                 ABOUT
@@ -185,19 +217,19 @@ const Navbar = ({ layout }) => {
               
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-300 ease-out z-50">
-                <div className="flex flex-col min-w-[160px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
+                <div className="flex flex-col min-w-[170px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
                   {[
-                    { label: "Flagship Events", hash: "#events" },
-                    { label: "Community & Culture", hash: "#community" },
+                    { label: "Flagship Events", targetId: "events" },
+                    { label: "Community & Culture", targetId: "community" },
                   ].map((item) => (
-                    <Link
+                    <button
                       key={item.label}
-                      to={`/about${item.hash}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-left px-4 py-2.5 font-sans text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors whitespace-nowrap"
+                      type="button"
+                      onClick={(e) => handleAboutSectionClick(e, item.targetId)}
+                      className="text-left px-4 py-2.5 font-sans text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors whitespace-nowrap cursor-pointer"
                     >
                       {item.label}
-                    </Link>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -315,14 +347,14 @@ const Navbar = ({ layout }) => {
               <div className="flex items-center justify-between">
                 <Link
                   to="/about"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={handleMainAboutClick}
                   className={`flex-1 flex items-center px-4 py-3 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold transition-all duration-200 ${location.pathname === '/about' ? "text-accent bg-accent/10 font-bold border-l-2 border-accent" : "text-text-muted hover:text-accent hover:bg-card-hover"}`}
                 >
                   ABOUT
                 </Link>
                 <button 
                   onClick={() => setIsAboutExpanded(!isAboutExpanded)}
-                  className="p-3 text-text-muted hover:text-accent focus:outline-none"
+                  className="p-3 text-text-muted hover:text-accent focus:outline-none cursor-pointer"
                   aria-label="Toggle About Menu"
                 >
                   <span className={`inline-block transition-transform duration-300 ${isAboutExpanded ? "rotate-180" : ""}`}>▼</span>
@@ -332,17 +364,17 @@ const Navbar = ({ layout }) => {
               <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isAboutExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
                 <div className="flex flex-col pl-6 pr-2 py-2 gap-1 border-l border-border/40 ml-4 mb-2">
                   {[
-                    { label: "Flagship Events", hash: "#events" },
-                    { label: "Community & Culture", hash: "#community" },
+                    { label: "Flagship Events", targetId: "events" },
+                    { label: "Community & Culture", targetId: "community" },
                   ].map((item) => (
-                    <Link
+                    <button
                       key={item.label}
-                      to={`/about${item.hash}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-left px-4 py-2 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors"
+                      type="button"
+                      onClick={(e) => handleAboutSectionClick(e, item.targetId)}
+                      className="text-left px-4 py-2 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
                     >
                       {item.label}
-                    </Link>
+                    </button>
                   ))}
                 </div>
               </div>

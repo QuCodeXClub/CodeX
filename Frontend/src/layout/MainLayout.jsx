@@ -12,12 +12,12 @@ const MainLayout = () => {
   const [footerClicks, setFooterClicks] = useState(0);
   const { layout } = contentData;
 
-  // Scroll to top when shifting to any page (e.g. Events, Team, Register)
+  // Scroll to top when shifting to any page (e.g. Events, Team, Register), unless there is a hash or target section
   useIsomorphicLayoutEffect(() => {
-    if (location.pathname !== "/") {
+    if (location.pathname !== "/" && !location.hash && !location.state?.scrollTo) {
       window.scrollTo(0, 0);
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.hash, location.state]);
 
   // Reset click count after 2 seconds of inactivity
   useEffect(() => {
