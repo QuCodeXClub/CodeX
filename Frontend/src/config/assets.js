@@ -8,9 +8,9 @@ export const ASSETS = {
 
 
     // Events
-    EVENT_HACKATHON: "https://res.cloudinary.com/fswmfdcp/image/upload/v1785170170/hackthon_ugz8gy.webp",
-    EVENT_CONTEST: "https://res.cloudinary.com/fswmfdcp/image/upload/v1785170030/contest_he2oqd.webp",
-    EVENT_WEBINAR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1785170227/webinar_ai3kg5.webp",
+    EVENT_HACKATHON: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1785170170/hackthon_ugz8gy.webp",
+    EVENT_CONTEST: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1785170030/contest_he2oqd.webp",
+    EVENT_WEBINAR: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1785170227/webinar_ai3kg5.webp",
 
     // Partners
     PARTNER_HACKINDIA: "/partners/hackindia.svg",
