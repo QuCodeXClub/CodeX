@@ -12,6 +12,7 @@ export const usePageNavigation = () => {
     () => [
       { label: "EVENTS", path: "/events" },
       { label: "TEAM", path: "/team" },
+      
     ],
     []
   );

@@ -21,3 +21,11 @@ export const getAcademicYearFromDate = (dateString) => {
     return `${year - 1}-${year}`;
   }
 };
+
+export const optimizeCloudinaryUrl = (url, width = 1200) => {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("res.cloudinary.com") || url.includes("/f_auto,")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+};
+
+
