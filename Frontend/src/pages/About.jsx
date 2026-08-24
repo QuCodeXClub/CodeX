@@ -1,14 +1,22 @@
 import React, { useEffect, memo } from "react";
 import { useLocation } from "react-router-dom";
-import AboutHero from "../features/about/components/AboutHero";
-import AboutFlagshipEvents from "../features/about/components/AboutFlagshipEvents";
-import AboutCulture from "../features/about/components/AboutCulture";
-import AboutCTA from "../features/about/components/AboutCTA";
+import {
+  AboutHero,
+  AboutFlagshipEvents,
+  AboutCulture,
+  AboutCTA,
+} from "../features/about";
 
+/**
+ * About Page Root Component
+ * 
+ * Aggregates Hero, Flagship Events, Culture Bento Grid, and Call-to-Action sections.
+ * Handles smooth URL hash and state scrolling for in-page navigation.
+ */
 const About = () => {
   const location = useLocation();
 
-  // Scroll smoothly to the target section (e.g. #events, #community, #hero)
+  // Scroll smoothly to target section on hash change or navigation state
   useEffect(() => {
     const rawTarget =
       location.state?.scrollTo ||
@@ -46,15 +54,17 @@ const About = () => {
   }, [location.pathname, location.hash, location.state]);
 
   return (
-    <div className="flex flex-col min-h-screen relative font-sans">
+    <main className="flex flex-col min-h-screen relative font-sans">
       <div className="relative z-10">
         <AboutHero />
         <AboutFlagshipEvents />
         <AboutCulture />
         <AboutCTA />
       </div>
-    </div>
+    </main>
   );
 };
+
+About.displayName = "AboutPage";
 
 export default memo(About);

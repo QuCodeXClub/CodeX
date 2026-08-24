@@ -3,33 +3,45 @@ import { ArrowRight } from "lucide-react";
 import contentData from "../../../data/content.json";
 import { optimizeCloudinaryUrl } from "../../../utils/helpers";
 
-// Import local logos
+// Import local vector logos
 import techThriveLogo from "../../../assets/about/techthrive-logo.svg";
 import techSprintLogo from "../../../assets/about/techsprint-logo.svg";
 import qHackathonLogo from "../../../assets/about/qhackathon-logo.svg";
 
-const eventLogos = {
+/**
+ * Event identifier to vector logo asset mapping.
+ */
+const EVENT_LOGOS = {
   techthrive: techThriveLogo,
   techsprint: techSprintLogo,
   "q-hackathon": qHackathonLogo,
 };
 
-const ROTATION_INTERVAL = 6000; // 6 seconds per slide loop
+const ROTATION_INTERVAL_MS = 6000; // 6 seconds per auto-slide
+const DEFAULT_FALLBACK_IMAGE =
+  "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg";
 
+/**
+ * AboutFlagshipEvents Component
+ * 
+ * Displays CodeX's flagship events (TechThrive, Q-Hackathon, TechSprint)
+ * in an interactive, accessible, hardware-accelerated carousel with
+ * infinite auto-rotation, pause-on-hover, and keyboard navigation.
+ */
 const AboutFlagshipEvents = () => {
-  const { flagshipEvents } = contentData.about;
-  const events = flagshipEvents.events;
+  const flagshipData = contentData?.about?.flagshipEvents;
+  const events = flagshipData?.events || [];
 
   const [selectedEventIndex, setSelectedEventIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Handle continuous auto-rotation loop
+  // Auto-rotation timer loop
   useEffect(() => {
     if (isHovered || events.length <= 1) return;
 
     const timer = setInterval(() => {
       setSelectedEventIndex((prevIndex) => (prevIndex + 1) % events.length);
-    }, ROTATION_INTERVAL);
+    }, ROTATION_INTERVAL_MS);
 
     return () => clearInterval(timer);
   }, [events.length, isHovered, selectedEventIndex]);
@@ -38,23 +50,44 @@ const AboutFlagshipEvents = () => {
     setSelectedEventIndex(index);
   };
 
+  const handleTabKeyDown = (e, currentIndex) => {
+    if (events.length <= 1) return;
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % events.length;
+      handleTabClick(nextIndex);
+      document.getElementById(`tab-${events[nextIndex].id}`)?.focus();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + events.length) % events.length;
+      handleTabClick(prevIndex);
+      document.getElementById(`tab-${events[prevIndex].id}`)?.focus();
+    }
+  };
+
+  if (!events.length) return null;
+
   return (
     <section
       id="events"
+      aria-label="Flagship Events Section"
       className="relative pt-6 pb-14 md:pt-4 md:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden flex flex-col justify-center [content-visibility:auto] [contain-intrinsic-size:650px]"
     >
       <div className="max-w-6xl mx-auto w-full">
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-8 md:mb-10">
           <span className="block text-accent font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-4 drop-shadow-sm">
-            {flagshipEvents.eyebrow}
+            {flagshipData?.eyebrow || "FLAGSHIP EVENTS"}
           </span>
           <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-text uppercase">
-            {flagshipEvents.titlePart1}{" "}
-            <span className="text-accent">{flagshipEvents.titlePart2}</span>
+            {flagshipData?.titlePart1 || "Where Ideas Become"}{" "}
+            <span className="text-accent">
+              {flagshipData?.titlePart2 || "Action"}
+            </span>
           </h2>
           <p className="mt-4 text-text-muted font-sans text-base sm:text-lg max-w-2xl">
-            {flagshipEvents.description}
+            {flagshipData?.description}
           </p>
         </div>
       </div>
@@ -66,13 +99,13 @@ const AboutFlagshipEvents = () => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Top Progress Bar - Continuous Infinite Loop */}
+          {/* Top Progress Bar - Hardware Accelerated CSS Animation */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-border/40 z-30 overflow-hidden">
             <div
               key={selectedEventIndex}
               className="h-full bg-accent origin-left w-full transform-gpu"
               style={{
-                animation: `progressGrow ${ROTATION_INTERVAL}ms linear forwards`,
+                animation: `progressGrow ${ROTATION_INTERVAL_MS}ms linear forwards`,
                 animationPlayState: isHovered ? "paused" : "running",
               }}
             />
@@ -83,8 +116,7 @@ const AboutFlagshipEvents = () => {
             {events.map((event, index) => {
               const isSelected = selectedEventIndex === index;
               const optimizedSrc = optimizeCloudinaryUrl(
-                event.image?.src ||
-                  "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg",
+                event.image?.src || DEFAULT_FALLBACK_IMAGE,
                 1200
               );
 
@@ -92,7 +124,9 @@ const AboutFlagshipEvents = () => {
                 <div
                   key={`img-${event.id}`}
                   className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
-                    isSelected ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                    isSelected
+                      ? "opacity-100 z-10"
+                      : "opacity-0 z-0 pointer-events-none"
                   }`}
                   aria-hidden={!isSelected}
                 >
@@ -106,7 +140,7 @@ const AboutFlagshipEvents = () => {
                 </div>
               );
             })}
-            {/* Dark Gradient Backdrop */}
+            {/* Dark Gradient Backdrop for text legibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 z-20 pointer-events-none" />
           </div>
 
@@ -114,11 +148,14 @@ const AboutFlagshipEvents = () => {
           <div className="relative z-30 w-full p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-end">
             {events.map((event, index) => {
               const isSelected = selectedEventIndex === index;
-              const logoSrc = eventLogos[event.id];
+              const logoSrc = EVENT_LOGOS[event.id];
 
               return (
                 <div
                   key={`content-${event.id}`}
+                  id={`panel-${event.id}`}
+                  role="tabpanel"
+                  aria-labelledby={`tab-${event.id}`}
                   className={`flex flex-col max-w-3xl transition-all duration-400 ease-out ${
                     isSelected
                       ? "opacity-100 translate-y-0 relative z-10 pointer-events-auto"
@@ -175,18 +212,19 @@ const AboutFlagshipEvents = () => {
         <div
           className="flex w-full justify-between gap-2 sm:gap-4"
           role="tablist"
-          aria-label="Flagship Events Tabs"
+          aria-label="Flagship Events Selector"
         >
           {events.map((event, index) => {
             const isActive = selectedEventIndex === index;
-            const logoSrc = eventLogos[event.id];
+            const logoSrc = EVENT_LOGOS[event.id];
 
             return (
               <button
                 key={event.id}
                 type="button"
                 onClick={() => handleTabClick(index)}
-                className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 h-20 sm:h-24 rounded-2xl transition-all duration-200 border cursor-pointer ${
+                onKeyDown={(e) => handleTabKeyDown(e, index)}
+                className={`flex-1 flex flex-col items-center justify-center p-2 sm:p-4 h-20 sm:h-24 rounded-2xl transition-all duration-200 border cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isActive
                     ? "bg-accent/10 border-accent shadow-[0_0_14px_var(--color-accent-glow)] -translate-y-0.5"
                     : "bg-card/70 border-border/70 hover:bg-card hover:border-accent/40"
@@ -195,11 +233,13 @@ const AboutFlagshipEvents = () => {
                 role="tab"
                 id={`tab-${event.id}`}
                 aria-controls={`panel-${event.id}`}
+                tabIndex={isActive ? 0 : -1}
               >
                 {logoSrc && (
                   <img
                     src={logoSrc}
-                    alt={`${event.name} Logo`}
+                    alt=""
+                    aria-hidden="true"
                     loading="lazy"
                     decoding="async"
                     className={`h-5 sm:h-7 md:h-8 mb-1.5 object-contain transition-transform duration-200 ${
@@ -209,7 +249,7 @@ const AboutFlagshipEvents = () => {
                 )}
                 <span
                   className={`font-mono text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-tight sm:tracking-wider transition-colors duration-200 text-center ${
-                    isActive ? "text-accent" : "text-text-muted"
+                    isActive ? "text-accent font-black" : "text-text-muted"
                   }`}
                 >
                   {event.name}
@@ -222,5 +262,7 @@ const AboutFlagshipEvents = () => {
     </section>
   );
 };
+
+AboutFlagshipEvents.displayName = "AboutFlagshipEvents";
 
 export default memo(AboutFlagshipEvents);
