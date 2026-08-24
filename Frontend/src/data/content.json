@@ -67,36 +67,36 @@
       ]
     },
     "contactSection": {
-  "eyebrow": "Contact Us",
-  "title": "Get in Touch",
-  "headline": "Have a question or want to connect? We'd love to hear from you.",
-  "description": "Whether you're interested in joining CodeX, collaborating on an event, exploring partnership opportunities, or simply have a query, our team is here to help. Reach out and we'll get back to you as soon as possible.",
-  "ctaPrimary": "Contact Us"
-},
-"partners": {
+      "eyebrow": "Contact Us",
+      "title": "Get in Touch",
+      "headline": "Have a question or want to connect? We'd love to hear from you.",
+      "description": "Whether you're interested in joining CodeX, collaborating on an event, exploring partnership opportunities, or simply have a query, our team is here to help. Reach out and we'll get back to you as soon as possible.",
+      "ctaPrimary": "Contact Us"
+    },
+    "partners": {
       "title": "Organizations We've Worked With",
       "description": "Building opportunities with organizations that support developers and innovation.",
       "list": [
-        { 
-      "name": "HackIndia", 
-      "description": "India's largest developer community and hackathon platform.",
-      "url": "https://hackindia.com" 
-    },
-    { 
-      "name": "Unstop", 
-      "description": "Empowering students with opportunities, contests and career resources.",
-      "url": "https://unstop.com" 
-    },
-    { 
-      "name": "Hostinger", 
-      "description": "Reliable web hosting and online solutions for developers.",
-      "url": "https://hostinger.com" 
-    },
-    { 
-      "name": ".xyz", 
-      "description": "A modern domain for the next generation of ideas and innovation.",
-      "url": "https://gen.xyz" 
-    }
+        {
+          "name": "HackIndia",
+          "description": "India's largest developer community and hackathon platform.",
+          "url": "https://hackindia.com"
+        },
+        {
+          "name": "Unstop",
+          "description": "Empowering students with opportunities, contests and career resources.",
+          "url": "https://unstop.com"
+        },
+        {
+          "name": "Hostinger",
+          "description": "Reliable web hosting and online solutions for developers.",
+          "url": "https://hostinger.com"
+        },
+        {
+          "name": ".xyz",
+          "description": "A modern domain for the next generation of ideas and innovation.",
+          "url": "https://gen.xyz"
+        }
       ]
     },
     "mission": {
@@ -192,9 +192,18 @@
       }
     ],
     "socials": [
-      { "name": "GitHub", "url": "https://github.com/QuCodeXClub" },
-      { "name": "LinkedIn", "url": "https://linkedin.com/company/qucodex" },
-      { "name": "Instagram", "url": "https://instagram.com/qu_codex/" }
+      {
+        "name": "GitHub",
+        "url": "https://github.com/QuCodeXClub"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/company/qucodex"
+      },
+      {
+        "name": "Instagram",
+        "url": "https://instagram.com/qu_codex/"
+      }
     ],
     "meta": "",
     "cta": "JOIN US"
@@ -206,26 +215,146 @@
     "description": "Initialize your profile and secure your position in the CodeX network."
   },
   "about": {
-    "eyebrow": "Official Technical Club",
-    "title": "Building the Next Generation of Innovators",
-    "description": "CodeX is the official technical club of the Department of Computer Science & Engineering and Computer Applications at Quantum University, Roorkee. We empower students to learn, build, innovate, and collaborate through practical, hands-on experiences.",
-    "mission": "Our mission is to create a thriving community where students transform ideas into real-world solutions. Through mentorship, live projects, hackathons, technical workshops, and competitive programming, we help members develop industry-ready skills, strengthen problem-solving abilities, and build impactful portfolios for internships, placements, and entrepreneurship.",
-    "activitiesTitle": "Key Activities & Focus Areas",
-    "activities": [
-      {
-        "title": "Projects & Open Source",
-        "description": "Build real-world applications, contribute to open-source projects, collaborate in teams, and gain practical development experience using modern technologies."
-      },
-      {
-        "title": "Workshops & Weekly PROPS",
-        "description": "Attend expert-led workshops and participate in our weekly PROPS (Problem Solving) sessions focused on DSA, competitive programming, coding interviews, and logical thinking."
-      },
-      {
-        "title": "Hackathons & Technical Events",
-        "description": "Compete in hackathons, coding contests, technical quizzes, project expos, and flagship events like CodeFest to challenge yourself and showcase your skills."
+    "hero": {
+      "eyebrow": "ABOUT CODEX CLUB",
+      "titlePart1": "CODING THE",
+      "titlePart2": "FUTURE,",
+      "titlePart3": "TODAY.",
+      "description": "CodeX is a student-driven technology community at Quantum University focused on learning, building, competing, and creating impact through technology.",
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Members"
+        },
+        {
+          "value": "25+",
+          "label": "Events"
+        },
+        {
+          "value": "8+",
+          "label": "Domains"
+        }
+      ]
+    },
+    "leadership": {
+      "eyebrow": "OUR LEADERSHIP",
+      "title": "A Word From Our Leadership",
+      "name": "[Name Placeholder]",
+      "designation": "Founder & Dean Academics",
+      "message": "\"[Placeholder quote: Please replace this text with the officially approved leadership message describing CodeX's impact and vision for students at Quantum University.]\"",
+      "image": {
+        "src": "",
+        "alt": "Leadership Photo"
       }
-    ],
-    "contact": "Join our community, attend our events, or reach out at codex.club@quantumeducation.in. Follow us on Instagram @qu_codex for the latest updates."
+    },
+    "flagshipEvents": {
+      "eyebrow": "FLAGSHIP EVENTS",
+      "titlePart1": "Where Ideas Become",
+      "titlePart2": "Action",
+      "description": "Experiences that challenge students to build, compete, and innovate.",
+      "events": [
+        {
+          "id": "techthrive",
+          "name": "TECHTHRIVE",
+          "tagline": "SIH Qualification Round",
+          "description": "The official CodeX flagship hackathon and screening initiative for SIH (Smart India Hackathon). A platform where the best ideas are forged under pressure.",
+          "website": "https://techthrive.qucodex.com",
+          "image": {
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475669/IMG_0627_rn1b2f.jpg",
+            "alt": "TechThrive"
+          }
+        },
+        {
+          "id": "q-hackathon",
+          "name": "Q-HACKATHON",
+          "tagline": "36-Hour Innovation Marathon",
+          "description": "A high-energy, fast-paced hackathon designed to push boundaries and build innovative solutions overnight.",
+          "website": "https://q-hackathon.qucodex.com",
+          "image": {
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg",
+            "alt": "Q-Hackathon"
+          }
+        },
+        {
+          "id": "techsprint",
+          "name": "TECHSPRINT",
+          "tagline": "Rapid Prototyping Challenge",
+          "description": "Our premier coding festival featuring competitive programming, project expos, and technical challenges.",
+          "website": "https://techsprint.qucodex.com",
+          "image": {
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475669/IMG_0624_ixv8wd.jpg",
+            "alt": "TechSprint"
+          }
+        }
+      ]
+    },
+    "community": {
+      "eyebrow": "COMMUNITY & CULTURE",
+      "titlePart1": "More Than a Club.",
+      "titlePart2": "A Community.",
+      "description": "We believe in the power of collective growth. CodeX is built on four core principles that shape everything we do.",
+      "principles": [
+        {
+          "id": "learn",
+          "title": "Learn Together",
+          "description": "Master new technologies through peer-to-peer mentoring and hands-on workshops.",
+          "icon": "book"
+        },
+        {
+          "id": "build",
+          "title": "Build Together",
+          "description": "Collaborate on real-world projects and open-source contributions.",
+          "icon": "code"
+        },
+        {
+          "id": "compete",
+          "title": "Compete Together",
+          "description": "Challenge yourself in hackathons and competitive programming contests.",
+          "icon": "trophy"
+        },
+        {
+          "id": "grow",
+          "title": "Grow Together",
+          "description": "Develop leadership skills and build a network for your future career.",
+          "icon": "trending-up"
+        }
+      ],
+      "images": [
+        {
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475669/IMG_0627_rn1b2f.jpg",
+          "alt": "Learn Together"
+        },
+        {
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475669/IMG_6902_oyq9by.jpg",
+          "alt": "Build Together"
+        },
+        {
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475669/IMG_0619_migrdi.jpg",
+          "alt": "Compete Together"
+        },
+        {
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475205/3R5A5331_iy1okp.jpg",
+          "alt": "Grow Together"
+        },
+        {
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475204/IMG_5259_dwnhsr.jpg",
+          "alt": "Community"
+        }
+      ]
+    },
+    "cta": {
+      "titlePart1": "Ready to Build",
+      "titlePart2": "What's Next?",
+      "description": "Join a community turning curiosity into code and ideas into impact.",
+      "primaryButton": {
+        "label": "Join CodeX",
+        "link": "/register"
+      },
+      "secondaryButton": {
+        "label": "Explore Events",
+        "link": "/events"
+      }
+    }
   },
   "contact": {
     "eyebrow": "GET IN TOUCH",
@@ -246,7 +375,6 @@
       "highlight": "Connect."
     },
     "description": "From hackathons to hands-on workshops, join experiences that push boundaries and build the future.",
-
     "cards": [
       {
         "id": 1,

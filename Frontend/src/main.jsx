@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import lazyWithRetry from "./utils/lazyWithRetry";
 
 // Public pages
+const About = lazyWithRetry(() => import("./pages/About"));
 const Team = lazyWithRetry(() => import("./pages/Team"));
 const Events = lazyWithRetry(() => import("./pages/Events"));
 const EventDetails = lazyWithRetry(() => import("./pages/EventDetails"));
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
       { path: "/team", element: <Team /> },
       { path: "/events", element: <Events /> },
       { path: "/events/:id", element: <EventDetails /> },
+      { path: "/about", element: <About /> },
 
       { path: "/register", element: <Register /> },
       { path: "/verify-certificate/:certificateId", element: <VerifyCertificate /> },
