@@ -5,7 +5,6 @@ import {
   Calendar,
   ExternalLink,
   MapPin,
-  Clock,
   ArrowLeft,
   Share2,
   Globe
@@ -93,6 +92,7 @@ export default function EventDetails() {
   const generateCalendarLink = () => {
     if (!event || !event.date) return "#";
     const startDate = new Date(event.date);
+    if (isNaN(startDate.getTime())) return "#";
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Assumes 2 hour duration
 
     const formatGoogleDate = (date) =>
