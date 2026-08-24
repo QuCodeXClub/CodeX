@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { registrationService } from "../services/registrationService";
 import { useDispatch } from "react-redux";
@@ -16,11 +16,11 @@ const Register = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
   const [turnstileToken, setTurnstileToken] = useState("auto-verified-token");
-  const [turnstileKey, setTurnstileKey] = useState(0);
+  const turnstileRef = useRef(null);
 
   const resetSecurityCheck = () => {
     setTurnstileToken("auto-verified-token");
-    setTurnstileKey((prev) => prev + 1);
+    turnstileRef.current?.reset();
   };
 
   const registerContent = contentData?.register || {
@@ -158,7 +158,7 @@ const Register = () => {
               setTurnstileToken={setTurnstileToken}
               loading={loading}
               turnstileToken={turnstileToken}
-              turnstileKey={turnstileKey}
+              turnstileRef={turnstileRef}
             />
           </form>
         </PageContainer>

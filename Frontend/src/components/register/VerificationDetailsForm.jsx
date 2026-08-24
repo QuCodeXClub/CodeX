@@ -10,7 +10,7 @@ export default function VerificationDetailsForm({
   setTurnstileToken,
   loading,
   turnstileToken,
-  turnstileKey,
+  turnstileRef,
 }) {
   const [isQrZoomed, setIsQrZoomed] = useState(false);
 
@@ -117,7 +117,8 @@ export default function VerificationDetailsForm({
 
       {/* Security Protection (Invisible Turnstile) */}
       <Turnstile
-        key={turnstileKey}
+        ref={turnstileRef}
+        id="turnstile-register"
         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
         onSuccess={(token) => setTurnstileToken(token)}
         onError={(err) => {
@@ -125,7 +126,7 @@ export default function VerificationDetailsForm({
           setTurnstileToken("auto-verified-token");
         }}
         onExpire={() => setTurnstileToken("auto-verified-token")}
-        options={{ theme: "auto", action: "register", mode: "invisible" }}
+        options={{ theme: "auto", action: "register", size: "invisible" }}
       />
       <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
         <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Protected by Cloudflare Turnstile

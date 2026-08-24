@@ -162,7 +162,10 @@ export const useSectionNavigation = () => {
   useEffect(() => {
     if (!isHomePage) return;
 
-    const handleScroll = () => {
+    let rAFId = null;
+
+    const updateScrollSpy = () => {
+      rAFId = null;
       // STRICT LOCK: Never allow scrollSpy to update activeSection while restoration or click scrolling is active
       if (isClickScrolling.current || isRestoringScroll.current) return;
 
@@ -182,10 +185,19 @@ export const useSectionNavigation = () => {
       setActiveSection((previous) => (previous === currentSection ? previous : currentSection));
     };
 
+    const handleScroll = () => {
+      if (rAFId === null) {
+        rAFId = requestAnimationFrame(updateScrollSpy);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", handleScroll, { passive: true });
 
     return () => {
+      if (rAFId !== null) {
+        cancelAnimationFrame(rAFId);
+      }
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };

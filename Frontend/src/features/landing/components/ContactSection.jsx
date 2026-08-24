@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setError } from "../../../context/messageSlice";
@@ -23,6 +23,7 @@ const ContactSection = () => {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const turnstileRef = useRef(null);
   const dispatch = useDispatch();
 
   const {
@@ -51,8 +52,10 @@ const ContactSection = () => {
       await axiosInstance.post("/contact", payload);
       setIsSuccess(true);
       reset();
+      turnstileRef.current?.reset();
     } catch {
       setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setLoading(false);
     }
@@ -225,6 +228,8 @@ const ContactSection = () => {
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
                     <div className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
                       <Turnstile
+                        ref={turnstileRef}
+                        id="turnstile-contact"
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => setTurnstileToken(token)}
                         onError={(err) => {
@@ -232,7 +237,7 @@ const ContactSection = () => {
                           setTurnstileToken("auto-verified-token");
                         }}
                         onExpire={() => setTurnstileToken("auto-verified-token")}
-                        options={{ theme: "auto", action: "contact", mode: "invisible" }}
+                        options={{ theme: "auto", action: "contact", size: "invisible" }}
                       />
                       <span>Protected by Cloudflare Turnstile</span>
                     </div>
