@@ -24,8 +24,30 @@ export const getAcademicYearFromDate = (dateString) => {
 
 export const optimizeCloudinaryUrl = (url, width = 1200) => {
   if (!url || typeof url !== "string") return url;
-  if (!url.includes("res.cloudinary.com") || url.includes("/f_auto,")) return url;
-  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+  try {
+    const parsedUrl = new URL(url);
+    if (
+      parsedUrl.hostname !== "res.cloudinary.com" ||
+      parsedUrl.pathname.includes("/f_auto,")
+    ) {
+      return url;
+    }
+    return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+  } catch {
+    return url;
+  }
 };
 
-
+/**
+ * Applies safe defaults for the new Event model fields (locationType, location, tags).
+ * Use this wherever raw API event data is consumed so defensive checks stay in one place.
+ */
+export const normalizeEvent = (event) => {
+  if (!event) return event;
+  return {
+    ...event,
+    locationType: event.locationType || "Offline",
+    location: event.location || "",
+    tags: Array.isArray(event.tags) ? event.tags : [],
+  };
+};

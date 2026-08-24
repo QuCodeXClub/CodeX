@@ -426,12 +426,16 @@ Creates a new event with cover image upload.
 
 ### Form Fields
 
-| Field | Type |
-|--------|------|
-| title | Text |
-| description | Text |
-| date | Date |
-| coverImage | File |
+| Field | Type | Required | Description |
+|--------|------|----------|-------------|
+| eventName | Text | ✅ | Event title |
+| date | Date | ✅ | Event date & time |
+| description | Text (HTML) | ✅ | Event description |
+| coverImage | File | ✅ | Cover image file |
+| registrationLink | Text | ❌ | External registration URL |
+| locationType | Text | ❌ | Mode (`Online` or `Offline`, default: `Offline`) |
+| location | Text | ❌ | Venue name/address or meeting link |
+| tags | Array / Text | ❌ | Array of strings or comma-separated tags |
 
 ---
 
@@ -440,18 +444,22 @@ Creates a new event with cover image upload.
 ### Endpoint
 
 ```
-PATCH /:id
+PUT /:id
 ```
 
 ### Authentication
 
 🔒 JWT Required
 
+### Content Type
+
+```
+multipart/form-data
+```
+
 ### Purpose
 
-Updates event information.
-
-Supports optional cover image replacement.
+Updates event information (supports optional cover image replacement, location type, location text, and tags).
 
 ---
 
