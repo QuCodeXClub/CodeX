@@ -7,13 +7,13 @@ import {
   MapPin,
   Clock,
   ArrowLeft,
-  Users,
   Share2,
   Globe
 } from "lucide-react";
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
+import { normalizeEvent } from "../utils/helpers";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -35,7 +35,7 @@ export default function EventDetails() {
           ? response.data
           : response?.data?.events || [];
         const foundEvent = eventsList.find((e) => e._id === id || e.id === id);
-        setEvent(foundEvent);
+        setEvent(normalizeEvent(foundEvent));
       } catch (error) {
         console.error("Failed to fetch event details:", error);
       } finally {
@@ -176,8 +176,12 @@ export default function EventDetails() {
               <div className="bg-card border border-border/80 rounded-2xl p-6 md:p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-2 text-text-muted text-sm font-medium">
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-red-500" />
-                    <span>Offline</span>
+                    {event.locationType === "Online" ? (
+                      <Globe className="w-4 h-4 text-accent" />
+                    ) : (
+                      <MapPin className="w-4 h-4 text-red-500" />
+                    )}
+                    <span>{event.locationType}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     {event.registrationLink && (
@@ -197,20 +201,30 @@ export default function EventDetails() {
                 <h1 className="font-display font-black text-3xl sm:text-4xl text-text mb-2 tracking-tight">
                   {event.eventName}
                 </h1>
-                <p className="text-text-muted text-base mb-8">Quantum University, Roorkee</p>
+                {event.location && (
+                  <p className="text-text-muted text-base mb-8">{event.location}</p>
+                )}
 
                 {/* Metadata List */}
                 <div className="space-y-6">
-                  {/* Location Row */}
-                  <div className="flex items-start gap-4">
-                    <div className="bg-accent/10 p-2.5 rounded-lg text-accent mt-0.5">
-                      <MapPin className="w-5 h-5" />
+                  {/* Location Row — only shown when location is provided */}
+                  {event.location && (
+                    <div className="flex items-start gap-4">
+                      <div className="bg-accent/10 p-2.5 rounded-lg text-accent mt-0.5">
+                        {event.locationType === "Online" ? (
+                          <Globe className="w-5 h-5" />
+                        ) : (
+                          <MapPin className="w-5 h-5" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-text mb-1">
+                          {event.locationType === "Online" ? "Online Platform" : "Venue"}
+                        </h3>
+                        <p className="text-sm text-text-muted">{event.location}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-text mb-1">Location</h3>
-                      <p className="text-sm text-text-muted">Quantum University, Roorkee, Uttarakhand</p>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Date & Time Row */}
                   <div className="flex items-start gap-4">
@@ -231,15 +245,19 @@ export default function EventDetails() {
                   </div>
                 </div>
 
-                {/* Tags */}
-                <div className="mt-8 pt-6 border-t border-border/80 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-card-hover border border-border/80 rounded-full text-xs font-semibold text-text-muted">
-                    Software Development
-                  </span>
-                  <span className="px-3 py-1 bg-card-hover border border-border/80 rounded-full text-xs font-semibold text-text-muted">
-                    Hackathon
-                  </span>
-                </div>
+                {/* Tags — only shown when the event has tags */}
+                {event.tags.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-border/80 flex flex-wrap gap-2">
+                    {event.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-card-hover border border-border/80 rounded-full text-xs font-semibold text-text-muted"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Description Card */}

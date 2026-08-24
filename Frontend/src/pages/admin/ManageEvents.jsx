@@ -6,6 +6,8 @@ import {
   Trash2,
   Calendar,
   Image as ImageIcon,
+  MapPin,
+  Globe,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
@@ -13,6 +15,7 @@ import {
   fetchAdminEvents,
   deleteAdminEvent,
 } from "../../context/adminEventsSlice";
+import { normalizeEvent } from "../../utils/helpers";
 
 import EventHeader from "../../components/admin/events/EventHeader";
 import EmptyState from "../../components/admin/events/EmptyState";
@@ -77,7 +80,9 @@ export default function ManageEvents() {
         <EmptyState />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-          {events.map((event) => (
+          {events.map((rawEvent) => {
+            const event = normalizeEvent(rawEvent);
+            return (
             <div
               key={event._id}
               className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-lg hover:border-accent/40 hover:shadow-accent/10 transition-all flex flex-col group relative"
@@ -131,6 +136,46 @@ export default function ManageEvents() {
                       })}
                     </span>
                   </div>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted mt-1.5">
+                    {event.locationType === "Online" ? (
+                      <Globe className="w-3.5 h-3.5 text-accent" />
+                    ) : (
+                      <MapPin className="w-3.5 h-3.5 text-accent" />
+                    )}
+                    <span className="truncate">
+                      {event.locationType === "Online"
+                        ? event.location ? `Online — ${event.location}` : "Online"
+                        : event.location || "Offline"}
+                    </span>
+                    <span className={`ml-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                      event.locationType === "Online"
+                        ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                        : "bg-accent/10 text-accent border border-accent/20"
+                    }`}>
+                      {event.locationType}
+                    </span>
+                  </div>
+
+                  {/* Tags */}
+                  {event.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2.5">
+                      {event.tags.slice(0, 3).map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 bg-card-hover border border-border/60 rounded-full text-[9px] font-mono font-semibold text-text-muted"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {event.tags.length > 3 && (
+                        <span className="px-2 py-0.5 bg-card-hover border border-border/60 rounded-full text-[9px] font-mono text-text-muted">
+                          +{event.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Footer Actions */}
@@ -166,7 +211,8 @@ export default function ManageEvents() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

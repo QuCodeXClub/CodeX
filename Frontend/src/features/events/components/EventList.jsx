@@ -1,17 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin } from "lucide-react";
-import { PublicEventCardSkeleton } from "../../../components/common/skeletons";
+import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin, Globe } from "lucide-react";
+import { normalizeEvent } from "../../../utils/helpers";
 
 const EventList = ({ events = [], loading }) => {
   const [activeTab, setActiveTab] = useState("UPCOMING");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
+  // Normalize events once to apply safe defaults for new fields
+  const normalizedEvents = useMemo(() => events.map(normalizeEvent), [events]);
+
   // Filter and Sort events dynamically based on current date and search query
   const { upcomingEvents, pastEvents } = useMemo(() => {
     const now = new Date();
-    const filtered = events.filter((e) =>
+    const filtered = normalizedEvents.filter((e) =>
       e.eventName?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -24,7 +27,7 @@ const EventList = ({ events = [], loading }) => {
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     return { upcomingEvents: upcoming, pastEvents: past };
-  }, [events, searchQuery]);
+  }, [normalizedEvents, searchQuery]);
 
   const displayEvents = activeTab === "UPCOMING" ? upcomingEvents : pastEvents;
 
@@ -153,6 +156,25 @@ const EventList = ({ events = [], loading }) => {
                   {/* Spacer to push metadata to the bottom if titles vary in length */}
                   <div className="flex-1"></div>
 
+                  {/* Tags (shown above the metadata row, hidden if empty) */}
+                  {event.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {event.tags.slice(0, 4).map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded-full bg-card-hover border border-border/60 text-[10px] font-mono font-semibold text-text-muted"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {event.tags.length > 4 && (
+                        <span className="px-2 py-0.5 rounded-full bg-card-hover border border-border/60 text-[10px] font-mono text-text-muted">
+                          +{event.tags.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {/* Event Metadata (Date, Time, Location) */}
                   <div className="pt-4 border-t border-border/60 mt-auto flex flex-wrap items-center gap-4 text-xs font-mono font-semibold text-text-muted">
                     <div className="flex items-center gap-1.5">
@@ -173,9 +195,20 @@ const EventList = ({ events = [], loading }) => {
                       </span>
                     </div>
 
+                    {/* Dynamic location display */}
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-accent" />
-                      <span>Offline</span>
+                      {event.locationType === "Online" ? (
+                        <Globe className="w-4 h-4 text-accent" />
+                      ) : (
+                        <MapPin className="w-4 h-4 text-accent" />
+                      )}
+                      <span className="truncate max-w-[160px]">
+                        {event.locationType === "Online"
+                          ? event.location
+                            ? `Online — ${event.location}`
+                            : "Online"
+                          : event.location || "Offline"}
+                      </span>
                     </div>
                   </div>
 
