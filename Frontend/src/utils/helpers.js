@@ -24,8 +24,16 @@ export const getAcademicYearFromDate = (dateString) => {
 
 export const optimizeCloudinaryUrl = (url, width = 1200) => {
   if (!url || typeof url !== "string") return url;
-  if (!url.includes("res.cloudinary.com") || url.includes("/f_auto,")) return url;
-  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+  try {
+    const parsedUrl = new URL(url);
+    if (
+      parsedUrl.hostname !== "res.cloudinary.com" ||
+      parsedUrl.pathname.includes("/f_auto,")
+    ) {
+      return url;
+    }
+    return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+  } catch {
+    return url;
+  }
 };
-
-
