@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShieldCheck, Loader2, ZoomIn, X, QrCode } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
+import TurnstileWidget from "../common/TurnstileWidget";
 
 export default function VerificationDetailsForm({
   register,
@@ -116,17 +116,18 @@ export default function VerificationDetailsForm({
       </div>
 
       {/* Security Protection (Invisible Turnstile) */}
-      <Turnstile
+      <TurnstileWidget
         ref={turnstileRef}
         id="turnstile-register"
         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+        action="register"
+        size="invisible"
         onSuccess={(token) => setTurnstileToken(token)}
         onError={(err) => {
-          console.warn("Turnstile verification widget warning:", err);
+          console.warn("[Turnstile] Register widget error:", err);
           setTurnstileToken(null);
         }}
         onExpire={() => setTurnstileToken(null)}
-        options={{ theme: "auto", action: "register", size: "invisible" }}
       />
       <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
         <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Protected by Cloudflare Turnstile

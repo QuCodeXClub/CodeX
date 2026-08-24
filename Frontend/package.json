@@ -11,7 +11,7 @@
     "postinstall": "node -e \"require('fs').cpSync('node_modules/tinymce', 'public/tinymce', {recursive: true, force: true})\""
   },
   "dependencies": {
-    "@marsidev/react-turnstile": "^1.5.3",
+    "@marsidev/react-turnstile": "^1.6.0",
     "@reduxjs/toolkit": "^2.12.0",
     "@tinymce/tinymce-react": "^6.3.0",
     "axios": "^1.18.1",

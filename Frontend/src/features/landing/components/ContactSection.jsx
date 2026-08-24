@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setError } from "../../../context/messageSlice";
-import { Turnstile } from "@marsidev/react-turnstile";
+import TurnstileWidget from "../../../components/common/TurnstileWidget";
 import axiosInstance from "../../../services/axiosInstance";
 import contentData from "../../../data/content.json";
 import {
@@ -227,17 +227,18 @@ const ContactSection = () => {
 
                   <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border-soft">
                     <div className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
-                      <Turnstile
+                      <TurnstileWidget
                         ref={turnstileRef}
                         id="turnstile-contact"
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                        action="contact"
+                        size="invisible"
                         onSuccess={(token) => setTurnstileToken(token)}
                         onError={(err) => {
-                          console.warn("Turnstile widget error:", err);
+                          console.warn("[Turnstile] Contact widget error:", err);
                           setTurnstileToken(null);
                         }}
                         onExpire={() => setTurnstileToken(null)}
-                        options={{ theme: "auto", action: "contact", size: "invisible" }}
                       />
                       <span>Protected by Cloudflare Turnstile</span>
                     </div>
