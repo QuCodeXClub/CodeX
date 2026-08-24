@@ -1,84 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeX | Coding the Future, Today.</title>
 
-    <!-- Primary Meta Tags -->
-    <meta name="title" content="CodeX | Coding the Future, Today.">
-    <meta name="description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
-    <meta name="keywords" content="CodeX, Quantum University, Technical Club, Coding, Roorkee, Development, Workshops, Tech Community">
-    <meta name="author" content="CodeX Club">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#2ec5d4">
-    <meta name="application-name" content="CodeX Club">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeX | Coding the Future, Today.</title>
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://qucodex.com">
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="CodeX | Coding the Future, Today.">
+  <meta name="description"
+    content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
+  <meta name="keywords"
+    content="CodeX, Quantum University, Technical Club, Coding, Roorkee, Development, Workshops, Tech Community">
+  <meta name="author" content="CodeX Club">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2ec5d4">
+  <meta name="application-name" content="CodeX Club">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://qucodex.com/">
-    <meta property="og:title" content="CodeX | Coding the Future, Today.">
-    <meta property="og:description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
-    <meta property="og:image" content="https://qucodex.com/codex-logo-icon.svg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/svg+xml">
-    <meta property="og:image:alt" content="CodeX official club logo banner">
-    <meta property="og:site_name" content="CodeX">
-    <meta property="og:locale" content="en_IN">
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://qucodex.com">
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://qucodex.com/">
-    <meta name="twitter:title" content="CodeX | Coding the Future, Today.">
-    <meta name="twitter:description" content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
-    <meta name="twitter:image" content="https://qucodex.com/codex-logo-icon.svg">
-    <meta name="twitter:image:alt" content="CodeX official club logo banner">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://qucodex.com/">
+  <meta property="og:title" content="CodeX | Coding the Future, Today.">
+  <meta property="og:description"
+    content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
+  <meta property="og:image" content="https://qucodex.com/codex-logo-icon.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:alt" content="CodeX official club logo banner">
+  <meta property="og:site_name" content="CodeX">
+  <meta property="og:locale" content="en_IN">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://qucodex.com/">
+  <meta name="twitter:title" content="CodeX | Coding the Future, Today.">
+  <meta name="twitter:description"
+    content="CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.">
+  <meta name="twitter:image" content="https://qucodex.com/codex-logo-icon.svg">
+  <meta name="twitter:image:alt" content="CodeX official club logo banner">
 
-    <!-- Favicons & App Manifest -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
 
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src  'self' 'unsafe-inline' https://va.vercel-scripts.com https://challenges.cloudflare.com;
-        style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
-        font-src    'self' https://fonts.gstatic.com;
-        img-src     'self' data: blob: https:;
-        frame-src   'self' https://challenges.cloudflare.com;
-        connect-src 'self' http://localhost:5000 https://api.qucodex.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com;
-      ">
+  <!-- Favicons & App Manifest -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
 
-    <!-- Theme script to prevent FOUC (Flash of Unstyled Content) -->
-    <script>
-      (function() {
-        try {
-          var theme = localStorage.getItem('theme');
-          var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) document.documentElement.classList.add('dark');
-          else document.documentElement.classList.remove('dark');
-        } catch (e) {}
-      })();
-    </script>
+  <!-- Content Security Policy (Audited for all 3rd Party Integrations) -->
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src  'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com https://cdn.tiny.cloud;
+      style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com https://cdn.tiny.cloud;
+      font-src    'self' data: https://fonts.gstatic.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com https://cdn.tiny.cloud;
+      img-src     'self' data: blob: https: https://res.cloudinary.com https://qucodex.com;
+      media-src   'self' data: blob: https: https://res.cloudinary.com;
+      frame-src   'self' https://challenges.cloudflare.com https://*.challenges.cloudflare.com;
+      worker-src  'self' blob: https://challenges.cloudflare.com https://*.challenges.cloudflare.com;
+      connect-src 'self' http://localhost:5000 ws://localhost:5000 ws://localhost:5173 wss://localhost:5173 https://api.qucodex.com https://qucodex.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com https://res.cloudinary.com;
+      object-src  'none';
+      base-uri    'self';
+      form-action 'self';
+    ">
 
-    <!-- Vercel Speed Insights (Optional: Uncomment if using speed insights) -->
-    <!-- <script src="/_vercel/speed-insights/script.js" defer data-sdkn="@vercel/speed-insights/react" data-sdkv="2.0.0"></script> -->
-  </head>
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem('theme');
+        var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      } catch (e) { }
+    })();
+  </script>
+</head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

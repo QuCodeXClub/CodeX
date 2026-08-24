@@ -232,7 +232,7 @@ const ContactSection = () => {
                           setTurnstileToken("auto-verified-token");
                         }}
                         onExpire={() => setTurnstileToken("auto-verified-token")}
-                        options={{ theme: "auto", action: "turnstile-spin-v2", mode: "invisible" }}
+                        options={{ theme: "auto", action: "contact", mode: "invisible" }}
                       />
                       <span>Protected by Cloudflare Turnstile</span>
                     </div>

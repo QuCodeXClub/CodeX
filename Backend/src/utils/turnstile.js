@@ -1,114 +1,219 @@
 /**
- * Canonical Cloudflare Turnstile server-side siteverify call
- * @param {string} token - The cf-turnstile-response token from the client request
- * @param {string} [remoteip] - Optional client IP address
- * @returns {Promise<boolean>} True if verification succeeds, false otherwise
+ * Production Cloudflare Turnstile server-side verification.
+ *
+ * Cloudflare requires every Turnstile token to be validated server-side
+ * through the Siteverify API before processing the protected request.
+ *
+ * @param {string} token - cf-turnstile-response token from the client
+ * @param {string} [remoteip] - Optional visitor IP address
+ * @param {string} expectedAction - Expected Turnstile action
+ *
+ * @returns {Promise<boolean>} true only when the token is fully validated
  */
-const verifyTurnstileToken = async (token, remoteip) => {
-  let secret = process.env.TURNSTILE_SECRET || process.env.TURNSTILE_SECRET_KEY;
-  if (secret) {
-    // Strip quotes or trailing spaces if pasted with quotes into .env
-    secret = secret.replace(/^["']|["']$/g, '').trim();
-  }
-  const isDev = process.env.NODE_ENV !== 'production';
+const verifyTurnstileToken = async (
+  token,
+  remoteip,
+  expectedAction
+) => {
+  const secret = process.env.TURNSTILE_SECRET;
 
+  /*
+   * Production must have a configured secret.
+   * Never bypass Turnstile when the secret is missing.
+   */
   if (!secret) {
-    if (isDev) {
-      console.warn('[DEV] TURNSTILE_SECRET is not defined in env. Skipping bot check for dev.');
-      return true;
-    }
-    console.error('[PROD ERROR] TURNSTILE_SECRET is missing in environment variables.');
+    console.error(
+      '[Turnstile] TURNSTILE_SECRET is not configured.'
+    );
+
     return false;
   }
 
-  if (!token || typeof token !== 'string' || !token.trim()) {
+  /*
+   * Turnstile tokens:
+   * - must be strings
+   * - must not be empty
+   * - maximum length is 2048 characters
+   */
+  if (
+    typeof token !== 'string' ||
+    token.trim().length === 0 ||
+    token.length > 2048
+  ) {
     return false;
   }
 
   const cleanToken = token.trim();
 
-  // Cloudflare official dummy test keys (always pass regardless of environment)
-  const isDummySecret = secret === '1x0000000000000000000000000000000AA' || secret.startsWith('1x000000000');
-  if (isDummySecret) {
-    return true;
+  /*
+   * Expected action is required in production.
+   *
+   * Example:
+   *   login
+   *   register
+   *   contact
+   *   subscribe
+   */
+  if (
+    typeof expectedAction !== 'string' ||
+    expectedAction.trim().length === 0
+  ) {
+    console.error(
+      '[Turnstile] expectedAction is required.'
+    );
+
+    return false;
   }
 
-  // Auto-verified fallback token (only allowed in local/non-production environments)
-  if (isDev && (cleanToken === 'auto-verified-token' || cleanToken.startsWith('auto-verified') || cleanToken === 'XXXX.DUMMY.TOKEN.XXXX')) {
-    return true;
+  const expectedHostnames = new Set(
+    (process.env.TURNSTILE_HOSTNAMES || 'qucodex.com,api.qucodex.com,localhost,127.0.0.1')
+      .split(',')
+      .map((hostname) => hostname.trim())
+      .filter(Boolean)
+  );
+
+  /*
+   * Hostname validation should be configured for production.
+   *
+   * Example:
+   *
+   * TURNSTILE_HOSTNAMES=example.com,www.example.com
+   */
+  if (expectedHostnames.size === 0) {
+    console.error(
+      '[Turnstile] TURNSTILE_HOSTNAMES is not configured.'
+    );
+
+    return false;
   }
 
+  /*
+   * Prepare Siteverify request.
+   *
+   * Cloudflare accepts application/x-www-form-urlencoded.
+   */
   const bodyParams = {
-    secret: secret.trim(),
+    secret,
     response: cleanToken,
   };
 
-  // Only pass remoteip if it is a valid public IP (prevents 'invalid-remoteip' failures behind Docker/Nginx/AWS proxies)
-  const isPublicIp = (ip) => {
-    if (!ip || typeof ip !== 'string') return false;
-    const cleanIp = ip.trim();
-    if (
-      cleanIp === 'localhost' ||
-      cleanIp === '::1' ||
-      cleanIp.startsWith('127.') ||
-      cleanIp.startsWith('10.') ||
-      cleanIp.startsWith('192.168.') ||
-      cleanIp.startsWith('::ffff:127.')
-    ) {
-      return false;
-    }
-    // Check 172.16.0.0 - 172.31.255.255 private Docker ranges
-    if (cleanIp.startsWith('172.')) {
-      const parts = cleanIp.split('.');
-      const secondOctet = parseInt(parts[1], 10);
-      if (secondOctet >= 16 && secondOctet <= 31) return false;
-    }
-    return true;
-  };
-
-  if (remoteip && isPublicIp(remoteip)) {
+  /*
+   * remoteip is optional.
+   *
+   * Only send it when the application has a reliable client IP.
+   * Do not invent or transform proxy IPs here.
+   */
+  if (
+    typeof remoteip === 'string' &&
+    remoteip.trim().length > 0
+  ) {
     bodyParams.remoteip = remoteip.trim();
   }
 
   try {
-    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams(bodyParams),
-    });
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
 
-    if (!response.ok) {
-      console.error(`Turnstile siteverify HTTP error: status ${response.status}`);
-      if (isDev) {
-        console.warn('[DEV] Turnstile HTTP error. Bypassing bot check for dev environment.');
-        return true;
+        headers: {
+          'Content-Type':
+            'application/x-www-form-urlencoded',
+        },
+
+        body: new URLSearchParams(bodyParams),
+
+        /*
+         * Never allow a request to hang indefinitely
+         * while waiting for Cloudflare.
+         */
+        signal: AbortSignal.timeout(10_000),
       }
+    );
+
+    /*
+     * Siteverify HTTP failure is a verification failure.
+     *
+     * IMPORTANT:
+     * Never bypass Turnstile because Cloudflare is temporarily
+     * unavailable. Production authentication/security checks
+     * should fail closed.
+     */
+    if (!response.ok) {
+      console.error(
+        `[Turnstile] Siteverify returned HTTP ${response.status}.`
+      );
+
       return false;
     }
 
-    const data = await response.json();
-    if (data && data.success) {
-      return true;
+    const result = await response.json();
+
+    /*
+     * Cloudflare must explicitly report success.
+     */
+    if (!result || result.success !== true) {
+      const errorCodes = Array.isArray(result?.['error-codes'])
+        ? result['error-codes']
+        : [];
+
+      console.warn(
+        `[Turnstile] Verification failed: ${JSON.stringify(
+          errorCodes
+        )}`
+      );
+
+      return false;
     }
 
-    const errorCodes = (data && data['error-codes']) || [];
-    console.warn(`[SECURITY] Turnstile verification failed. Error codes: ${JSON.stringify(errorCodes)}`);
+    /*
+     * Validate the action returned by Cloudflare.
+     *
+     * This prevents a valid Turnstile token generated for one
+     * protected action from being reused for another action.
+     */
+    if (result.action !== expectedAction) {
+      console.warn(
+        `[Turnstile] Action mismatch. Expected "${expectedAction}", received "${result.action}".`
+      );
 
-    // Allow local/non-production testing fallback if siteverify fails due to localhost domain mismatch
-    if (isDev) {
-      console.warn('[DEV] Bypassing Turnstile verification failure for non-production environment.');
-      return true;
+      return false;
     }
 
-    return false;
+    /*
+     * Validate the hostname returned by Cloudflare.
+     *
+     * This prevents tokens generated for an unexpected domain
+     * from being accepted by this backend.
+     */
+    if (
+      typeof result.hostname !== 'string' ||
+      !expectedHostnames.has(result.hostname)
+    ) {
+      console.warn(
+        `[Turnstile] Hostname mismatch. Received "${result.hostname}".`
+      );
+
+      return false;
+    }
+
+    /*
+     * Everything required by the production validation flow
+     * has passed.
+     */
+    return true;
   } catch (error) {
-    console.error('Turnstile verification network error:', error);
-    if (isDev) {
-      console.warn('[DEV] Turnstile network error. Bypassing bot check for dev environment.');
-      return true;
-    }
+    /*
+     * Network errors, timeout errors, JSON parsing errors, etc.
+     * are all verification failures.
+     *
+     * Never return true here in production.
+     */
+    console.error(
+      '[Turnstile] Siteverify request failed:',
+      error
+    );
+
     return false;
   }
 };

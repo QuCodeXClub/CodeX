@@ -125,7 +125,7 @@ export default function VerificationDetailsForm({
           setTurnstileToken("auto-verified-token");
         }}
         onExpire={() => setTurnstileToken("auto-verified-token")}
-        options={{ theme: "auto", action: "turnstile-spin-v2", mode: "invisible" }}
+        options={{ theme: "auto", action: "register", mode: "invisible" }}
       />
       <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">
         <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Protected by Cloudflare Turnstile

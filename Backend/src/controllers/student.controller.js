@@ -28,7 +28,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Bot verification token is missing');
   }
 
-  const isHuman = await verifyTurnstileToken(turnstileToken, clientIp);
+  const isHuman = await verifyTurnstileToken(turnstileToken, clientIp, 'register');
   if (!isHuman) {
     throw new ApiError(400, 'Bot verification failed. Please try again.');
   }
