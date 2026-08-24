@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setError } from "../../../context/messageSlice";
-import TurnstileWidget from "../../../components/common/TurnstileWidget";
+import { TurnstileWidget } from "../../../components";
 import axiosInstance from "../../../services/axiosInstance";
 import contentData from "../../../data/content.json";
 import {

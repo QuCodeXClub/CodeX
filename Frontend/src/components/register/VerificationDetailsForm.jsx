@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShieldCheck, Loader2, ZoomIn, X, QrCode } from "lucide-react";
-import TurnstileWidget from "../common/TurnstileWidget";
+import { TurnstileWidget } from "..";
 
 export default function VerificationDetailsForm({
   register,
