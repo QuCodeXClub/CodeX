@@ -123,9 +123,9 @@ export default function VerificationDetailsForm({
         onSuccess={(token) => setTurnstileToken(token)}
         onError={(err) => {
           console.warn("Turnstile verification widget warning:", err);
-          setTurnstileToken("auto-verified-token");
+          setTurnstileToken(null);
         }}
-        onExpire={() => setTurnstileToken("auto-verified-token")}
+        onExpire={() => setTurnstileToken(null)}
         options={{ theme: "auto", action: "register", size: "invisible" }}
       />
       <div className="mb-6 flex items-center justify-center gap-1.5 text-[11px] font-mono text-text-muted/60">

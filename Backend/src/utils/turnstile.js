@@ -15,7 +15,7 @@ const verifyTurnstileToken = async (
   remoteip,
   expectedAction
 ) => {
-  const secret = process.env.TURNSTILE_SECRET;
+  const secret = process.env.TURNSTILE_SECRET || process.env.TURNSTILE_SECRET_KEY;
 
   /*
    * Production must have a configured secret.
@@ -65,12 +65,20 @@ const verifyTurnstileToken = async (
     return false;
   }
 
+  const rawHostnames = process.env.TURNSTILE_HOSTNAMES || 'qucodex.com,api.qucodex.com,localhost,127.0.0.1';
   const expectedHostnames = new Set(
-    (process.env.TURNSTILE_HOSTNAMES || 'qucodex.com,api.qucodex.com,localhost,127.0.0.1')
+    rawHostnames
       .split(',')
       .map((hostname) => hostname.trim())
       .filter(Boolean)
   );
+
+  // In non-production environments, allow local development hostnames
+  if (process.env.NODE_ENV !== 'production') {
+    expectedHostnames.add('localhost');
+    expectedHostnames.add('127.0.0.1');
+    expectedHostnames.add('::1');
+  }
 
   /*
    * Hostname validation should be configured for production.

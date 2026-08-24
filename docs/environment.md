@@ -194,19 +194,20 @@ Cloudflare Turnstile protects public forms from automated bots.
 
 Currently used for:
 
-- Student Registration
+- Student Registration (`/api/v1/students/register`)
+- Contact Inquiries (`/api/v1/contact`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `TURNSTILE_SECRET_KEY` | No | Cloudflare Turnstile secret key |
+| `TURNSTILE_SECRET` | Yes | Cloudflare Turnstile secret key |
+| `TURNSTILE_HOSTNAMES` | No | Comma-separated list of allowed hostnames (e.g. `qucodex.com,api.qucodex.com`) |
 
 Example
 
 ```env
-TURNSTILE_SECRET_KEY=your_turnstile_secret
+TURNSTILE_SECRET=0x4AAAAAAD5...
+TURNSTILE_HOSTNAMES=qucodex.com,api.qucodex.com
 ```
-
-> During local development, this value can be left empty if bot protection is disabled.
 
 ---
 

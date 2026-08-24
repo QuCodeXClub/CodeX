@@ -164,13 +164,20 @@ Benefits:
 
 ## Cloudflare Turnstile
 
-Public registration endpoints use Cloudflare Turnstile for bot protection.
+Public interactive endpoints (Student Registration `/api/v1/students/register` and Contact Inquiries `/api/v1/contact`) use Cloudflare Turnstile for bot protection.
+
+Verification Flow:
+
+- Client mounts Turnstile widget with specific action tags (`register`, `contact`).
+- Token is submitted with form payload.
+- Backend server validates the token against Cloudflare Siteverify API (`https://challenges.cloudflare.com/turnstile/v0/siteverify`).
+- Backend verifies action integrity and domain hostname matching before processing the request.
 
 Benefits:
 
-- Prevents automated registrations.
-- Reduces spam submissions.
-- Blocks common bot attacks.
+- Prevents automated registrations and spam bot submissions.
+- Replaces intrusive visual CAPTCHAs with seamless background verification.
+- Protects downstream services and databases.
 
 ---
 

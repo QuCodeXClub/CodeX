@@ -234,9 +234,9 @@ const ContactSection = () => {
                         onSuccess={(token) => setTurnstileToken(token)}
                         onError={(err) => {
                           console.warn("Turnstile widget error:", err);
-                          setTurnstileToken("auto-verified-token");
+                          setTurnstileToken(null);
                         }}
-                        onExpire={() => setTurnstileToken("auto-verified-token")}
+                        onExpire={() => setTurnstileToken(null)}
                         options={{ theme: "auto", action: "contact", size: "invisible" }}
                       />
                       <span>Protected by Cloudflare Turnstile</span>

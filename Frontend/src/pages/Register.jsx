@@ -15,11 +15,11 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const dispatch = useDispatch();
-  const [turnstileToken, setTurnstileToken] = useState("auto-verified-token");
+  const [turnstileToken, setTurnstileToken] = useState(null);
   const turnstileRef = useRef(null);
 
   const resetSecurityCheck = () => {
-    setTurnstileToken("auto-verified-token");
+    setTurnstileToken(null);
     turnstileRef.current?.reset();
   };
 
@@ -58,10 +58,16 @@ const Register = () => {
   const onFormSubmit = async (data) => {
     setLoading(true);
 
+    if (!turnstileToken) {
+      dispatch(setError("Please complete the security check."));
+      setLoading(false);
+      return;
+    }
+
     try {
       const payload = {
         ...data,
-        turnstileToken: turnstileToken || "auto-verified-token",
+        turnstileToken,
       };
 
       await registrationService.registerStudent(payload);
