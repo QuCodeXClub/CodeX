@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema(
   {
@@ -22,8 +22,26 @@ const eventSchema = new mongoose.Schema(
     registrationLink: {
       type: String, // URL
     },
+    locationType: {
+      type: String,
+      enum: {
+        values: ["Online", "Offline"],
+        message: "{VALUE} is not a valid location type",
+      },
+      default: "Offline",
+      trim: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
 
-export const Event = mongoose.model('Event', eventSchema);
+export const Event = mongoose.model("Event", eventSchema);

@@ -1289,6 +1289,9 @@ Event
 | description | String | ✅ | HTML description |
 | coverImage | String | ✅ | Cloudinary image URL |
 | registrationLink | String | ❌ | External registration URL |
+| locationType | String | ❌ (Default: 'Offline') | Mode (`Online` or `Offline`) |
+| location | String | ❌ | Venue name/address or meeting link |
+| tags | [String] | ❌ | Array of event tags |
 | createdAt | Date | Auto | Creation timestamp |
 | updatedAt | Date | Auto | Last update timestamp |
 
@@ -1304,6 +1307,9 @@ Event
 ├── description
 ├── coverImage
 ├── registrationLink
+├── locationType
+├── location
+├── tags
 ├── createdAt
 └── updatedAt
 ```

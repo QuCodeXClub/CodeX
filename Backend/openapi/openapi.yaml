@@ -149,6 +149,25 @@ components:
           format: uri
           example: https://forms.google.com/xxxxxxxx
 
+        locationType:
+          type: string
+          enum:
+            - Online
+            - Offline
+          default: Offline
+          example: Offline
+
+        location:
+          type: string
+          example: Auditorium Hall A
+          description: Venue address or meeting link
+
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["Coding", "Web Dev", "Hackathon"]
+
         coverImage:
           type: string
           format: binary
@@ -534,6 +553,19 @@ paths:
                   format: date
                 registrationLink:
                   type: string
+                locationType:
+                  type: string
+                  enum:
+                    - Online
+                    - Offline
+                  default: Offline
+                location:
+                  type: string
+                  description: Venue address or online meeting URL
+                tags:
+                  type: array
+                  items:
+                    type: string
                 coverImage:
                   type: string
                   format: binary
