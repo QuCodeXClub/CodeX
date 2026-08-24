@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin } from "lucide-react";
 import { PublicEventCardSkeleton } from "../../../components/common/skeletons";
 
 const EventList = ({ events = [], loading }) => {
@@ -36,8 +36,11 @@ const EventList = ({ events = [], loading }) => {
             <div key={tab} className="w-36 h-10 bg-card-hover animate-pulse rounded-xl" />
           ))}
         </div>
-        <div className="flex flex-col gap-6">
-          {[1, 2, 3].map((i) => <PublicEventCardSkeleton key={i} />)}
+        {/* Skeleton Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-full h-72 bg-card-hover animate-pulse rounded-2xl" />
+          ))}
         </div>
       </div>
     );
@@ -87,8 +90,8 @@ const EventList = ({ events = [], loading }) => {
         </div>
       </div>
 
-      {/* Events List */}
-      <div className="flex flex-col gap-5">
+      {/* Events Grid Layout */}
+      <div>
         {displayEvents.length === 0 ? (
           <div className="text-text-muted font-mono text-xs uppercase tracking-widest text-center py-16 border border-dashed border-border/80 rounded-2xl bg-card/40">
             {searchQuery
@@ -98,74 +101,88 @@ const EventList = ({ events = [], loading }) => {
               : "No past events found."}
           </div>
         ) : (
-          displayEvents.map((event) => (
-            <div
-              key={event._id}
-              onClick={() => navigate(`/events/${event._id}`)}
-              className="glass-card glass-card-hover p-5 sm:p-6 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-6 cursor-pointer group relative overflow-hidden"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5 flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {displayEvents.map((event) => (
+              <div
+                key={event._id}
+                onClick={() => navigate(`/events/${event._id}`)}
+                className="bg-card border border-border/80 rounded-2xl flex flex-col cursor-pointer group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden relative"
+              >
                 
-                {/* Cover Image Thumbnail */}
-                <div className="w-full sm:w-44 h-44 sm:h-32 shrink-0 rounded-xl overflow-hidden bg-card-hover border border-border/60 relative">
+                {/* 1920x557 Banner Image Section */}
+                <div className="w-full aspect-[1920/557] shrink-0 bg-card-hover border-b border-border/60 relative overflow-hidden">
                   {event.coverImage ? (
                     <img 
                       src={event.coverImage} 
                       alt={event.eventName} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-contain bg-black/5 group-hover:scale-[1.02] transition-transform duration-500"
                       loading="lazy"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-text-muted">
                       <ImageIcon className="w-8 h-8 opacity-40 mb-1" />
-                      <span className="text-[10px] font-mono uppercase tracking-widest opacity-40">No Image</span>
+                      <span className="text-[10px] font-mono uppercase tracking-widest opacity-40">No Cover</span>
                     </div>
                   )}
                 </div>
 
-                {/* Event Information */}
-                <div className="flex-1">
-                  <span className={`inline-block text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-2 ${
-                    activeTab === "UPCOMING"
-                      ? "bg-accent/10 text-accent border border-accent/20"
-                      : "bg-card-hover text-text-muted border border-border"
-                  }`}>
-                    {activeTab === "UPCOMING" ? "SCHEDULED" : "COMPLETED"}
-                  </span>
+                {/* Event Content Section */}
+                <div className="p-5 flex flex-col flex-1">
                   
-                  <h2 className="font-display font-bold text-2xl sm:text-3xl uppercase text-text group-hover:text-accent transition-colors leading-tight mb-2">
+                  {/* Top row: Status Badge & View Arrow */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`inline-flex items-center text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
+                      activeTab === "UPCOMING"
+                        ? "bg-accent/10 text-accent border border-accent/20"
+                        : "bg-card-hover text-text-muted border border-border"
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full mr-2 ${activeTab === "UPCOMING" ? 'bg-accent animate-pulse' : 'bg-text-muted'}`}></span>
+                      {activeTab === "UPCOMING" ? "REGISTRATION OPEN" : "COMPLETED"}
+                    </span>
+                    
+                    <div className="w-8 h-8 rounded-full bg-card-hover border border-border/80 flex items-center justify-center text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent transition-all duration-300">
+                      <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5" />
+                    </div>
+                  </div>
+                  
+                  {/* Event Title */}
+                  <h2 className="font-display font-bold text-2xl uppercase text-text group-hover:text-accent transition-colors leading-tight mb-4 line-clamp-2">
                     {event.eventName}
                   </h2>
+                  
+                  {/* Spacer to push metadata to the bottom if titles vary in length */}
+                  <div className="flex-1"></div>
+
+                  {/* Event Metadata (Date, Time, Location) */}
+                  <div className="pt-4 border-t border-border/60 mt-auto flex flex-wrap items-center gap-4 text-xs font-mono font-semibold text-text-muted">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-accent" />
+                      <span>
+                        {new Date(event.date).toLocaleDateString("en-US", {
+                          month: "short", day: "numeric", year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-accent" />
+                      <span>
+                        {new Date(event.date).toLocaleTimeString([], {
+                          hour: "2-digit", minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-accent" />
+                      <span>Offline</span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
-              {/* Event Details (Date & Time) */}
-              <div className="flex items-center justify-between lg:justify-end gap-6 pt-4 lg:pt-0 border-t lg:border-t-0 border-border/60 lg:border-l lg:pl-6">
-                <div className="flex flex-col gap-1.5 text-xs font-mono font-semibold text-text-muted">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-accent" />
-                    <span>
-                      {new Date(event.date).toLocaleDateString("en-US", {
-                        month: "short", day: "numeric", year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-accent" />
-                    <span>
-                      {new Date(event.date).toLocaleTimeString([], {
-                        hour: "2-digit", minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="w-10 h-10 rounded-xl bg-card-hover border border-border/80 flex items-center justify-center text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent transition-all duration-300">
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-0.5" />
-                </div>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
