@@ -65,7 +65,7 @@ export default function ManageEvents() {
   };
 
   return (
-    <div className="p-8 lg:p-10 font-sans text-text min-h-full relative">
+    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full relative">
       <EventHeader
         openCreateModal={openCreateModal}
         onRefresh={() => dispatch(fetchAdminEvents())}
@@ -79,7 +79,7 @@ export default function ManageEvents() {
       ) : events.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
           {events.map((rawEvent) => {
             const event = normalizeEvent(rawEvent);
             return (

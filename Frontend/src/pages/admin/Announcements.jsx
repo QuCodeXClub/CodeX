@@ -79,10 +79,10 @@ export default function Announcements() {
   };
 
   return (
-    <div className="p-8 lg:p-10 font-sans text-text min-h-full relative flex flex-col">
+    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full relative flex flex-col">
 
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6 shrink-0">
+      <header className="flex flex-col items-start md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6 shrink-0">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
             <Send className="w-3.5 h-3.5" />
