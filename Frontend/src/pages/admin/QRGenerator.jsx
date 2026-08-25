@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LinkIcon, Download, Loader2, QrCode, Trash2 } from "lucide-react";
+import { LinkIcon, Download, Loader2, QrCode, Trash2, Copy, Check } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchQRHistory, generateCustomQR, deleteCustomQR, clearError, clearGeneratedQr } from "../../context/adminQrSlice";
 import ConfirmModal from "../../components/common/ConfirmModal";
@@ -10,6 +10,8 @@ export default function QRGenerator() {
 
   const [link, setLink] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [downloadingState, setDownloadingState] = useState(null);
+  const [copied, setCopied] = useState(false);
   
   // Modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -51,8 +53,9 @@ export default function QRGenerator() {
     dispatch(generateCustomQR(link));
   };
 
-  const handleDownload = async (urlToDownload = qrUrl, format = 'svg') => {
+  const handleDownload = async (urlToDownload = qrUrl, format = 'svg', targetLink = link) => {
     if (!urlToDownload) return;
+    setDownloadingState({ url: urlToDownload, format });
     try {
       let finalUrl = urlToDownload;
       
@@ -63,20 +66,118 @@ export default function QRGenerator() {
         }
       }
 
-      const response = await fetch(finalUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `codex-qr-${Date.now()}.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      if (format === 'svg') {
+        const response = await fetch(finalUrl);
+        let svgText = await response.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, "image/svg+xml");
+        const svgEl = doc.documentElement;
+        
+        let viewBox = svgEl.getAttribute('viewBox');
+        let width = parseInt(svgEl.getAttribute('width'));
+        let height = parseInt(svgEl.getAttribute('height'));
+        
+        if (!viewBox && width && height) {
+           viewBox = `0 0 ${width} ${height}`;
+        }
+        
+        if (viewBox) {
+          const parts = viewBox.split(' ').map(Number);
+          if (parts.length === 4) {
+             const originalWidth = parts[2];
+             const originalHeight = parts[3];
+             const paddingBottom = Math.max(30, originalHeight * 0.15);
+             parts[3] += paddingBottom;
+             svgEl.setAttribute('viewBox', parts.join(' '));
+             
+             if (height) svgEl.setAttribute('height', height + paddingBottom * (height/originalHeight));
+             
+             const textEl = doc.createElementNS("http://www.w3.org/2000/svg", "text");
+             textEl.setAttribute('x', parts[0] + originalWidth / 2);
+             textEl.setAttribute('y', parts[1] + originalHeight + (paddingBottom / 2));
+             textEl.setAttribute('text-anchor', 'middle');
+             textEl.setAttribute('dominant-baseline', 'middle');
+             textEl.setAttribute('font-family', 'monospace, sans-serif');
+             textEl.setAttribute('font-size', (originalHeight * 0.045).toString());
+             textEl.setAttribute('fill', '#000000');
+             textEl.textContent = targetLink;
+             svgEl.appendChild(textEl);
+          }
+        }
+        
+        const serializer = new XMLSerializer();
+        const newSvgText = serializer.serializeToString(doc);
+        const blob = new Blob([newSvgText], { type: 'image/svg+xml' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `codex-qr-${Date.now()}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = finalUrl;
+        
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        const paddingBottom = Math.max(50, img.height * 0.15);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height + paddingBottom;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.drawImage(img, 0, 0);
+        
+        ctx.fillStyle = '#000000';
+        const fontSize = Math.max(12, Math.floor(img.height * 0.045));
+        ctx.font = `${fontSize}px monospace, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        let displayLink = targetLink;
+        const maxTextWidth = canvas.width - 40;
+        if (ctx.measureText(displayLink).width > maxTextWidth) {
+           while(displayLink.length > 0 && ctx.measureText(displayLink + '...').width > maxTextWidth) {
+              displayLink = displayLink.slice(0, -1);
+           }
+           displayLink += '...';
+        }
+
+        ctx.fillText(displayLink, canvas.width / 2, img.height + (paddingBottom / 2));
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${format}`));
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `codex-qr-${Date.now()}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
     } catch (err) {
       console.error("Download failed:", err);
       alert("Failed to download the image. Please open it in a new tab.");
+    } finally {
+      setDownloadingState(null);
     }
+  };
+
+  const handleCopy = () => {
+    if (!qrUrl) return;
+    navigator.clipboard.writeText(qrUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -168,28 +269,64 @@ export default function QRGenerator() {
                   className="w-56 h-56 md:w-64 md:h-64 object-contain relative z-10"
                 />
               </div>
+
+              <div className="w-full max-w-xs flex flex-col gap-2">
+                <span className="text-xs font-mono uppercase text-text-muted tracking-wider text-center">Hosted Image Link</span>
+                <div className="flex items-center gap-2 p-2 bg-card-hover rounded-xl border border-border/80">
+                  <input
+                    type="text"
+                    readOnly
+                    value={qrUrl}
+                    className="flex-1 bg-transparent text-xs text-text outline-none px-1 truncate font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="p-1.5 hover:bg-accent/20 hover:text-accent rounded-lg text-text-muted transition-colors cursor-pointer"
+                    title="Copy Hosted Link"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
               <div className="flex flex-col items-center gap-3 w-full max-w-xs">
                 <span className="text-xs font-mono uppercase text-text-muted tracking-wider">Download Format</span>
                 <div className="flex gap-2 w-full">
                   <button
-                    onClick={() => handleDownload(qrUrl, 'svg')}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                    onClick={() => handleDownload(qrUrl, 'svg', history.find(i => i.qrUrl === qrUrl)?.link || link)}
+                    disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'svg'}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
                   >
-                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    {downloadingState?.url === qrUrl && downloadingState?.format === 'svg' ? (
+                      <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
+                    ) : (
+                      <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    )}
                     SVG
                   </button>
                   <button
-                    onClick={() => handleDownload(qrUrl, 'png')}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                    onClick={() => handleDownload(qrUrl, 'png', history.find(i => i.qrUrl === qrUrl)?.link || link)}
+                    disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'png'}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
                   >
-                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    {downloadingState?.url === qrUrl && downloadingState?.format === 'png' ? (
+                      <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
+                    ) : (
+                      <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    )}
                     PNG
                   </button>
                   <button
-                    onClick={() => handleDownload(qrUrl, 'jpg')}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                    onClick={() => handleDownload(qrUrl, 'jpg', history.find(i => i.qrUrl === qrUrl)?.link || link)}
+                    disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'jpg'}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
                   >
-                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    {downloadingState?.url === qrUrl && downloadingState?.format === 'jpg' ? (
+                      <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
+                    ) : (
+                      <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    )}
                     JPG
                   </button>
                 </div>
@@ -236,25 +373,40 @@ export default function QRGenerator() {
                   <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => handleDownload(item.qrUrl, 'svg')}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        onClick={() => handleDownload(item.qrUrl, 'svg', item.link)}
+                        disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg'}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
                         title="Download SVG"
                       >
-                        SVG
+                        {downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg' ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "SVG"
+                        )}
                       </button>
                       <button 
-                        onClick={() => handleDownload(item.qrUrl, 'png')}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        onClick={() => handleDownload(item.qrUrl, 'png', item.link)}
+                        disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'png'}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
                         title="Download PNG"
                       >
-                        PNG
+                        {downloadingState?.url === item.qrUrl && downloadingState?.format === 'png' ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "PNG"
+                        )}
                       </button>
                       <button 
-                        onClick={() => handleDownload(item.qrUrl, 'jpg')}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        onClick={() => handleDownload(item.qrUrl, 'jpg', item.link)}
+                        disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg'}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
                         title="Download JPG"
                       >
-                        JPG
+                        {downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg' ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "JPG"
+                        )}
                       </button>
                     </div>
                     <button 
@@ -301,6 +453,7 @@ export default function QRGenerator() {
         title="Delete QR Code"
         message="Are you sure you want to permanently delete this custom QR code? This will remove it from the system and free up Cloudinary storage. This action cannot be undone."
         onConfirm={executeDelete}
+        isLoading={deletingId !== null}
         onCancel={() => {
           setDeleteModalOpen(false);
           setQrToDelete(null);
