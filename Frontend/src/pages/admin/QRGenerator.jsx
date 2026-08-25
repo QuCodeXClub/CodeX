@@ -71,7 +71,7 @@ export default function QRGenerator() {
   };
 
   return (
-    <div className="p-8 lg:p-10 font-sans text-text min-h-full animate-in fade-in duration-500">
+    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full animate-in fade-in duration-500">
       
       {/* Page Header */}
       <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">

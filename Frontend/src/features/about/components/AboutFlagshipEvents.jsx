@@ -19,7 +19,7 @@ const EVENT_LOGOS = {
 
 const ROTATION_INTERVAL_MS = 6000; // 6 seconds per auto-slide
 const DEFAULT_FALLBACK_IMAGE =
-  "https://res.cloudinary.com/ddfwdj4jn/image/upload/v1787475195/3R5A5324_mlzhos.jpg";
+  "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg";
 
 /**
  * AboutFlagshipEvents Component
