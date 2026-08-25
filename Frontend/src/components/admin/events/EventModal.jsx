@@ -104,7 +104,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
     try {
       const submitData = new FormData();
       submitData.append("eventName", data.eventName);
-      submitData.append("date", data.date);
+      submitData.append("date", new Date(data.date).toISOString());
       submitData.append("description", description);
       if (data.registrationLink)
         submitData.append("registrationLink", data.registrationLink);
