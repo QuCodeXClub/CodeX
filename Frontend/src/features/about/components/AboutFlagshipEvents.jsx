@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo } from "react";
 import { ArrowRight } from "lucide-react";
 import contentData from "../../../data/content.json";
-import { optimizeCloudinaryUrl } from "../../../utils/helpers";
+import { ASSETS } from "../../../config/assets";
 
 // Import local vector logos
 import techThriveLogo from "../../../assets/about/techthrive-logo.svg";
@@ -111,14 +111,11 @@ const AboutFlagshipEvents = () => {
             />
           </div>
 
-          {/* Background Images with optimized Cloudinary WebP URLs */}
+          {/* Background Images */}
           <div className="absolute inset-0 pointer-events-none">
             {events.map((event, index) => {
               const isSelected = selectedEventIndex === index;
-              const optimizedSrc = optimizeCloudinaryUrl(
-                event.image?.src || DEFAULT_FALLBACK_IMAGE,
-                1200
-              );
+              const optimizedSrc = (event.image?.assetKey ? ASSETS.IMAGES[event.image.assetKey] : event.image?.src) || DEFAULT_FALLBACK_IMAGE;
 
               return (
                 <div

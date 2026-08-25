@@ -17,5 +17,15 @@ export const ASSETS = {
     PARTNER_UNSTOP: "/partners/unstop.svg",
     PARTNER_HOSTINGER: "/partners/hostinger.svg",
     PARTNER_XYZ: "/partners/xyz.svg",
+
+    // About Section
+    ABOUT_FLAGSHIP_TECHTHRIVE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
+    ABOUT_FLAGSHIP_QHACKATHON: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg",
+    ABOUT_FLAGSHIP_TECHSPRINT: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",
+    ABOUT_COMMUNITY_1: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0627_rn1b2f.jpg",
+    ABOUT_COMMUNITY_2: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_6902_oyq9by.jpg",
+    ABOUT_COMMUNITY_3: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0619_migrdi.jpg",
+    ABOUT_COMMUNITY_4: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475205/3R5A5331_iy1okp.jpg",
+    ABOUT_COMMUNITY_5: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475204/IMG_5259_dwnhsr.jpg",
   },
 };

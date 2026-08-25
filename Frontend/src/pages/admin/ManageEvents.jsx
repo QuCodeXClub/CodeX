@@ -15,7 +15,8 @@ import {
   fetchAdminEvents,
   deleteAdminEvent,
 } from "../../context/adminEventsSlice";
-import { normalizeEvent } from "../../utils/helpers";
+import { eventService } from "../../../services/eventService";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../../utils/helpers";
 
 import EventHeader from "../../components/admin/events/EventHeader";
 import EmptyState from "../../components/admin/events/EmptyState";
@@ -94,7 +95,7 @@ export default function ManageEvents() {
               >
                 {event.coverImage ? (
                   <img
-                    src={event.coverImage}
+                    src={optimizeCloudinaryUrl(event.coverImage, 400)}
                     alt={event.eventName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />

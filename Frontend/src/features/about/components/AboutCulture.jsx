@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import contentData from "../../../data/content.json";
-import { optimizeCloudinaryUrl } from "../../../utils/helpers";
+import { ASSETS } from "../../../config/assets";
 
 /**
  * Bento grid layout span mappings for community principles.
@@ -20,7 +20,7 @@ const cultureItems = principles.map((principle, index) => ({
   id: principle.id,
   title: principle.title?.toUpperCase() || "",
   desc: principle.description || "",
-  image: optimizeCloudinaryUrl(communityImages[index]?.src, 800),
+  image: communityImages[index]?.assetKey ? ASSETS.IMAGES[communityImages[index].assetKey] : communityImages[index]?.src,
   className: BENTO_CLASS_NAMES[principle.id] || "md:col-span-1 min-h-[300px]",
 }));
 

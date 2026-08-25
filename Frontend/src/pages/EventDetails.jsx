@@ -12,7 +12,7 @@ import {
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
-import { normalizeEvent } from "../utils/helpers";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../utils/helpers";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -150,7 +150,7 @@ export default function EventDetails() {
           <div className="w-full aspect-[1920/557] bg-card-hover relative border border-border/80 rounded-2xl overflow-hidden shadow-sm">
             {event.coverImage ? (
               <img
-                src={event.coverImage}
+                src={optimizeCloudinaryUrl(event.coverImage, 1920)}
                 alt={event.eventName}
                 className="w-full h-full object-contain object-center absolute inset-0 bg-black/5"
               />

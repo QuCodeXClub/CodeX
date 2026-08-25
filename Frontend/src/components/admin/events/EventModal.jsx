@@ -9,7 +9,7 @@ import {
   fetchAdminEvents,
 } from "../../../context/adminEventsSlice";
 import RichTextEditor from "../../common/RichTextEditor";
-import { normalizeEvent } from "../../../utils/helpers";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../../../utils/helpers";
 
 const formatLocalDatetime = (dateString) => {
   if (!dateString) return "";
@@ -368,7 +368,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
                     {imagePreview && (
                       <div className="w-full sm:w-24 sm:h-24 border border-border/80 rounded-xl overflow-hidden shrink-0 bg-card shadow-sm aspect-video sm:aspect-square relative">
                         <img
-                          src={imagePreview}
+                          src={optimizeCloudinaryUrl(imagePreview, 800)}
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
