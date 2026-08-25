@@ -178,8 +178,8 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
                         </td>
 
                         <td className="p-4 font-mono text-text-muted text-[11px]">
-                          <div>{new Date(cert.createdAt).toLocaleDateString()}</div>
-                          <div className="text-text-muted/60">{new Date(cert.createdAt).toLocaleTimeString()}</div>
+                          <div>{new Date(cert.createdAt).toLocaleDateString("en-IN")}</div>
+                          <div className="text-text-muted/60">{new Date(cert.createdAt).toLocaleTimeString("en-IN")}</div>
                         </td>
 
                         <td className="p-4 pr-6 text-right">
@@ -226,7 +226,7 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono">
-                      <span className="text-text-muted">{new Date(cert.createdAt).toLocaleDateString()}</span>
+                      <span className="text-text-muted">{new Date(cert.createdAt).toLocaleDateString("en-IN")}</span>
                       <a
                         href={`/verify-certificate/${cert.certificateId}`}
                         target="_blank"

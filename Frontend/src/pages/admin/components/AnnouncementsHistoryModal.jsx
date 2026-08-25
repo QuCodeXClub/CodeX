@@ -138,8 +138,8 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
                           </td>
 
                           <td className="p-4 font-mono text-text-muted text-[11px]">
-                            <div>{new Date(item.createdAt).toLocaleDateString()}</div>
-                            <div className="text-text-muted/60">{new Date(item.createdAt).toLocaleTimeString()}</div>
+                            <div>{new Date(item.createdAt).toLocaleDateString("en-IN")}</div>
+                            <div className="text-text-muted/60">{new Date(item.createdAt).toLocaleTimeString("en-IN")}</div>
                           </td>
 
                           <td className="p-4 pr-6 text-right">
@@ -170,7 +170,7 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
                         <span className="flex items-center gap-1 text-indigo-400 font-bold">
                           <Users className="w-3.5 h-3.5" /> {recipientCount} Recipients
                         </span>
-                        <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                        <span>{new Date(item.createdAt).toLocaleDateString("en-IN")}</span>
                       </div>
                       <div className="flex items-center justify-between pt-2 border-t border-border/40">
                         <span className="text-[11px] font-mono text-emerald-400 font-bold">● {item.status}</span>

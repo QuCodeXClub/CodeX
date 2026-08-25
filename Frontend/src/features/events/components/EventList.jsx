@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin, Globe } from "lucide-react";
-import { normalizeEvent } from "../../../utils/helpers";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../../../utils/helpers";
 
 const EventList = ({ events = [], loading }) => {
   const [activeTab, setActiveTab] = useState("UPCOMING");
@@ -116,7 +116,7 @@ const EventList = ({ events = [], loading }) => {
                 <div className="w-full aspect-[1920/557] shrink-0 bg-card-hover border-b border-border/60 relative overflow-hidden">
                   {event.coverImage ? (
                     <img 
-                      src={event.coverImage} 
+                      src={optimizeCloudinaryUrl(event.coverImage, 800)} 
                       alt={event.eventName} 
                       className="w-full h-full object-contain bg-black/5 group-hover:scale-[1.02] transition-transform duration-500"
                       loading="lazy"
@@ -180,7 +180,7 @@ const EventList = ({ events = [], loading }) => {
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-accent" />
                       <span>
-                        {new Date(event.date).toLocaleDateString("en-US", {
+                        {new Date(event.date).toLocaleDateString("en-IN", {
                           month: "short", day: "numeric", year: "numeric",
                         })}
                       </span>
@@ -189,7 +189,7 @@ const EventList = ({ events = [], loading }) => {
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-4 h-4 text-accent" />
                       <span>
-                        {new Date(event.date).toLocaleTimeString([], {
+                        {new Date(event.date).toLocaleTimeString("en-IN", {
                           hour: "2-digit", minute: "2-digit",
                         })}
                       </span>

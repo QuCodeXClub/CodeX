@@ -38,6 +38,8 @@ export const optimizeCloudinaryUrl = (url, width = 1200) => {
   }
 };
 
+
+
 /**
  * Applies safe defaults for the new Event model fields (locationType, location, tags).
  * Use this wherever raw API event data is consumed so defensive checks stay in one place.

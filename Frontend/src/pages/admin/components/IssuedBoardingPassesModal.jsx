@@ -186,8 +186,8 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                         </td>
 
                         <td className="p-4 font-mono text-text-muted text-[11px]">
-                          <div>{new Date(pass.createdAt).toLocaleDateString()}</div>
-                          <div className="text-text-muted/60">{new Date(pass.createdAt).toLocaleTimeString()}</div>
+                          <div>{new Date(pass.createdAt).toLocaleDateString("en-IN")}</div>
+                          <div className="text-text-muted/60">{new Date(pass.createdAt).toLocaleTimeString("en-IN")}</div>
                         </td>
 
                         <td className="p-4 pr-6 text-right">
@@ -234,7 +234,7 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono">
-                      <span className="text-text-muted">{new Date(pass.createdAt).toLocaleDateString()}</span>
+                      <span className="text-text-muted">{new Date(pass.createdAt).toLocaleDateString("en-IN")}</span>
                       <a
                         href={`/verify-boarding-pass/${pass.boardingPassId}`}
                         target="_blank"

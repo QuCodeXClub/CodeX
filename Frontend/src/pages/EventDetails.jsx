@@ -12,7 +12,7 @@ import {
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
-import { normalizeEvent } from "../utils/helpers";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../utils/helpers";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -150,7 +150,7 @@ export default function EventDetails() {
           <div className="w-full aspect-[1920/557] bg-card-hover relative border border-border/80 rounded-2xl overflow-hidden shadow-sm">
             {event.coverImage ? (
               <img
-                src={event.coverImage}
+                src={optimizeCloudinaryUrl(event.coverImage, 1920)}
                 alt={event.eventName}
                 className="w-full h-full object-contain object-center absolute inset-0 bg-black/5"
               />
@@ -234,12 +234,12 @@ export default function EventDetails() {
                     <div>
                       <h3 className="text-sm font-bold text-text mb-1">Date & Time</h3>
                       <p className="text-sm text-text-muted">
-                        {new Date(event.date).toLocaleDateString("en-US", {
+                        {new Date(event.date).toLocaleDateString("en-IN", {
                           weekday: "short",
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        })} • {new Date(event.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        })} • {new Date(event.date).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
                   </div>

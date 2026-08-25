@@ -237,7 +237,7 @@ export default function QRGenerator() {
                     </a>
                   </div>
                   <p className="text-[10px] text-text-muted font-mono uppercase tracking-widest pt-3 border-t border-border">
-                    {new Date(item.createdAt).toLocaleDateString(undefined, {
+                    {new Date(item.createdAt).toLocaleDateString("en-IN", {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric',

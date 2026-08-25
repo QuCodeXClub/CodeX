@@ -40,7 +40,7 @@ export default function RecentRegistrations({ metrics, recentLogs }) {
                   applied for <span className="font-mono text-accent">{log.course || "CodeX"}</span>
                 </p>
                 <p className="text-[10px] font-mono text-text-muted mt-0.5">
-                  {new Date(log.createdAt).toLocaleDateString()}
+                  {new Date(log.createdAt).toLocaleDateString("en-IN")}
                 </p>
               </div>
             </div>

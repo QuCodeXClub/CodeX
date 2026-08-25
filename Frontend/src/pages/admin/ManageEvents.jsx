@@ -15,7 +15,8 @@ import {
   fetchAdminEvents,
   deleteAdminEvent,
 } from "../../context/adminEventsSlice";
-import { normalizeEvent } from "../../utils/helpers";
+import { eventService } from "../../../services/eventService";
+import { normalizeEvent, optimizeCloudinaryUrl } from "../../utils/helpers";
 
 import EventHeader from "../../components/admin/events/EventHeader";
 import EmptyState from "../../components/admin/events/EmptyState";
@@ -94,7 +95,7 @@ export default function ManageEvents() {
               >
                 {event.coverImage ? (
                   <img
-                    src={event.coverImage}
+                    src={optimizeCloudinaryUrl(event.coverImage, 400)}
                     alt={event.eventName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -121,7 +122,7 @@ export default function ManageEvents() {
                   <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted mt-2">
                     <Calendar className="w-3.5 h-3.5 text-accent" />
                     <span>
-                      {new Date(event.date).toLocaleDateString("en-US", {
+                      {new Date(event.date).toLocaleDateString("en-IN", {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
@@ -130,7 +131,7 @@ export default function ManageEvents() {
                     </span>
                     <span>•</span>
                     <span>
-                      {new Date(event.date).toLocaleTimeString([], {
+                      {new Date(event.date).toLocaleTimeString("en-IN", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}

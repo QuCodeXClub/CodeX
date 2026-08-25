@@ -26,6 +26,12 @@ cloudinary.config({
   secure: true,
 });
 
+const optimizeUrl = (url) => {
+  if (!url) return url;
+  if (url.includes('/upload/f_auto,q_auto/')) return url;
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
+};
+
 const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") => {
   try {
     if (!localFilePath) return null;
@@ -47,7 +53,8 @@ const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") =
     const response = await cloudinary.uploader.upload(localFilePath, uploadOptions);
 
     if (response) {
-      const secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      let secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      secureUrl = optimizeUrl(secureUrl);
       response.url = secureUrl;
       response.secure_url = secureUrl;
     }
@@ -92,7 +99,8 @@ const updateOnCloudinary = async (localFilePath, oldPublicId) => {
     });
     
     if (response) {
-      const secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      let secureUrl = response.secure_url || (response.url ? response.url.replace(/^http:/i, 'https:') : '');
+      secureUrl = optimizeUrl(secureUrl);
       response.url = secureUrl;
       response.secure_url = secureUrl;
     }
@@ -112,7 +120,16 @@ const getPublicIdFromUrl = (url) => {
   const parts = url.split('/');
   const uploadIndex = parts.findIndex(part => part === 'upload');
   if (uploadIndex === -1) return null;
-  const publicIdWithExt = parts.slice(uploadIndex + 2).join('/');
+  
+  let startIndex = uploadIndex + 1;
+  if (parts[startIndex] && parts[startIndex].includes(',')) {
+    startIndex++;
+  }
+  if (parts[startIndex] && /^v\d+$/.test(parts[startIndex])) {
+    startIndex++;
+  }
+  
+  const publicIdWithExt = parts.slice(startIndex).join('/');
   return publicIdWithExt.substring(0, publicIdWithExt.lastIndexOf('.'));
 };
 
