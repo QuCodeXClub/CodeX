@@ -573,9 +573,9 @@ export default function BackgroundJobs() {
                         {job.attempts} / {job.maxAttempts}
                       </td>
                       <td className="p-4 text-text-muted whitespace-nowrap text-[11px]">
-                        <div>Sched: {new Date(job.scheduledAt).toLocaleTimeString()}</div>
+                        <div>Sched: {new Date(job.scheduledAt).toLocaleTimeString("en-IN")}</div>
                         {job.processedAt && (
-                          <div className="text-text-muted/70">Done: {new Date(job.processedAt).toLocaleTimeString()}</div>
+                          <div className="text-text-muted/70">Done: {new Date(job.processedAt).toLocaleTimeString("en-IN")}</div>
                         )}
                       </td>
                       <td className="p-4 pr-6 text-right whitespace-nowrap">
@@ -635,7 +635,7 @@ export default function BackgroundJobs() {
                       Attempts: <span className="text-text">{job.attempts}/{job.maxAttempts}</span>
                     </div>
                     <div>
-                      {new Date(job.scheduledAt).toLocaleTimeString()}
+                      {new Date(job.scheduledAt).toLocaleTimeString("en-IN")}
                     </div>
                   </div>
 

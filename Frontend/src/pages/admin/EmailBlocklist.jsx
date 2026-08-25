@@ -296,7 +296,7 @@ export default function EmailBlocklist() {
                       {item.reason || "No details available"}
                     </td>
                     <td className="p-4 text-text-muted whitespace-nowrap">
-                      {new Date(item.createdAt).toLocaleDateString("en-US", {
+                      {new Date(item.createdAt).toLocaleDateString("en-IN", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

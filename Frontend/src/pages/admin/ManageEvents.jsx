@@ -121,7 +121,7 @@ export default function ManageEvents() {
                   <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted mt-2">
                     <Calendar className="w-3.5 h-3.5 text-accent" />
                     <span>
-                      {new Date(event.date).toLocaleDateString("en-US", {
+                      {new Date(event.date).toLocaleDateString("en-IN", {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
@@ -130,7 +130,7 @@ export default function ManageEvents() {
                     </span>
                     <span>•</span>
                     <span>
-                      {new Date(event.date).toLocaleTimeString([], {
+                      {new Date(event.date).toLocaleTimeString("en-IN", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}

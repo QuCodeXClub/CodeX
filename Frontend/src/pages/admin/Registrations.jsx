@@ -225,7 +225,7 @@ export default function Registrations() {
           `"${reg.transactionId || ""}"`,
           `"${reg.paymentMode || "ONLINE"}"`,
           `"${reg.status || ""}"`,
-          `"${new Date(reg.createdAt).toLocaleDateString()}"`,
+          `"${new Date(reg.createdAt).toLocaleDateString("en-IN")}"`,
         ];
         csvRows.push(row.join(","));
       });

@@ -183,7 +183,7 @@ export default function ManageContacts() {
                       </h4>
                       <div className="shrink-0 text-xs text-text-muted flex items-center gap-1.5 ml-4">
                         <Clock className="w-3.5 h-3.5" />
-                        {new Date(msg.createdAt).toLocaleDateString()}
+                        {new Date(msg.createdAt).toLocaleDateString("en-IN")}
                       </div>
                     </div>
                     <p

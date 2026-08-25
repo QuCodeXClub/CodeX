@@ -234,12 +234,12 @@ export default function EventDetails() {
                     <div>
                       <h3 className="text-sm font-bold text-text mb-1">Date & Time</h3>
                       <p className="text-sm text-text-muted">
-                        {new Date(event.date).toLocaleDateString("en-US", {
+                        {new Date(event.date).toLocaleDateString("en-IN", {
                           weekday: "short",
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        })} • {new Date(event.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        })} • {new Date(event.date).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
                   </div>
