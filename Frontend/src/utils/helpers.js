@@ -24,6 +24,13 @@ export const getAcademicYearFromDate = (dateString) => {
 
 export const optimizeCloudinaryUrl = (url, width = 1200) => {
   if (!url || typeof url !== "string") return url;
+  
+  // Sanitize potentially dangerous protocols
+  const lowerUrl = url.trim().toLowerCase();
+  if (lowerUrl.startsWith("javascript:") || lowerUrl.startsWith("vbscript:") || lowerUrl.startsWith("data:text/html")) {
+    return "";
+  }
+
   try {
     const parsedUrl = new URL(url);
     if (

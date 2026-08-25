@@ -63,8 +63,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
 
   const getPlainText = (html) => {
     if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent || "";
+    return html.replace(/<[^>]*>?/gm, '');
   };
 
   // Tag management
