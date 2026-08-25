@@ -15,7 +15,6 @@ import {
   fetchAdminEvents,
   deleteAdminEvent,
 } from "../../context/adminEventsSlice";
-import { eventService } from "../../../services/eventService";
 import { normalizeEvent, optimizeCloudinaryUrl } from "../../utils/helpers";
 
 import EventHeader from "../../components/admin/events/EventHeader";
