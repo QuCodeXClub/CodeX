@@ -51,15 +51,24 @@ export default function QRGenerator() {
     dispatch(generateCustomQR(link));
   };
 
-  const handleDownload = async (urlToDownload = qrUrl) => {
+  const handleDownload = async (urlToDownload = qrUrl, format = 'svg') => {
     if (!urlToDownload) return;
     try {
-      const response = await fetch(urlToDownload);
+      let finalUrl = urlToDownload;
+      
+      if (format !== 'svg' && finalUrl.includes('res.cloudinary.com')) {
+        const lastDotIndex = finalUrl.lastIndexOf('.');
+        if (lastDotIndex !== -1 && lastDotIndex > finalUrl.lastIndexOf('/')) {
+          finalUrl = finalUrl.substring(0, lastDotIndex) + '.' + format;
+        }
+      }
+
+      const response = await fetch(finalUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `codex-qr-${Date.now()}.svg`;
+      a.download = `codex-qr-${Date.now()}.${format}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -159,13 +168,32 @@ export default function QRGenerator() {
                   className="w-56 h-56 md:w-64 md:h-64 object-contain relative z-10"
                 />
               </div>
-              <button
-                onClick={() => handleDownload()}
-                className="flex items-center justify-center w-full max-w-xs py-3 rounded-xl border border-border bg-card hover:bg-card-hover text-text transition-all duration-200"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download SVG
-              </button>
+              <div className="flex flex-col items-center gap-3 w-full max-w-xs">
+                <span className="text-xs font-mono uppercase text-text-muted tracking-wider">Download Format</span>
+                <div className="flex gap-2 w-full">
+                  <button
+                    onClick={() => handleDownload(qrUrl, 'svg')}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                  >
+                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    SVG
+                  </button>
+                  <button
+                    onClick={() => handleDownload(qrUrl, 'png')}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                  >
+                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    PNG
+                  </button>
+                  <button
+                    onClick={() => handleDownload(qrUrl, 'jpg')}
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200"
+                  >
+                    <Download className="w-4 h-4 mr-1.5 text-accent" />
+                    JPG
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="text-center text-text-muted flex flex-col items-center">
@@ -205,24 +233,40 @@ export default function QRGenerator() {
                 
                 {/* Keep bg-white so history QR remains scannable! */}
                 <div className="bg-white p-3 rounded-xl mb-4 relative overflow-hidden flex-shrink-0 border border-border">
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3 backdrop-blur-[2px]">
-                    <button 
-                      onClick={() => handleDownload(item.qrUrl)}
-                      className="p-2 bg-accent rounded-lg text-white hover:scale-110 transition-transform"
-                      title="Download"
-                    >
-                      <Download className="w-5 h-5" />
-                    </button>
+                  <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleDownload(item.qrUrl, 'svg')}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        title="Download SVG"
+                      >
+                        SVG
+                      </button>
+                      <button 
+                        onClick={() => handleDownload(item.qrUrl, 'png')}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        title="Download PNG"
+                      >
+                        PNG
+                      </button>
+                      <button 
+                        onClick={() => handleDownload(item.qrUrl, 'jpg')}
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm"
+                        title="Download JPG"
+                      >
+                        JPG
+                      </button>
+                    </div>
                     <button 
                       onClick={() => handleDeleteClick(item._id)}
                       disabled={deletingId === item._id}
-                      className="p-2 bg-danger rounded-lg text-white hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+                      className="mt-1 p-2 bg-danger rounded-lg text-white hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100 shadow-sm"
                       title="Delete"
                     >
                       {deletingId === item._id ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       )}
                     </button>
                   </div>
