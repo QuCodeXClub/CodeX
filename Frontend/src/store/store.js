@@ -1,6 +1,8 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "../context/authSlice";
 import messageReducer from "../context/messageSlice";
+import eventsReducer from "../context/eventsSlice";
+import teamReducer from "../context/teamSlice";
 import adminEventsReducer from "../context/adminEventsSlice";
 import adminTeamReducer from "../context/adminTeamSlice";
 import adminRegistrationsReducer from "../context/adminRegistrationsSlice";
@@ -12,6 +14,8 @@ import adminQrReducer from "../context/adminQrSlice";
 const appReducer = combineReducers({
   auth: authReducer,
   message: messageReducer,
+  events: eventsReducer,
+  team: teamReducer,
   adminEvents: adminEventsReducer,
   adminTeam: adminTeamReducer,
   adminRegistrations: adminRegistrationsReducer,

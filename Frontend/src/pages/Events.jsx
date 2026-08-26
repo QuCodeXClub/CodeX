@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { eventService } from "../services/eventService";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPublicEvents } from "../context/eventsSlice";
 
 import EventList from "../features/events/components/EventList";
 import PageContainer from "../components/common/PageContainer";
 import { Sparkles } from "lucide-react";
 
 const Events = () => {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { events, loading, hasFetched } = useSelector((state) => state.events);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await eventService.getEvents();
-        setEvents(response.data || []);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
+    if (!hasFetched) {
+      dispatch(fetchPublicEvents());
+    }
+  }, [dispatch, hasFetched]);
 
   return (
     <div className="events-page flex flex-col min-h-screen bg-transparent relative font-sans">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Filter, Users, Sparkles } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminTeam } from "../context/adminTeamSlice";
+import { fetchPublicTeam } from "../context/teamSlice";
 import { AdminTeamCardSkeleton } from "../components/common/skeletons";
 import { TeamMemberCard } from "../components/common/TeamMemberCard";
 import PageContainer from "../components/common/PageContainer";
@@ -11,14 +11,16 @@ const formAcademicYears = generateAcademicYears();
 
 const Team = () => {
   const dispatch = useDispatch();
-  const { members, loading } = useSelector((state) => state.adminTeam);
+  const { membersByYear, loading } = useSelector((state) => state.team);
   const [filterYear, setFilterYear] = useState(formAcademicYears[0]);
 
   useEffect(() => {
-    if (filterYear) {
-      dispatch(fetchAdminTeam(filterYear));
+    if (filterYear && !membersByYear[filterYear]) {
+      dispatch(fetchPublicTeam(filterYear));
     }
-  }, [dispatch, filterYear]);
+  }, [dispatch, filterYear, membersByYear]);
+
+  const members = membersByYear[filterYear] || [];
 
   const displayedMembers = [...members].sort(
     (a, b) => (a.sequenceNumber || 0) - (b.sequenceNumber || 0)
