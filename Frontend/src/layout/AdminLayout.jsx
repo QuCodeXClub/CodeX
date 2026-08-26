@@ -81,8 +81,8 @@ export default function AdminLayout() {
 
       <Suspense
         fallback={
-          <div className="flex h-screen items-center justify-center">
-            <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div>
+          <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
+            <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
           </div>
         }
       >

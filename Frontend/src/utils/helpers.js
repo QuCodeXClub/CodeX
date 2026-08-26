@@ -24,14 +24,20 @@ export const getAcademicYearFromDate = (dateString) => {
 
 export const optimizeCloudinaryUrl = (url, width = 1200) => {
   if (!url || typeof url !== "string") return url;
-  
-  // Sanitize potentially dangerous protocols
-  if (/^[\s\x00-\x1f]*(javascript:|vbscript:|data:text\/html)/i.test(url)) {
-    return "";
-  }
 
   try {
-    const parsedUrl = new URL(url);
+    const parsedUrl = new URL(url, window.location.origin);
+    
+    // Strict protocol allowlist
+    if (!['http:', 'https:', 'blob:', 'data:'].includes(parsedUrl.protocol)) {
+      return "";
+    }
+    
+    // For data: URIs, ensure they are images
+    if (parsedUrl.protocol === 'data:' && !parsedUrl.pathname.startsWith('image/')) {
+      return "";
+    }
+
     if (
       parsedUrl.hostname !== "res.cloudinary.com" ||
       parsedUrl.pathname.includes("/f_auto,")
