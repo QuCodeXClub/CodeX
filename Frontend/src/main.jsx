@@ -12,43 +12,43 @@ import AdminLayout from "./layout/AdminLayout";
 import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
-import lazyWithRetry from "./utils/lazyWithRetry";
+import { lazyWithRetry, routeLazy } from "./utils/lazyWithRetry";
 
 // Public pages
-const About = lazyWithRetry(() => import("./pages/About"));
-const Team = lazyWithRetry(() => import("./pages/Team"));
-const Events = lazyWithRetry(() => import("./pages/Events"));
-const EventDetails = lazyWithRetry(() => import("./pages/EventDetails"));
+const About = routeLazy(() => import("./pages/About"));
+const Team = routeLazy(() => import("./pages/Team"));
+const Events = routeLazy(() => import("./pages/Events"));
+const EventDetails = routeLazy(() => import("./pages/EventDetails"));
 
-const Register = lazyWithRetry(() => import("./pages/Register"));
+const Register = routeLazy(() => import("./pages/Register"));
 
-const VerifyCertificate = lazyWithRetry(() => import("./pages/VerifyCertificate"));
-const VerifyBoardingPass = lazyWithRetry(() => import("./pages/VerifyBoardingPass"));
+const VerifyCertificate = routeLazy(() => import("./pages/VerifyCertificate"));
+const VerifyBoardingPass = routeLazy(() => import("./pages/VerifyBoardingPass"));
 
 
 // New Policy Pages
-const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"));
-const TermsConditions = lazyWithRetry(() => import("./pages/TermsConditions"));
-const CommunityGuidelines = lazyWithRetry(() => import("./pages/CommunityGuidelines"));
-const EventPolicy = lazyWithRetry(() => import("./pages/EventPolicy"));
-const Accessibility = lazyWithRetry(() => import("./pages/Accessibility"));
+const PrivacyPolicy = routeLazy(() => import("./pages/PrivacyPolicy"));
+const TermsConditions = routeLazy(() => import("./pages/TermsConditions"));
+const CommunityGuidelines = routeLazy(() => import("./pages/CommunityGuidelines"));
+const EventPolicy = routeLazy(() => import("./pages/EventPolicy"));
+const Accessibility = routeLazy(() => import("./pages/Accessibility"));
 
 // Admin only pages
-const AdminLogin = lazyWithRetry(() => import("./pages/admin/AdminLogin"));
-const AdminDashboard = lazyWithRetry(() => import("./pages/admin/Dashboard"));
-const AdminRegistrations = lazyWithRetry(() => import("./pages/admin/Registrations"));
-const AdminEvents = lazyWithRetry(() => import("./pages/admin/ManageEvents"));
-const AdminTeam = lazyWithRetry(() => import("./pages/admin/ManageTeam"));
-const BulkCertificates = lazyWithRetry(() => import("./pages/admin/BulkCertificates"));
-const BulkBoardingPasses = lazyWithRetry(() => import("./pages/admin/BulkBoardingPasses"));
-const QRGenerator = lazyWithRetry(() => import("./pages/admin/QRGenerator"));
-const ManageSessions = lazyWithRetry(() => import("./pages/admin/ManageSessions"));
-const ManageContacts = lazyWithRetry(() => import("./pages/admin/ManageContacts"));
-const AdminProfile = lazyWithRetry(() => import("./pages/admin/AdminProfile"));
-const AdminSettings = lazyWithRetry(() => import("./pages/admin/AdminSettings"));
-const AdminAnnouncements = lazyWithRetry(() => import("./pages/admin/Announcements"));
-const BackgroundJobs = lazyWithRetry(() => import("./pages/admin/BackgroundJobs"));
-const AuditHistory = lazyWithRetry(() => import("./pages/admin/AuditHistory"));
+const AdminLogin = routeLazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = routeLazy(() => import("./pages/admin/Dashboard"));
+const AdminRegistrations = routeLazy(() => import("./pages/admin/Registrations"));
+const AdminEvents = routeLazy(() => import("./pages/admin/ManageEvents"));
+const AdminTeam = routeLazy(() => import("./pages/admin/ManageTeam"));
+const BulkCertificates = routeLazy(() => import("./pages/admin/BulkCertificates"));
+const BulkBoardingPasses = routeLazy(() => import("./pages/admin/BulkBoardingPasses"));
+const QRGenerator = routeLazy(() => import("./pages/admin/QRGenerator"));
+const ManageSessions = routeLazy(() => import("./pages/admin/ManageSessions"));
+const ManageContacts = routeLazy(() => import("./pages/admin/ManageContacts"));
+const AdminProfile = routeLazy(() => import("./pages/admin/AdminProfile"));
+const AdminSettings = routeLazy(() => import("./pages/admin/AdminSettings"));
+const AdminAnnouncements = routeLazy(() => import("./pages/admin/Announcements"));
+const BackgroundJobs = routeLazy(() => import("./pages/admin/BackgroundJobs"));
+const AuditHistory = routeLazy(() => import("./pages/admin/AuditHistory"));
 
 const router = createBrowserRouter([
   {
@@ -58,21 +58,21 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
 
-      { path: "/team", element: <Team /> },
-      { path: "/events", element: <Events /> },
-      { path: "/events/:id", element: <EventDetails /> },
-      { path: "/about", element: <About /> },
+      { path: "/team", lazy: Team },
+      { path: "/events", lazy: Events },
+      { path: "/events/:id", lazy: EventDetails },
+      { path: "/about", lazy: About },
 
-      { path: "/register", element: <Register /> },
-      { path: "/verify-certificate/:certificateId", element: <VerifyCertificate /> },
-      { path: "/verify-boarding-pass/:boardingPassId", element: <VerifyBoardingPass /> },
+      { path: "/register", lazy: Register },
+      { path: "/verify-certificate/:certificateId", lazy: VerifyCertificate },
+      { path: "/verify-boarding-pass/:boardingPassId", lazy: VerifyBoardingPass },
 
 
-      { path: "/privacy-policy", element: <PrivacyPolicy /> },
-      { path: "/terms-conditions", element: <TermsConditions /> },
-      { path: "/community-guidelines", element: <CommunityGuidelines /> },
-      { path: "/event-policy", element: <EventPolicy /> },
-      { path: "/accessibility", element: <Accessibility /> },
+      { path: "/privacy-policy", lazy: PrivacyPolicy },
+      { path: "/terms-conditions", lazy: TermsConditions },
+      { path: "/community-guidelines", lazy: CommunityGuidelines },
+      { path: "/event-policy", lazy: EventPolicy },
+      { path: "/accessibility", lazy: Accessibility },
     ],
   },
   {
@@ -80,33 +80,33 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     errorElement: <GlobalError />,
     children: [
-      { path: "login", element: <AdminLogin /> },
+      { path: "login", lazy: AdminLogin },
       {
         path: "",
         element: <DashboardLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
-          { path: "dashboard", element: <AdminDashboard /> },
-          { path: "registrations", element: <AdminRegistrations /> },
-          { path: "events", element: <AdminEvents /> },
-          { path: "team", element: <AdminTeam /> },
-          { path: "certificates", element: <BulkCertificates /> },
-          { path: "boarding-passes", element: <BulkBoardingPasses /> },
-          { path: "qr-generator", element: <QRGenerator /> },
-          { path: "sessions", element: <ManageSessions /> },
-          { path: "messages", element: <ManageContacts /> },
-          { path: "tasks", element: <BackgroundJobs /> },
-          { path: "history", element: <AuditHistory /> },
-          { path: "profile", element: <AdminProfile /> },
-          { path: "settings", element: <AdminSettings /> },
-          { path: "announcements", element: <AdminAnnouncements /> },
+          { path: "dashboard", lazy: AdminDashboard },
+          { path: "registrations", lazy: AdminRegistrations },
+          { path: "events", lazy: AdminEvents },
+          { path: "team", lazy: AdminTeam },
+          { path: "certificates", lazy: BulkCertificates },
+          { path: "boarding-passes", lazy: BulkBoardingPasses },
+          { path: "qr-generator", lazy: QRGenerator },
+          { path: "sessions", lazy: ManageSessions },
+          { path: "messages", lazy: ManageContacts },
+          { path: "tasks", lazy: BackgroundJobs },
+          { path: "history", lazy: AuditHistory },
+          { path: "profile", lazy: AdminProfile },
+          { path: "settings", lazy: AdminSettings },
+          { path: "announcements", lazy: AdminAnnouncements },
         ],
       },
     ],
   },
   {
     path: "*",
-    element: <Navigate to="/" replace />,
+    element: <GlobalError />,
   },
 ]);
 

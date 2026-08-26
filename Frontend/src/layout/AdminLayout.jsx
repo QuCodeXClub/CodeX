@@ -1,5 +1,5 @@
 import { useEffect, useState, Suspense } from "react";
-import { Outlet, Navigate, useLocation } from "react-router-dom";
+import { Outlet, Navigate, useLocation, useNavigation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { adminService } from "../services/adminService";
 import { setLogin, setLogout, setAuthResolved } from "../context/authSlice";
@@ -10,7 +10,9 @@ export default function AdminLayout() {
   const isAuthResolved = useSelector((state) => state.auth.isAuthResolved);
   const user = useSelector((state) => state.auth.user);
   const location = useLocation();
+  const navigation = useNavigation();
   const [showSplash, setShowSplash] = useState(true);
+  const isPageLoading = navigation.state === "loading";
 
   useEffect(() => {
     dispatch(setAuthResolved(false));
@@ -70,6 +72,13 @@ export default function AdminLayout() {
         It fades out smoothly after showSplash becomes false.
       */}
       <SplashScreen show={!isAuthResolved || showSplash} />
+
+      {isPageLoading && (
+        <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
+          <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
+        </div>
+      )}
+
       <Suspense
         fallback={
           <div className="flex h-screen items-center justify-center">
