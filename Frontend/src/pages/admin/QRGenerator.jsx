@@ -59,7 +59,14 @@ export default function QRGenerator() {
     try {
       let finalUrl = urlToDownload;
       
-      if (format !== 'svg' && finalUrl.includes('res.cloudinary.com')) {
+      let isCloudinary = false;
+      try {
+        isCloudinary = new URL(finalUrl).hostname === 'res.cloudinary.com';
+      } catch (e) {
+        isCloudinary = false;
+      }
+      
+      if (format !== 'svg' && isCloudinary) {
         const lastDotIndex = finalUrl.lastIndexOf('.');
         if (lastDotIndex !== -1 && lastDotIndex > finalUrl.lastIndexOf('/')) {
           finalUrl = finalUrl.substring(0, lastDotIndex) + '.' + format;

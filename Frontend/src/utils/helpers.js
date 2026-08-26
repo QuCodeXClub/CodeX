@@ -26,8 +26,7 @@ export const optimizeCloudinaryUrl = (url, width = 1200) => {
   if (!url || typeof url !== "string") return url;
   
   // Sanitize potentially dangerous protocols
-  const lowerUrl = url.trim().toLowerCase();
-  if (lowerUrl.startsWith("javascript:") || lowerUrl.startsWith("vbscript:") || lowerUrl.startsWith("data:text/html")) {
+  if (/^[\s\x00-\x1f]*(javascript:|vbscript:|data:text\/html)/i.test(url)) {
     return "";
   }
 
