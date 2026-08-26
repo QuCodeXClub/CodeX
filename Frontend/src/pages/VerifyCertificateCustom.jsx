@@ -6,14 +6,14 @@ import Certificate from "../components/common/Certificate";
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
 
-const VerifyCertificate = () => {
+const VerifyCertificateCustom = () => {
   const { certificateId } = useParams();
 
   const [loading, setLoading] = useState(true);
   const [certificate, setCertificate] = useState(null);
   const [error, setError] = useState("");
 
-  const verificationURL = `${window.location.origin}/verify-certificate/${certificateId}`;
+  const verificationURL = `${window.location.origin}/verify-certificate-custom/${certificateId}`;
 
   const fetchCertificate = useCallback(async () => {
     try {
@@ -127,4 +127,4 @@ const VerifyCertificate = () => {
   );
 };
 
-export default VerifyCertificate;
+export default VerifyCertificateCustom;
