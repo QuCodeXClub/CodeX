@@ -25,6 +25,7 @@
   --shadow-tech: 0 10px 30px -10px rgba(0, 240, 255, 0.15);
   --breakpoint-md: 720px;
   --breakpoint-lg: 1100px;
+  --animate-indeterminate-progress: indeterminateProgress 1s infinite linear;
 }
 
 :root {
@@ -40,7 +41,7 @@
 
   --color-border: rgba(15, 23, 42, 0.12);
   --color-border-soft: rgba(15, 23, 42, 0.06);
-  
+
   --color-accent: #2EC5D4;
   --color-accent-glow: rgba(46, 197, 212, 0.25);
   --color-success: #10B981;
@@ -131,7 +132,7 @@
     color-scheme: dark;
     cursor: pointer;
   }
-  
+
   :root:not(.dark) input[type="date"],
   :root:not(.dark) input[type="datetime-local"],
   :root:not(.dark) input[type="time"] {
@@ -156,8 +157,19 @@
   from {
     transform: scaleX(0);
   }
+
   to {
     transform: scaleX(1);
+  }
+}
+
+@keyframes indeterminateProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
   }
 }
 
@@ -166,6 +178,7 @@
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -173,10 +186,13 @@
 }
 
 @keyframes ambient-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1) translate(0, 0);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.08) translate(-2%, -2%);
@@ -184,8 +200,13 @@
 }
 
 @keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(1000%); }
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(1000%);
+  }
 }
 
 @layer utilities {
@@ -208,7 +229,7 @@
 
   .tech-grid-bg {
     background-image: linear-gradient(var(--color-border-soft) 1px, transparent 1px),
-                      linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
+      linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
@@ -220,5 +241,3 @@
     clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
   }
 }
-
-

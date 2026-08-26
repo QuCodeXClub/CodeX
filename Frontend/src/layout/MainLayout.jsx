@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, useNavigation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer"; // Import the new component
 import contentData from "../data/content.json";
@@ -9,8 +9,10 @@ const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffec
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const navigation = useNavigation();
   const [footerClicks, setFooterClicks] = useState(0);
   const { layout } = contentData;
+  const isPageLoading = navigation.state === "loading";
 
   // Scroll to top when shifting to any page (e.g. Events, Team, Register), unless there is a hash or target section
   useIsomorphicLayoutEffect(() => {
@@ -55,6 +57,12 @@ const MainLayout = () => {
       <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
 
       <Navbar layout={layout} />
+
+      {isPageLoading && (
+        <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
+          <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
+        </div>
+      )}
 
       <Suspense fallback={<div className="flex h-[60vh] items-center justify-center relative z-10"><div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div></div>}>
         <main className="w-full mx-auto flex-1 border-x border-border/80 bg-transparent relative z-10">
