@@ -67,7 +67,13 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
       const doc = new DOMParser().parseFromString(html, "text/html");
       return doc.body.textContent || "";
     } catch {
-      return html.replace(/<[^>]+>/g, ""); // fallback
+      let previous = "";
+      let current = html;
+      while (current !== previous) {
+        previous = current;
+        current = current.replace(/<[^>]*>/g, "");
+      }
+      return current;
     }
   };
 
