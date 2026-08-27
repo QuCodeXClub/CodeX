@@ -22,6 +22,19 @@ const DEFAULT_PASSES = [
 ];
 
 class BoardingPassService {
+  generateSecureDigits(length = 4) {
+    const bytes = new Uint8Array(length);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => (b % 10).toString()).join("");
+  }
+
+  generateSecureId(length = 9) {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    const bytes = new Uint8Array(length);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+  }
+
   getStoredPasses() {
     const data = localStorage.getItem("codex_boarding_passes");
     if (!data) {
@@ -72,9 +85,9 @@ class BoardingPassService {
     const students = JSON.parse(submitData.studentsStr || "[]");
 
     const newPasses = students.map((student) => {
-      const bpId = `BP-${Math.floor(1000 + Math.random() * 9000)}`;
+      const bpId = `BP-${this.generateSecureDigits(4)}`;
       return {
-        _id: Math.random().toString(36).substr(2, 9),
+        _id: this.generateSecureId(9),
         boardingPassId: bpId,
         eventName: submitData.eventName,
         eventDescription: submitData.eventDescription,
