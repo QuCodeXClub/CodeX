@@ -36,12 +36,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             Course Program
           </label>
           <select
-            {...register("course", { 
-              required: "Course is required",
-              onChange: () => {
-                if (clearErrors) clearErrors("course");
-              },
-            })}
+            {...register("course", { required: "Course is required" })}
             className={errors.course ? errorInputStyle : inputBaseStyle}
           >
             <option value="">Select Course</option>
@@ -72,12 +67,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
               Year
             </label>
             <select
-              {...register("year", { 
-                required: "Year is required",
-                onChange: () => {
-                  if (clearErrors) clearErrors("year");
-                },
-              })}
+              {...register("year", { required: "Year is required" })}
               className={errors.year ? errorInputStyle : inputBaseStyle}
             >
               <option value="">Year</option>
@@ -98,12 +88,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
               Semester
             </label>
             <select
-              {...register("semester", { 
-                required: "Semester is required",
-                onChange: () => {
-                  if (clearErrors) clearErrors("semester");
-                },
-              })}
+              {...register("semester", { required: "Semester is required" })}
               className={errors.semester ? errorInputStyle : inputBaseStyle}
             >
               <option value="">Sem</option>
@@ -129,12 +114,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             </label>
             <input
               type="text"
-              {...register("section", { 
-                required: "Section is required",
-                onChange: () => {
-                  if (clearErrors) clearErrors("section");
-                },
-              })}
+              {...register("section", { required: "Section is required" })}
               className={errors.section ? errorInputStyle : inputBaseStyle}
               placeholder="e.g. A, B"
             />
@@ -150,12 +130,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             </label>
             <input
               type="text"
-              {...register("set", { 
-                required: "Set/Group is required",
-                onChange: () => {
-                  if (clearErrors) clearErrors("set");
-                },
-              })}
+              {...register("set", { required: "Set/Group is required" })}
               className={errors.set ? errorInputStyle : inputBaseStyle}
               placeholder="e.g. G1, G2"
             />

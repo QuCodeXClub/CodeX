@@ -1,49 +1,59 @@
+import axiosInstance from "./axiosInstance";
+
 class AdminService {
   async loginAdmin(email, password) {
-    // MOCKED: Bypass login
-    return { success: true, data: { message: "Mock OTP Sent" } };
+    return axiosInstance.post("/admin/login", { email, password });
   }
 
   async verifyAdminOtp(email, otp) {
-    // MOCKED: Bypass OTP
-    return { success: true, data: { user: { name: "Admin", email: "admin@codex.com" } } };
+    return axiosInstance.post("/admin/verify-otp", { email, otp });
   }
 
   async logoutAdmin() {
-    return { success: true };
+    return axiosInstance.post("/admin/logout");
   }
 
   async getCurrentAdmin() {
-    // MOCKED: Return fake admin user to stay logged in
-    return { success: true, data: { name: "Admin", email: "admin@codex.com" } };
+    return axiosInstance.get("/admin/current");
   }
 
   async requestPasswordChange(oldPassword) {
-    return { success: true };
+    return axiosInstance.post("/admin/request-password-change", {
+      oldPassword,
+    });
   }
 
   async changeAdminPassword(otp, newPassword) {
-    return { success: true };
+    return axiosInstance.post("/admin/change-password", {
+      otp,
+      newPassword,
+    });
   }
 
   async getSessions() {
-    return { success: true, data: [] };
+    return axiosInstance.get("/admin/sessions");
   }
 
   async killSession(sessionId) {
-    return { success: true };
+    return axiosInstance.delete(`/admin/sessions/${sessionId}`);
   }
 
   async updateAdminProfile(name, email) {
-    return { success: true };
+    return axiosInstance.patch("/admin/update-profile", { name, email });
   }
 
   async updateAdminAvatar(formData) {
-    return { success: true };
+    return axiosInstance.patch("/admin/avatar", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   }
 
   async updateProfile(formData) {
-    return { success: true };
+    return axiosInstance.patch("/admin/profile", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   }
 
   async getBlocklist(params = {}) {
