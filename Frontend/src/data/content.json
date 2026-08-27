@@ -260,7 +260,7 @@
           "description": "The official CodeX flagship hackathon and screening initiative for SIH (Smart India Hackathon). A platform where the best ideas are forged under pressure.",
           "website": "https://techthrive.qucodex.com",
           "image": {
-            "assetKey": "ABOUT_FLAGSHIP_TECHTHRIVE",
+            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676228/IMG_0627_rn1b2f_jgajho.jpg",
             "alt": "TechThrive"
           }
         },
@@ -271,7 +271,7 @@
           "description": "A high-energy, fast-paced hackathon designed to push boundaries and build innovative solutions overnight.",
           "website": "https://q-hackathon.qucodex.com",
           "image": {
-            "assetKey": "ABOUT_FLAGSHIP_QHACKATHON",
+            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676238/3R5A5324_mlzhos_rrm8qo.jpg",
             "alt": "Q-Hackathon"
           }
         },
@@ -282,7 +282,7 @@
           "description": "Our premier coding festival featuring competitive programming, project expos, and technical challenges.",
           "website": "https://techsprint.qucodex.com",
           "image": {
-            "assetKey": "ABOUT_FLAGSHIP_TECHSPRINT",
+            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676229/IMG_0624_ixv8wd_x53ers.jpg",
             "alt": "TechSprint"
           }
         }
@@ -321,19 +321,24 @@
       ],
       "images": [
         {
-          "assetKey": "ABOUT_COMMUNITY_1"
+          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676228/IMG_0627_rn1b2f_jgajho.jpg",
+          "alt": "Learn Together"
         },
         {
-          "assetKey": "ABOUT_COMMUNITY_2"
+          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676227/IMG_6902_oyq9by_tx5xar.jpg",
+          "alt": "Build Together"
         },
         {
-          "assetKey": "ABOUT_COMMUNITY_3"
+          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676231/IMG_0619_migrdi_tjbly3.jpg",
+          "alt": "Compete Together"
         },
         {
-          "assetKey": "ABOUT_COMMUNITY_4"
+          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676240/3R5A5331_iy1okp_l6kiza.jpg",
+          "alt": "Grow Together"
         },
         {
-          "assetKey": "ABOUT_COMMUNITY_5"
+          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676238/IMG_5259_dwnhsr_jgso5d.jpg",
+          "alt": "Community"
         }
       ]
     },

@@ -65,9 +65,8 @@ const router = createBrowserRouter([
 
       { path: "/register", lazy: Register },
       { path: "/verify-certificate/:certificateId", lazy: VerifyCertificate },
+      { path: "/verify-certificate-custom/:certificateId", lazy: VerifyCertificate },
       { path: "/verify-boarding-pass/:boardingPassId", lazy: VerifyBoardingPass },
-
-
       { path: "/privacy-policy", lazy: PrivacyPolicy },
       { path: "/terms-conditions", lazy: TermsConditions },
       { path: "/community-guidelines", lazy: CommunityGuidelines },
