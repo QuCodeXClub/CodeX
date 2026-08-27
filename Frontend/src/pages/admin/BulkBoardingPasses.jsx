@@ -41,6 +41,10 @@ export default function BulkBoardingPasses() {
     defaultValues: {
       eventName: "",
       eventDescription: "",
+      prizePool: "₹20,000",
+      certificateType: "FOR EVERY VALID SUBMISSION",
+      mode: "100% ONLINE",
+      teamSize: "SOLO / TEAM (UP TO 3)",
       students: [{ name: "", email: "", qid: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
     },
   });
@@ -184,6 +188,10 @@ export default function BulkBoardingPasses() {
       const submitData = {
         eventName: data.eventName,
         eventDescription: data.eventDescription,
+        prizePool: data.prizePool,
+        certificateType: data.certificateType,
+        mode: data.mode,
+        teamSize: data.teamSize,
         studentsStr: JSON.stringify(validStudents)
       };
 
@@ -286,6 +294,58 @@ export default function BulkBoardingPasses() {
                   {errors.eventDescription.message}
                 </p>
               )}
+            </div>
+
+            {/* Prize Pool */}
+            <div>
+              <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                PRIZE POOL
+              </label>
+              <input
+                type="text"
+                {...register("prizePool")}
+                placeholder="₹20,000"
+                className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
+
+            {/* Certificate */}
+            <div>
+              <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                CERTIFICATE
+              </label>
+              <input
+                type="text"
+                {...register("certificateType")}
+                placeholder="FOR EVERY VALID SUBMISSION"
+                className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
+
+            {/* Mode / Node */}
+            <div>
+              <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                NODE
+              </label>
+              <input
+                type="text"
+                {...register("mode")}
+                placeholder="100% ONLINE"
+                className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
+
+            {/* Team Size */}
+            <div>
+              <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                TEAM SIZE
+              </label>
+              <input
+                type="text"
+                {...register("teamSize")}
+                placeholder="SOLO / TEAM (UP TO 3)"
+                className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
             </div>
           </div>
         </div>

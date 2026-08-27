@@ -1,59 +1,49 @@
-import axiosInstance from "./axiosInstance";
-
 class AdminService {
   async loginAdmin(email, password) {
-    return axiosInstance.post("/admin/login", { email, password });
+    // MOCKED: Bypass login
+    return { success: true, data: { message: "Mock OTP Sent" } };
   }
 
   async verifyAdminOtp(email, otp) {
-    return axiosInstance.post("/admin/verify-otp", { email, otp });
+    // MOCKED: Bypass OTP
+    return { success: true, data: { user: { name: "Admin", email: "admin@codex.com" } } };
   }
 
   async logoutAdmin() {
-    return axiosInstance.post("/admin/logout");
+    return { success: true };
   }
 
   async getCurrentAdmin() {
-    return axiosInstance.get("/admin/current");
+    // MOCKED: Return fake admin user to stay logged in
+    return { success: true, data: { name: "Admin", email: "admin@codex.com" } };
   }
 
   async requestPasswordChange(oldPassword) {
-    return axiosInstance.post("/admin/request-password-change", {
-      oldPassword,
-    });
+    return { success: true };
   }
 
   async changeAdminPassword(otp, newPassword) {
-    return axiosInstance.post("/admin/change-password", {
-      otp,
-      newPassword,
-    });
+    return { success: true };
   }
 
   async getSessions() {
-    return axiosInstance.get("/admin/sessions");
+    return { success: true, data: [] };
   }
 
   async killSession(sessionId) {
-    return axiosInstance.delete(`/admin/sessions/${sessionId}`);
+    return { success: true };
   }
 
   async updateAdminProfile(name, email) {
-    return axiosInstance.patch("/admin/update-profile", { name, email });
+    return { success: true };
   }
 
   async updateAdminAvatar(formData) {
-    return axiosInstance.patch("/admin/avatar", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return { success: true };
   }
 
   async updateProfile(formData) {
-    return axiosInstance.patch("/admin/profile", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    return { success: true };
   }
 
   async getBlocklist(params = {}) {

@@ -9,12 +9,17 @@ const VerificationLayout = ({
   loadingMessage = "Checking cryptographic signature & authenticity...",
   verificationURL,
   downloadText = "Download PDF",
+  onDownload,
   children,
 }) => {
   const [copied, setCopied] = React.useState(false);
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownload = () => {
+    if (onDownload) {
+      onDownload();
+    } else {
+      window.print();
+    }
   };
 
   const copyVerificationLink = async () => {
@@ -32,17 +37,27 @@ const VerificationLayout = ({
       {/* Fixed Print-Specific CSS */}
       <style>{`
         @media print {
-          @page { size: landscape; margin: 0; }
-          body { 
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important; 
+          @page { 
+            size: landscape; 
+            margin: 0; 
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
             background-color: white !important;
           }
           body * {
-            visibility: hidden;
+            visibility: hidden !important;
           }
-          #verification-overlay, #verification-overlay * {
-            visibility: visible;
+          /* Show only the certificate element inside our container */
+          #verification-overlay, 
+          #verification-overlay *,
+          #certificate-print-area,
+          #certificate-print-area * {
+            visibility: visible !important;
           }
           #verification-overlay {
             position: absolute !important;
@@ -51,9 +66,28 @@ const VerificationLayout = ({
             width: 100vw !important;
             height: 100vh !important;
             margin: 0 !important;
-            padding: 20px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             background: white !important;
             box-sizing: border-box !important;
+          }
+          /* Ensure the certificate container fills the landscape print space precisely */
+          #certificate-print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100vw !important;
+            height: 80.03vw !important; /* Keep aspect ratio 1402/1122 precisely (1122 / 1402 = 80.03%) */
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            box-shadow: none !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-size: contain !important;
+            background-position: center !important;
           }
         }
       `}</style>
@@ -98,7 +132,7 @@ const VerificationLayout = ({
             {/* Action Buttons Toolbar */}
             <div className="relative z-10 w-full max-w-[1000px] flex flex-wrap justify-end gap-3 mb-6 print:hidden">
               <button
-                onClick={handlePrint}
+                onClick={handleDownload}
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-text-inverse font-mono text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md shadow-accent/20 cursor-pointer border-0 transition-all"
               >
                 <Printer className="w-4 h-4" />

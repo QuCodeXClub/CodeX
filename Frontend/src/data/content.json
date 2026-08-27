@@ -260,7 +260,8 @@
           "description": "The official CodeX flagship hackathon and screening initiative for SIH (Smart India Hackathon). A platform where the best ideas are forged under pressure.",
           "website": "https://techthrive.qucodex.com",
           "image": {
-            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676228/IMG_0627_rn1b2f_jgajho.jpg",
+            "assetKey": "ABOUT_FLAGSHIP_TECHTHRIVE",
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
             "alt": "TechThrive"
           }
         },
@@ -271,7 +272,8 @@
           "description": "A high-energy, fast-paced hackathon designed to push boundaries and build innovative solutions overnight.",
           "website": "https://q-hackathon.qucodex.com",
           "image": {
-            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676238/3R5A5324_mlzhos_rrm8qo.jpg",
+            "assetKey": "ABOUT_FLAGSHIP_QHACKATHON",
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg",
             "alt": "Q-Hackathon"
           }
         },
@@ -282,7 +284,8 @@
           "description": "Our premier coding festival featuring competitive programming, project expos, and technical challenges.",
           "website": "https://techsprint.qucodex.com",
           "image": {
-            "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676229/IMG_0624_ixv8wd_x53ers.jpg",
+            "assetKey": "ABOUT_FLAGSHIP_TECHSPRINT",
+            "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",
             "alt": "TechSprint"
           }
         }
@@ -321,23 +324,28 @@
       ],
       "images": [
         {
-          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676228/IMG_0627_rn1b2f_jgajho.jpg",
+          "assetKey": "ABOUT_COMMUNITY_1",
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0627_rn1b2f.jpg",
           "alt": "Learn Together"
         },
         {
-          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676227/IMG_6902_oyq9by_tx5xar.jpg",
+          "assetKey": "ABOUT_COMMUNITY_2",
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_6902_oyq9by.jpg",
           "alt": "Build Together"
         },
         {
-          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676231/IMG_0619_migrdi_tjbly3.jpg",
+          "assetKey": "ABOUT_COMMUNITY_3",
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0619_migrdi.jpg",
           "alt": "Compete Together"
         },
         {
-          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676240/3R5A5331_iy1okp_l6kiza.jpg",
+          "assetKey": "ABOUT_COMMUNITY_4",
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475205/3R5A5331_iy1okp.jpg",
           "alt": "Grow Together"
         },
         {
-          "src": "https://res.cloudinary.com/fswmfdcp/image/upload/v1787676238/IMG_5259_dwnhsr_jgso5d.jpg",
+          "assetKey": "ABOUT_COMMUNITY_5",
+          "src": "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475204/IMG_5259_dwnhsr.jpg",
           "alt": "Community"
         }
       ]

@@ -6,14 +6,14 @@ import Certificate from "../components/common/Certificate";
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
 
-const VerifyCertificate = () => {
+const VerifyCertificateCustom = () => {
   const { certificateId } = useParams();
 
   const [loading, setLoading] = useState(true);
   const [certificate, setCertificate] = useState(null);
   const [error, setError] = useState("");
 
-  const verificationURL = `${window.location.origin}/verify-certificate/${certificateId}`;
+  const verificationURL = `${window.location.origin}/verify-certificate-custom/${certificateId}`;
 
   const fetchCertificate = useCallback(async () => {
     try {
@@ -113,11 +113,11 @@ const VerifyCertificate = () => {
     >
       {certificate && (
         <Certificate
-          studentName={certificate.studentName}
+          recipientName={certificate.studentName}
           eventName={certificate.eventName}
-          eventDate={certificate.eventDate}
+          issueDate={certificate.issuedAt}
           certificateId={certificate.certificateId}
-          qrCodeImage={certificate.qrCodeImage}
+          qrCode={certificate.qrCodeImage}
           coordinatorName={certificate.coordinatorName}
           signatureImage={certificate.signatureImage}
           position={certificate.position}
@@ -127,4 +127,4 @@ const VerifyCertificate = () => {
   );
 };
 
-export default VerifyCertificate;
+export default VerifyCertificateCustom;
