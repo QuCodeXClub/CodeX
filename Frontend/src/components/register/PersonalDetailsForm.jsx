@@ -16,7 +16,12 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
           </label>
           <input
             type="text"
-            {...register("name", { required: "Name is required" })}
+            {...register("name", { 
+              required: "Name is required",
+              onChange: () => {
+                if (clearErrors) clearErrors("name");
+              }
+            })}
             className={errors.name ? errorInputStyle : inputBaseStyle}
             placeholder="Enter Your Full Name"
           />
@@ -34,6 +39,9 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
             type="text"
             {...register("fatherName", {
               required: "Father's name is required",
+              onChange: () => {
+                if (clearErrors) clearErrors("fatherName");
+              }
             })}
             className={errors.fatherName ? errorInputStyle : inputBaseStyle}
             placeholder="Enter Father's Name"

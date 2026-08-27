@@ -119,6 +119,7 @@ const Footer = ({ layout, onFooterClick }) => {
               <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
               <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
               <Link to="/register" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Register</Link>
+              <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment Guide</Link>
             </div>
           </div>
 

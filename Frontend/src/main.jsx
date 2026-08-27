@@ -32,6 +32,7 @@ const TermsConditions = routeLazy(() => import("./pages/TermsConditions"));
 const CommunityGuidelines = routeLazy(() => import("./pages/CommunityGuidelines"));
 const EventPolicy = routeLazy(() => import("./pages/EventPolicy"));
 const Accessibility = routeLazy(() => import("./pages/Accessibility"));
+const PaymentRegistrationGuide = routeLazy(() => import("./pages/PaymentRegistrationGuide"));
 
 // Admin only pages
 const AdminLogin = routeLazy(() => import("./pages/admin/AdminLogin"));
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
       { path: "/community-guidelines", lazy: CommunityGuidelines },
       { path: "/event-policy", lazy: EventPolicy },
       { path: "/accessibility", lazy: Accessibility },
+      { path: "/payment-registration-guide", lazy: PaymentRegistrationGuide },
     ],
   },
   {
