@@ -147,31 +147,30 @@ const UsersIcon = () => (
 
 const BoardingPass = ({
   studentName,
-  recipientName, // support both prop names for compatibility
   eventName,
   eventDescription,
   qrCodeImage,
-  qrCode, // support both prop names for compatibility
   qid,
   citeNumber,
   boardingPassId,
-  certificateId, // support both prop names for compatibility
   wifiUser,
   wifiPass,
   loginUser,
   loginPass,
-  prizePool = "₹20,000",
-  certificateType = "FOR EVERY VALID SUBMISSION",
-  mode = "100% ONLINE",
-  teamSize = "SOLO / TEAM (UP TO 3)",
-  signature = "Let's Build the Future.",
+  issuedAt,
 }) => {
+  // Static fields not in backend model
+  const prizePool = "₹20,000";
+  const certificateType = "FOR EVERY VALID SUBMISSION";
+  const mode = "100% ONLINE";
+  const teamSize = "SOLO / TEAM (UP TO 3)";
+  const signature = "Let's Build the Future.";
   // Normalize dynamic properties
-  const displayName = studentName || recipientName || "Attendee Name";
+  const displayName = studentName || "Attendee Name";
   const displayEvent = eventName || "CodeX Hackathon 2026";
-  const displayQr = qrCodeImage || qrCode || "/favicon.svg";
+  const displayQr = qrCodeImage || "/favicon.svg";
   const displayQid = qid || "QID-9876";
-  const displayPassId = boardingPassId || certificateId || "TEST-ID";
+  const displayPassId = boardingPassId || "TEST-ID";
   const displayDesk = citeNumber || "Desk 42";
 
   const [copiedField, setCopiedField] = useState(null);

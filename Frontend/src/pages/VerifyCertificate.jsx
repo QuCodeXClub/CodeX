@@ -113,11 +113,11 @@ const VerifyCertificate = () => {
     >
       {certificate && (
         <Certificate
-          recipientName={certificate.studentName}
+          studentName={certificate.studentName}
           eventName={certificate.eventName}
-          issueDate={certificate.issuedAt}
+          eventDate={certificate.eventDate}
           certificateId={certificate.certificateId}
-          qrCode={certificate.qrCodeImage}
+          qrCodeImage={certificate.qrCodeImage}
           coordinatorName={certificate.coordinatorName}
           signatureImage={certificate.signatureImage}
           position={certificate.position}

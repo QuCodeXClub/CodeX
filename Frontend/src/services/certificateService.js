@@ -8,14 +8,15 @@ class CertificateService {
       success: true,
       data: {
         studentName: "Abhiraj Chaubey",
+        studentEmail: "abhiraj@example.com",
         eventName: "Q Hackathon 2026",
-        position: "Winner",
-        certificateId: certificateId || "CERT-12345",
-        issuedAt: new Date().toISOString(),
-        qrCodeImage: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MockQR",
-        signatureImage: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Signature_Mock.png",
+        eventDate: new Date("2026-08-07").toISOString(),
         coordinatorName: "Jane Smith",
-        academicYear: "2025-26"
+        signatureImage: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Signature_Mock.png",
+        certificateId: certificateId || "CERT-12345",
+        position: "Winner",
+        qrCodeImage: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MockQR",
+        issuedAt: new Date().toISOString(),
       }
     };
   }

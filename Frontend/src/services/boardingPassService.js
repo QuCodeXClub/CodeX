@@ -4,10 +4,6 @@ const DEFAULT_PASSES = [
     boardingPassId: "BP-9876",
     eventName: "CodeX Hackathon 2026",
     eventDescription: "A 24-hour coding marathon",
-    prizePool: "₹20,000",
-    certificateType: "FOR EVERY VALID SUBMISSION",
-    mode: "100% ONLINE",
-    teamSize: "SOLO / TEAM (UP TO 3)",
     studentName: "Darshan Kumar",
     studentEmail: "darshan.kumar@qucodex.com",
     qid: "QID-9876",
@@ -63,10 +59,6 @@ class BoardingPassService {
       data: {
         eventName: "CodeX Hackathon 2026",
         eventDescription: "A 24-hour coding marathon",
-        prizePool: "₹20,000",
-        certificateType: "FOR EVERY VALID SUBMISSION",
-        mode: "100% ONLINE",
-        teamSize: "SOLO / TEAM (UP TO 3)",
         qrCodeImage: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${boardingPassId}`,
         qid: "QID-9876",
         studentName: "Darshan Kumar",
@@ -91,10 +83,6 @@ class BoardingPassService {
         boardingPassId: bpId,
         eventName: submitData.eventName,
         eventDescription: submitData.eventDescription,
-        prizePool: submitData.prizePool || "₹20,000",
-        certificateType: submitData.certificateType || "FOR EVERY VALID SUBMISSION",
-        mode: submitData.mode || "100% ONLINE",
-        teamSize: submitData.teamSize || "SOLO / TEAM (UP TO 3)",
         studentName: student.name,
         studentEmail: student.email,
         qid: student.qid,
@@ -109,7 +97,10 @@ class BoardingPassService {
     });
 
     const updatedPasses = [...newPasses, ...passes];
-    localStorage.setItem("codex_boarding_passes", JSON.stringify(updatedPasses));
+    const sanitizedPassesForStorage = updatedPasses.map(
+      ({ loginPass, wifiPass, ...safePass }) => safePass
+    );
+    localStorage.setItem("codex_boarding_passes", JSON.stringify(sanitizedPassesForStorage));
 
     return {
       success: true,

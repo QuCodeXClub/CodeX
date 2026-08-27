@@ -90,11 +90,11 @@ const generateQrWithLogo = (qrUrl, logoUrl) => {
 };
 
 const Certificate = ({
-  recipientName,
+  studentName,
   eventName,
-  issueDate,
+  eventDate,
   certificateId,
-  qrCode,
+  qrCodeImage,
   coordinatorName,
   signatureImage,
   position,
@@ -118,13 +118,13 @@ const Certificate = ({
   }, [signatureImage]);
 
   useEffect(() => {
-    if (qrCode) {
+    if (qrCodeImage) {
       // Bake the apple-touch-icon logo directly inside the QR Code image
-      generateQrWithLogo(qrCode, "/apple-touch-icon.png").then((res) => {
+      generateQrWithLogo(qrCodeImage, "/apple-touch-icon.png").then((res) => {
         setProcessedQr(res);
       });
     }
-  }, [qrCode]);
+  }, [qrCodeImage]);
 
   const formatDisplayDate = (date) => {
     if (!date) return "-";
@@ -142,7 +142,7 @@ const Certificate = ({
   };
 
   // Automatically scale font size for unusually long recipient names
-  const nameLength = recipientName?.length || 0;
+  const nameLength = studentName?.length || 0;
   const baseNameSize = 4.1;
   const nameFontSize = nameLength > 18
     ? `${Math.max(2.8, baseNameSize * (18 / nameLength))}cqw`
@@ -181,7 +181,7 @@ const Certificate = ({
           className="text-[#0a192f] charm-bold leading-[1.2]"
           style={{ fontSize: nameFontSize }}
         >
-          {recipientName}
+          {studentName}
         </h2>
       </div>
 
@@ -204,7 +204,7 @@ const Certificate = ({
         className="absolute top-[71.9%] left-[45.2%] w-[9.6cqw] h-[9.6cqw] bg-white p-[0.8cqw] shadow-[0_2px_8px_rgba(0,0,0,0.05)] rounded-sm flex items-center justify-center"
       >
         <img
-          src={processedQr || qrCode}
+          src={processedQr || qrCodeImage}
           alt="QR Code"
           className="w-full h-full object-contain"
         />
@@ -220,7 +220,7 @@ const Certificate = ({
       {/* DYNAMIC FIELD 3 — issueDate (Metadata left) */}
       <div className="absolute top-[84.2%] left-[14.5%] text-left w-[24cqw]">
         <p className="font-mono text-[1.1cqw] font-bold text-[#0a192f] leading-normal">
-          {formatDisplayDate(issueDate)}
+          {formatDisplayDate(eventDate)}
         </p>
       </div>
 
