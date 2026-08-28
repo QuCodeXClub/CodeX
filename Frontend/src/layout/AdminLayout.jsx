@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation, useNavigation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { adminService } from "../services/adminService";
 import { setLogin, setLogout, setAuthResolved } from "../context/authSlice";
+import SplashScreen from "../components/common/SplashScreen";
 import RouteProgressBar from "../components/common/RouteProgressBar";
 
 export default function AdminLayout() {
