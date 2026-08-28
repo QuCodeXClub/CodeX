@@ -1,7 +1,8 @@
 import React, { useState, useEffect, memo } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ZoomIn } from "lucide-react";
 import contentData from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
+import { useImageZoom } from "../../../context/ImageZoomContext";
 
 // Import local vector logos
 import techThriveLogo from "../../../assets/about/techthrive-logo.svg";
@@ -29,13 +30,14 @@ const DEFAULT_FALLBACK_IMAGE =
  * infinite auto-rotation, pause-on-hover, and keyboard navigation.
  */
 const AboutFlagshipEvents = () => {
-  const flagshipData = contentData?.about?.flagshipEvents;
+  const { openImage } = useImageZoom();
+  const flagshipData = contentData.about?.flagshipEvents;
   const events = flagshipData?.events || [];
 
   const [selectedEventIndex, setSelectedEventIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Auto-rotation timer loop
+  // Auto-slide rotation effect (pauses on hover)
   useEffect(() => {
     if (isHovered || events.length <= 1) return;
 
@@ -44,27 +46,27 @@ const AboutFlagshipEvents = () => {
     }, ROTATION_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [events.length, isHovered, selectedEventIndex]);
+  }, [events.length, isHovered]);
 
   const handleTabClick = (index) => {
     setSelectedEventIndex(index);
   };
 
-  const handleTabKeyDown = (e, currentIndex) => {
-    if (events.length <= 1) return;
-
-    if (e.key === "ArrowRight") {
+  const handleTabKeyDown = (e, index) => {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      const nextIndex = (currentIndex + 1) % events.length;
-      handleTabClick(nextIndex);
-      document.getElementById(`tab-${events[nextIndex].id}`)?.focus();
+      setSelectedEventIndex(index);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setSelectedEventIndex((index + 1) % events.length);
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
-      const prevIndex = (currentIndex - 1 + events.length) % events.length;
-      handleTabClick(prevIndex);
-      document.getElementById(`tab-${events[prevIndex].id}`)?.focus();
+      setSelectedEventIndex((index - 1 + events.length) % events.length);
     }
   };
+
+  const currentEvent = events[selectedEventIndex];
+  const currentImageSrc = (currentEvent?.image?.assetKey ? ASSETS.IMAGES[currentEvent.image.assetKey] : currentEvent?.image?.src) || DEFAULT_FALLBACK_IMAGE;
 
   if (!events.length) return null;
 
@@ -95,7 +97,10 @@ const AboutFlagshipEvents = () => {
       {/* Detailed Event Panel */}
       <div className="w-full max-w-7xl mx-auto mb-6">
         <div
-          className="relative bg-card/95 border border-border rounded-[2rem] overflow-hidden min-h-[440px] sm:min-h-[480px] md:min-h-[520px] flex w-full shadow-lg group/panel transform-gpu"
+          className="relative bg-card/95 border border-border rounded-[2rem] overflow-hidden min-h-[440px] sm:min-h-[480px] md:min-h-[520px] flex w-full shadow-lg group/panel transform-gpu cursor-zoom-in"
+          data-zoom-src={currentImageSrc}
+          data-zoom-alt={currentEvent?.image?.alt || currentEvent?.name}
+          onClick={() => openImage({ src: currentImageSrc, alt: currentEvent?.image?.alt || currentEvent?.name })}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -109,6 +114,12 @@ const AboutFlagshipEvents = () => {
                 animationPlayState: isHovered ? "paused" : "running",
               }}
             />
+          </div>
+
+          {/* Zoom Badge on Hover */}
+          <div className="absolute top-4 right-4 z-40 opacity-0 group-hover/panel:opacity-100 transition-opacity duration-300 bg-black/75 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg pointer-events-none">
+            <ZoomIn size={14} className="text-accent" />
+            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">Click to Zoom</span>
           </div>
 
           {/* Background Images */}
@@ -142,7 +153,7 @@ const AboutFlagshipEvents = () => {
           </div>
 
           {/* Content Area Overlay */}
-          <div className="relative z-30 w-full p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-end">
+          <div className="relative z-30 w-full p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-end pointer-events-none">
             {events.map((event, index) => {
               const isSelected = selectedEventIndex === index;
               const logoSrc = EVENT_LOGOS[event.id];

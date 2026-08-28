@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ShieldAlert,
   Info,
+  ZoomIn,
 } from "lucide-react";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
@@ -118,13 +119,16 @@ const PaymentRegistrationGuide = () => {
             </Link>
           </div>
           
-          <div className="w-full aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl border border-border/50 relative">
+          <div className="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-card group relative cursor-zoom-in">
             <img 
               src={ASSETS.IMAGES.PAYMENT_GUIDE_COVER} 
-              alt="Payment Guide Cover" 
-              className="w-full h-full object-cover"
+              alt="Payment Guide - Step 1 Payment Instructions" 
+              className="w-full h-auto block select-none group-hover:scale-[1.01] transition-transform duration-300"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-60"></div>
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/75 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-mono flex items-center gap-1.5 shadow-lg pointer-events-none">
+              <ZoomIn className="w-3.5 h-3.5 text-accent" />
+              <span>Click to Zoom Fullscreen</span>
+            </div>
           </div>
         </header>
 
@@ -275,6 +279,26 @@ const PaymentRegistrationGuide = () => {
                     <p className="text-xs text-text-muted leading-relaxed">
                       {parseFormattedText(section.info)}
                     </p>
+                  </div>
+                )}
+
+                {/* Section 4 Visual Guide Image */}
+                {section.id === 'find-utr' && ASSETS.IMAGES.PAYMENT_GUIDE_IMAGE_2 && (
+                  <div className="mt-6 rounded-2xl overflow-hidden border border-border/80 shadow-lg bg-card group relative cursor-zoom-in">
+                    <img
+                      src={ASSETS.IMAGES.PAYMENT_GUIDE_IMAGE_2}
+                      alt="Visual Guide: Finding UTR / Transaction Reference Number"
+                      className="w-full h-auto block select-none group-hover:scale-[1.01] transition-transform duration-300"
+                    />
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/75 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-mono flex items-center gap-1.5 shadow-lg pointer-events-none">
+                      <ZoomIn className="w-3.5 h-3.5 text-accent" />
+                      <span>Click to Zoom Fullscreen</span>
+                    </div>
+                    <div className="p-3 bg-card-hover border-t border-border/60 text-center">
+                      <p className="text-xs text-text-muted font-mono">
+                        Visual Example: Step 2 — Entering UTR & Finding Transaction Reference Number
+                      </p>
+                    </div>
                   </div>
                 )}
 

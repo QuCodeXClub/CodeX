@@ -7,16 +7,19 @@ import {
   MapPin,
   ArrowLeft,
   Share2,
-  Globe
+  Globe,
+  ZoomIn,
 } from "lucide-react";
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
 import { normalizeEvent, optimizeCloudinaryUrl } from "../utils/helpers";
+import { useImageZoom } from "../context/ImageZoomContext";
 
 export default function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { openImage } = useImageZoom();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   
@@ -147,13 +150,22 @@ export default function EventDetails() {
 
         {/* Hero Image Container (Fixed to 1920x557 Aspect Ratio) */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 mb-8">
-          <div className="w-full aspect-[1920/557] bg-card-hover relative border border-border/80 rounded-2xl overflow-hidden shadow-sm">
+          <div 
+            onClick={() => event.coverImage && openImage({ src: event.coverImage, alt: event.eventName })}
+            className={`w-full aspect-[1920/557] bg-card-hover relative border border-border/80 rounded-2xl overflow-hidden shadow-sm group ${event.coverImage ? 'cursor-zoom-in' : ''}`}
+          >
             {event.coverImage ? (
-              <img
-                src={optimizeCloudinaryUrl(event.coverImage, 1920)}
-                alt={event.eventName}
-                className="w-full h-full object-contain object-center absolute inset-0 bg-black/5"
-              />
+              <>
+                <img
+                  src={optimizeCloudinaryUrl(event.coverImage, 1920)}
+                  alt={event.eventName}
+                  className="w-full h-full object-contain object-center absolute inset-0 bg-black/5 group-hover:scale-[1.01] transition-transform duration-500"
+                />
+                <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/75 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-mono flex items-center gap-1.5 shadow-lg pointer-events-none">
+                  <ZoomIn className="w-3.5 h-3.5 text-accent" />
+                  <span>Click to Zoom</span>
+                </div>
+              </>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-text-muted bg-card">
                 <ImageIcon className="w-16 h-16 mb-3 opacity-40" />
