@@ -1,22 +1,25 @@
 import { lazy } from "react";
 
-/**
- * Robust lazy loader wrapper with automatic retry and page reload for chunk mismatches.
- * Handles missing JS chunks caused by new deployments or cache mismatches gracefully.
- * 
- * @param {Function} componentImport Dynamic import function, e.g. () => import('./MyComponent')
- * @returns {React.LazyExoticComponent}
- */
-export const lazyWithRetry = (componentImport) =>
-  lazy(async () => {
-    const CHUNK_RELOAD_KEY = "codex_chunk_refreshed";
+const CHUNK_RELOAD_KEY = "codex_chunk_refreshed";
+const moduleCache = new Map();
 
+/**
+ * Executes a dynamic import with memory caching and error recovery.
+ */
+const loadModuleWithCache = (componentImport) => {
+  if (moduleCache.has(componentImport)) {
+    return moduleCache.get(componentImport);
+  }
+
+  const promise = (async () => {
     try {
-      const component = await componentImport();
-      // Reset refresh flag upon successful dynamic module load
+      const module = await componentImport();
       sessionStorage.setItem(CHUNK_RELOAD_KEY, "false");
-      return component;
+      return module;
     } catch (error) {
+      // Remove failed promise from cache so retry is possible
+      moduleCache.delete(componentImport);
+
       const errorMessage = error?.message || error?.toString() || "";
       const isChunkError =
         errorMessage.includes("Failed to fetch dynamically imported module") ||
@@ -30,13 +33,36 @@ export const lazyWithRetry = (componentImport) =>
       if (isChunkError && !hasRefreshed) {
         sessionStorage.setItem(CHUNK_RELOAD_KEY, "true");
         window.location.reload();
-        // Return a non-resolving promise while page reloads
-        return new Promise(() => { });
+        return new Promise(() => {});
       }
 
-      // If already reloaded or non-chunk error, propagate error to ErrorBoundary
       throw error;
     }
+  })();
+
+  moduleCache.set(componentImport, promise);
+  return promise;
+};
+
+/**
+ * Prefetches a dynamic import module in background/idle time.
+ * @param {Function} componentImport Dynamic import function, e.g. () => import('./MyPage')
+ */
+export const prefetchRoute = (componentImport) => {
+  if (typeof componentImport === "function") {
+    loadModuleWithCache(componentImport).catch(() => {});
+  }
+};
+
+/**
+ * Robust lazy loader wrapper with automatic retry and page reload for chunk mismatches.
+ * @param {Function} componentImport Dynamic import function, e.g. () => import('./MyComponent')
+ * @returns {React.LazyExoticComponent}
+ */
+export const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    const module = await loadModuleWithCache(componentImport);
+    return module;
   });
 
 /**
@@ -45,31 +71,8 @@ export const lazyWithRetry = (componentImport) =>
  */
 export const routeLazy = (componentImport) => {
   return async () => {
-    const CHUNK_RELOAD_KEY = "codex_chunk_refreshed";
-
-    try {
-      const module = await componentImport();
-      sessionStorage.setItem(CHUNK_RELOAD_KEY, "false");
-      return { Component: module.default };
-    } catch (error) {
-      const errorMessage = error?.message || error?.toString() || "";
-      const isChunkError =
-        errorMessage.includes("Failed to fetch dynamically imported module") ||
-        errorMessage.includes("Importing a module script failed") ||
-        errorMessage.includes("text/html") ||
-        errorMessage.includes("Loading chunk") ||
-        errorMessage.includes("CSS chunk");
-
-      const hasRefreshed = sessionStorage.getItem(CHUNK_RELOAD_KEY) === "true";
-
-      if (isChunkError && !hasRefreshed) {
-        sessionStorage.setItem(CHUNK_RELOAD_KEY, "true");
-        window.location.reload();
-        return new Promise(() => { });
-      }
-
-      throw error;
-    }
+    const module = await loadModuleWithCache(componentImport);
+    return { Component: module.default };
   };
 };
 
