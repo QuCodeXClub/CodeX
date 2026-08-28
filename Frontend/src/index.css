@@ -240,4 +240,9 @@
   .hero-right-panel {
     clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
   }
+
+  /* Global Content Image Zoom Cursor & Styling */
+  img:not([data-no-zoom]):not(.no-zoom):not(nav img):not(footer a img):not(.h-4):not(.w-4):not(.h-5):not(.w-5) {
+    cursor: zoom-in;
+  }
 }

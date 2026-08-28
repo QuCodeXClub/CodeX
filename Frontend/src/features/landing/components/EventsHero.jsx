@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Star, ZoomIn } from "lucide-react";
 import content from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
+import { useImageZoom } from "../../../context/ImageZoomContext";
 
 const EventsHero = () => {
   const { eventsHero, layout } = content;
+  const { openImage } = useImageZoom();
   const images = {
     hackathon: ASSETS.IMAGES.EVENT_HACKATHON,
     contest: ASSETS.IMAGES.EVENT_CONTEST,
@@ -94,8 +96,8 @@ const EventsHero = () => {
                return (
                  <div 
                     key={card.id}
-                    // Added hover:z-50 and ease-out for a smooth pop-to-top effect
-                    className={`absolute w-[260px] h-[380px] lg:w-[300px] lg:h-[440px] transition-all duration-500 ease-out rounded-[1.5rem] overflow-hidden border-[2px] border-border-soft hover:border-accent/80 hover:shadow-[0_0_30px_rgba(46,197,212,0.3)] bg-card/40 backdrop-blur-md group hover:z-50 cursor-pointer ${posClasses} ${zIndex}`}
+                    onClick={() => openImage({ src: images[card.image], alt: card.title })}
+                    className={`absolute w-[260px] h-[380px] lg:w-[300px] lg:h-[440px] transition-all duration-500 ease-out rounded-[1.5rem] overflow-hidden border-[2px] border-border-soft hover:border-accent/80 hover:shadow-[0_0_30px_rgba(46,197,212,0.3)] bg-card/40 backdrop-blur-md group hover:z-50 cursor-zoom-in ${posClasses} ${zIndex}`}
                     style={{ 
                        clipPath: card.id === 1 
                          ? "polygon(0 0, 100% 0, 100% calc(100% - 35px), calc(100% - 35px) 100%, 0 100%)" 
@@ -107,6 +109,13 @@ const EventsHero = () => {
                         <Star size={20} className="text-bg fill-bg" />
                       </div>
                     )}
+
+                    {/* Zoom Badge on Hover */}
+                    <div className="absolute top-4 left-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/70 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                      <ZoomIn size={13} className="text-accent" />
+                      <span className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">Zoom</span>
+                    </div>
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-20 opacity-80 group-hover:opacity-40 transition-opacity duration-300"></div>
                     <img
                       src={images[card.image]}

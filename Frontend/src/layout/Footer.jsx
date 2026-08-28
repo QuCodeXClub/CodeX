@@ -38,13 +38,13 @@ const getSocialIcon = (name) => {
   if (lowerName.includes("instagram")) {
     return <InstagramIcon className={iconClass} />;
   }
-  
+
   return <span className="text-xs font-bold uppercase tracking-wider group-hover:text-accent transition-colors">{name}</span>;
 };
 
 const Footer = ({ layout, onFooterClick }) => {
   const currentYear = new Date().getFullYear();
-  const footerText = layout?.footerText 
+  const footerText = layout?.footerText
     ? layout.footerText.replace("2026", currentYear)
     : `© ${currentYear} CodeX. ALL RIGHTS RESERVED.`;
 
@@ -55,11 +55,11 @@ const Footer = ({ layout, onFooterClick }) => {
 
       <div className="max-w-[1400px] mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10 mb-12">
-          
+
           {/* Column 1: Brand & Info */}
           <div className="flex flex-col gap-4 lg:col-span-2">
             <div className="flex items-center gap-3">
-              <span 
+              <span
                 onClick={onFooterClick}
                 className="cursor-pointer select-none font-display font-black text-3xl uppercase tracking-widest text-text inline-block hover:text-accent transition-colors"
               >
@@ -74,13 +74,13 @@ const Footer = ({ layout, onFooterClick }) => {
             <p className="text-sm text-text-muted leading-relaxed max-w-sm">
               Empowering student developers through code, innovation, collaboration, and community building.
             </p>
-            
+
             <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-card-hover/50 border border-border/60 w-fit">
               <span className="text-xs text-text-muted font-mono tracking-wider uppercase">AN INITIATIVE BY</span>
               <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="h-5 w-5 object-contain" />
               <span className="text-xs text-text font-bold font-sans tracking-wider uppercase">Quantum University</span>
             </div>
-            
+
             <div className="flex items-center gap-3 mt-2">
               {layout?.socials?.map((link) => (
                 <a
@@ -144,20 +144,21 @@ const Footer = ({ layout, onFooterClick }) => {
             <div className="flex flex-col gap-2.5">
               <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Guidelines</Link>
               <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Event Policy</Link>
+              <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment Guide</Link>
             </div>
           </div>
-          
+
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p 
+          <p
             onClick={onFooterClick}
             className="text-xs text-text-muted font-mono uppercase tracking-wider text-center md:text-left select-none cursor-pointer hover:text-accent transition-colors"
           >
             {footerText}
           </p>
-          
+
           {layout?.meta && (
             <div className="flex items-center gap-3">
               <p className="text-xs text-text-muted font-mono uppercase tracking-widest">
