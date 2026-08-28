@@ -221,6 +221,7 @@ const Navbar = ({ layout }) => {
                   {[
                     { label: "Flagship Events", targetId: "events" },
                     { label: "Community & Culture", targetId: "community" },
+                    { label: "Partners", targetId: "partners" },
                   ].map((item) => (
                     <button
                       key={item.label}
@@ -366,6 +367,7 @@ const Navbar = ({ layout }) => {
                   {[
                     { label: "Flagship Events", targetId: "events" },
                     { label: "Community & Culture", targetId: "community" },
+                    { label: "Partners", targetId: "partners" },
                   ].map((item) => (
                     <button
                       key={item.label}
