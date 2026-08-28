@@ -136,7 +136,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
                 },
               })}
               className={errors.section ? errorInputStyle : inputBaseStyle}
-              placeholder="e.g. A, B"
+              placeholder="e.g. 1, 2"
             />
             {errors.section && (
               <p className="mt-1.5 text-xs text-danger font-semibold">
@@ -157,7 +157,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
                 },
               })}
               className={errors.set ? errorInputStyle : inputBaseStyle}
-              placeholder="e.g. G1, G2"
+              placeholder="e.g. A, B"
             />
             {errors.set && (
               <p className="mt-1.5 text-xs text-danger font-semibold">

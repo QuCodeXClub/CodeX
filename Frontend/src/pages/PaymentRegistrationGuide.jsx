@@ -15,8 +15,9 @@ import {
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
 import legalData from "../data/legal.json";
+import contentData from "../data/content.json";
 
-const TREASURER_UPI_ID = import.meta.env.VITE_TREASURER_UPI_ID || null;
+const TREASURER_UPI_ID = contentData.register.treasurerUpiId || null;
 
 /* ─── Shared sub-components ─── */
 

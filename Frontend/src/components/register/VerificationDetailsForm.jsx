@@ -13,8 +13,9 @@ import {
 } from "lucide-react";
 import { TurnstileWidget } from "..";
 import { ASSETS } from "../../config/assets";
+import contentData from "../../data/content.json";
 
-const TREASURER_UPI_ID = import.meta.env.VITE_TREASURER_UPI_ID || null;
+const TREASURER_UPI_ID = contentData.register.treasurerUpiId || null;
 
 export default function VerificationDetailsForm({
   register,
@@ -98,11 +99,7 @@ export default function VerificationDetailsForm({
               Open your UPI app, pay exactly{" "}
               <strong className="text-text">₹50</strong> to the UPI ID above,
               then complete the transaction successfully before submitting this
-              form. You will need the{" "}
-              <strong className="text-text">
-                UTR / Transaction Reference Number
-              </strong>{" "}
-              from the transaction to proceed.
+              form.
             </p>
 
             <p className="text-xs font-semibold text-text-muted flex items-center gap-1.5">
