@@ -65,7 +65,8 @@ const PartnerMarquee = () => {
       <div className="absolute inset-y-0 right-0 w-12 sm:w-24 md:w-32 bg-gradient-to-l from-bg via-bg/80 to-transparent z-10 pointer-events-none" />
 
       <Link 
-        to="/about#partners" 
+        to="/about"
+        state={{ scrollTo: "partners" }}
         className="flex w-full overflow-hidden focus:outline-none"
         aria-label="View all partners on About page"
       >

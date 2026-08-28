@@ -118,9 +118,8 @@ const Footer = ({ layout, onFooterClick }) => {
             <div className="flex flex-col gap-2.5">
               <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
               <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
-              <Link to="/register" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Register</Link>
-              <Link to="/about#partners" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Partners</Link>
-              <Link to="/#contact" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Contact</Link>
+              <Link to="/about" state={{ scrollTo: "partners" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Partners</Link>
+              <Link to="/" state={{ scrollTo: "contact" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Contact</Link>
             </div>
           </div>
 

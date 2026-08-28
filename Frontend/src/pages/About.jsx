@@ -51,6 +51,11 @@ const About = () => {
         const timer = setTimeout(scrollToTarget, 100);
         return () => clearTimeout(timer);
       }
+
+      // Keep address bar clean without URL hash
+      if (location.hash && typeof window !== "undefined") {
+        window.history.replaceState(null, "", window.location.pathname);
+      }
     }
   }, [location.pathname, location.hash, location.state]);
 

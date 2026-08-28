@@ -266,11 +266,16 @@ export const useSectionNavigation = () => {
 
     pollForTargetElement();
 
+    // Ensure clean URL without hash in the address bar
+    if (location.hash && typeof window !== "undefined") {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
     return () => {
       if (pollTimerId) clearTimeout(pollTimerId);
       if (restorationTimer.current) clearTimeout(restorationTimer.current);
     };
-  }, [isHomePage, resolveTargetSection, getSectionOffsetPosition]);
+  }, [isHomePage, resolveTargetSection, getSectionOffsetPosition, location.hash]);
 
   return {
     sectionNavItems,
