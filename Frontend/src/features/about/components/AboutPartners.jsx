@@ -20,7 +20,7 @@ const PartnerSection = () => {
   const { partners } = contentData.landing;
 
   return (
-    <section className="relative overflow-hidden py-12 lg:py-20" id="partners">
+    <section className="relative overflow-hidden py-12 lg:py-20 scroll-mt-20 md:scroll-mt-24" id="partners">
       {/* Background glow blobs */}
       <div className="absolute top-0 right-0 w-[50%] md:w-[40%] h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent/15 via-bg to-transparent pointer-events-none z-0 blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-[40%] h-[400px] bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-accent/10 to-transparent pointer-events-none z-0 blur-3xl"></div>

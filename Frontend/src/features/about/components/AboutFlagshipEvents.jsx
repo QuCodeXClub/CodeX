@@ -74,7 +74,7 @@ const AboutFlagshipEvents = () => {
     <section
       id="events"
       aria-label="Flagship Events Section"
-      className="relative pt-6 pb-14 md:pt-4 md:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden flex flex-col justify-center [content-visibility:auto] [contain-intrinsic-size:650px]"
+      className="relative pt-6 pb-14 md:pt-4 md:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden flex flex-col justify-center scroll-mt-20 md:scroll-mt-24"
     >
       <div className="max-w-6xl mx-auto w-full">
         {/* Section Header */}

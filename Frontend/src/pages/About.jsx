@@ -34,21 +34,14 @@ const About = () => {
 
         const el = document.getElementById(targetId);
         if (el) {
-          const navbarOffset = window.innerWidth < 768 ? 64 : 80;
-          const elementPosition = el.getBoundingClientRect().top + window.scrollY;
-          const offsetPosition = Math.max(0, Math.floor(elementPosition - navbarOffset));
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-          });
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
           return true;
         }
         return false;
       };
 
       if (!scrollToTarget()) {
-        const timer = setTimeout(scrollToTarget, 100);
+        const timer = setTimeout(scrollToTarget, 60);
         return () => clearTimeout(timer);
       }
 

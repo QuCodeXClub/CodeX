@@ -40,7 +40,7 @@ const AboutCulture = () => {
     <section
       id="community"
       aria-label="Community and Culture Section"
-      className="relative pt-8 pb-16 lg:pt-4 lg:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden [content-visibility:auto] [contain-intrinsic-size:800px]"
+      className="relative pt-8 pb-16 lg:pt-4 lg:pb-16 px-4 sm:px-6 lg:px-16 overflow-hidden scroll-mt-20 md:scroll-mt-24"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
