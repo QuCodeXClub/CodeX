@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
 import { Outlet, useNavigate, useLocation, useNavigation } from "react-router-dom";
 import Navbar from "./Navbar";
-import Footer from "./Footer"; // Import the new component
+import Footer from "./Footer";
 import contentData from "../data/content.json";
+import RouteProgressBar from "../components/common/RouteProgressBar";
 
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -43,7 +44,7 @@ const MainLayout = () => {
 
   return (
     <div className="app-shell flex flex-col min-h-screen bg-bg relative font-sans text-text overflow-x-clip">
-      {/* Background Grid Pattern (Same as Welcome Page & Admin Portal) */}
+      {/* Background Grid Pattern */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.035] z-0"
         style={{
@@ -58,13 +59,9 @@ const MainLayout = () => {
 
       <Navbar layout={layout} />
 
-      {isPageLoading && (
-        <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
-          <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
-        </div>
-      )}
+      {isPageLoading && <RouteProgressBar />}
 
-      <Suspense fallback={<div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20"><div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div></div>}>
+      <Suspense fallback={<RouteProgressBar />}>
         <main className="w-full mx-auto flex-1 border-x border-border/80 bg-transparent relative z-10">
           <Outlet />
         </main>

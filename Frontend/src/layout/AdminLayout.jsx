@@ -3,7 +3,7 @@ import { Outlet, Navigate, useLocation, useNavigation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { adminService } from "../services/adminService";
 import { setLogin, setLogout, setAuthResolved } from "../context/authSlice";
-import SplashScreen from "../components/common/SplashScreen";
+import RouteProgressBar from "../components/common/RouteProgressBar";
 
 export default function AdminLayout() {
   const dispatch = useDispatch();
@@ -67,25 +67,11 @@ export default function AdminLayout() {
 
   return (
     <>
-      {/* 
-        Always keep SplashScreen at the top so it doesn't unmount abruptly.
-        It fades out smoothly after showSplash becomes false.
-      */}
       <SplashScreen show={!isAuthResolved || showSplash} />
 
-      {isPageLoading && (
-        <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
-          <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
-        </div>
-      )}
+      {isPageLoading && <RouteProgressBar />}
 
-      <Suspense
-        fallback={
-          <div className="fixed top-0 left-0 w-full h-1 z-[9999] overflow-hidden bg-accent/20">
-            <div className="h-full bg-accent w-1/2 rounded-r-full animate-indeterminate-progress"></div>
-          </div>
-        }
-      >
+      <Suspense fallback={<RouteProgressBar />}>
         {content}
       </Suspense>
     </>
