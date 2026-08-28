@@ -42,11 +42,11 @@ export const optimizeCloudinaryUrl = (url, width = 1200) => {
       parsedUrl.hostname !== "res.cloudinary.com" ||
       parsedUrl.pathname.includes("/f_auto,")
     ) {
-      return url;
+      return parsedUrl.href;
     }
-    return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+    return parsedUrl.href.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
   } catch {
-    return url;
+    return "";
   }
 };
 

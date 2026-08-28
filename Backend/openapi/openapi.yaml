@@ -796,6 +796,9 @@ paths:
                 eventDescription:
                   type: string
                   example: Annual coding competition
+                time:
+                  type: string
+                  example: "10:00 AM - 01:00 PM"
                 qid:
                   type: string
                   example: QID-12345

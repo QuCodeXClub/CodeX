@@ -152,10 +152,10 @@ const VerifyBoardingPass = () => {
             </div>
 
             {/* Information Grid */}
-            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-6">
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-y-8 gap-x-6">
               
               {/* Event Info */}
-              <div className="sm:col-span-2">
+              <div className="sm:col-span-3">
                 <p className="font-mono text-[10px] text-[#2EC5D4] uppercase tracking-[0.2em] mb-1">
                   Event
                 </p>
@@ -166,6 +166,18 @@ const VerifyBoardingPass = () => {
                   {boardingPass.eventDescription}
                 </p>
               </div>
+
+              {/* Event Time */}
+              {boardingPass.time && (
+                <div>
+                  <p className="font-mono text-[10px] text-[#2EC5D4] uppercase tracking-[0.2em] mb-1">
+                    Event Time
+                  </p>
+                  <p className="font-sans text-xl md:text-2xl font-bold uppercase text-[#F5F5F5]">
+                    {boardingPass.time}
+                  </p>
+                </div>
+              )}
 
               {/* Desk Number */}
               <div>

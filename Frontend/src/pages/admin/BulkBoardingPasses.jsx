@@ -11,6 +11,7 @@ import {
   User,
   Mail,
   Calendar,
+  Clock,
   Info,
   Hash,
   Wifi,
@@ -41,7 +42,8 @@ export default function BulkBoardingPasses() {
     defaultValues: {
       eventName: "",
       eventDescription: "",
-      students: [{ name: "", email: "", qid: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
+      time: "",
+      students: [{ name: "", email: "", qid: "", time: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
     },
   });
 
@@ -70,6 +72,7 @@ export default function BulkBoardingPasses() {
         name: -1,
         email: -1,
         qid: -1,
+        time: -1,
         loginUser: -1,
         loginPass: -1,
         wifiUser: -1,
@@ -89,6 +92,7 @@ export default function BulkBoardingPasses() {
           if (col === "name" || col.includes("student name")) headerMap.name = idx;
           else if (col === "email" || col.includes("student email")) headerMap.email = idx;
           else if (col === "qid" || col.includes("q_id") || col.includes("q id") || col === "id") headerMap.qid = idx;
+          else if (col.includes("time") || col.includes("slot")) headerMap.time = idx;
           else if (col.includes("loginid") || col.includes("login_id") || col.includes("loginuser")) headerMap.loginUser = idx;
           else if (col.includes("loginpass") || col.includes("login_pass")) headerMap.loginPass = idx;
           else if (col.includes("wifiid") || col.includes("wifi_id") || col.includes("wifiuser")) headerMap.wifiUser = idx;
@@ -108,6 +112,7 @@ export default function BulkBoardingPasses() {
           const name = headerMap.name !== -1 ? cols[headerMap.name] : cols[0];
           const email = headerMap.email !== -1 ? cols[headerMap.email] : cols[1];
           const qid = headerMap.qid !== -1 ? cols[headerMap.qid] : (headerMap.name === -1 && cols.length > 2 ? cols[2] : "");
+          const time = headerMap.time !== -1 ? cols[headerMap.time] : "";
 
           let loginUser = headerMap.loginUser !== -1 ? cols[headerMap.loginUser] : (headerMap.name === -1 ? cols[3] : "");
           let loginPass = headerMap.loginPass !== -1 ? cols[headerMap.loginPass] : (headerMap.name === -1 ? cols[4] : "");
@@ -120,6 +125,7 @@ export default function BulkBoardingPasses() {
               name: name || "",
               email: email || "",
               qid: qid || "",
+              time: time || "",
               loginUser: loginUser || "",
               loginPass: loginPass || "",
               wifiUser: wifiUser || "",
@@ -153,7 +159,7 @@ export default function BulkBoardingPasses() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber\n";
+    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,Time,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -184,6 +190,7 @@ export default function BulkBoardingPasses() {
       const submitData = {
         eventName: data.eventName,
         eventDescription: data.eventDescription,
+        time: data.time,
         studentsStr: JSON.stringify(validStudents)
       };
 
@@ -248,7 +255,7 @@ export default function BulkBoardingPasses() {
             Event Details
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {/* Event Name */}
             <div>
               <label className="block text-sm font-semibold text-text mb-2">
@@ -265,6 +272,22 @@ export default function BulkBoardingPasses() {
                   {errors.eventName.message}
                 </p>
               )}
+            </div>
+
+            {/* Event Time */}
+            <div>
+              <label className="block text-sm font-semibold text-text mb-2">
+                Event Time
+              </label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
+                <input
+                  type="text"
+                  {...register("time")}
+                  placeholder="e.g. 10:00 AM - 01:00 PM"
+                  className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
             </div>
 
             {/* Event Description */}
@@ -379,7 +402,7 @@ export default function BulkBoardingPasses() {
                   )}
                 </div>
 
-                <div className="md:col-span-3 relative">
+                <div className="md:col-span-2 relative">
                   <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
@@ -397,12 +420,21 @@ export default function BulkBoardingPasses() {
                 </div>
 
                 <div className="md:col-span-2 relative">
-                  <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
+                  <Clock className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Desk No (Opt)"
-                    {...register(`students.${index}.citeNumber`)}
+                    placeholder="Time (Opt)"
+                    {...register(`students.${index}.time`)}
                     className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+
+                <div className="md:col-span-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Desk No"
+                    {...register(`students.${index}.citeNumber`)}
+                    className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
 

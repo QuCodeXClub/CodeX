@@ -43,24 +43,26 @@ const sessionSchema = new mongoose.Schema(
       type: Date,
       required: [true, "Session expiration date is required"],
     },
+    cleanupAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
 
-// Automatically remove old session history after 7 days
-sessionSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 });
+// TTL index to automatically delete sessions only when cleanupAt is reached
+sessionSchema.index(
+  { cleanupAt: 1 },
+  {
+    expireAfterSeconds: 0,
+    partialFilterExpression: {
+      cleanupAt: { $type: 'date' },
+    },
+  }
+);
 
 export const Session = mongoose.model('Session', sessionSchema);
 
-// Explicitly drop legacy expiresAt_1 TTL index from MongoDB database if it exists
-mongoose.connection.on('connected', async () => {
-  try {
-    const collection = mongoose.connection.collection('sessions');
-    const indexes = await collection.indexes();
-    if (indexes.some((idx) => idx.name === 'expiresAt_1')) {
-      await collection.dropIndex('expiresAt_1');
-    }
-  } catch {
-    // Index dropped or not present
-  }
-});
+// Synchronize indexes with MongoDB to ensure legacy TTL indexes (updatedAt_1, expiresAt_1) are dropped
+Session.syncIndexes().catch(() => {});

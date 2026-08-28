@@ -804,6 +804,31 @@ Deletes a contact message.
 
 ---
 
+# Additional API Endpoints
+
+Recent updates have introduced several new endpoints that follow the same common response format and authentication rules.
+
+### Boarding Passes (`/boarding-passes`)
+- `GET /verify/:boardingPassId` 🌐 Public
+- `GET /` 🔒 Protected
+- `POST /generate-bulk` 🔒 Protected
+
+### Email Blocklist (`/blocklist`)
+- `GET /` 🔒 Protected
+- `POST /add` 🔒 Protected
+- `DELETE /remove/:email` 🔒 Protected
+
+### Background Jobs (`/jobs`)
+- `GET /` 🔒 Protected
+- `GET /:jobId` 🔒 Protected
+
+### Custom QR (`/qr`)
+- `GET /` 🔒 Protected
+- `POST /` 🔒 Protected
+- `DELETE /:id` 🔒 Protected
+
+---
+
 # Common Response Format
 
 ## Success

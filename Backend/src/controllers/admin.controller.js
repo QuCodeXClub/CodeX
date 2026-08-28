@@ -29,11 +29,13 @@ const generateAuthSession = async (adminId, req) => {
     const deviceType = parsedUA.device.type ?
       parsedUA.device.type.charAt(0).toUpperCase() + parsedUA.device.type.slice(1) : 'Desktop';
 
-    // Create a new session to get an ID
+    // Create a new session with 10-day validity
+    const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
     let session = await Session.create({
       adminId,
       token: 'temp', // Placeholder
-      expiresAt: new Date(Date.now() + ms(process.env.ACCESS_TOKEN_EXPIRY || '1d')),
+      expiresAt,
+      cleanupAt: null,
       userAgent: rawUserAgent,
       os,
       browser,
@@ -184,17 +186,24 @@ const verifyOtp = asyncHandler(async (req, res) => {
 });
 
 const logoutAdmin = asyncHandler(async (req, res) => {
+  const cleanupDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
   if (req.sessionId) {
     await Session.findByIdAndUpdate(req.sessionId, {
       status: 'LOGGED_OUT',
       loggedOutAt: new Date(),
+      cleanupAt: cleanupDate,
     });
   } else {
     const token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ', '');
     if (token) {
       await Session.findOneAndUpdate(
         { token },
-        { status: 'LOGGED_OUT', loggedOutAt: new Date() }
+        {
+          status: 'LOGGED_OUT',
+          loggedOutAt: new Date(),
+          cleanupAt: cleanupDate,
+        }
       );
     }
   }
@@ -216,10 +225,17 @@ const logoutAdmin = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/admin/sessions
 // @access  Private/Admin
 const getAdminSessions = asyncHandler(async (req, res) => {
-  // Update expired active sessions
+  const cleanupDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  // Update expired active sessions with EXPIRED status and 7-day cleanupAt
   await Session.updateMany(
-    { status: 'ACTIVE', expiresAt: { $lt: new Date() } },
-    { status: 'EXPIRED' }
+    { status: 'ACTIVE', expiresAt: { $lte: new Date() } },
+    {
+      $set: {
+        status: 'EXPIRED',
+        cleanupAt: cleanupDate,
+      },
+    }
   );
 
   const rawSessions = await Session.find()
@@ -253,6 +269,7 @@ const killSession = asyncHandler(async (req, res) => {
 
   session.status = 'REVOKED';
   session.loggedOutAt = new Date();
+  session.cleanupAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   await session.save();
 
   await session.populate('adminId', 'name email profilePhoto');

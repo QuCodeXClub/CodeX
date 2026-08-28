@@ -32,7 +32,10 @@ The backend is responsible for:
 - Managing club events
 - Managing team members
 - Generating and verifying certificates
+- **Generating boarding passes and QR codes**
 - Managing contact form submissions
+- **Processing background jobs for bulk email**
+- **Managing an email blocklist**
 - Sending transactional emails
 - Uploading and managing media using Cloudinary
 - Protecting public APIs against abuse

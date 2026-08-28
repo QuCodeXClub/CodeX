@@ -99,7 +99,7 @@ MongoDB also integrates seamlessly with Mongoose, making schema validation and q
 
 # Database Architecture
 
-The application consists of eight primary collections.
+The application consists of twelve primary collections.
 
 ```
                     MongoDB
@@ -119,10 +119,22 @@ The application consists of eight primary collections.
     Event
 
       ▼
- TeamMember
+ BoardingPass
+
+      ▼
+  TeamMember
 
       ▼
    Contact
+
+      ▼
+ BackgroundJob
+
+      ▼
+ EmailBlocklist
+
+      ▼
+   CustomQR
 ```
 
 Each collection has a single responsibility.
@@ -145,6 +157,10 @@ The backend currently contains the following collections.
 | TeamMember | Stores official team members |
 | Certificate | Stores generated certificates |
 | Contact | Stores contact form submissions |
+| BoardingPass | Stores generated boarding passes for events |
+| BackgroundJob | Tracks status of long-running automated tasks |
+| EmailBlocklist | Tracks emails marked as spam or invalid |
+| CustomQR | Stores statically generated manual QR codes |
 
 Each collection is represented by a dedicated Mongoose model inside:
 
@@ -735,7 +751,10 @@ This allows:
 | browser | String | ✅ | Browser |
 | device | String | ✅ | Device type |
 | ipAddress | String | ✅ | Client IP |
-| expiresAt | Date | ✅ | Session expiry |
+| status | String | Auto | Status (ACTIVE, LOGGED_OUT, REVOKED, EXPIRED) |
+| expiresAt | Date | ✅ | Session expiration date (10 days) |
+| cleanupAt | Date | ❌ | Scheduled cleanup timestamp (+7 days post inactive) |
+| loggedOutAt | Date | ❌ | Timestamp when session logged out or revoked |
 | createdAt | Date | Auto | Timestamp |
 | updatedAt | Date | Auto | Timestamp |
 
@@ -798,11 +817,11 @@ Example:
 ```text
 Chrome
 
-Windows
+Windows 11
 
 Desktop
 
-192.168.1.20
+192.168.1.10
 ```
 
 This enables administrators to view all active login sessions.
@@ -811,34 +830,39 @@ This enables administrators to view all active login sessions.
 
 # TTL Index
 
-The Session model uses a TTL (Time-To-Live) index.
+The Session model uses a partial TTL (Time-To-Live) index on `cleanupAt`:
 
 ```javascript
 sessionSchema.index(
-    { expiresAt: 1 },
-    { expireAfterSeconds: 0 }
-)
+    { cleanupAt: 1 },
+    {
+        expireAfterSeconds: 0,
+        partialFilterExpression: {
+            cleanupAt: { $type: 'date' },
+        },
+    }
+);
 ```
 
-MongoDB automatically deletes expired sessions.
+MongoDB automatically deletes sessions 7 days after they become inactive (logged out, revoked, or expired):
 
 ```
-Session
+Session Inactive (LOGGED_OUT / REVOKED / EXPIRED)
 
 ↓
 
-expiresAt
+cleanupAt set to Date.now() + 7 days
 
 ↓
 
-TTL Monitor
+TTL Monitor (when cleanupAt <= now)
 
 ↓
 
 Deleted
 ```
 
-This prevents the Session collection from growing indefinitely.
+ACTIVE sessions retain `cleanupAt: null` and are never automatically deleted by this TTL index.
 
 ---
 

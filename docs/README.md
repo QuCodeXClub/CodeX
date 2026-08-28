@@ -17,6 +17,7 @@ Please refer to the following markdown files for in-depth insights into specific
 - **[Development Guide](./development-guide.md)**: Best practices and conventions for writing maintainable code in this repository.
 - **[Project Structure](./project-structure.md)**: An overview of the backend's directory layout and standard practices.
 - **[Getting Started](./getting-started.md)**: A more detailed companion to the root README for setting up the environment.
+- **[Image Guidelines](./image-guidelines.md)**: Guidelines for frontend image storage, Cloudinary usage, `.webp` formatting, and optimization.
 
 ## OpenAPI Specification
 - **`openapi.yaml`**: The raw OpenAPI (Swagger) specification file used to generate the interactive API documentation available at `/api-docs` when running the backend.
