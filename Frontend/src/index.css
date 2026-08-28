@@ -26,6 +26,7 @@
   --breakpoint-md: 720px;
   --breakpoint-lg: 1100px;
   --animate-indeterminate-progress: indeterminateProgress 1s infinite linear;
+  --animate-marquee: marquee 30s linear infinite;
 }
 
 :root {
@@ -171,6 +172,11 @@
   100% {
     transform: translateX(200%);
   }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes fadeInSlideUp {

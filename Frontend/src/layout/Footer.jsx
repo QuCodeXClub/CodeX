@@ -119,6 +119,8 @@ const Footer = ({ layout, onFooterClick }) => {
               <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
               <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
               <Link to="/register" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Register</Link>
+              <Link to="/about#partners" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Partners</Link>
+              <Link to="/#contact" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Contact</Link>
             </div>
           </div>
 
@@ -144,7 +146,7 @@ const Footer = ({ layout, onFooterClick }) => {
             <div className="flex flex-col gap-2.5">
               <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Guidelines</Link>
               <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Event Policy</Link>
-              <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment Guide</Link>
+              <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment & Registration Guide</Link>
             </div>
           </div>
 

@@ -2,6 +2,11 @@ import partnerHackindia from '../assets/partners/hackindia.svg';
 import partnerUnstop from '../assets/partners/unstop.svg';
 import partnerHostinger from '../assets/partners/hostinger.svg';
 import partnerXyz from '../assets/partners/xyz.svg';
+import partnerCodechef from '../assets/partners/codechef.svg';
+import partnerBlackbox from '../assets/partners/blackbox.svg';
+import partnerCollagecart from '../assets/partners/collagecart.svg';
+import partnerCodecrafters from '../assets/partners/codecrafters.svg';
+import partnerMemcode from '../assets/partners/memcode.svg';
 
 export const ASSETS = {
   IMAGES: {
@@ -21,6 +26,11 @@ export const ASSETS = {
     PARTNER_UNSTOP: partnerUnstop,
     PARTNER_HOSTINGER: partnerHostinger,
     PARTNER_XYZ: partnerXyz,
+    PARTNER_CODECHEF: partnerCodechef,
+    PARTNER_BLACKBOX: partnerBlackbox,
+    PARTNER_COLLAGECART: partnerCollagecart,
+    PARTNER_CODECRAFTERS: partnerCodecrafters,
+    PARTNER_MEMCODE: partnerMemcode,
 
     // About Section
     ABOUT_FLAGSHIP_TECHTHRIVE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
