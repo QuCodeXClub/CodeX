@@ -31,5 +31,9 @@ export const ASSETS = {
     ABOUT_COMMUNITY_3: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0619_migrdi.jpg",
     ABOUT_COMMUNITY_4: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475205/3R5A5331_iy1okp.jpg",
     ABOUT_COMMUNITY_5: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475204/IMG_5259_dwnhsr.jpg",
+
+    // Registration
+    PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787918116/payment-codex_cc2mq4.webp",
+    PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787918116/WhatsApp_Image_2026-08-27_at_4.22.42_AM_ayilhc.webp",
   },
 };
