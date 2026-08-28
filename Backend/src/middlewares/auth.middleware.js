@@ -37,8 +37,9 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     }
 
     // Check expiration date
-    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+    if (session.expiresAt && new Date(session.expiresAt) <= new Date()) {
       session.status = 'EXPIRED';
+      session.cleanupAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       await session.save();
       throw new ApiError(401, 'Session has expired');
     }

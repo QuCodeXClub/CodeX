@@ -5,7 +5,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
 
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
-  const { eventName, eventDescription, studentsStr } = req.body;
+  const { eventName, eventDescription, time, eventTime, studentsStr } = req.body;
+  const globalTime = (time || eventTime || '').toString().trim();
   
   if (!eventName || !eventDescription || !studentsStr) {
     throw new ApiError(400, 'Event Name, Event Description, and students data are required');
@@ -35,6 +36,7 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
     payload: {
       eventName,
       eventDescription,
+      time: (student.time || globalTime || '').toString().trim(),
       student,
     },
   }));

@@ -252,19 +252,16 @@ Current files:
 
 ```text
 admin.controller.js
-
+backgroundJob.controller.js
+blocklist.controller.js
+boardingPass.controller.js
 certificate.controller.js
-
 contact.controller.js
-
+customQR.controller.js
 event.controller.js
-
 healthcheck.controller.js
-
 registration.controller.js
-
 student.controller.js
-
 team.controller.js
 ```
 
@@ -315,19 +312,16 @@ Current models:
 
 ```text
 admin.model.js
-
+backgroundJob.model.js
+boardingPass.model.js
 certificate.model.js
-
 contact.model.js
-
+customQR.model.js
+emailBlocklist.model.js
 event.model.js
-
 session.model.js
-
 studentRegistration.model.js
-
 teamMember.model.js
-
 token.model.js
 ```
 
@@ -355,19 +349,16 @@ Current routes:
 
 ```text
 admin.routes.js
-
+blocklist.routes.js
+boardingPass.routes.js
 certificate.routes.js
-
 contact.routes.js
-
 event.routes.js
-
 healthcheck.routes.js
-
+job.routes.js
+qr.routes.js
 registration.routes.js
-
 student.routes.js
-
 team.routes.js
 ```
 

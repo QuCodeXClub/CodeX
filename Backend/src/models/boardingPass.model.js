@@ -24,6 +24,10 @@ const boardingPassSchema = new mongoose.Schema(
       required: [true, "Event description is required"],
       trim: true,
     },
+    time: {
+      type: String,
+      trim: true,
+    },
     qid: {
       type: String,
       required: [true, "QID is required"],

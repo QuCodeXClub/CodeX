@@ -16,10 +16,14 @@ CodeX Website is the official web platform for the CodeX coding club. It provide
 
 ## Features
 
-- Member registration and authentication
-- Event creation, listing, and registration management
+- Member registration, authentication, and session management
+- Event creation, listing, and robust registration workflows
+- **Boarding Pass & QR System**: Automated boarding pass generation and QR code verification for attendees
+- **Certificates**: Automated certificate generation for event participants
 - Team and role management for club organizers
-- Admin dashboard (create/manage events, view registrations)
+- Admin dashboard (create/manage events, view registrations, manage blocklists)
+- Background job processing for bulk email delivery and task automation
+- Contact and inquiry management
 
 ## Project Structure
 
