@@ -1,6 +1,8 @@
 import React, { memo } from "react";
+import { ZoomIn } from "lucide-react";
 import contentData from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
+import { useImageZoom } from "../../../context/ImageZoomContext";
 
 /**
  * Bento grid layout span mappings for community principles.
@@ -31,6 +33,7 @@ const cultureItems = principles.map((principle, index) => ({
  * Learn Together, Build Together, Compete Together, and Grow Together.
  */
 const AboutCulture = () => {
+  const { openImage } = useImageZoom();
   if (!principles.length) return null;
 
   return (
@@ -62,8 +65,15 @@ const AboutCulture = () => {
           {cultureItems.map((item) => (
             <div
               key={item.id}
-              className={`group relative overflow-hidden rounded-3xl border border-border/60 bg-card ${item.className} transform-gpu`}
+              onClick={() => item.image && openImage({ src: item.image, alt: item.title })}
+              className={`group relative overflow-hidden rounded-3xl border border-border/60 bg-card cursor-zoom-in ${item.className} transform-gpu`}
             >
+              {/* Zoom badge on hover */}
+              <div className="absolute top-4 right-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/75 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg pointer-events-none">
+                <ZoomIn size={13} className="text-accent" />
+                <span className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">Zoom</span>
+              </div>
+
               {/* Background Image */}
               <div className="absolute inset-0 w-full h-full">
                 {item.image && (
@@ -82,7 +92,7 @@ const AboutCulture = () => {
               <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
               {/* Content Overlay */}
-              <div className="absolute inset-0 p-6 sm:p-8 md:p-10 flex flex-col justify-end">
+              <div className="absolute inset-0 p-6 sm:p-8 md:p-10 flex flex-col justify-end pointer-events-none">
                 <div className="transform-gpu translate-y-1 group-hover:translate-y-0 transition-transform duration-300 ease-out">
                   {/* Principle Badge */}
                   <div className="inline-block px-3 py-1.5 rounded-lg bg-black/70 backdrop-blur-sm border border-white/20 shadow-sm mb-3">

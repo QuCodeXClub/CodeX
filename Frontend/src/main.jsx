@@ -12,6 +12,7 @@ import AdminLayout from "./layout/AdminLayout";
 import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
+import SplashScreen from "./components/common/SplashScreen";
 import { lazyWithRetry, routeLazy } from "./utils/lazyWithRetry";
 
 // Public pages
@@ -116,7 +117,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       <App>
-        <RouterProvider router={router} />
+        <RouterProvider router={router} fallbackElement={<SplashScreen show={true} />} />
       </App>
     </Provider>
   </React.StrictMode>
