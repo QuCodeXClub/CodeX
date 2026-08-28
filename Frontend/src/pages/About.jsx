@@ -5,6 +5,7 @@ import {
   AboutFlagshipEvents,
   AboutCulture,
   AboutCTA,
+  AboutPartners,
 } from "../features/about";
 
 /**
@@ -59,6 +60,7 @@ const About = () => {
         <AboutHero />
         <AboutFlagshipEvents />
         <AboutCulture />
+        <AboutPartners />
         <AboutCTA />
       </div>
     </main>

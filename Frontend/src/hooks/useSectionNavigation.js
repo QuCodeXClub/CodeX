@@ -43,7 +43,6 @@ export const useSectionNavigation = () => {
       { label: "VISION", targetId: "vision" },
       { label: "PROGRAMS", targetId: "programs" },
       { label: "DOMAINS", targetId: "domains" },
-      { label: "PARTNERS", targetId: "partners" },
       { label: "FAQS", targetId: "faqs" },
       { label: "CONTACT", targetId: "contact" },
     ],

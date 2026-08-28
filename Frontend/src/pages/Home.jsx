@@ -6,9 +6,8 @@ import { fetchPublicEvents } from "../context/eventsSlice";
 import { fetchPublicTeam } from "../context/teamSlice";
 import { generateAcademicYears } from "../utils/helpers";
 
-// Lazy load below-the-fold sections to improve initial load time with auto-retry on build updates
 const MissionSection = lazyWithRetry(() => import("../features/landing/components/MissionSection"));
-const PartnerSection = lazyWithRetry(() => import("../features/landing/components/PartnerSection"));
+const PartnerMarquee = lazyWithRetry(() => import("../features/landing/components/PartnerMarquee"));
 const FaqSection = lazyWithRetry(() => import("../features/landing/components/FaqSection"));
 const ContactSection = lazyWithRetry(() => import("../features/landing/components/ContactSection"));
 const Domains = lazyWithRetry(() => import("../features/landing/components/Domains"));
@@ -40,10 +39,10 @@ const Home = () => {
             <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></div>
           </div>
         }>
+          <PartnerMarquee />
           <MissionSection />
           <EventHero />
           <Domains />
-          <PartnerSection />
           <FaqSection />
           <ContactSection />
         </Suspense>

@@ -80,7 +80,7 @@
         {
           "name": "HackIndia",
           "description": "India's largest developer community and hackathon platform.",
-          "url": "https://hackindia.com"
+          "url": "https://hackindia.org"
         },
         {
           "name": "Unstop",
@@ -96,6 +96,31 @@
           "name": ".xyz",
           "description": "A modern domain for the next generation of ideas and innovation.",
           "url": "https://gen.xyz"
+        },
+        {
+          "name": "CodeChef",
+          "description": "A competitive programming platform and community.",
+          "url": "https://codechef.com"
+        },
+        {
+          "name": "Blackbox",
+          "description": "AI-powered coding assistant and search for developers.",
+          "url": "https://blackbox.ai"
+        },
+        {
+          "name": "CollageCart",
+          "description": "Empowering college students with digital resources.",
+          "url": "https://collagecart.com"
+        },
+        {
+          "name": "CodeCrafters",
+          "description": "Master advanced programming by rebuilding popular tools from scratch.",
+          "url": "https://codecrafters.io"
+        },
+        {
+          "name": "Memcode",
+          "description": "Spaced repetition flashcards for developers.",
+          "url": "https://memcode.com"
         }
       ]
     },
@@ -185,6 +210,10 @@
       {
         "label": "FAQS",
         "path": "/#faqs"
+      },
+      {
+        "label": "PARTNERS",
+        "path": "/about#partners"
       },
       {
         "label": "CONTACT",
