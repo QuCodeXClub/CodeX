@@ -12,7 +12,7 @@ import AdminLayout from "./layout/AdminLayout";
 import GlobalError from "./pages/Error";
 
 import Home from "./pages/Home";
-import RouteProgressBar from "./components/common/RouteProgressBar";
+import SplashScreen from "./components/common/SplashScreen";
 import { routeLazy, prefetchRoute } from "./utils/lazyWithRetry";
 
 // Dynamic Loaders
@@ -164,7 +164,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       <App>
-        <RouterProvider router={router} fallbackElement={<RouteProgressBar />} />
+        <RouterProvider router={router} fallbackElement={<SplashScreen />} />
       </App>
     </Provider>
   </React.StrictMode>
