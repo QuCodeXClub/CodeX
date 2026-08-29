@@ -22,6 +22,10 @@ const eventSchema = new mongoose.Schema(
     registrationLink: {
       type: String, // URL
     },
+    registrationCloseDate: {
+      type: Date, // Deadline after which registration is closed
+      default: null,
+    },
     locationType: {
       type: String,
       enum: {
@@ -44,4 +48,10 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for fast timeline filtering (upcoming/past) and sorting
+eventSchema.index({ date: 1 });
+eventSchema.index({ date: -1 });
+eventSchema.index({ eventName: "text", location: "text", tags: "text" });
+
 export const Event = mongoose.model("Event", eventSchema);
+

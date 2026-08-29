@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Event } from "../models/event.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -8,6 +9,18 @@ import {
   updateOnCloudinary,
   getPublicIdFromUrl,
 } from "../utils/cloudinary.js";
+
+const parseDateSafe = (val, fieldName, isRequired = false) => {
+  if (!val) {
+    if (isRequired) throw new ApiError(400, `${fieldName} is required`);
+    return null;
+  }
+  const d = new Date(val);
+  if (isNaN(d.getTime())) {
+    throw new ApiError(400, `Invalid date format for ${fieldName}`);
+  }
+  return d;
+};
 
 const parseTags = (tags) => {
   if (!tags) return [];
@@ -60,10 +73,13 @@ const normalizeLocationType = (type) => {
   throw new ApiError(400, "Location type must be either 'Online' or 'Offline'");
 };
 
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const createEvent = asyncHandler(async (req, res) => {
   const {
     eventName,
     date,
+    registrationCloseDate,
     description,
     registrationLink,
     locationType,
@@ -74,6 +90,13 @@ const createEvent = asyncHandler(async (req, res) => {
   if (!eventName || !date || !description) {
     throw new ApiError(400, "Event name, date, and description are required");
   }
+
+  const parsedDate = parseDateSafe(date, "Event date", true);
+  const parsedRegistrationCloseDate = parseDateSafe(
+    registrationCloseDate,
+    "Registration close date",
+    false
+  );
 
   const coverImageLocalPath = req.file?.path;
 
@@ -91,10 +114,11 @@ const createEvent = asyncHandler(async (req, res) => {
   }
 
   const event = await Event.create({
-    eventName,
-    date,
+    eventName: String(eventName).trim(),
+    date: parsedDate,
+    registrationCloseDate: parsedRegistrationCloseDate,
     description,
-    registrationLink,
+    registrationLink: registrationLink ? String(registrationLink).trim() : "",
     locationType: locationType
       ? normalizeLocationType(locationType)
       : "Offline",
@@ -109,15 +133,92 @@ const createEvent = asyncHandler(async (req, res) => {
 });
 
 const getEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find().sort({ date: -1 });
+  const { type, search, all } = req.query;
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.max(1, parseInt(req.query.limit, 10) || 12);
+  const isUnpaged = all === "true" || req.query.limit === "0";
+
+  const filter = {};
+  let sort = { date: -1 };
+
+  const now = new Date();
+  if (type === "upcoming") {
+    filter.date = { $gte: now };
+    sort = { date: 1 }; // Chronological order: soonest upcoming first
+  } else if (type === "past") {
+    filter.date = { $lt: now };
+    sort = { date: -1 }; // Reverse chronological order: most recent past first
+  }
+
+  if (search && typeof search === "string" && search.trim()) {
+    const safeSearch = escapeRegex(search.trim()).slice(0, 100);
+    const searchRegex = new RegExp(safeSearch, "i");
+    filter.$or = [
+      { eventName: searchRegex },
+      { location: searchRegex },
+      { tags: { $in: [searchRegex] } },
+    ];
+  }
+
+  if (isUnpaged) {
+    const events = await Event.find(filter).sort(sort).lean();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { events, pagination: null }, "Events fetched successfully"));
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [events, total] = await Promise.all([
+    Event.find(filter).sort(sort).skip(skip).limit(limit).lean(),
+    Event.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(total / limit) || 1;
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        events,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+        },
+      },
+      "Events fetched successfully"
+    )
+  );
+});
+
+const getEventById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Invalid event ID format");
+  }
+
+  const event = await Event.findById(id).lean();
+
+  if (!event) {
+    throw new ApiError(404, "Event not found");
+  }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, events, "Events fetched successfully"));
+    .json(new ApiResponse(200, event, "Event fetched successfully"));
 });
 
 const deleteEvent = asyncHandler(async (req, res) => {
   const { id } = req.params;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Invalid event ID format");
+  }
 
   const event = await Event.findById(id);
 
@@ -125,10 +226,18 @@ const deleteEvent = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Event not found");
   }
 
-  // Extract public ID from Cloudinary URL
-  const publicId = getPublicIdFromUrl(event.coverImage);
+  // Extract public ID from Cloudinary URL and safely attempt removal
+  if (event.coverImage) {
+    try {
+      const publicId = getPublicIdFromUrl(event.coverImage);
+      if (publicId) {
+        await deleteFromCloudinary(publicId);
+      }
+    } catch (err) {
+      console.warn("Could not delete Cloudinary image for event:", err.message);
+    }
+  }
 
-  await deleteFromCloudinary(publicId);
   await event.deleteOne();
 
   return res
@@ -141,12 +250,17 @@ const updateEvent = asyncHandler(async (req, res) => {
   const {
     eventName,
     date,
+    registrationCloseDate,
     description,
     registrationLink,
     locationType,
     location,
     tags,
   } = req.body;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Invalid event ID format");
+  }
 
   const event = await Event.findById(id);
 
@@ -166,11 +280,21 @@ const updateEvent = asyncHandler(async (req, res) => {
     newCoverImageUrl = uploadedImage.url;
   }
 
-  event.eventName = eventName || event.eventName;
-  event.date = date || event.date;
-  event.description = description || event.description;
-  event.registrationLink =
-    registrationLink !== undefined ? registrationLink : event.registrationLink;
+  if (eventName !== undefined) event.eventName = String(eventName).trim();
+  if (date !== undefined) {
+    event.date = parseDateSafe(date, "Event date", true);
+  }
+  if (registrationCloseDate !== undefined) {
+    event.registrationCloseDate = parseDateSafe(
+      registrationCloseDate,
+      "Registration close date",
+      false
+    );
+  }
+  if (description !== undefined) event.description = description;
+  if (registrationLink !== undefined) {
+    event.registrationLink = registrationLink ? String(registrationLink).trim() : "";
+  }
   if (locationType !== undefined) {
     event.locationType = normalizeLocationType(locationType);
   }
@@ -189,4 +313,5 @@ const updateEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, event, "Event updated successfully"));
 });
 
-export { createEvent, getEvents, deleteEvent, updateEvent };
+export { createEvent, getEvents, getEventById, deleteEvent, updateEvent };
+

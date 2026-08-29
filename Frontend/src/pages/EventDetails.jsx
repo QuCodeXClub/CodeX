@@ -13,7 +13,11 @@ import {
 import { eventService } from "../services/eventService";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
-import { normalizeEvent, optimizeCloudinaryUrl } from "../utils/helpers";
+import {
+  normalizeEvent,
+  optimizeCloudinaryUrl,
+  isRegistrationOpen,
+} from "../utils/helpers";
 import { useImageZoom } from "../context/ImageZoomContext";
 
 export default function EventDetails() {
@@ -30,12 +34,23 @@ export default function EventDetails() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await eventService.getEvents();
+        try {
+          const response = await eventService.getEventById(id);
+          const raw = response.data?.data || response.data;
+          if (raw && (raw._id || raw.eventName)) {
+            setEvent(normalizeEvent(raw));
+            return;
+          }
+        } catch {
+          // Fallback to getEvents if getEventById fails
+        }
+
+        const response = await eventService.getEvents({ all: "true" });
         const eventsList = Array.isArray(response)
           ? response
           : Array.isArray(response?.data)
           ? response.data
-          : response?.data?.events || [];
+          : response?.data?.data?.events || response?.data?.events || [];
         const foundEvent = eventsList.find((e) => e._id === id || e.id === id);
         setEvent(normalizeEvent(foundEvent));
       } catch (error) {
@@ -103,8 +118,11 @@ export default function EventDetails() {
 
     const text = encodeURIComponent(event.eventName);
     const dates = `${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}`;
+    const regOpen = isRegistrationOpen(event);
     const details = encodeURIComponent(
-      `Register here: ${event.registrationLink || window.location.href}`
+      regOpen && event.registrationLink
+        ? `Register here: ${event.registrationLink}`
+        : `Event Details: ${window.location.href}`
     );
 
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}`;
@@ -196,8 +214,8 @@ export default function EventDetails() {
                     <span>{event.locationType}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    {event.registrationLink && (
-                      <a href={event.registrationLink} target="_blank" rel="noreferrer" title="Event Website">
+                    {isRegistrationOpen(event) && event.registrationLink && (
+                      <a href={event.registrationLink} target="_blank" rel="noreferrer" title="Register on Website">
                         <Globe className="w-4 h-4 cursor-pointer hover:text-accent transition-colors" />
                       </a>
                     )}
@@ -255,6 +273,26 @@ export default function EventDetails() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Registration Close Date Row (if configured) */}
+                  {event.registrationCloseDate && (
+                    <div className="flex items-start gap-4">
+                      <div className="bg-accent/10 p-2.5 rounded-lg text-accent mt-0.5">
+                        <Clock className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-text mb-1">Registration Deadline</h3>
+                        <p className="text-sm text-text-muted">
+                          {new Date(event.registrationCloseDate).toLocaleDateString("en-IN", {
+                            weekday: "short",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })} • {new Date(event.registrationCloseDate).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tags — only shown when the event has tags */}
@@ -302,9 +340,19 @@ export default function EventDetails() {
                 {/* Registration Card */}
                 <div className="bg-card border border-border/80 rounded-2xl shadow-sm relative overflow-hidden">
                   {/* Status Banner */}
-                  <div className="bg-accent text-text-inverse px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0">
-                    Registration Open
-                  </div>
+                  {new Date(event.date) < new Date() ? (
+                    <div className="bg-card-hover text-text-muted border-b border-r border-border px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0">
+                      Completed
+                    </div>
+                  ) : isRegistrationOpen(event) ? (
+                    <div className="bg-accent text-text-inverse px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0 shadow-sm">
+                      Registration Open
+                    </div>
+                  ) : (
+                    <div className="bg-warning/90 text-text-inverse px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0 shadow-sm">
+                      Registration Closed
+                    </div>
+                  )}
 
                   <div className="p-6 pt-16">
                     {/* Organizer/Event Info */}
@@ -322,19 +370,30 @@ export default function EventDetails() {
                     </div>
 
                     {/* Action Button */}
-                    {event.registrationLink ? (
+                    {isRegistrationOpen(event) ? (
                       <a
                         href={event.registrationLink}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300"
+                        className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer"
                       >
                         Register <ExternalLink className="w-4 h-4" />
                       </a>
                     ) : (
-                      <button disabled className="w-full bg-card-hover text-text-muted px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider cursor-not-allowed">
-                        Registration Closed
-                      </button>
+                      <div className="space-y-2">
+                        <button disabled className="w-full bg-card-hover border border-border text-text-muted px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider cursor-not-allowed">
+                          Registration Closed
+                        </button>
+                        {event.registrationCloseDate && new Date(event.registrationCloseDate) < new Date() && (
+                          <p className="text-[11px] font-mono text-center text-text-muted">
+                            Registration deadline passed on{" "}
+                            {new Date(event.registrationCloseDate).toLocaleDateString("en-IN", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -346,7 +405,7 @@ export default function EventDetails() {
                   </span>
                   <button
                     onClick={handleShare}
-                    className="flex-shrink-0 inline-flex items-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_16px_var(--color-accent-glow)] text-text-inverse px-5 py-2.5 rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-300"
+                    className="flex-shrink-0 inline-flex items-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_16px_var(--color-accent-glow)] text-text-inverse px-5 py-2.5 rounded-xl font-bold font-mono text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer"
                   >
                     <Share2 className="w-4 h-4" /> Share
                   </button>
@@ -363,12 +422,12 @@ export default function EventDetails() {
 
       {/* Mobile Sticky Bottom Registration Bar - Transparent & Centered */}
       <div className={`lg:hidden ${isDocked ? 'absolute' : 'fixed'} bottom-6 left-0 right-0 z-50 flex items-center justify-center px-4 bg-transparent pointer-events-none`}>
-        {event.registrationLink ? (
+        {isRegistrationOpen(event) ? (
           <a
             href={event.registrationLink}
             target="_blank"
             rel="noreferrer"
-            className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2"
+            className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
           >
             Register <ExternalLink className="w-4 h-4" />
           </a>
@@ -383,4 +442,4 @@ export default function EventDetails() {
       </div>
     </div>
   );
-}
+}

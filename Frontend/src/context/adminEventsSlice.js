@@ -3,19 +3,17 @@ import axiosInstance from "../services/axiosInstance";
 
 export const fetchAdminEvents = createAsyncThunk(
   "adminEvents/fetch",
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/events");
+      const response = await axiosInstance.get("/events", { params });
       const payload = response.data?.data || response.data || response;
-      return payload.events || (Array.isArray(payload) ? payload : []);
+      return {
+        events: payload.events || (Array.isArray(payload) ? payload : []),
+        pagination: payload.pagination || null,
+      };
     } catch (err) {
       return rejectWithValue(err);
     }
-  },
-  {
-    condition: (_, { getState }) => {
-      if (getState().adminEvents.loading) return false;
-    },
   }
 );
 
@@ -63,6 +61,14 @@ const adminEventsSlice = createSlice({
   name: "adminEvents",
   initialState: {
     events: [],
+    pagination: {
+      page: 1,
+      limit: 12,
+      total: 0,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    },
     loading: false,
     error: null,
     isLoaded: false,
@@ -76,20 +82,23 @@ const adminEventsSlice = createSlice({
       .addCase(fetchAdminEvents.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoaded = true;
-        state.events = action.payload;
+        state.events = action.payload.events;
+        if (action.payload.pagination) {
+          state.pagination = action.payload.pagination;
+        }
       })
       .addCase(fetchAdminEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       .addCase(createAdminEvent.fulfilled, (state, action) => {
-        const created = action.payload?.data || action.payload;
+        const created = action.payload?.data?.data || action.payload?.data || action.payload;
         if (created && created._id) {
           state.events = [created, ...state.events];
         }
       })
       .addCase(updateAdminEvent.fulfilled, (state, action) => {
-        const updated = action.payload?.data || action.payload;
+        const updated = action.payload?.data?.data || action.payload?.data || action.payload;
         if (updated && updated._id) {
           state.events = state.events.map((e) => (e._id === updated._id ? updated : e));
         }
@@ -101,3 +110,4 @@ const adminEventsSlice = createSlice({
 });
 
 export default adminEventsSlice.reducer;
+

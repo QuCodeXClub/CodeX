@@ -106,8 +106,24 @@ export const normalizeEvent = (event) => {
   if (!event) return event;
   return {
     ...event,
+    registrationCloseDate: event.registrationCloseDate || null,
     locationType: event.locationType || "Offline",
     location: event.location || "",
     tags: Array.isArray(event.tags) ? event.tags : [],
   };
+};
+
+/**
+ * Checks if registration is currently active for an event.
+ * Returns true only if:
+ * 1. Event has a valid registration link
+ * 2. Event date has not passed
+ * 3. Registration close deadline (if configured) has not passed
+ */
+export const isRegistrationOpen = (event) => {
+  if (!event || !event.registrationLink) return false;
+  const now = new Date();
+  if (event.date && new Date(event.date) < now) return false;
+  if (event.registrationCloseDate && new Date(event.registrationCloseDate) < now) return false;
+  return true;
 };
