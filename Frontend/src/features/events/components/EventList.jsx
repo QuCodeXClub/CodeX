@@ -139,11 +139,11 @@ const EventList = () => {
       {/* Search Bar & Time Tabs Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-border/80">
         {/* Tabs */}
-        <div className="flex items-center gap-2 bg-card-hover/80 p-1 rounded-xl border border-border/60">
+        <div className="flex items-center w-full sm:w-auto gap-1 sm:gap-2 bg-card-hover/80 p-1 rounded-xl border border-border/60">
           <button
             type="button"
             onClick={() => handleTabChange("UPCOMING")}
-            className={`px-5 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "UPCOMING"
                 ? "bg-accent text-text-inverse shadow-sm"
                 : "text-text-muted hover:text-text"
@@ -154,7 +154,7 @@ const EventList = () => {
           <button
             type="button"
             onClick={() => handleTabChange("PAST")}
-            className={`px-5 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "PAST"
                 ? "bg-accent text-text-inverse shadow-sm"
                 : "text-text-muted hover:text-text"
@@ -268,8 +268,9 @@ const EventList = () => {
                         </span>
                       )}
 
-                      <div className="w-8 h-8 rounded-full bg-card-hover border border-border/80 flex items-center justify-center text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent transition-all duration-300 shadow-sm">
-                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5" />
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card-hover border border-border/80 text-[10px] font-mono font-bold uppercase tracking-widest text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent group-hover:shadow-[0_0_12px_var(--color-accent-glow)] transition-all duration-300">
+                        <span>View</span>
+                        <ArrowRight className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform duration-300" />
                       </div>
                     </div>
 
