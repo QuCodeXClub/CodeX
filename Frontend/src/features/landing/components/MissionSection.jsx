@@ -23,8 +23,18 @@ const MissionSection = () => {
 
   return (
     <section id="vision" className="relative overflow-hidden py-12 lg:py-20 px-4 lg:px-8 flex items-center justify-center">
+      {/* Background Image Layer */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10 pointer-events-none mix-blend-luminosity"
+        style={{
+          backgroundImage: `url(${ASSETS.IMAGES.MISSION_IMAGE})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      ></div>
+
       {/* Dynamic Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/10 via-transparent to-transparent blur-3xl pointer-events-none -z-10"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] h-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-accent/10 via-transparent to-transparent blur-3xl pointer-events-none z-0"></div>
       
       <div className="relative w-full max-w-[1300px] mx-auto group">
         
@@ -57,7 +67,7 @@ const MissionSection = () => {
           </div>
           
           {/* Right SVG Graphic */}
-          <div className="flex-1 flex justify-center items-center relative w-full h-[400px] lg:h-[500px]">
+          <div className="hidden lg:flex flex-1 justify-center items-center relative w-full h-[400px] lg:h-[500px]">
              {/* Rotating Background SVG */}
              <div className="absolute inset-0 w-full h-full animate-[spin_60s_linear_infinite] pointer-events-none">
                <svg className="w-full h-full text-accent/30" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">

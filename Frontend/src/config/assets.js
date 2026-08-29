@@ -42,5 +42,8 @@ export const ASSETS = {
     PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787935592/Payment_Page.webp",
     PAYMENT_GUIDE_IMAGE_2: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787935592/Payment_Page_2.webp",
     PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787932036/qr_code_kse1yg.svg",
+
+    // Mission
+    MISSION_IMAGE: "https://res.cloudinary.com/fswmfdcp/image/upload/v1788029897/1743616313005_sy87ie.webp",
   },
 };
