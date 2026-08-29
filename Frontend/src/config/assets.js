@@ -1,12 +1,5 @@
-import partnerHackindia from '../assets/partners/hackindia.svg';
-import partnerUnstop from '../assets/partners/unstop.svg';
-import partnerHostinger from '../assets/partners/hostinger.svg';
-import partnerXyz from '../assets/partners/xyz.svg';
-import partnerCodechef from '../assets/partners/codechef.svg';
-import partnerBlackbox from '../assets/partners/blackbox.svg';
-import partnerCollagecart from '../assets/partners/collagecart.svg';
-import partnerCodecrafters from '../assets/partners/codecrafters.svg';
-import partnerMemcode from '../assets/partners/memcode.svg';
+
+
 
 export const ASSETS = {
   IMAGES: {
@@ -22,17 +15,20 @@ export const ASSETS = {
     EVENT_WEBINAR: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1785170227/webinar_ai3kg5.webp",
 
     // Partners
-    PARTNER_HACKINDIA: partnerHackindia,
-    PARTNER_UNSTOP: partnerUnstop,
-    PARTNER_HOSTINGER: partnerHostinger,
-    PARTNER_XYZ: partnerXyz,
-    PARTNER_CODECHEF: partnerCodechef,
-    PARTNER_BLACKBOX: partnerBlackbox,
-    PARTNER_COLLAGECART: partnerCollagecart,
-    PARTNER_CODECRAFTERS: partnerCodecrafters,
-    PARTNER_MEMCODE: partnerMemcode,
+    PARTNER_HACKINDIA: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981859/hackindia_jtdbeb.svg",
+    PARTNER_UNSTOP: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981867/unstop_bz5g2r.svg",
+    PARTNER_HOSTINGER: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981864/hostinger_v4uwd6.svg",
+    PARTNER_XYZ: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981870/xyz_zxjiih.svg",
+    PARTNER_CODECHEF: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981648/codechef_xnlrcp.svg",
+    PARTNER_BLACKBOX: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981674/blackbox_qtjy4t.svg",
+    PARTNER_COLLAGECART: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981666/collagecart_n12fpb.svg",
+    PARTNER_CODECRAFTERS: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981671/codecrafters_esxtat.svg",
+    PARTNER_MEMCODE: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981661/memcode_vc0ncj.svg",
 
     // About Section
+    ABOUT_FLAGSHIP_TECHTHRIVE_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980365/techthrive-logo_dtu9hw.svg",
+    ABOUT_FLAGSHIP_QHACKATHON_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980407/qhackathon-logo_wf5ehk.svg",
+    ABOUT_FLAGSHIP_TECHSPRINT_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980369/techsprint-logo_xed01t.svg",
     ABOUT_FLAGSHIP_TECHTHRIVE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
     ABOUT_FLAGSHIP_QHACKATHON: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg",
     ABOUT_FLAGSHIP_TECHSPRINT: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",

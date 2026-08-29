@@ -4,18 +4,14 @@ import contentData from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
 import { useImageZoom } from "../../../context/ImageZoomContext";
 
-// Import local vector logos
-import techThriveLogo from "../../../assets/about/techthrive-logo.svg";
-import techSprintLogo from "../../../assets/about/techsprint-logo.svg";
-import qHackathonLogo from "../../../assets/about/qhackathon-logo.svg";
-
 /**
  * Event identifier to vector logo asset mapping.
+ * Uses Cloudinary-hosted SVGs from the centralised ASSETS config.
  */
 const EVENT_LOGOS = {
-  techthrive: techThriveLogo,
-  techsprint: techSprintLogo,
-  "q-hackathon": qHackathonLogo,
+  techthrive: ASSETS.IMAGES.ABOUT_FLAGSHIP_TECHTHRIVE_LOGO,
+  techsprint: ASSETS.IMAGES.ABOUT_FLAGSHIP_TECHSPRINT_LOGO,
+  "q-hackathon": ASSETS.IMAGES.ABOUT_FLAGSHIP_QHACKATHON_LOGO,
 };
 
 const ROTATION_INTERVAL_MS = 6000; // 6 seconds per auto-slide
