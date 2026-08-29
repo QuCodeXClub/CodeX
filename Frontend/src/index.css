@@ -222,7 +222,9 @@
   }
 
   .glass-card {
-    @apply bg-card/85 backdrop-blur-xl border border-border/80 shadow-lg transition-all duration-300;
+    @apply bg-card/90 md:bg-card/85 backdrop-blur-md md:backdrop-blur-xl border border-border/80 shadow-lg transition-[border-color,box-shadow,background-color] duration-200;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .glass-card-hover {
@@ -230,7 +232,9 @@
   }
 
   .glass-panel {
-    @apply bg-card/90 backdrop-blur-2xl border border-border/70 shadow-2xl;
+    @apply bg-card/95 md:bg-card/90 backdrop-blur-md md:backdrop-blur-2xl border border-border/70 shadow-2xl;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .tech-grid-bg {
