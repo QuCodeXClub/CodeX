@@ -1,27 +1,15 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchPublicEvents } from "../context/eventsSlice";
-
+import React from "react";
 import EventList from "../features/events/components/EventList";
 import PageContainer from "../components/common/PageContainer";
 import { Sparkles } from "lucide-react";
 
 const Events = () => {
-  const dispatch = useDispatch();
-  const { events, loading, hasFetched } = useSelector((state) => state.events);
-
-  useEffect(() => {
-    if (!hasFetched) {
-      dispatch(fetchPublicEvents());
-    }
-  }, [dispatch, hasFetched]);
-
   return (
     <div className="events-page flex flex-col min-h-screen bg-transparent relative font-sans">
       <div className="relative z-10 pt-8 pb-20">
         <PageContainer>
           <header className="mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
               <Sparkles className="w-3.5 h-3.5" />
               <span>TIMELINE & SCHEDULE</span>
             </div>
@@ -36,7 +24,7 @@ const Events = () => {
           </header>
 
           <div className="w-full">
-            <EventList events={events} loading={loading} />
+            <EventList />
           </div>
         </PageContainer>
       </div>
@@ -44,4 +32,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default Events;

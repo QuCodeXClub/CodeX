@@ -217,22 +217,38 @@
 
 @layer utilities {
   .ambient-glow {
-    @apply absolute rounded-full pointer-events-none blur-[100px] bg-accent;
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    filter: blur(100px);
+    background-color: var(--color-accent);
     animation: ambient-pulse 6s ease-in-out infinite;
   }
 
   .glass-card {
-    @apply bg-card/90 md:bg-card/85 backdrop-blur-md md:backdrop-blur-xl border border-border/80 shadow-lg transition-[border-color,box-shadow,background-color] duration-200;
+    background-color: color-mix(in srgb, var(--color-card) 90%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    transition-property: border-color, box-shadow, background-color;
+    transition-duration: 200ms;
     transform: translateZ(0);
     backface-visibility: hidden;
   }
 
-  .glass-card-hover {
-    @apply hover:bg-card-hover/90 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10;
+  .glass-card-hover:hover {
+    background-color: color-mix(in srgb, var(--color-card-hover) 90%, transparent);
+    border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    box-shadow: 0 20px 25px -5px rgba(46, 197, 212, 0.1), 0 8px 10px -6px rgba(46, 197, 212, 0.1);
   }
 
   .glass-panel {
-    @apply bg-card/95 md:bg-card/90 backdrop-blur-md md:backdrop-blur-2xl border border-border/70 shadow-2xl;
+    background-color: color-mix(in srgb, var(--color-card) 95%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border-soft);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     transform: translateZ(0);
     backface-visibility: hidden;
   }
@@ -244,11 +260,38 @@
   }
 
   .tech-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase tracking-wider bg-accent/10 text-accent border border-accent/30 shadow-sm;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--color-accent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
 
   .hero-right-panel {
     clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
   }
+}
 
+@media (min-width: 720px) {
+  .glass-card {
+    background-color: color-mix(in srgb, var(--color-card) 85%, transparent);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--color-card) 90%, transparent);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+  }
 }

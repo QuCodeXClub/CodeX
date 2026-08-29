@@ -1,8 +1,12 @@
 import axiosInstance from "./axiosInstance";
 
 class EventService {
-  getEvents() {
-    return axiosInstance.get("/events");
+  getEvents(params = {}) {
+    return axiosInstance.get("/events", { params });
+  }
+
+  getEventById(id) {
+    return axiosInstance.get(`/events/${id}`);
   }
 
   createEvent(formData) {
