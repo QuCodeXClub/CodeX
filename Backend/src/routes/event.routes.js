@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { createEvent, getEvents, deleteEvent, updateEvent } from '../controllers/event.controller.js';
+import {
+  createEvent,
+  getEvents,
+  getEventById,
+  deleteEvent,
+  updateEvent,
+} from '../controllers/event.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
