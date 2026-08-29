@@ -5,8 +5,9 @@ import { upload } from '../middlewares/multer.middleware.js';
 
 const router = Router();
 
-// Public route
+// Public routes
 router.route('/').get(getEvents);
+router.route('/:id').get(getEventById);
 
 // Secured admin routes
 router.use(verifyJWT);

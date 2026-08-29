@@ -45,6 +45,9 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
     defaultValues: {
       eventName: normalized?.eventName || "",
       date: normalized ? formatLocalDatetime(normalized.date) : "",
+      registrationCloseDate: normalized?.registrationCloseDate
+        ? formatLocalDatetime(normalized.registrationCloseDate)
+        : "",
       registrationLink: normalized?.registrationLink || "",
       locationType: normalized?.locationType || "Offline",
       location: normalized?.location || "",
@@ -115,6 +118,14 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
       const submitData = new FormData();
       submitData.append("eventName", data.eventName);
       submitData.append("date", new Date(data.date).toISOString());
+      if (data.registrationCloseDate) {
+        submitData.append(
+          "registrationCloseDate",
+          new Date(data.registrationCloseDate).toISOString()
+        );
+      } else {
+        submitData.append("registrationCloseDate", "");
+      }
       submitData.append("description", description);
       if (data.registrationLink)
         submitData.append("registrationLink", data.registrationLink);
@@ -334,7 +345,7 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
                 </p>
               </div>
 
-              {/* Row 5: Registration URL + Cover Image */}
+              {/* Row 5: Registration Settings (URL + Close Date) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0 pt-2">
                 <div>
                   <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
@@ -359,32 +370,51 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                    Cover Banner Image
+                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider flex items-center justify-between">
+                    <span>
+                      Registration Closes At{" "}
+                      <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
+                    </span>
+                    <span className="text-[10px] text-accent font-normal">AUTO-CLOSING DEADLINE</span>
                   </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <label className="w-full sm:flex-1 border-2 border-dashed border-border/80 bg-card-hover/50 hover:bg-accent/10 hover:border-accent/50 rounded-xl p-4 text-center cursor-pointer transition-all group">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
+                  <input
+                    type="datetime-local"
+                    {...register("registrationCloseDate")}
+                    className="w-full bg-card-hover/60 border border-border/80 focus:ring-accent/20 focus:border-accent text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm font-mono"
+                  />
+                  <p className="mt-1.5 text-[10px] text-text-muted font-mono">
+                    After this deadline, registration will show closed while event remains in Upcoming list.
+                  </p>
+                </div>
+              </div>
+
+              {/* Row 6: Cover Image */}
+              <div className="shrink-0 pt-2">
+                <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                  Cover Banner Image
+                </label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <label className="w-full sm:flex-1 border-2 border-dashed border-border/80 bg-card-hover/50 hover:bg-accent/10 hover:border-accent/50 rounded-xl p-4 text-center cursor-pointer transition-all group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <ImageIcon className="w-6 h-6 text-text-muted mx-auto mb-1 group-hover:text-accent transition-colors" />
+                    <span className="text-xs font-mono font-semibold text-text-muted group-hover:text-accent block uppercase">
+                      Browse Cover Banner
+                    </span>
+                  </label>
+                  {imagePreview && (
+                    <div className="w-full sm:w-28 sm:h-24 border border-border/80 rounded-xl overflow-hidden shrink-0 bg-card shadow-sm aspect-video sm:aspect-square relative">
+                      <img
+                        src={optimizeCloudinaryUrl(imagePreview, 800)}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
                       />
-                      <ImageIcon className="w-6 h-6 text-text-muted mx-auto mb-1 group-hover:text-accent transition-colors" />
-                      <span className="text-xs font-mono font-semibold text-text-muted group-hover:text-accent block uppercase">
-                        Browse Cover Banner
-                      </span>
-                    </label>
-                    {imagePreview && (
-                      <div className="w-full sm:w-24 sm:h-24 border border-border/80 rounded-xl overflow-hidden shrink-0 bg-card shadow-sm aspect-video sm:aspect-square relative">
-                        <img
-                          src={optimizeCloudinaryUrl(imagePreview, 800)}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

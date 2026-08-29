@@ -1,12 +1,52 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { eventService } from "../services/eventService";
 
+export const fetchUpcomingEvents = createAsyncThunk(
+  "events/fetchUpcomingEvents",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const queryParams = { type: "upcoming", limit: 6, page: 1, ...params };
+      const response = await eventService.getEvents(queryParams);
+      const payload = response.data?.data || response.data || response;
+      return {
+        events: payload.events || (Array.isArray(payload) ? payload : []),
+        pagination: payload.pagination || null,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch upcoming events"
+      );
+    }
+  }
+);
+
+export const fetchPastEvents = createAsyncThunk(
+  "events/fetchPastEvents",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const queryParams = { type: "past", limit: 6, page: 1, ...params };
+      const response = await eventService.getEvents(queryParams);
+      const payload = response.data?.data || response.data || response;
+      return {
+        events: payload.events || (Array.isArray(payload) ? payload : []),
+        pagination: payload.pagination || null,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch past events"
+      );
+    }
+  }
+);
+
+// Backward-compatibility wrapper for fetching all events
 export const fetchPublicEvents = createAsyncThunk(
   "events/fetchPublicEvents",
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await eventService.getEvents();
-      return response.data || [];
+      const response = await eventService.getEvents(params);
+      const payload = response.data?.data || response.data || response;
+      return payload.events || (Array.isArray(payload) ? payload : []);
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message || "Failed to fetch events"
@@ -18,31 +58,80 @@ export const fetchPublicEvents = createAsyncThunk(
 const eventsSlice = createSlice({
   name: "events",
   initialState: {
+    upcoming: {
+      events: [],
+      pagination: { page: 1, limit: 6, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false },
+      loading: false,
+      isLoaded: false,
+      error: null,
+    },
+    past: {
+      events: [],
+      pagination: { page: 1, limit: 6, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false },
+      loading: false,
+      isLoaded: false,
+      error: null,
+    },
+    // Fallback array for any components reading state.events directly
     events: [],
     loading: false,
-    error: null,
-    hasFetched: false,
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Upcoming
+    builder
+      .addCase(fetchUpcomingEvents.pending, (state) => {
+        state.upcoming.loading = true;
+        state.upcoming.error = null;
+      })
+      .addCase(fetchUpcomingEvents.fulfilled, (state, action) => {
+        state.upcoming.loading = false;
+        state.upcoming.isLoaded = true;
+        state.upcoming.events = action.payload.events;
+        if (action.payload.pagination) {
+          state.upcoming.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(fetchUpcomingEvents.rejected, (state, action) => {
+        state.upcoming.loading = false;
+        state.upcoming.isLoaded = true;
+        state.upcoming.error = action.payload;
+      });
+
+    // Past
+    builder
+      .addCase(fetchPastEvents.pending, (state) => {
+        state.past.loading = true;
+        state.past.error = null;
+      })
+      .addCase(fetchPastEvents.fulfilled, (state, action) => {
+        state.past.loading = false;
+        state.past.isLoaded = true;
+        state.past.events = action.payload.events;
+        if (action.payload.pagination) {
+          state.past.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(fetchPastEvents.rejected, (state, action) => {
+        state.past.loading = false;
+        state.past.isLoaded = true;
+        state.past.error = action.payload;
+      });
+
+    // Fallback general fetch
     builder
       .addCase(fetchPublicEvents.pending, (state) => {
-        if (!state.hasFetched) {
-          state.loading = true;
-        }
-        state.error = null;
+        state.loading = true;
       })
       .addCase(fetchPublicEvents.fulfilled, (state, action) => {
         state.loading = false;
         state.events = action.payload;
-        state.hasFetched = true;
       })
-      .addCase(fetchPublicEvents.rejected, (state, action) => {
+      .addCase(fetchPublicEvents.rejected, (state) => {
         state.loading = false;
-        state.error = action.payload;
-        state.hasFetched = true;
       });
   },
 });
 
 export default eventsSlice.reducer;
+
