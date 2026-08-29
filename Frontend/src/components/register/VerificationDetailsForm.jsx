@@ -33,6 +33,8 @@ export default function VerificationDetailsForm({
 }) {
   const [isQrZoomed, setIsQrZoomed] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [upiAppError, setUpiAppError] = useState(null);
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
 
   // Close modal on Escape key and prevent background scroll
   useEffect(() => {
@@ -82,9 +84,48 @@ export default function VerificationDetailsForm({
     }
   };
 
+  const isMobile =
+    typeof window !== "undefined" &&
+    typeof navigator !== "undefined" &&
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || navigator.vendor || window.opera
+    );
+
   const upiDeepLink = TREASURER_UPI_ID
     ? `upi://pay?pa=${encodeURIComponent(TREASURER_UPI_ID)}&pn=CodeX%20Club&am=50&cu=INR&tn=CodeX%20Membership%20Fee`
     : null;
+
+  const handlePayViaUpiApp = (e) => {
+    e?.preventDefault();
+    setUpiAppError(null);
+
+    if (!upiDeepLink) {
+      setUpiAppError("Official UPI ID is not configured. Please contact the CodeX team.");
+      return;
+    }
+
+    if (!isMobile) {
+      setUpiAppError(
+        "UPI apps are not supported on desktop devices. Please scan the QR code with your phone or copy the UPI ID below."
+      );
+      return;
+    }
+
+    // On mobile devices, trigger the UPI intent and notify the user
+    setPaymentInitiated(true);
+    const startTime = Date.now();
+    window.location.href = upiDeepLink;
+
+    setTimeout(() => {
+      // If the user remains on the page after timeout, app may not be installed
+      if (document.visibilityState === "visible" && Date.now() - startTime < 2500) {
+        setPaymentInitiated(false);
+        setUpiAppError(
+          "Could not open UPI app. If you don't have a supported UPI app installed, please scan the QR code or copy the UPI ID."
+        );
+      }
+    }, 1500);
+  };
 
   const inputBaseStyle =
     "w-full bg-card border border-border text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm placeholder:text-text-muted/40";
@@ -171,11 +212,68 @@ export default function VerificationDetailsForm({
                 </button>
               </div>
 
+              {/* Pay via UPI App Action Button */}
+              {upiDeepLink && (
+                <div className="w-full max-w-xs mx-auto pt-0.5">
+                  <button
+                    type="button"
+                    onClick={handlePayViaUpiApp}
+                    className="w-full inline-flex items-center justify-center gap-2 py-2 sm:py-2.5 px-3 rounded-xl bg-accent text-text-inverse hover:bg-accent/90 font-bold font-mono text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 text-center cursor-pointer"
+                  >
+                    <Smartphone className="w-4 h-4" />
+                    Pay via UPI App
+                  </button>
+                  <p className="text-[10px] sm:text-[11px] text-text-muted mt-1 leading-tight">
+                    Opens your UPI app (GPay, PhonePe, Paytm, etc.) to complete payment
+                  </p>
+
+                  {/* Message when user initiates UPI app payment */}
+                  {paymentInitiated && !upiAppError && (
+                    <div className="mt-2 p-2.5 rounded-xl bg-accent/10 border border-accent/30 text-left flex items-start gap-2 animate-in fade-in duration-200">
+                      <CheckCircle2 className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-accent leading-relaxed font-medium">
+                        Opening UPI app... Once payment of ₹50 is completed, copy the <strong className="text-text font-bold">12-digit UTR</strong> from your transaction receipt and paste it below.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Message when UPI app is not installed or device is desktop */}
+                  {upiAppError && (
+                    <div className="mt-2 p-2.5 rounded-xl bg-warning/10 border border-warning/30 text-left flex items-start gap-2 animate-in fade-in duration-200">
+                      <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] text-warning leading-relaxed font-medium">
+                          {upiAppError}
+                        </p>
+                        <div className="mt-1.5 flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setIsQrZoomed(true)}
+                            className="text-[10px] font-bold text-accent hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <QrCode className="w-3 h-3" /> Enlarge QR
+                          </button>
+                          {TREASURER_UPI_ID && (
+                            <button
+                              type="button"
+                              onClick={handleCopyUpi}
+                              className="text-[10px] font-bold text-accent hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <Copy className="w-3 h-3" /> Copy UPI ID
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* UPI ID with quick copy */}
               {TREASURER_UPI_ID && (
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-1 pt-0.5">
                   <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">
-                    Pay to UPI ID:
+                    Or pay to UPI ID:
                   </span>
                   <button
                     type="button"
@@ -441,27 +539,46 @@ export default function VerificationDetailsForm({
                 </div>
               )}
 
-              {/* Action Buttons: Mobile Deep Link & Download */}
-              <div className="w-full flex flex-col xs:flex-row items-center gap-2 mb-2.5 sm:mb-3.5">
+              {/* Action Buttons: UPI App & Download */}
+              <div className="w-full flex flex-col xs:flex-row items-center gap-2 mb-2 sm:mb-3">
                 {upiDeepLink && (
-                  <a
-                    href={upiDeepLink}
-                    className="w-full xs:flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 rounded-xl bg-accent text-text-inverse hover:bg-accent/90 font-semibold text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-md shadow-accent/20 text-center"
+                  <button
+                    type="button"
+                    onClick={handlePayViaUpiApp}
+                    className="w-full xs:flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 rounded-xl bg-accent text-text-inverse hover:bg-accent/90 font-semibold text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-md shadow-accent/20 text-center cursor-pointer"
                   >
                     <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Pay via UPI App
-                  </a>
+                  </button>
                 )}
                 <button
                   type="button"
                   onClick={handleDownloadQr}
-                  className="w-full xs:w-auto inline-flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-card-hover hover:bg-border/60 text-text border border-border text-[11px] sm:text-xs font-semibold tracking-wider transition-all cursor-pointer"
+                  className="w-full xs:flex-1 inline-flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-card-hover hover:bg-border/60 text-text border border-border text-[11px] sm:text-xs font-semibold tracking-wider transition-all cursor-pointer"
                   title="Download QR image to scan from gallery"
                 >
                   <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  Save QR
+                  Save QR Code
                 </button>
               </div>
+
+              {paymentInitiated && !upiAppError && (
+                <div className="w-full mb-2.5 p-2 sm:p-2.5 rounded-xl bg-accent/10 border border-accent/30 text-left flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
+                  <p className="text-[10px] sm:text-[11px] text-accent leading-snug font-medium">
+                    Opening UPI app... After payment of ₹50, copy the <strong>12-digit UTR</strong> from your receipt and enter it in Step 2.
+                  </p>
+                </div>
+              )}
+
+              {upiAppError && (
+                <div className="w-full mb-2.5 p-2 sm:p-2.5 rounded-xl bg-warning/10 border border-warning/30 text-left flex items-start gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />
+                  <p className="text-[10px] sm:text-[11px] text-warning leading-snug font-medium">
+                    {upiAppError}
+                  </p>
+                </div>
+              )}
 
               {/* Step Helper Note */}
               <div className="w-full text-left p-2.5 sm:p-3 rounded-xl bg-accent/5 border border-accent/15 mb-2.5 sm:mb-3">
