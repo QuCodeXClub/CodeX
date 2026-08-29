@@ -133,40 +133,203 @@
   },
   "faqs": [
     {
-      "_id": "faq_1",
-      "question": "Who can join CodeX?",
-      "answer": "Any Quantum University student with an interest in technology can join CodeX. Whether you're a beginner or an experienced developer, you'll find opportunities to learn, build, and collaborate.",
-      "isActive": true
+      "category": "General",
+      "items": [
+        {
+          "_id": "gen_1",
+          "question": "Who can join CodeX?",
+          "answer": "Any Quantum University student with an interest in technology, coding, innovation, or related fields can join CodeX.",
+          "isActive": true
+        },
+        {
+          "_id": "gen_2",
+          "question": "Do I need prior coding experience?",
+          "answer": "No. CodeX welcomes students of all skill levels, from beginners to experienced developers.",
+          "isActive": true
+        },
+        {
+          "_id": "gen_3",
+          "question": "What is CodeX?",
+          "answer": "CodeX is the technical and coding club of Quantum University, focused on building technical skills through events, workshops, competitions, projects, and collaborative learning.",
+          "isActive": true
+        },
+        {
+          "_id": "gen_4",
+          "question": "Which technologies can I learn through CodeX?",
+          "answer": "CodeX covers a wide range of areas including programming, web development, app development, AI/ML, cybersecurity, cloud, open source, robotics, and emerging technologies.",
+          "isActive": true
+        },
+        {
+          "_id": "gen_5",
+          "question": "Can students from non-technical backgrounds join?",
+          "answer": "Yes. Students from any discipline can join if they are interested in technology and willing to learn.",
+          "isActive": true
+        },
+        {
+          "_id": "gen_6",
+          "question": "Do I need to be a member to attend CodeX events?",
+          "answer": "It depends on the event. Some activities may be open to all students, while others may be specifically for CodeX members.",
+          "isActive": true
+        }
+      ]
     },
     {
-      "_id": "faq_2",
-      "question": "What activities does CodeX organize?",
-      "answer": "CodeX organizes hackathons, coding competitions, technical workshops, speaker sessions, open-source initiatives, project collaborations, networking events, and weekly PROPS (Problem Solving) sessions where members practice DSA, competitive programming, interview questions, and collaborative problem-solving.",
-      "isActive": true
+      "category": "Events",
+      "items": [
+        {
+          "_id": "evt_1",
+          "question": "What activities does CodeX organize?",
+          "answer": "CodeX organizes hackathons, coding competitions, technical workshops, project showcases, seminars, talks, bootcamps, and other technology-focused activities.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_2",
+          "question": "How can I stay updated about upcoming events?",
+          "answer": "Follow CodeX on our official social media channels and join our student communication groups to receive updates about upcoming events, registrations, and opportunities.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_3",
+          "question": "Where can I find details about upcoming events?",
+          "answer": "Event details, registration links, schedules, and updates are shared through the CodeX website and our official communication channels.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_4",
+          "question": "Can I participate in CodeX hackathons and competitions?",
+          "answer": "Yes. Students can participate in CodeX hackathons, coding competitions, and other technical challenges according to the eligibility criteria of each event.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_5",
+          "question": "Can I attend workshops if I am a beginner?",
+          "answer": "Yes. Many CodeX workshops are designed to help students learn from the basics and build practical skills.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_6",
+          "question": "Does CodeX organize events with other organizations or companies?",
+          "answer": "Yes. CodeX collaborates with companies, student teams, technical communities, and other organizations to conduct workshops, showcases, competitions, and other technical initiatives.",
+          "isActive": true
+        },
+        {
+          "_id": "evt_7",
+          "question": "Can I suggest an event or workshop topic?",
+          "answer": "Yes. Students can share their ideas and suggestions with the CodeX team. Relevant ideas may be considered for future activities.",
+          "isActive": true
+        }
+      ]
     },
     {
-      "_id": "faq_3",
-      "question": "Do I need prior coding experience?",
-      "answer": "No. We welcome students of all skill levels. If you're willing to learn and actively participate, our mentors and community will help you grow through practical projects and collaborative learning.",
-      "isActive": true
+      "category": "Registration",
+      "items": [
+        {
+          "_id": "reg_1",
+          "question": "Is there a membership fee?",
+          "answer": "Yes. CodeX membership requires a one-time fee of ₹50.",
+          "isActive": true
+        },
+        {
+          "_id": "reg_2",
+          "question": "How long is the membership valid?",
+          "answer": "CodeX membership is valid for the entire academic year.",
+          "isActive": true
+        },
+        {
+          "_id": "reg_3",
+          "question": "How can I become a CodeX member?",
+          "answer": "Students can register through the official CodeX membership registration process when applications are open.",
+          "isActive": true
+        },
+        {
+          "_id": "reg_4",
+          "question": "What do I get as a CodeX member?",
+          "answer": "Members get access to CodeX activities, technical learning opportunities, competitions, workshops, networking opportunities, and opportunities to contribute to club projects and initiatives.",
+          "isActive": true
+        },
+        {
+          "_id": "reg_5",
+          "question": "Can I join CodeX after the membership registration period?",
+          "answer": "Membership availability depends on the club's current registration cycle. Follow CodeX's official channels for announcements.",
+          "isActive": true
+        },
+        {
+          "_id": "reg_6",
+          "question": "Is CodeX membership useful for building my technical profile?",
+          "answer": "Yes. Active members can gain practical experience by participating in projects, competitions, events, and organizing technical activities.",
+          "isActive": true
+        }
+      ]
     },
     {
-      "_id": "faq_4",
-      "question": "When are the weekly PROPS sessions held?",
-      "answer": "We conduct a weekly PROPS (Problem Solving) session every Saturday from 4:00 PM to 6:00 PM, where members solve coding problems, strengthen DSA concepts, prepare for coding interviews, and improve their problem-solving skills together.",
-      "isActive": true
+      "category": "Team",
+      "items": [
+        {
+          "_id": "team_1",
+          "question": "How can I become a part of the CodeX core team?",
+          "answer": "CodeX generally opens core-team recruitment forms during the even semester. Recruitment announcements are shared through our official communication channels.",
+          "isActive": true
+        },
+        {
+          "_id": "team_2",
+          "question": "Who can apply for the core team?",
+          "answer": "Eligible CodeX members can apply when recruitment opens. Selection is based on factors such as skills, interest, contribution, responsibility, and involvement in club activities.",
+          "isActive": true
+        },
+        {
+          "_id": "team_3",
+          "question": "What roles are available in the core team?",
+          "answer": "Depending on the recruitment cycle, roles may include technical development, event management, design, marketing, content, social media, sponsorship, and other operational responsibilities.",
+          "isActive": true
+        },
+        {
+          "_id": "team_4",
+          "question": "Do I need to be an expert to join the core team?",
+          "answer": "No. Strong interest, willingness to learn, reliability, and active contribution matter more than simply having advanced technical skills.",
+          "isActive": true
+        },
+        {
+          "_id": "team_5",
+          "question": "Can I contribute to CodeX without being on the core team?",
+          "answer": "Yes. Students can contribute by volunteering at events, participating in projects, helping with technical activities, and supporting club initiatives.",
+          "isActive": true
+        }
+      ]
     },
     {
-      "_id": "faq_5",
-      "question": "Is there a membership fee?",
-      "answer": "Yes. There is a one-time membership fee of ₹50. The entire amount is added to the club fund and is used to organize workshops, hackathons, coding contests, technical events, and other activities for our members.",
-      "isActive": true
-    },
-    {
-      "_id": "faq_6",
-      "question": "What are the benefits of joining CodeX?",
-      "answer": "As a member, you'll work on real-world projects, attend exclusive workshops, participate in hackathons and coding contests, receive mentorship, build a strong portfolio, expand your professional network, and gain practical experience that helps with internships and placements.",
-      "isActive": true
+      "category": "Sponsors",
+      "items": [
+        {
+          "_id": "spon_1",
+          "question": "How can my company sponsor a CodeX event?",
+          "answer": "Companies interested in sponsoring CodeX can contact us through the website contact form or email us at codex.club@quantumeducation.in.",
+          "isActive": true
+        },
+        {
+          "_id": "spon_2",
+          "question": "What are the benefits of sponsoring CodeX?",
+          "answer": "Sponsors can gain brand visibility among 500+ technology-focused students, recruitment and talent-engagement opportunities, event branding, student interaction, and opportunities to showcase their products or services.",
+          "isActive": true
+        },
+        {
+          "_id": "spon_3",
+          "question": "Can companies collaborate with CodeX without providing financial sponsorship?",
+          "answer": "Yes. We are open to collaborations such as technical sessions, workshops, project showcases, mentorship, challenges, goodies, and other mutually beneficial initiatives.",
+          "isActive": true
+        },
+        {
+          "_id": "spon_4",
+          "question": "Can external technical communities or student teams collaborate with CodeX?",
+          "answer": "Yes. CodeX welcomes collaborations with technical communities, student teams, institutions, and organizations for workshops, project showcases, knowledge-sharing sessions, and other technical initiatives.",
+          "isActive": true
+        },
+        {
+          "_id": "spon_5",
+          "question": "How can I propose a collaboration with CodeX?",
+          "answer": "Send your proposal through our website contact form or email codex.club@quantumeducation.in with details about the organization, proposed collaboration, and requirements.",
+          "isActive": true
+        }
+      ]
     }
   ],
   "layout": {
