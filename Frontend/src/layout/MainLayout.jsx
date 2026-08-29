@@ -53,9 +53,9 @@ const MainLayout = () => {
           backgroundSize: "40px 40px",
         }}
       />
-      {/* Ambient Top & Bottom Glow Blobs */}
-      <div className="fixed top-0 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none z-0" />
+      {/* Ambient Top & Bottom Glow Blobs (Hardware-accelerated and size-optimized for mobile) */}
+      <div className="fixed top-0 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[500px] md:h-[500px] bg-accent/10 blur-[60px] md:blur-[150px] rounded-full pointer-events-none z-0 transform-gpu" />
+      <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[280px] h-[280px] md:w-[500px] md:h-[500px] bg-accent/10 blur-[60px] md:blur-[150px] rounded-full pointer-events-none z-0 transform-gpu" />
 
       <Navbar layout={layout} />
 

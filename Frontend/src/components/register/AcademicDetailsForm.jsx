@@ -2,9 +2,13 @@ import React from "react";
 
 export default function AcademicDetailsForm({ register, errors, clearErrors }) {
   const inputBaseStyle =
-    "w-full bg-card border border-border text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm placeholder:text-text-muted/40 cursor-pointer hover:border-accent/40";
+    "w-full bg-card border border-border text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm placeholder:text-text-muted/40 hover:border-accent/40";
+  const selectBaseStyle =
+    "w-full bg-card border border-border text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm placeholder:text-text-muted/40 hover:border-accent/40 cursor-pointer";
   const errorInputStyle =
     "w-full bg-card border border-danger text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-danger/30 focus:border-danger transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm";
+  const errorSelectStyle =
+    "w-full bg-card border border-danger text-text rounded-xl p-3 sm:p-3.5 focus:outline-none focus:ring-2 focus:ring-danger/30 focus:border-danger transition-all font-sans text-xs sm:text-sm tracking-wide shadow-sm cursor-pointer";
 
   return (
     <div className="flex flex-col h-full justify-between">
@@ -54,7 +58,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
           </label>
           <select
             {...register("course", { required: "Course is required" })}
-            className={errors.course ? errorInputStyle : inputBaseStyle}
+            className={errors.course ? errorSelectStyle : selectBaseStyle}
           >
             <option value="">Select Course</option>
             {[
@@ -86,7 +90,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             </label>
             <select
               {...register("year", { required: "Year is required" })}
-              className={errors.year ? errorInputStyle : inputBaseStyle}
+              className={errors.year ? errorSelectStyle : selectBaseStyle}
             >
               <option value="">Year</option>
               {["1st Year", "2nd Year", "3rd Year", "4th Year"].map((y) => (
@@ -108,7 +112,7 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             </label>
             <select
               {...register("semester", { required: "Semester is required" })}
-              className={errors.semester ? errorInputStyle : inputBaseStyle}
+              className={errors.semester ? errorSelectStyle : selectBaseStyle}
             >
               <option value="">Sem</option>
               {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].map(
