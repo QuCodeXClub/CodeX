@@ -66,7 +66,7 @@ const Navbar = ({ layout }) => {
         }
       }
     } else {
-      navigate(`/about#${targetId}`, { state: { scrollTo: targetId } });
+      navigate("/about", { state: { scrollTo: targetId } });
     }
   };
 

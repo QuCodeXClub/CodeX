@@ -80,7 +80,8 @@
         "title": "6. Membership & Payment Information",
         "content": [
           "CodeX Club currently charges a membership fee of ₹50. Payments may be accepted either online or offline depending on the registration process.",
-          "For online payments, only the transaction reference or payment identifier is collected for verification purposes. We do not collect, process, or store your debit card, credit card, banking credentials, UPI PIN, passwords, or other sensitive financial information.",
+          "For online payments, our platform provides a direct 'Pay via UPI App' option and official payment QR code that opens your external third-party UPI application (such as Google Pay, PhonePe, Paytm, BHIM, or your bank's UPI app) to complete the transaction.",
+          "Only the transaction reference (UTR) or payment identifier is collected for verification purposes. We do not collect, process, access, or store your debit card, credit card, banking credentials, UPI PIN, passwords, or other sensitive financial information.",
           "Offline cash payments are recorded only for administrative verification."
         ]
       },
@@ -206,6 +207,7 @@
         "title": "5a. Membership Payment Declaration",
         "content": [
           "By submitting a membership registration, you confirm that you have completed the ₹50 membership payment and entered the correct UTR (Unique Transaction Reference) for that transaction.",
+          "Payments may be initiated via the 'Pay via UPI App' button or QR code, which opens your installed third-party UPI payment application.",
           "You understand that CodeX may verify the transaction details provided during registration and that registrations containing incorrect, duplicate, fake, or unverifiable payment information may be rejected.",
           "Entering a UTR alone does not guarantee registration approval — your registration will only be approved after the transaction has been successfully verified by the CodeX team."
         ]
@@ -593,7 +595,7 @@
           "amount": "₹50",
           "upiLabel": "Official UPI ID",
           "upiMissing": "Contact the CodeX team for payment details",
-          "note": "You can select and copy the UPI ID above to paste it into your UPI app manually."
+          "note": "You can tap 'Pay via UPI App' on your phone to open your UPI app directly, scan the QR code, or copy the UPI ID below to pay manually."
         }
       },
       {
@@ -602,14 +604,14 @@
         "icon": "Smartphone",
         "title": "2. How to Complete Your Payment",
         "steps": [
-          "Open the UPI app of your choice (GPay, PhonePe, Paytm, BHIM, etc.) on your smartphone.",
-          "Select **\"Send Money\" / \"Pay\" / \"Transfer\"** — whichever option lets you pay to a UPI ID.",
-          "Enter the official CodeX UPI ID: ",
+          "Tap **\"Pay via UPI App\"** on your smartphone (which directly opens your installed UPI app like Google Pay, PhonePe, Paytm, or BHIM), or scan the official QR code.",
+          "If paying manually by UPI ID, open your UPI app and select **\"Send Money\" / \"Pay to UPI ID\"**.",
+          "Enter or verify the official CodeX UPI ID: ",
           "Enter exactly **₹50** as the payment amount. Do not enter any other amount.",
-          "Complete the transaction successfully. Wait for the \"Payment Successful\" confirmation screen.",
+          "Complete the transaction securely in your UPI app. Wait for the \"Payment Successful\" confirmation screen.",
           "Open the **transaction details** of the completed ₹50 payment in your UPI app.",
           "Find and copy the **UTR / Transaction Reference Number** exactly as displayed (see Section 4 below for where to find it in common UPI apps).",
-          "Return to the CodeX Registration Form and paste the UTR into both UTR fields."
+          "Return to the CodeX Registration Form and paste the UTR into the UTR reference field."
         ]
       },
       {

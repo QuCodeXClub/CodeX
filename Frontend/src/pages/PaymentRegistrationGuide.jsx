@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   CreditCard,
@@ -12,11 +12,13 @@ import {
   ShieldAlert,
   Info,
   ZoomIn,
+  CheckCircle2,
 } from "lucide-react";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
 import legalData from "../data/legal.json";
 import contentData from "../data/content.json";
+import { useImageZoom } from "../context/ImageZoomContext";
 
 const TREASURER_UPI_ID = contentData.register.treasurerUpiId || null;
 
@@ -95,6 +97,56 @@ const ICONS = {
 const PaymentRegistrationGuide = () => {
   const guideData = legalData.paymentGuide;
   const header = guideData.header;
+  const { openImage } = useImageZoom();
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [upiAppError, setUpiAppError] = useState(null);
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
+
+  const isMobile =
+    typeof window !== "undefined" &&
+    typeof navigator !== "undefined" &&
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || navigator.vendor || window.opera
+    );
+
+  const upiDeepLink = TREASURER_UPI_ID
+    ? `upi://pay?pa=${encodeURIComponent(TREASURER_UPI_ID)}&pn=CodeX%20Club&am=50&cu=INR&tn=CodeX%20Membership%20Fee`
+    : null;
+
+  const handlePayViaUpiApp = (e) => {
+    e?.preventDefault();
+    setUpiAppError(null);
+
+    if (!upiDeepLink) {
+      setUpiAppError("Official UPI ID is not configured. Please contact the CodeX team.");
+      return;
+    }
+
+    if (!isMobile) {
+      if (TREASURER_UPI_ID) {
+        navigator.clipboard.writeText(TREASURER_UPI_ID);
+        setCopiedUpi(true);
+        setTimeout(() => setCopiedUpi(false), 2500);
+      }
+      setUpiAppError(
+        "UPI apps are not supported on desktop devices. UPI ID has been copied to your clipboard, or you can scan the QR code using your phone."
+      );
+      return;
+    }
+
+    setPaymentInitiated(true);
+    const startTime = Date.now();
+    window.location.href = upiDeepLink;
+
+    setTimeout(() => {
+      if (document.visibilityState === "visible" && Date.now() - startTime < 2500) {
+        setPaymentInitiated(false);
+        setUpiAppError(
+          "Could not open UPI app. If you don't have a supported UPI app installed, please scan the QR code or copy the UPI ID."
+        );
+      }
+    }, 1500);
+  };
 
   return (
     <div className="py-6 sm:py-10 md:py-14 bg-transparent min-h-screen font-sans text-text">
@@ -119,7 +171,10 @@ const PaymentRegistrationGuide = () => {
             </Link>
           </div>
           
-          <div className="w-full rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-card group relative cursor-zoom-in">
+          <div 
+            onClick={() => openImage({ src: ASSETS.IMAGES.PAYMENT_GUIDE_COVER, alt: "Payment Guide - Step 1 Payment Instructions" })}
+            className="w-full rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-border/80 bg-card group relative cursor-zoom-in"
+          >
             <img 
               src={ASSETS.IMAGES.PAYMENT_GUIDE_COVER} 
               alt="Payment Guide - Step 1 Payment Instructions" 
@@ -216,9 +271,39 @@ const PaymentRegistrationGuide = () => {
                       </div>
                     </div>
                     {TREASURER_UPI_ID && (
-                      <p className="mt-3 sm:mt-4 text-[11px] sm:text-xs text-text-muted">
-                        {section.feeDetails.note}
-                      </p>
+                      <div className="mt-3.5 sm:mt-4 space-y-2.5">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          {upiDeepLink && (
+                            <button
+                              type="button"
+                              onClick={handlePayViaUpiApp}
+                              className="inline-flex items-center justify-center gap-2 bg-accent text-text-inverse text-xs sm:text-sm font-semibold px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl hover:bg-accent/90 transition-all shadow-md shadow-accent/20 text-center shrink-0 cursor-pointer"
+                            >
+                              <Smartphone className="w-4 h-4" />
+                              Pay via UPI App
+                            </button>
+                          )}
+                          <p className="text-[11px] sm:text-xs text-text-muted leading-relaxed">
+                            {section.feeDetails.note}
+                          </p>
+                        </div>
+                        {paymentInitiated && !upiAppError && (
+                          <div className="p-2.5 sm:p-3 rounded-xl bg-accent/10 border border-accent/30 text-left flex items-start gap-2 animate-in fade-in duration-200">
+                            <CheckCircle2 className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-accent leading-relaxed font-medium">
+                              Opening UPI app... Once payment of ₹50 is completed, copy the <strong className="text-text font-bold">12-digit UTR</strong> from your transaction receipt to enter in the registration form.
+                            </p>
+                          </div>
+                        )}
+                        {upiAppError && (
+                          <div className="p-2.5 sm:p-3 rounded-xl bg-warning/10 border border-warning/30 text-left flex items-start gap-2 animate-in fade-in duration-200">
+                            <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-warning leading-relaxed font-medium">
+                              {upiAppError}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </>
                 )}
@@ -284,7 +369,10 @@ const PaymentRegistrationGuide = () => {
 
                 {/* Section 4 Visual Guide Image */}
                 {section.id === 'find-utr' && ASSETS.IMAGES.PAYMENT_GUIDE_IMAGE_2 && (
-                  <div className="mt-5 sm:mt-6 rounded-xl sm:rounded-2xl overflow-hidden border border-border/80 shadow-lg bg-card group relative cursor-zoom-in">
+                  <div 
+                    onClick={() => openImage({ src: ASSETS.IMAGES.PAYMENT_GUIDE_IMAGE_2, alt: "Visual Guide: Finding UTR / Transaction Reference Number" })}
+                    className="mt-5 sm:mt-6 rounded-xl sm:rounded-2xl overflow-hidden border border-border/80 shadow-lg bg-card group relative cursor-zoom-in"
+                  >
                     <img
                       src={ASSETS.IMAGES.PAYMENT_GUIDE_IMAGE_2}
                       alt="Visual Guide: Finding UTR / Transaction Reference Number"
