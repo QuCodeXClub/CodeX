@@ -39,8 +39,8 @@ export const ASSETS = {
     ABOUT_COMMUNITY_5: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475204/IMG_5259_dwnhsr.jpg",
 
     // Registration
-    PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787935592/Payment_Page.webp",
-    PAYMENT_GUIDE_IMAGE_2: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787935592/Payment_Page_2.webp",
-    PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787932036/qr_code_kse1yg.svg",
+    PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787935592/Payment_Page.webp",
+    PAYMENT_GUIDE_IMAGE_2: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787935592/Payment_Page_2.webp",
+    PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787932036/qr_code_kse1yg.svg",
   },
 };
