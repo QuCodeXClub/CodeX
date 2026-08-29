@@ -23,6 +23,9 @@ export const ASSETS = {
     PARTNER_XYZ: partnerXyz,
 
     // About Section
+    ABOUT_FLAGSHIP_TECHTHRIVE_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980365/techthrive-logo_dtu9hw.svg",
+    ABOUT_FLAGSHIP_QHACKATHON_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980407/qhackathon-logo_wf5ehk.svg",
+    ABOUT_FLAGSHIP_TECHSPRINT_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980369/techsprint-logo_xed01t.svg",
     ABOUT_FLAGSHIP_TECHTHRIVE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
     ABOUT_FLAGSHIP_QHACKATHON: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg",
     ABOUT_FLAGSHIP_TECHSPRINT: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",
@@ -33,7 +36,7 @@ export const ASSETS = {
     ABOUT_COMMUNITY_5: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475204/IMG_5259_dwnhsr.jpg",
 
     // Registration
-    PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787918116/payment-codex_cc2mq4.webp",
-    PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1787918116/WhatsApp_Image_2026-08-27_at_4.22.42_AM_ayilhc.webp",
+    PAYMENT_GUIDE_COVER: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787918116/payment-codex_cc2mq4.webp",
+    PAYMENT_QR: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787918116/WhatsApp_Image_2026-08-27_at_4.22.42_AM_ayilhc.webp",
   },
 };
