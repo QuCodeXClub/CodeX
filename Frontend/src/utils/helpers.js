@@ -50,7 +50,53 @@ export const optimizeCloudinaryUrl = (url, width = 1200) => {
   }
 };
 
+export const removeImageOptimization = (url) => {
+  if (!url || typeof url !== "string") return url;
 
+  try {
+    const parsedUrl = new URL(url, window.location.origin);
+    
+    // Strict protocol allowlist
+    if (!['http:', 'https:', 'blob:', 'data:'].includes(parsedUrl.protocol)) {
+      return "";
+    }
+
+    if (
+      parsedUrl.hostname === "res.cloudinary.com" ||
+      parsedUrl.hostname.endsWith(".cloudinary.com")
+    ) {
+      const uploadIndex = parsedUrl.pathname.indexOf("/upload/");
+      if (uploadIndex !== -1) {
+        const prefix = parsedUrl.pathname.substring(0, uploadIndex + 8);
+        const rest = parsedUrl.pathname.substring(uploadIndex + 8);
+        const segments = rest.split("/");
+
+        // Filter out transformation segments (e.g. f_auto, q_auto, w_1200, c_scale, etc.)
+        const cleanSegments = segments.filter((seg) => {
+          if (!seg) return false;
+          // Version segment: v followed by digits
+          if (/^v\d+$/.test(seg)) return true;
+          // Segment with file extension
+          if (/\.[a-zA-Z0-9]+$/.test(seg)) return true;
+
+          // Check if segment is a Cloudinary transformation parameter list
+          const isTransformation =
+            seg.includes(",") ||
+            /^(?:[a-z]{1,4}_[a-zA-Z0-9_.:-]+)+$/i.test(seg);
+
+          return !isTransformation;
+        });
+
+        parsedUrl.pathname = prefix + cleanSegments.join("/");
+        return parsedUrl.href;
+      }
+    }
+
+    return parsedUrl.href;
+  } catch {
+    return url;
+  }
+};
 
 /**
  * Applies safe defaults for the new Event model fields (locationType, location, tags).
