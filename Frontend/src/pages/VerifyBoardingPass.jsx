@@ -62,7 +62,7 @@ const VerifyBoardingPass = () => {
       `}</style>
 
       {boardingPass && (
-        <div 
+        <div
           className="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(46,197,212,0.12)] border border-[#2EC5D4]/20 bg-[#121212]"
         >
           {/* 
@@ -71,14 +71,14 @@ const VerifyBoardingPass = () => {
             ====================================================
           */}
           <div className="w-full md:w-[32%] bg-[#181818] flex flex-col md:flex-row relative border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#444444]">
-            
+
             {/* Bottom Cutouts for the Dashed Line */}
             <div className="absolute -right-3 -bottom-3 md:-bottom-4 md:-right-4 w-6 h-6 md:w-8 md:h-8 bg-bg-soft rounded-full z-20 print-hide shadow-inner"></div>
 
             {/* Vertical Edge Text */}
             <div className="hidden md:flex items-center justify-center w-12 border-r border-[#333333]">
-              <span 
-                className="transform -rotate-180 whitespace-nowrap text-[#666666] font-mono text-[10px] tracking-[0.4em] uppercase" 
+              <span
+                className="transform -rotate-180 whitespace-nowrap text-[#666666] font-mono text-[10px] tracking-[0.4em] uppercase"
                 style={{ writingMode: 'vertical-rl' }}
               >
                 Boarding Pass : {boardingPass.eventName}
@@ -105,7 +105,7 @@ const VerifyBoardingPass = () => {
                   className="w-32 h-32 md:w-40 md:h-40"
                 />
               </div>
-              
+
               <div className="text-center">
                 <span className="font-mono text-[#2EC5D4] text-xs uppercase tracking-widest font-bold">
                   Scan to Verify
@@ -123,18 +123,18 @@ const VerifyBoardingPass = () => {
             ====================================================
           */}
           <div className="w-full md:w-[68%] p-8 md:p-12 flex flex-col relative overflow-hidden bg-[#121212]">
-            
+
             {/* Tech Background Elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2EC5D4]/5 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
-            <div 
-              className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+            <div
+              className="absolute inset-0 opacity-[0.03] pointer-events-none"
               style={{ backgroundImage: 'linear-gradient(#2EC5D4 1px, transparent 1px), linear-gradient(90deg, #2EC5D4 1px, transparent 1px)', backgroundSize: '40px 40px' }}
             ></div>
 
             {/* Header / Meta */}
             <div className="relative z-10 flex flex-wrap justify-between items-start border-b border-[#333333] pb-4 mb-6 md:mb-8 gap-4">
               <div className="flex items-center gap-3">
-                
+
                 <span className="font-mono text-[10px] md:text-xs text-[#AAAAAA] uppercase tracking-widest">
                   CodeX Event Administration
                 </span>
@@ -153,7 +153,7 @@ const VerifyBoardingPass = () => {
 
             {/* Information Grid */}
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-y-8 gap-x-6">
-              
+
               {/* Event Info */}
               <div className="sm:col-span-3">
                 <p className="font-mono text-[10px] text-[#2EC5D4] uppercase tracking-[0.2em] mb-1">
@@ -195,14 +195,14 @@ const VerifyBoardingPass = () => {
                   Boarding Pass ID
                 </p>
                 <p className="font-mono text-lg font-bold text-[#F5F5F5]">
-                  {(boardingPass.boardingPassId || boardingPassId || "").split('-')[0]} 
+                  {(boardingPass.boardingPassId || boardingPassId || "").split('-')[0]}
                 </p>
               </div>
 
               {/* Conditional Event Credentials */}
               {(boardingPass.wifiUser || boardingPass.wifiPass || boardingPass.loginUser || boardingPass.loginPass) && (
                 <div className="sm:col-span-2 grid grid-cols-2 gap-6 pt-6 border-t border-[#333333] mt-2">
-                  
+
                   {/* WiFi Credentials */}
                   {(boardingPass.wifiUser || boardingPass.wifiPass) && (
                     <div className="bg-[#1A1A1A] p-4 rounded-xl border border-[#2EC5D4]/20">
@@ -242,7 +242,7 @@ const VerifyBoardingPass = () => {
 
             </div>
           </div>
-          
+
         </div>
       )}
     </VerificationLayout>

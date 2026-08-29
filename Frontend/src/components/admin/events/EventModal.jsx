@@ -151,16 +151,16 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
   return createPortal(
     <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-md overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4 sm:p-6 md:p-8">
-        
+
         <div className="w-full max-w-5xl bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl relative flex flex-col my-8 overflow-hidden">
-          
+
           <button
             onClick={() => setIsModalOpen(false)}
             className="absolute top-5 right-5 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors z-10 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
-          
+
           <div className="p-6 md:p-8 lg:p-10 flex-1 flex flex-col">
             <div className="border-b border-border/60 pb-5 mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
@@ -171,9 +171,9 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
                 {editingEvent ? "EDIT EVENT DETAILS" : "CREATE NEW EVENT"}
               </h2>
             </div>
-            
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
-              
+
               {/* Row 1: Event Name + Date */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
                 <div>
