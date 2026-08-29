@@ -1,14 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin, Globe, ZoomIn } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Image as ImageIcon, Search, MapPin, Globe } from "lucide-react";
 import { normalizeEvent, optimizeCloudinaryUrl } from "../../../utils/helpers";
-import { useImageZoom } from "../../../context/ImageZoomContext";
 
 const EventList = ({ events = [], loading }) => {
   const [activeTab, setActiveTab] = useState("UPCOMING");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { openImage } = useImageZoom();
 
   // Normalize events once to apply safe defaults for new fields
   const normalizedEvents = useMemo(() => events.map(normalizeEvent), [events]);
@@ -117,26 +115,13 @@ const EventList = ({ events = [], loading }) => {
                 {/* 1920x557 Banner Image Section */}
                 <div className="w-full aspect-[1920/557] shrink-0 bg-card-hover border-b border-border/60 relative overflow-hidden">
                   {event.coverImage ? (
-                    <>
-                      <img 
-                        src={optimizeCloudinaryUrl(event.coverImage, 800)} 
-                        alt={event.eventName} 
-                        className="w-full h-full object-contain bg-black/5 group-hover:scale-[1.02] transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openImage({ src: event.coverImage, alt: event.eventName });
-                        }}
-                        className="absolute top-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/75 hover:bg-black backdrop-blur-md text-white p-1.5 rounded-lg border border-white/20 shadow-lg cursor-pointer flex items-center gap-1"
-                        title="Zoom cover image"
-                      >
-                        <ZoomIn className="w-3.5 h-3.5 text-accent" />
-                        <span className="text-[10px] font-mono font-bold hidden sm:inline">Zoom</span>
-                      </button>
-                    </>
+                    <img 
+                      src={optimizeCloudinaryUrl(event.coverImage, 800)} 
+                      alt={event.eventName} 
+                      data-no-zoom="true"
+                      className="w-full h-full object-contain bg-black/5 group-hover:scale-[1.02] transition-transform duration-500"
+                      loading="lazy"
+                    />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-text-muted">
                       <ImageIcon className="w-8 h-8 opacity-40 mb-1" />
