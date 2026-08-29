@@ -42,7 +42,7 @@ const AboutLeadership = () => {
             <div className="shrink-0 relative">
               <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-border/50 border border-border/80 overflow-hidden flex items-center justify-center relative z-10 group-hover:border-accent/40 transition-colors duration-300 shadow-md">
                 {leadershipData.photoUrl &&
-                leadershipData.photoUrl !== "[Leadership Photo URL]" ? (
+                  leadershipData.photoUrl !== "[Leadership Photo URL]" ? (
                   <img
                     src={leadershipData.photoUrl}
                     alt={leadershipData.photoAlt || leadershipData.name}

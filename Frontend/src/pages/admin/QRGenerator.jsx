@@ -12,7 +12,7 @@ export default function QRGenerator() {
   const [deletingId, setDeletingId] = useState(null);
   const [downloadingState, setDownloadingState] = useState(null);
   const [copied, setCopied] = useState(false);
-  
+
   // Modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [qrToDelete, setQrToDelete] = useState(null);
@@ -33,7 +33,7 @@ export default function QRGenerator() {
 
   const executeDelete = async () => {
     if (!qrToDelete) return;
-    
+
     setDeletingId(qrToDelete);
     try {
       await dispatch(deleteCustomQR(qrToDelete)).unwrap();
@@ -58,14 +58,14 @@ export default function QRGenerator() {
     setDownloadingState({ url: urlToDownload, format });
     try {
       let finalUrl = urlToDownload;
-      
+
       let isCloudinary = false;
       try {
         isCloudinary = new URL(finalUrl).hostname === 'res.cloudinary.com';
       } catch (e) {
         isCloudinary = false;
       }
-      
+
       if (format !== 'svg' && isCloudinary) {
         const lastDotIndex = finalUrl.lastIndexOf('.');
         if (lastDotIndex !== -1 && lastDotIndex > finalUrl.lastIndexOf('/')) {
@@ -76,43 +76,43 @@ export default function QRGenerator() {
       if (format === 'svg') {
         const response = await fetch(finalUrl);
         let svgText = await response.text();
-        
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(svgText, "image/svg+xml");
         const svgEl = doc.documentElement;
-        
+
         let viewBox = svgEl.getAttribute('viewBox');
         let width = parseInt(svgEl.getAttribute('width'));
         let height = parseInt(svgEl.getAttribute('height'));
-        
+
         if (!viewBox && width && height) {
-           viewBox = `0 0 ${width} ${height}`;
+          viewBox = `0 0 ${width} ${height}`;
         }
-        
+
         if (viewBox) {
           const parts = viewBox.split(' ').map(Number);
           if (parts.length === 4) {
-             const originalWidth = parts[2];
-             const originalHeight = parts[3];
-             const paddingBottom = Math.max(30, originalHeight * 0.15);
-             parts[3] += paddingBottom;
-             svgEl.setAttribute('viewBox', parts.join(' '));
-             
-             if (height) svgEl.setAttribute('height', height + paddingBottom * (height/originalHeight));
-             
-             const textEl = doc.createElementNS("http://www.w3.org/2000/svg", "text");
-             textEl.setAttribute('x', parts[0] + originalWidth / 2);
-             textEl.setAttribute('y', parts[1] + originalHeight + (paddingBottom / 2));
-             textEl.setAttribute('text-anchor', 'middle');
-             textEl.setAttribute('dominant-baseline', 'middle');
-             textEl.setAttribute('font-family', 'monospace, sans-serif');
-             textEl.setAttribute('font-size', (originalHeight * 0.045).toString());
-             textEl.setAttribute('fill', '#000000');
-             textEl.textContent = targetLink;
-             svgEl.appendChild(textEl);
+            const originalWidth = parts[2];
+            const originalHeight = parts[3];
+            const paddingBottom = Math.max(30, originalHeight * 0.15);
+            parts[3] += paddingBottom;
+            svgEl.setAttribute('viewBox', parts.join(' '));
+
+            if (height) svgEl.setAttribute('height', height + paddingBottom * (height / originalHeight));
+
+            const textEl = doc.createElementNS("http://www.w3.org/2000/svg", "text");
+            textEl.setAttribute('x', parts[0] + originalWidth / 2);
+            textEl.setAttribute('y', parts[1] + originalHeight + (paddingBottom / 2));
+            textEl.setAttribute('text-anchor', 'middle');
+            textEl.setAttribute('dominant-baseline', 'middle');
+            textEl.setAttribute('font-family', 'monospace, sans-serif');
+            textEl.setAttribute('font-size', (originalHeight * 0.045).toString());
+            textEl.setAttribute('fill', '#000000');
+            textEl.textContent = targetLink;
+            svgEl.appendChild(textEl);
           }
         }
-        
+
         const serializer = new XMLSerializer();
         const newSvgText = serializer.serializeToString(doc);
         const blob = new Blob([newSvgText], { type: 'image/svg+xml' });
@@ -128,7 +128,7 @@ export default function QRGenerator() {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = finalUrl;
-        
+
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
@@ -139,25 +139,25 @@ export default function QRGenerator() {
         canvas.width = img.width;
         canvas.height = img.height + paddingBottom;
         const ctx = canvas.getContext('2d');
-        
+
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         ctx.drawImage(img, 0, 0);
-        
+
         ctx.fillStyle = '#000000';
         const fontSize = Math.max(12, Math.floor(img.height * 0.045));
         ctx.font = `${fontSize}px monospace, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        
+
         let displayLink = targetLink;
         const maxTextWidth = canvas.width - 40;
         if (ctx.measureText(displayLink).width > maxTextWidth) {
-           while(displayLink.length > 0 && ctx.measureText(displayLink + '...').width > maxTextWidth) {
-              displayLink = displayLink.slice(0, -1);
-           }
-           displayLink += '...';
+          while (displayLink.length > 0 && ctx.measureText(displayLink + '...').width > maxTextWidth) {
+            displayLink = displayLink.slice(0, -1);
+          }
+          displayLink += '...';
         }
 
         ctx.fillText(displayLink, canvas.width / 2, img.height + (paddingBottom / 2));
@@ -189,7 +189,7 @@ export default function QRGenerator() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full animate-in fade-in duration-500">
-      
+
       {/* Page Header */}
       <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
@@ -218,7 +218,7 @@ export default function QRGenerator() {
             </div>
             <h2 className="text-lg font-display font-bold uppercase text-text">New QR Code</h2>
           </div>
-          
+
           <form onSubmit={handleGenerate} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-text-muted mb-2 uppercase tracking-wider">
@@ -374,12 +374,12 @@ export default function QRGenerator() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {history.map((item) => (
               <div key={item._id} className="bg-card-hover border border-border p-4 rounded-2xl hover:border-accent/50 transition-all duration-300 group flex flex-col h-full shadow-sm">
-                
+
                 {/* Keep bg-white so history QR remains scannable! */}
                 <div className="bg-white p-3 rounded-xl mb-4 relative overflow-hidden flex-shrink-0 border border-border">
                   <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
                     <div className="flex gap-2">
-                      <button 
+                      <button
                         onClick={() => handleDownload(item.qrUrl, 'svg', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg'}
                         className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
@@ -391,7 +391,7 @@ export default function QRGenerator() {
                           "SVG"
                         )}
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDownload(item.qrUrl, 'png', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'png'}
                         className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
@@ -403,7 +403,7 @@ export default function QRGenerator() {
                           "PNG"
                         )}
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDownload(item.qrUrl, 'jpg', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg'}
                         className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
@@ -416,7 +416,7 @@ export default function QRGenerator() {
                         )}
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleDeleteClick(item._id)}
                       disabled={deletingId === item._id}
                       className="mt-1 p-2 bg-danger rounded-lg text-white hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100 shadow-sm"
@@ -431,7 +431,7 @@ export default function QRGenerator() {
                   </div>
                   <img src={item.qrUrl} alt="QR Code" className="w-full aspect-square object-contain" />
                 </div>
-                
+
                 <div className="flex-1 flex flex-col justify-between">
                   <div className="mb-3">
                     <p className="text-xs font-mono text-text-muted uppercase tracking-wider mb-1">Target Link</p>

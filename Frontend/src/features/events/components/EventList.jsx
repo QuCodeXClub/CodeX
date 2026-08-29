@@ -117,8 +117,6 @@ const EventList = ({ events = [], loading }) => {
                   {event.coverImage ? (
                     <img 
                       src={optimizeCloudinaryUrl(event.coverImage, 800)} 
-                      alt={event.eventName} 
-                      data-no-zoom="true"
                       className="w-full h-full object-contain bg-black/5 group-hover:scale-[1.02] transition-transform duration-500"
                       loading="lazy"
                     />
