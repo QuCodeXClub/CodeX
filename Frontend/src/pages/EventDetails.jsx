@@ -28,10 +28,6 @@ export default function EventDetails() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Refs and state for docking the mobile button
-  const bottomRef = useRef(null);
-  const [isDocked, setIsDocked] = useState(false);
-
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -64,30 +60,6 @@ export default function EventDetails() {
     fetchEvent();
     window.scrollTo(0, 0);
   }, [id]);
-
-  // Intersection Observer to detect when the footer is reached
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsDocked(entry.isIntersecting);
-      },
-      {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0,
-      }
-    );
-
-    if (bottomRef.current) {
-      observer.observe(bottomRef.current);
-    }
-
-    return () => {
-      if (bottomRef.current) {
-        observer.unobserve(bottomRef.current);
-      }
-    };
-  }, [loading]);
 
   // Handle Share Functionality
   const handleShare = async () => {
@@ -154,7 +126,7 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent pb-28 lg:pb-20 font-sans relative">
+    <div className="min-h-screen bg-transparent pb-8 lg:pb-20 font-sans relative">
       <div className="w-full relative z-10">
         
         {/* Top Navigation Bar */}
@@ -332,6 +304,27 @@ export default function EventDetails() {
                   dangerouslySetInnerHTML={{ __html: event.description }}
                 />
               </div>
+
+              {/* Mobile Sticky Bottom Registration Bar */}
+              <div className="lg:hidden sticky bottom-6 z-50 flex items-center justify-center pointer-events-none mt-6">
+                {isRegistrationOpen(event) ? (
+                  <a
+                    href={event.registrationLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Register <ExternalLink className="w-4 h-4" />
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full pointer-events-auto bg-card border border-border text-text-muted px-8 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider cursor-not-allowed shadow-[0_4px_20px_rgba(0,0,0,0.25)]"
+                  >
+                    Registration Closed
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Right Column: Sticky Registration Sidebar (Hidden on Mobile) */}
@@ -417,30 +410,6 @@ export default function EventDetails() {
           </div>
         </PageContainer>
       </div>
-
-      {/* Invisible anchor element to detect when we reach the bottom */}
-      <div ref={bottomRef} className="absolute bottom-0 w-full h-4 pointer-events-none opacity-0" />
-
-      {/* Mobile Sticky Bottom Registration Bar - Transparent & Centered */}
-      <div className={`lg:hidden ${isDocked ? 'absolute' : 'fixed'} bottom-6 left-0 right-0 z-50 flex items-center justify-center px-4 bg-transparent pointer-events-none`}>
-        {isRegistrationOpen(event) ? (
-          <a
-            href={event.registrationLink}
-            target="_blank"
-            rel="noreferrer"
-            className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-          >
-            Register <ExternalLink className="w-4 h-4" />
-          </a>
-        ) : (
-          <button
-            disabled
-            className="w-full pointer-events-auto bg-card border border-border text-text-muted px-8 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider cursor-not-allowed shadow-[0_4px_20px_rgba(0,0,0,0.25)]"
-          >
-            Registration Closed
-          </button>
-        )}
-      </div>
     </div>
   );
-}
+}

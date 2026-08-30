@@ -15,7 +15,7 @@ const EventsHero = () => {
   };
 
   return (
-    <section id="programs" className="relative overflow-hidden min-h-[80vh] flex flex-col">
+    <section id="programs" className="relative overflow-hidden min-h-0 md:min-h-[80vh] flex flex-col pb-8 md:pb-0">
       <div className="flex-1 max-w-[1400px] w-full mx-auto grid grid-cols-1 xl:grid-cols-2 gap-24 xl:gap-8 items-center px-6 lg:px-12 py-12 lg:py-20 relative z-10">
         
         {/* Left Content */}
@@ -40,20 +40,30 @@ const EventsHero = () => {
           <p className="text-text-muted font-mono text-sm md:text-base leading-[1.8] max-w-[90%] mb-12 transition-colors duration-300">
             {eventsHero.description}
           </p>
-          <Link 
-            to="/events" 
-            className="inline-flex items-center gap-4 px-[2rem] py-[1rem] bg-accent/5 hover:bg-accent hover:text-bg text-text font-sans text-[1.05rem] font-bold tracking-[0.2em] uppercase transition-all duration-300 group relative"
-          >
-            <div className="absolute inset-0 border border-accent shadow-[0_0_15px_rgba(46,197,212,0.2)] group-hover:shadow-[0_0_30px_rgba(46,197,212,0.6)] transition-all duration-300 pointer-events-none" style={{ clipPath: "polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)" }}></div>
-            <div className="absolute top-0 left-0 w-2 h-[2px] bg-accent shadow-[0_0_5px_rgba(46,197,212,0.8)]"></div>
-            <div className="absolute bottom-0 right-0 w-2 h-[2px] bg-accent shadow-[0_0_5px_rgba(46,197,212,0.8)]"></div>
-            <span className="relative z-10 transition-colors duration-300 group-hover:text-bg">Explore Events</span>
-            <ArrowRight size={20} className="relative z-10 group-hover:translate-x-2 group-hover:text-bg transition-transform duration-300" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-6">
+            <Link 
+              to="/events" 
+              className="inline-flex items-center gap-4 px-[2rem] py-[1rem] bg-accent/5 hover:bg-accent hover:text-bg text-text font-sans text-[1.05rem] font-bold tracking-[0.2em] uppercase transition-all duration-300 group relative"
+            >
+              <div className="absolute inset-0 border border-accent shadow-[0_0_15px_rgba(46,197,212,0.2)] group-hover:shadow-[0_0_30px_rgba(46,197,212,0.6)] transition-all duration-300 pointer-events-none" style={{ clipPath: "polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)" }}></div>
+              <div className="absolute top-0 left-0 w-2 h-[2px] bg-accent shadow-[0_0_5px_rgba(46,197,212,0.8)]"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-[2px] bg-accent shadow-[0_0_5px_rgba(46,197,212,0.8)]"></div>
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-bg">Explore Events</span>
+              <ArrowRight size={20} className="relative z-10 group-hover:translate-x-2 group-hover:text-bg transition-transform duration-300" />
+            </Link>
+
+            <Link 
+              to="/about#flagship" 
+              className="inline-flex items-center gap-2 text-text-muted hover:text-accent font-sans text-[0.9rem] font-bold tracking-[0.15em] uppercase transition-colors duration-300 group border-b border-transparent hover:border-accent pb-1"
+            >
+              <span>Flagship Event</span>
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+            </Link>
+          </div>
         </div>
         
         {/* Right Cards Section */}
-        <div className="relative h-[550px] w-full flex justify-center items-center mt-12 xl:mt-0">
+        <div className="hidden md:flex relative h-[550px] w-full justify-center items-center mt-12 xl:mt-0">
           {/* Animated Radar SVG */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[160%] pointer-events-none -z-10 animate-[spin_40s_linear_infinite]">
             <svg className="w-full h-full text-accent/30" viewBox="0 0 800 800" fill="none">
@@ -80,15 +90,12 @@ const EventsHero = () => {
                let zIndex = "";
                
                if (card.id === 1) {
-                 // Center card: Pops up and scales on hover
                  posClasses = "rotate-0 scale-100 -translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] hover:-translate-y-8 hover:scale-[1.05]";
                  zIndex = "z-30";
                } else if (card.id === 2) {
-                 // Left card: Shifts left, straightens out, and scales up to 100% on hover
                  posClasses = "-translate-x-[55%] translate-y-8 -rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:-translate-x-[80%] hover:-translate-y-2 hover:rotate-0 hover:scale-100 hover:opacity-100";
                  zIndex = "z-10";
                } else if (card.id === 3) {
-                 // Right card: Shifts right, straightens out, and scales up to 100% on hover
                  posClasses = "translate-x-[55%] translate-y-8 rotate-[12deg] scale-[0.85] opacity-80 shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:translate-x-[80%] hover:-translate-y-2 hover:rotate-0 hover:scale-100 hover:opacity-100";
                  zIndex = "z-20";
                }
