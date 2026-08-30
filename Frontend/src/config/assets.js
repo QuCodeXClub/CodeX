@@ -20,7 +20,7 @@ export const ASSETS = {
     PARTNER_HOSTINGER: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981864/hostinger_v4uwd6.svg",
     PARTNER_XYZ: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981870/xyz_zxjiih.svg",
     PARTNER_CODECHEF: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981648/codechef_xnlrcp.svg",
-    PARTNER_BLOCKSEBLOCK: "https://res.cloudinary.com/fswmfdcp/image/upload/v1788028277/blackbox_qtjy4t.svg",
+    PARTNER_BLOCKSEBLOCK: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1788028277/blackbox_qtjy4t.svg",
     PARTNER_COLLAGECART: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981666/collagecart_n12fpb.svg",
     PARTNER_CODECRAFTERS: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981671/codecrafters_esxtat.svg",
     PARTNER_MEMCODE: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981661/memcode_vc0ncj.svg",
