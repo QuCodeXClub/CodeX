@@ -5,6 +5,7 @@ import { useTheme } from "../hooks/useTheme";
 import { usePageNavigation } from "../hooks/usePageNavigation";
 import { useSectionNavigation } from "../hooks/useSectionNavigation";
 import { ASSETS } from "../config/assets";
+import { CodeXLogo } from "../components/common/CodeXLogo";
 
 const Navbar = ({ layout }) => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const Navbar = ({ layout }) => {
       } else {
         const el = document.getElementById(targetId);
         if (el) {
-          const navbarOffset = window.innerWidth < 768 ? 64 : 80;
+          const navbarOffset = window.innerWidth < 768 ? 56 : 64;
           const elementPosition = el.getBoundingClientRect().top + window.scrollY;
           const offsetPosition = Math.max(0, Math.floor(elementPosition - navbarOffset));
           window.scrollTo({ top: offsetPosition, behavior: "smooth" });
@@ -143,27 +144,25 @@ const Navbar = ({ layout }) => {
 
   return (
     <header ref={navRef} className="sticky top-0 z-50 w-full bg-bg/85 backdrop-blur-xl border-b border-border/80 transition-all duration-300">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 md:h-16 flex items-center justify-between">
 
-        {/* Brand Logo */}
+        {/* Brand Logo with University Icon on Left */}
         <Link
           to="/"
           onClick={(e) => {
             handleSectionClick(e, { label: "HOME", targetId: "home" });
           }}
-          className="flex items-center gap-3 shrink-0 group"
+          className="flex items-center gap-2.5 md:gap-3 shrink-0 group py-1"
           aria-label="CodeX Club home"
         >
-          <div className="relative p-1.5 rounded-xl bg-accent/10 border border-accent/20 group-hover:border-accent/50 group-hover:shadow-[0_0_15px_var(--color-accent-glow)] transition-all duration-300">
+          <div className="relative p-1 md:p-1.5 rounded-lg md:rounded-xl bg-accent/10 border border-accent/20 group-hover:border-accent/50 group-hover:shadow-[0_0_15px_var(--color-accent-glow)] transition-all duration-300 flex items-center justify-center">
             <img
-              src={ASSETS.IMAGES.CODEX_LOGO_ICON}
-              alt="CodeX Club logo"
-              className="h-6 md:h-7 object-contain transition-transform duration-300 group-hover:scale-110"
+              src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON}
+              alt="University Logo"
+              className="h-5 w-5 sm:h-5.5 sm:w-5.5 md:h-6 md:w-6 object-contain transition-transform duration-300 group-hover:scale-110"
             />
           </div>
-          <span className="font-display font-extrabold text-lg md:text-2xl tracking-[0.15em] text-text group-hover:text-accent transition-colors">
-            CODE<span className="text-accent">X</span>
-          </span>
+          <CodeXLogo className="h-4.5 sm:h-5 md:h-6 w-auto text-text transition-transform duration-300 group-hover:scale-105" />
         </Link>
 
         {/* Unified Desktop Navigation */}
