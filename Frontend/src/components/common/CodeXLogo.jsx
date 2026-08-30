@@ -11,7 +11,7 @@ export const CodeXLogo = ({ className = "h-7 w-auto", ...props }) => {
       viewBox="0 0 640 116"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`inline-block ${className}`}
+      className={className || "inline-block h-7 w-auto"}
       aria-label="CodeX Logo"
       {...props}
     >

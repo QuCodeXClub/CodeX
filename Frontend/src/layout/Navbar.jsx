@@ -146,7 +146,7 @@ const Navbar = ({ layout }) => {
     <header ref={navRef} className="sticky top-0 z-50 w-full bg-bg/85 backdrop-blur-xl border-b border-border/80 transition-all duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-14 md:h-16 flex items-center justify-between">
 
-        {/* Brand Logo with University Icon on Left */}
+        {/* Brand Logo with CodeX Icon on Left */}
         <Link
           to="/"
           onClick={(e) => {
@@ -155,14 +155,14 @@ const Navbar = ({ layout }) => {
           className="flex items-center gap-2.5 md:gap-3 shrink-0 group py-1"
           aria-label="CodeX Club home"
         >
-          <div className="relative p-1 md:p-1.5 rounded-lg md:rounded-xl bg-accent/10 border border-accent/20 group-hover:border-accent/50 group-hover:shadow-[0_0_15px_var(--color-accent-glow)] transition-all duration-300 flex items-center justify-center">
-            <img
-              src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON}
-              alt="University Logo"
-              className="h-5 w-5 sm:h-5.5 sm:w-5.5 md:h-6 md:w-6 object-contain transition-transform duration-300 group-hover:scale-110"
-            />
-          </div>
-          <CodeXLogo className="h-4.5 sm:h-5 md:h-6 w-auto text-text transition-transform duration-300 group-hover:scale-105" />
+          <img
+            src={ASSETS.IMAGES.CODEX_LOGO_ICON}
+            alt="CodeX Logo"
+            className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+          />
+          <span className="hidden sm:inline-flex items-center">
+            <CodeXLogo className="h-4.5 sm:h-5 md:h-6 w-auto text-text transition-transform duration-300 group-hover:scale-105" />
+          </span>
         </Link>
 
         {/* Unified Desktop Navigation */}
