@@ -19,7 +19,7 @@ const formatLocalDatetime = (dateString) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
-export default function EventModal({ setIsModalOpen, editingEvent }) {
+export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) {
   const dispatch = useDispatch();
   const normalized = editingEvent ? normalizeEvent(editingEvent) : null;
 
@@ -145,7 +145,11 @@ export default function EventModal({ setIsModalOpen, editingEvent }) {
         await dispatch(createAdminEvent(submitData)).unwrap();
       }
       setIsModalOpen(false);
-      dispatch(fetchAdminEvents());
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      } else {
+        dispatch(fetchAdminEvents());
+      }
     } catch (err) {
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {

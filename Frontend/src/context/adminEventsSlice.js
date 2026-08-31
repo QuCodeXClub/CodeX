@@ -73,7 +73,14 @@ const adminEventsSlice = createSlice({
     error: null,
     isLoaded: false,
   },
-  reducers: {},
+  reducers: {
+    invalidateEvents: (state) => {
+      state.isLoaded = false;
+    },
+    setPagination: (state, action) => {
+      state.pagination = { ...state.pagination, ...action.payload };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminEvents.pending, (state) => {
@@ -91,11 +98,8 @@ const adminEventsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(createAdminEvent.fulfilled, (state, action) => {
-        const created = action.payload?.data?.data || action.payload?.data || action.payload;
-        if (created && created._id) {
-          state.events = [created, ...state.events];
-        }
+      .addCase(createAdminEvent.fulfilled, (state) => {
+        state.isLoaded = false;
       })
       .addCase(updateAdminEvent.fulfilled, (state, action) => {
         const updated = action.payload?.data?.data || action.payload?.data || action.payload;
@@ -105,9 +109,14 @@ const adminEventsSlice = createSlice({
       })
       .addCase(deleteAdminEvent.fulfilled, (state, action) => {
         state.events = state.events.filter((e) => e._id !== action.payload);
+        if (state.pagination.total > 0) {
+          state.pagination.total -= 1;
+          state.pagination.totalPages = Math.ceil(state.pagination.total / (state.pagination.limit || 12)) || 1;
+        }
       });
   },
 });
 
+export const { invalidateEvents, setPagination } = adminEventsSlice.actions;
 export default adminEventsSlice.reducer;
 
