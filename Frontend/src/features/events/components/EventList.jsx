@@ -315,8 +315,9 @@ const EventList = () => {
                         </span>
                       )}
 
-                      <div className="w-8 h-8 rounded-full bg-card-hover border border-border/80 flex items-center justify-center text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent transition-all duration-300 shadow-sm">
-                        <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5" />
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card-hover border border-border/80 text-[10px] font-mono font-bold uppercase tracking-widest text-text group-hover:bg-accent group-hover:text-text-inverse group-hover:border-accent group-hover:shadow-[0_0_12px_var(--color-accent-glow)] transition-all duration-300">
+                        <span>View</span>
+                        <ArrowRight className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform duration-300" />
                       </div>
                     </div>
 

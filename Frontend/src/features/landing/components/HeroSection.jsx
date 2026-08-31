@@ -39,14 +39,10 @@ const HeroSection = () => {
       {/* Left Content Area */}
       <div className="flex-1 relative z-10 lg:w-[55%] flex flex-col justify-center max-w-3xl">
         
-        {/* Eyebrow Tech Badge with Pulse */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-sans text-xs font-semibold uppercase tracking-widest w-fit mb-6 shadow-sm hover:scale-105 transition-all">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-          </span>
-          <Sparkles className="w-3.5 h-3.5 text-accent" />
-          <span>QUANTUM UNIVERSITY DEVELOPER CLUB</span>
+        {/* Eyebrow Tech Badge */}
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-widest w-fit mb-6 shadow-sm hover:scale-105 transition-all">
+          <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="w-4 h-4 object-contain drop-shadow-sm" />
+          <span>QUANTUM Best technical DEVELOPER CLUB</span>
         </div>
 
         {/* Ultra-Stylish Hero Title: CODE X */}
