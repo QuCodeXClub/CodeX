@@ -12,8 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
+  X,
 } from "lucide-react";
 import {
+  fetchAllEvents,
   fetchUpcomingEvents,
   fetchPastEvents,
 } from "../../../context/eventsSlice";
@@ -27,14 +29,14 @@ const EventList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { upcoming, past } = useSelector((state) => state.events);
+  const { all, upcoming, past } = useSelector((state) => state.events);
 
-  const [activeTab, setActiveTab] = useState("UPCOMING");
+  const [activeTab, setActiveTab] = useState("ALL"); // "ALL" | "UPCOMING" | "PAST"
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [allPage, setAllPage] = useState(1);
   const [upcomingPage, setUpcomingPage] = useState(1);
   const [pastPage, setPastPage] = useState(1);
-  const hasUserSelectedTabRef = useRef(false);
   const limit = 6;
 
   // Debounce search query input (350ms)
@@ -45,57 +47,58 @@ const EventList = () => {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  // Initial Priority Fetch: Fetch Upcoming Events first, then Past Events in background
+  // Fetch events on mount and when debouncedSearch changes
   useEffect(() => {
     let isMounted = true;
 
-    // 1. Priority: Fetch Upcoming Events immediately
-    dispatch(
-      fetchUpcomingEvents({
-        page: 1,
-        limit,
-        search: debouncedSearch,
-      })
-    );
+    // Reset pagination to page 1 on search change
+    setAllPage(1);
+    setUpcomingPage(1);
+    setPastPage(1);
 
-    // 2. Background: Fetch Past Events right after
+    // Fetch active tab first, then the remaining tabs in background
+    if (activeTab === "ALL") {
+      dispatch(fetchAllEvents({ page: 1, limit, search: debouncedSearch }));
+    } else if (activeTab === "UPCOMING") {
+      dispatch(fetchUpcomingEvents({ page: 1, limit, search: debouncedSearch }));
+    } else {
+      dispatch(fetchPastEvents({ page: 1, limit, search: debouncedSearch }));
+    }
+
     const backgroundTimer = setTimeout(() => {
-      if (isMounted) {
-        dispatch(
-          fetchPastEvents({
-            page: 1,
-            limit,
-            search: debouncedSearch,
-          })
-        );
+      if (!isMounted) return;
+      if (activeTab !== "ALL") {
+        dispatch(fetchAllEvents({ page: 1, limit, search: debouncedSearch }));
       }
-    }, 100);
+      if (activeTab !== "UPCOMING") {
+        dispatch(fetchUpcomingEvents({ page: 1, limit, search: debouncedSearch }));
+      }
+      if (activeTab !== "PAST") {
+        dispatch(fetchPastEvents({ page: 1, limit, search: debouncedSearch }));
+      }
+    }, 150);
 
     return () => {
       isMounted = false;
       clearTimeout(backgroundTimer);
     };
-  }, [dispatch, debouncedSearch, limit]);
-
-  // Auto-switch to PAST tab if no upcoming events exist and user hasn't explicitly clicked UPCOMING
-  useEffect(() => {
-    if (
-      upcoming.isLoaded &&
-      upcoming.events.length === 0 &&
-      !hasUserSelectedTabRef.current &&
-      !debouncedSearch
-    ) {
-      setActiveTab("PAST");
-    }
-  }, [upcoming.isLoaded, upcoming.events.length, debouncedSearch]);
+  }, [dispatch, debouncedSearch, limit, activeTab]);
 
   const handleTabChange = (tab) => {
-    hasUserSelectedTabRef.current = true;
     setActiveTab(tab);
   };
 
   const handlePageChange = (newPage) => {
-    if (activeTab === "UPCOMING") {
+    if (activeTab === "ALL") {
+      setAllPage(newPage);
+      dispatch(
+        fetchAllEvents({
+          page: newPage,
+          limit,
+          search: debouncedSearch,
+        })
+      );
+    } else if (activeTab === "UPCOMING") {
       setUpcomingPage(newPage);
       dispatch(
         fetchUpcomingEvents({
@@ -114,6 +117,7 @@ const EventList = () => {
         })
       );
     }
+
     // Smooth scroll back to events container top
     const eventHeader = document.querySelector(".events-page");
     if (eventHeader) {
@@ -121,11 +125,23 @@ const EventList = () => {
     }
   };
 
-  const currentFeed = activeTab === "UPCOMING" ? upcoming : past;
-  const currentPage = activeTab === "UPCOMING" ? upcomingPage : pastPage;
-  const rawEvents = currentFeed.events || [];
+  const getCurrentFeed = () => {
+    if (activeTab === "ALL") return all;
+    if (activeTab === "UPCOMING") return upcoming;
+    return past;
+  };
+
+  const getCurrentPage = () => {
+    if (activeTab === "ALL") return allPage;
+    if (activeTab === "UPCOMING") return upcomingPage;
+    return pastPage;
+  };
+
+  const currentFeed = getCurrentFeed();
+  const currentPage = getCurrentPage();
+  const rawEvents = currentFeed?.events || [];
   const events = rawEvents.map(normalizeEvent);
-  const pagination = currentFeed.pagination || {
+  const pagination = currentFeed?.pagination || {
     page: 1,
     limit,
     total: events.length,
@@ -136,14 +152,25 @@ const EventList = () => {
 
   return (
     <div className="flex flex-col gap-8 font-sans">
-      {/* Search Bar & Time Tabs Bar */}
+      {/* Search Bar & Tabs Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-border/80">
-        {/* Tabs */}
-        <div className="flex items-center w-full sm:w-auto gap-1 sm:gap-2 bg-card-hover/80 p-1 rounded-xl border border-border/60">
+        {/* Tabs: All Events / Upcoming / Past */}
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-card-hover/80 p-1 rounded-xl border border-border/60 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => handleTabChange("ALL")}
+            className={`px-4 sm:px-5 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "ALL"
+                ? "bg-accent text-text-inverse shadow-sm"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            All Events ({all.pagination?.total ?? all.events.length})
+          </button>
           <button
             type="button"
             onClick={() => handleTabChange("UPCOMING")}
-            className={`flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-4 sm:px-5 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "UPCOMING"
                 ? "bg-accent text-text-inverse shadow-sm"
                 : "text-text-muted hover:text-text"
@@ -154,7 +181,7 @@ const EventList = () => {
           <button
             type="button"
             onClick={() => handleTabChange("PAST")}
-            className={`flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-4 sm:px-5 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "PAST"
                 ? "bg-accent text-text-inverse shadow-sm"
                 : "text-text-muted hover:text-text"
@@ -166,14 +193,24 @@ const EventList = () => {
 
         {/* Live Search Input */}
         <div className="relative min-w-[240px] sm:min-w-[280px]">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-muted pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
           <input
             type="text"
             placeholder="Search by name, venue, tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-card border border-border/80 rounded-xl py-2 pl-10 pr-4 text-xs font-mono text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder:text-text-muted/60 shadow-sm"
+            className="w-full bg-card border border-border/80 rounded-xl py-2 pl-10 pr-9 text-xs font-mono text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder:text-text-muted/60 shadow-sm"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text rounded-md transition-colors cursor-pointer"
+              title="Clear Search"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -204,9 +241,19 @@ const EventList = () => {
                 ? `No events matching "${debouncedSearch}".`
                 : activeTab === "UPCOMING"
                 ? "No upcoming events scheduled at the moment."
-                : "No past events found."}
+                : activeTab === "PAST"
+                ? "No past events found."
+                : "No events available at the moment."}
             </span>
-            {activeTab === "UPCOMING" && past.events.length > 0 && (
+            {debouncedSearch ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-card-hover hover:bg-card border border-border text-accent font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+              >
+                Clear Search Filter
+              </button>
+            ) : activeTab === "UPCOMING" && past.events.length > 0 ? (
               <button
                 type="button"
                 onClick={() => handleTabChange("PAST")}
@@ -214,12 +261,12 @@ const EventList = () => {
               >
                 Browse Past Events &rarr;
               </button>
-            )}
+            ) : null}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {events.map((event) => {
-              const isPastTab = activeTab === "PAST";
+              const isPastEvent = new Date(event.date) < new Date();
               const regOpen = isRegistrationOpen(event);
 
               return (
@@ -251,7 +298,7 @@ const EventList = () => {
                   <div className="p-5 sm:p-6 flex flex-col flex-1">
                     {/* Top row: Status Badge & View Arrow */}
                     <div className="flex items-center justify-between mb-3">
-                      {isPastTab ? (
+                      {isPastEvent ? (
                         <span className="inline-flex items-center text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-card-hover text-text-muted border border-border">
                           <span className="w-1.5 h-1.5 rounded-full mr-2 bg-text-muted" />
                           COMPLETED
@@ -280,9 +327,9 @@ const EventList = () => {
                     </h2>
 
                     {/* Registration Deadline Notification (for upcoming events with configured close date) */}
-                    {!isPastTab && event.registrationCloseDate && (
+                    {!isPastEvent && event.registrationCloseDate && (
                       <p className="text-[11px] font-mono text-text-muted mb-3 flex items-center gap-1.5">
-                        <Clock className="w-3 h-3 text-accent" />
+                        <Clock className="w-3 h-3 text-accent shrink-0" />
                         <span>
                           {regOpen ? "Closes on: " : "Closed on: "}
                           <strong className="text-text">
@@ -304,7 +351,7 @@ const EventList = () => {
                     <div className="flex-1" />
 
                     {/* Tags */}
-                    {event.tags.length > 0 && (
+                    {event.tags && event.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {event.tags.slice(0, 4).map((tag, idx) => (
                           <span
@@ -325,7 +372,7 @@ const EventList = () => {
                     {/* Event Metadata (Date, Time, Location) */}
                     <div className="pt-4 border-t border-border/60 mt-auto flex flex-wrap items-center gap-4 text-xs font-mono font-semibold text-text-muted">
                       <div className="flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-accent" />
+                        <Calendar className="w-4 h-4 text-accent shrink-0" />
                         <span>
                           {new Date(event.date).toLocaleDateString("en-IN", {
                             month: "short",
@@ -336,7 +383,7 @@ const EventList = () => {
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-accent" />
+                        <Clock className="w-4 h-4 text-accent shrink-0" />
                         <span>
                           {new Date(event.date).toLocaleTimeString("en-IN", {
                             hour: "2-digit",
@@ -348,9 +395,9 @@ const EventList = () => {
                       {/* Dynamic location */}
                       <div className="flex items-center gap-1.5">
                         {event.locationType === "Online" ? (
-                          <Globe className="w-4 h-4 text-accent" />
+                          <Globe className="w-4 h-4 text-accent shrink-0" />
                         ) : (
-                          <MapPin className="w-4 h-4 text-accent" />
+                          <MapPin className="w-4 h-4 text-accent shrink-0" />
                         )}
                         <span className="truncate max-w-[160px]">
                           {event.locationType === "Online"
@@ -374,7 +421,8 @@ const EventList = () => {
         <div className="mt-6 pt-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-xs font-mono text-text-muted">
             Showing <strong className="text-text">{events.length}</strong> of{" "}
-            <strong className="text-text">{totalCount}</strong> {activeTab.toLowerCase()} events (Page {currentPage} of {totalPages})
+            <strong className="text-text">{totalCount}</strong>{" "}
+            {activeTab === "ALL" ? "total" : activeTab.toLowerCase()} events (Page {currentPage} of {totalPages})
           </span>
 
           <div className="flex items-center gap-2">
@@ -382,7 +430,7 @@ const EventList = () => {
               type="button"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage <= 1 || currentFeed.loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm"
               title="Previous Page"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -397,15 +445,15 @@ const EventList = () => {
                 return (
                   <div key={p} className="flex items-center gap-1">
                     {showEllipsis && (
-                      <span className="px-1 text-xs font-mono text-text-muted">...</span>
+                      <span className="px-1 text-xs font-mono text-text-muted select-none">...</span>
                     )}
                     <button
                       type="button"
                       onClick={() => handlePageChange(p)}
                       disabled={currentFeed.loading}
-                      className={`min-w-[36px] h-9 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${
+                      className={`min-w-[36px] h-9 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
                         currentPage === p
-                          ? "bg-accent text-text-inverse shadow-sm"
+                          ? "bg-accent text-text-inverse shadow-accent/20 border border-accent scale-105"
                           : "bg-card border border-border/80 text-text hover:bg-card-hover"
                       }`}
                     >
@@ -419,7 +467,7 @@ const EventList = () => {
               type="button"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage >= totalPages || currentFeed.loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm"
               title="Next Page"
             >
               <ChevronRight className="w-4 h-4" />

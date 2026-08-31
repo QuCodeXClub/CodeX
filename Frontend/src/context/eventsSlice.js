@@ -1,6 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { eventService } from "../services/eventService";
 
+export const fetchAllEvents = createAsyncThunk(
+  "events/fetchAllEvents",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const queryParams = { limit: 6, page: 1, ...params };
+      delete queryParams.type;
+      const response = await eventService.getEvents(queryParams);
+      const payload = response.data?.data || response.data || response;
+      return {
+        events: payload.events || (Array.isArray(payload) ? payload : []),
+        pagination: payload.pagination || null,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch all events"
+      );
+    }
+  }
+);
+
 export const fetchUpcomingEvents = createAsyncThunk(
   "events/fetchUpcomingEvents",
   async (params = {}, { rejectWithValue }) => {
@@ -58,6 +78,13 @@ export const fetchPublicEvents = createAsyncThunk(
 const eventsSlice = createSlice({
   name: "events",
   initialState: {
+    all: {
+      events: [],
+      pagination: { page: 1, limit: 6, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false },
+      loading: false,
+      isLoaded: false,
+      error: null,
+    },
     upcoming: {
       events: [],
       pagination: { page: 1, limit: 6, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false },
@@ -78,6 +105,26 @@ const eventsSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // All Events
+    builder
+      .addCase(fetchAllEvents.pending, (state) => {
+        state.all.loading = true;
+        state.all.error = null;
+      })
+      .addCase(fetchAllEvents.fulfilled, (state, action) => {
+        state.all.loading = false;
+        state.all.isLoaded = true;
+        state.all.events = action.payload.events;
+        if (action.payload.pagination) {
+          state.all.pagination = action.payload.pagination;
+        }
+      })
+      .addCase(fetchAllEvents.rejected, (state, action) => {
+        state.all.loading = false;
+        state.all.isLoaded = true;
+        state.all.error = action.payload;
+      });
+
     // Upcoming
     builder
       .addCase(fetchUpcomingEvents.pending, (state) => {
@@ -134,4 +181,3 @@ const eventsSlice = createSlice({
 });
 
 export default eventsSlice.reducer;
-
