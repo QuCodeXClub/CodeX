@@ -108,7 +108,10 @@ const HeroSection = () => {
             <div className="font-mono text-xs space-y-1.5 text-text-muted leading-relaxed">
               <p><span className="text-accent font-bold">import</span> &#123; DeveloperClub &#125; <span className="text-accent font-bold">from</span> <span className="text-accent/90">'@codex/core'</span>;</p>
               <p className="pt-1"><span className="text-accent font-bold">const</span> <span className="text-text font-bold">club</span> = <span className="text-accent font-bold">new</span> DeveloperClub(&#123;</p>
-              <p className="pl-4">university: <span className="text-accent/90">'Quantum University'</span>,</p>
+              <p className="pl-4 flex items-center gap-1.5">
+                <span>university: <span className="text-accent/90">'Quantum University'</span>,</span>
+                <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="w-3.5 h-3.5 object-contain inline-block opacity-90" />
+              </p>
               <p className="pl-4">tracks: [<span className="text-accent/90">'WebDev'</span>, <span className="text-accent/90">'AI/ML'</span>, <span className="text-accent/90">'CyberSec'</span>, <span className="text-accent/90">'Cloud'</span>],</p>
               <p className="pl-4">status: <span className="text-accent font-bold">'ACTIVE_COMMUNITY'</span></p>
               <p>&#125;);</p>
