@@ -13,6 +13,10 @@ class RegistrationService {
     return axiosInstance.patch(`/registrations/${id}/status`, { status, rejectionReason, reason: rejectionReason });
   }
 
+  async updateRegistrationDetails(id, studentData) {
+    return axiosInstance.put(`/registrations/${id}`, studentData);
+  }
+
   async addManualRegistration(studentData) {
     return axiosInstance.post("/registrations/manual", studentData);
   }

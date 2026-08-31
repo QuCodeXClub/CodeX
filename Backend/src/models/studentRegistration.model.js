@@ -63,7 +63,7 @@ const studentRegistrationSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       required: [true, "Transaction ID is required for fee verification"],
-      unique: true,
+      trim: true,
     },
     paymentMode: {
       type: String,
@@ -87,6 +87,31 @@ const studentRegistrationSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
+);
+
+// High-performance indexing for 500+ concurrent queries and lookups
+studentRegistrationSchema.index({ email: 1 });
+studentRegistrationSchema.index({ createdAt: -1 });
+studentRegistrationSchema.index({ status: 1, createdAt: -1 });
+
+// Atomic race-condition prevention under high concurrency:
+// Enforces uniqueness for PENDING and APPROVED states while allowing REJECTED students to re-register
+studentRegistrationSchema.index(
+  { studentId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ['PENDING', 'APPROVED'] } },
+    background: true,
+  }
+);
+
+studentRegistrationSchema.index(
+  { transactionId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ['PENDING', 'APPROVED'] } },
+    background: true,
+  }
 );
 
 export const StudentRegistration = mongoose.model(
