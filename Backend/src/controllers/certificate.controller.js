@@ -35,7 +35,7 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     if (!signatureImage) {
       throw new ApiError(500, 'Error while uploading signature image');
     }
-    finalSignatureUrl = signatureImage.url;
+    finalSignatureUrl = signatureImage.secure_url || signatureImage.url;
   }
 
   const validStudents = students.filter(s => s && s.name && s.email);
