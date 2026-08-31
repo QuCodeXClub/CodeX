@@ -144,10 +144,9 @@ const getEvents = asyncHandler(async (req, res) => {
   const now = new Date();
   if (type === "upcoming") {
     filter.date = { $gte: now };
-    sort = { date: 1 }; // Chronological order: soonest upcoming first
   } else if (type === "past") {
     filter.date = { $lt: now };
-    sort = { date: -1 }; // Reverse chronological order: most recent past first
+    sort = { date: -1, createdAt: -1 };
   }
 
   if (search && typeof search === "string" && search.trim()) {
@@ -160,8 +159,64 @@ const getEvents = asyncHandler(async (req, res) => {
     ];
   }
 
+  const buildSmartPipeline = (matchFilter) => [
+    ...(Object.keys(matchFilter).length > 0 ? [{ $match: matchFilter }] : []),
+    {
+      $addFields: {
+        isRegOpen: {
+          $and: [
+            { $gte: ["$date", now] },
+            {
+              $gt: [
+                { $strLenCP: { $ifNull: ["$registrationLink", ""] } },
+                0,
+              ],
+            },
+            {
+              $or: [
+                { $eq: ["$registrationCloseDate", null] },
+                { $not: ["$registrationCloseDate"] },
+                { $gte: ["$registrationCloseDate", now] },
+              ],
+            },
+          ],
+        },
+        isUpcoming: { $gte: ["$date", now] },
+      },
+    },
+    {
+      $addFields: {
+        sortKey: {
+          $cond: [
+            "$isRegOpen",
+            // Tier 1: Reg Open -> Soonest upcoming first (0 to ~1e14)
+            { $subtract: ["$date", now] },
+            {
+              $cond: [
+                "$isUpcoming",
+                // Tier 2: Upcoming but Reg Closed -> Soonest upcoming first (~1e14 to ~2e14)
+                { $add: [100000000000000, { $subtract: ["$date", now] }] },
+                // Tier 3: Past -> Most recent past first (~2e14+)
+                { $add: [200000000000000, { $subtract: [now, "$date"] }] },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    { $sort: { sortKey: 1, createdAt: -1 } },
+    { $project: { isRegOpen: 0, isUpcoming: 0, sortKey: 0 } },
+  ];
+
   if (isUnpaged) {
-    const events = await Event.find(filter).sort(sort).lean();
+    if (type === "past") {
+      const events = await Event.find(filter).sort(sort).lean();
+      return res
+        .status(200)
+        .json(new ApiResponse(200, { events, pagination: null }, "Events fetched successfully"));
+    }
+
+    const events = await Event.aggregate(buildSmartPipeline(filter));
     return res
       .status(200)
       .json(new ApiResponse(200, { events, pagination: null }, "Events fetched successfully"));
@@ -169,10 +224,21 @@ const getEvents = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-  const [events, total] = await Promise.all([
-    Event.find(filter).sort(sort).skip(skip).limit(limit).lean(),
-    Event.countDocuments(filter),
-  ]);
+  let events;
+  let total;
+
+  if (type === "past") {
+    [events, total] = await Promise.all([
+      Event.find(filter).sort(sort).skip(skip).limit(limit).lean(),
+      Event.countDocuments(filter),
+    ]);
+  } else {
+    const pipeline = buildSmartPipeline(filter);
+    [events, total] = await Promise.all([
+      Event.aggregate([...pipeline, { $skip: skip }, { $limit: limit }]),
+      Event.countDocuments(filter),
+    ]);
+  }
 
   const totalPages = Math.ceil(total / limit) || 1;
 
