@@ -38,6 +38,15 @@ const certificateSchema = new mongoose.Schema(
     },
     position: {
       type: String,
+      enum: [
+        'Participant',
+        'Winner',
+        'Runner Up',
+        '1st Runner-up',
+        '2nd Runner-up',
+        'Volunteer',
+        'Organizer',
+      ],
       default: 'Participant',
       trim: true,
     },
