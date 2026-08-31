@@ -10,10 +10,17 @@ const errorHandler = (err, req, res, next) => {
   } 
   // 2. Handle MongoDB Duplicate Key Error (11000)
   else if (err.code === 11000) {
-    const field = Object.keys(err.keyValue || {})[0];
-    const fieldLabel = field === 'studentId' ? 'Student ID (Q-ID)' : field === 'transactionId' ? 'Transaction UTR' : field === 'email' ? 'Email Address' : 'information';
+    const field = Object.keys(err.keyValue || err.keyPattern || {})[0];
+    const fieldLabel =
+      field === 'studentId' ? 'Student ID (Q-ID)' :
+      field === 'transactionId' ? 'Transaction UTR' :
+      field === 'email' ? 'Email Address' :
+      field === 'eventName' ? 'Event Name' :
+      field === 'certificateId' ? 'Certificate ID' :
+      field === 'passId' ? 'Boarding Pass ID' :
+      field ? `${field}` : 'record';
     const message = `A record with this ${fieldLabel} already exists in the system.`;
-    error = new ApiError(409, message);
+    error = new ApiError(400, message);
   }
   // 3. Handle Mongoose CastError (Invalid ID format)
   else if (err.name === 'CastError') {

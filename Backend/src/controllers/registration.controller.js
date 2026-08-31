@@ -151,6 +151,89 @@ const updateRegistrationStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, registration, `Registration ${status.toLowerCase()} successfully`));
 });
 
+// Update registration details (Admin only)
+const updateRegistrationDetails = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    fatherName,
+    course,
+    year,
+    semester,
+    section,
+    set,
+    studentId,
+    email,
+    phone,
+    transactionId,
+    paymentMode,
+    status,
+    rejectionReason,
+  } = req.body;
+
+  const registration = await StudentRegistration.findById(id);
+  if (!registration) {
+    throw new ApiError(404, 'Registration not found');
+  }
+
+  if (name !== undefined) registration.name = String(name).trim();
+  if (fatherName !== undefined) registration.fatherName = String(fatherName).trim();
+  if (course !== undefined) registration.course = course;
+  if (year !== undefined) registration.year = year;
+  if (semester !== undefined) registration.semester = semester;
+  if (section !== undefined) registration.section = String(section).trim();
+  if (set !== undefined) registration.set = String(set).trim();
+  if (email !== undefined) registration.email = String(email).trim().toLowerCase();
+  if (phone !== undefined) registration.phone = String(phone).trim();
+  if (paymentMode !== undefined) registration.paymentMode = paymentMode;
+
+  if (status !== undefined) {
+    if (!['PENDING', 'APPROVED', 'REJECTED'].includes(status)) {
+      throw new ApiError(400, 'Invalid status value');
+    }
+    registration.status = status;
+    if (status === 'REJECTED') {
+      registration.rejectionReason = rejectionReason || registration.rejectionReason || '';
+    } else {
+      registration.rejectionReason = '';
+    }
+  }
+
+  // If studentId changed, check for conflict with other active registrations
+  if (studentId !== undefined && studentId.trim() !== registration.studentId) {
+    const trimmedId = studentId.trim();
+    const existing = await StudentRegistration.findOne({
+      _id: { $ne: id },
+      studentId: trimmedId,
+      status: { $in: ['PENDING', 'APPROVED'] },
+    });
+    if (existing) {
+      throw new ApiError(400, `Student ID (Q-ID) ${trimmedId} is already registered to another active applicant`);
+    }
+    registration.studentId = trimmedId;
+  }
+
+  // If transactionId changed, check for conflict with other active registrations
+  if (transactionId !== undefined && transactionId.trim() !== registration.transactionId) {
+    const trimmedTx = transactionId.trim();
+    const existing = await StudentRegistration.findOne({
+      _id: { $ne: id },
+      transactionId: trimmedTx,
+      status: { $in: ['PENDING', 'APPROVED'] },
+    });
+    if (existing) {
+      throw new ApiError(400, `Transaction ID ${trimmedTx} is already registered to another active applicant`);
+    }
+    registration.transactionId = trimmedTx;
+  }
+
+  await registration.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, registration, 'Registration details updated successfully'));
+});
+
 // Add Manual Registration (Admin only)
 const addManualRegistration = asyncHandler(async (req, res) => {
   const {
@@ -174,10 +257,13 @@ const addManualRegistration = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'All fields are required');
   }
 
-  // Check if studentId already exists
-  const existingRegistration = await StudentRegistration.findOne({ studentId });
+  // Check if studentId already exists (excluding REJECTED)
+  const existingRegistration = await StudentRegistration.findOne({
+    studentId,
+    status: { $in: ['PENDING', 'APPROVED'] },
+  });
   if (existingRegistration) {
-    throw new ApiError(400, 'Student ID (Q ID) is already registered');
+    throw new ApiError(400, `Student ID (Q ID) is already registered (${existingRegistration.status.toLowerCase()})`);
   }
 
   // Generate a mock transaction ID for cash
@@ -325,4 +411,10 @@ const bulkRegistration = asyncHandler(async (req, res) => {
     });
 });
 
-export { getAllRegistrations, updateRegistrationStatus, addManualRegistration, bulkRegistration };
+export {
+  getAllRegistrations,
+  updateRegistrationStatus,
+  updateRegistrationDetails,
+  addManualRegistration,
+  bulkRegistration,
+};

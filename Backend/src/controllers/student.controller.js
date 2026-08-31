@@ -46,8 +46,9 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'You must accept the Terms and Conditions to register');
   }
 
-  // 3. Check for existing registration with same transactionId or studentId
+  // 3. Check for existing active registration with same transactionId or studentId (excluding REJECTED)
   const existingRegistration = await StudentRegistration.findOne({
+    status: { $in: ['PENDING', 'APPROVED'] },
     $or: [{ transactionId }, { studentId }]
   });
 
@@ -60,24 +61,38 @@ const registerStudent = asyncHandler(async (req, res) => {
     }
   }
 
-  // 4. Create Registration
-  const registration = await StudentRegistration.create({
-    name,
-    fatherName,
-    course,
-    year,
-    semester,
-    section,
-    set,
-    studentId,
-    email,
-    phone,
-    transactionId,
-  });
+  // 4. Create Registration with high-concurrency race condition safety
+  try {
+    const registration = await StudentRegistration.create({
+      name: name.trim(),
+      fatherName: fatherName.trim(),
+      course,
+      year,
+      semester,
+      section: section.trim(),
+      set: set.trim(),
+      studentId: studentId.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+      transactionId: transactionId.trim(),
+    });
 
-  return res.status(201).json(
-    new ApiResponse(201, registration, 'Registration submitted successfully. Please wait for admin approval.')
-  );
+    return res.status(201).json(
+      new ApiResponse(201, registration, 'Registration submitted successfully. Please wait for admin approval.')
+    );
+  } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0];
+      if (field === 'studentId') {
+        throw new ApiError(400, 'A registration with this Student ID (Q-ID) is already registered.');
+      }
+      if (field === 'transactionId') {
+        throw new ApiError(400, 'A registration with this Transaction UTR already exists.');
+      }
+      throw new ApiError(400, 'A duplicate registration already exists.');
+    }
+    throw error;
+  }
 });
 
 export { registerStudent };
