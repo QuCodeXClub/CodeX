@@ -71,6 +71,20 @@ export const updateRegistrationStatus = createAsyncThunk(
   }
 );
 
+export const updateAdminRegistrationDetails = createAsyncThunk(
+  "adminRegistrations/updateDetails",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await registrationService.updateRegistrationDetails(id, data);
+      return response.data?.data || response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update registration details"
+      );
+    }
+  }
+);
+
 export const createManualRegistration = createAsyncThunk(
   "adminRegistrations/createManual",
   async (data, { rejectWithValue }) => {
@@ -156,6 +170,17 @@ const adminRegistrationsSlice = createSlice({
             state.pages[pageNum][index].status = action.payload.status;
           }
         });
+      })
+      .addCase(updateAdminRegistrationDetails.fulfilled, (state, action) => {
+        const updated = action.payload;
+        if (updated && updated._id) {
+          Object.keys(state.pages).forEach((pageNum) => {
+            const index = state.pages[pageNum].findIndex((r) => r._id === updated._id);
+            if (index !== -1) {
+              state.pages[pageNum][index] = { ...state.pages[pageNum][index], ...updated };
+            }
+          });
+        }
       })
       .addCase(createManualRegistration.fulfilled, (state, action) => {
         // Unshift to page 1 to make it visible immediately

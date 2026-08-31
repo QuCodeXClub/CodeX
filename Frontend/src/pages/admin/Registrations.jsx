@@ -9,12 +9,14 @@ import {
   Download,
   Upload,
   FileText,
+  Edit3,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
   fetchAdminRegistrations,
   updateRegistrationStatus,
+  updateAdminRegistrationDetails,
   createManualRegistration,
   createBulkRegistration,
   setCurrentPage,
@@ -24,6 +26,7 @@ import { TableRowSkeleton } from "../../components/common/skeletons";
 import { generateAcademicYears } from "../../utils/helpers";
 import StatusBadge from "./components/StatusBadge";
 import AddRegistrationModal from "./components/AddRegistrationModal";
+import EditRegistrationModal from "./components/EditRegistrationModal";
 import ImportRegistrationModal from "./components/ImportRegistrationModal";
 import RejectRegistrationModal from "./components/RejectRegistrationModal";
 
@@ -82,9 +85,14 @@ export default function Registrations() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [rejectingRegistration, setRejectingRegistration] = useState(null);
+  const [editingRegistration, setEditingRegistration] = useState(null);
 
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
+
+  const handleSaveEdit = async (id, data) => {
+    await dispatch(updateAdminRegistrationDetails({ id, data })).unwrap();
+  };
 
   const handleStatusChange = async (id, newStatus) => {
     const registration = currentData.find((r) => r._id === id);
@@ -525,6 +533,13 @@ export default function Registrations() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setEditingRegistration(reg)}
+                              className="p-1.5 text-text-muted hover:text-accent bg-card-hover hover:bg-accent/10 rounded-lg transition-all border border-border/80 hover:border-accent/30 cursor-pointer"
+                              title="Edit Student Info"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
                             {reg.status !== "APPROVED" && (
                               <button
                                 onClick={() =>
@@ -607,6 +622,14 @@ export default function Registrations() {
         <AddRegistrationModal
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddSubmit}
+        />
+      )}
+      {/* Edit Modal */}
+      {editingRegistration && (
+        <EditRegistrationModal
+          registration={editingRegistration}
+          onClose={() => setEditingRegistration(null)}
+          onSave={handleSaveEdit}
         />
       )}
       {/* Import Modal */}
