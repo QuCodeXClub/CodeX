@@ -39,12 +39,24 @@ const VerifyBoardingPass = () => {
     fetchBoardingPass();
   }, [fetchBoardingPass]);
 
+  const metadata = boardingPass
+    ? [
+        { label: "Attendee", value: boardingPass.studentName || "Attendee" },
+        { label: "Event", value: boardingPass.eventName || "CodeX Event" },
+        { label: "Pass ID", value: boardingPass.boardingPassId || "BP-2026", isMono: true },
+        { label: "Status", value: "Valid Entry", isBadge: true },
+      ]
+    : [];
+
   return (
     <VerificationLayout
       isLoading={loading}
       error={error || (!boardingPass && !loading ? "Boarding Pass not found." : null)}
       errorTitle="Invalid Boarding Pass"
       verificationURL={verificationURL}
+      metadata={metadata}
+      badgeTitle="Verified Pass"
+      badgeSubtitle="Authentic CodeX Boarding Pass"
       downloadText="Save / Print"
     >
       {/* 
