@@ -10,7 +10,6 @@ import { uploadOnCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../u
 import { adminOtpEmail, passwordChangeOtpEmail, passwordChangedSuccessEmail } from '../utils/emailTemplates.js';
 import { Session } from '../models/session.model.js';
 import { Token } from '../models/token.model.js';
-import ms from 'ms';
 import { UAParser } from 'ua-parser-js';
 import mongoSanitize from 'express-mongo-sanitize';
 import crypto from 'crypto';

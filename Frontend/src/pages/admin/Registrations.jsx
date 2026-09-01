@@ -347,11 +347,7 @@ export default function Registrations() {
             <span>{isExporting ? "Exporting..." : "Export CSV"}</span>
           </button>
           <button
-            onClick={() => {
-              setShowImportModal(true);
-              setImportResult(null);
-              setImportFile(null);
-            }}
+            onClick={() => setShowImportModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors shadow-sm"
           >
             <Upload className="w-4 h-4" />

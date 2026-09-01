@@ -15,7 +15,6 @@ import {
   Search,
   X,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
@@ -543,7 +542,22 @@ export default function ManageEvents() {
         <EventModal
           setIsModalOpen={setIsModalOpen}
           editingEvent={editingEvent}
-          onSuccess={() => loadEvents(currentPage)}
+          onSuccess={() =>
+            dispatch(
+              fetchAdminEvents({
+                page: currentPage,
+                limit,
+                type:
+                  filterType === "UPCOMING"
+                    ? "upcoming"
+                    : filterType === "PAST"
+                    ? "past"
+                    : undefined,
+                search: debouncedSearch || undefined,
+                force: true,
+              })
+            )
+          }
         />
       )}
     </div>

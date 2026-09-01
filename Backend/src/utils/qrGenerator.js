@@ -113,6 +113,6 @@ export const generateQRCodeWithLogo = async (data) => {
 
   } catch (error) {
     console.error("Critical error generating SVG QR code:", error);
-    throw new Error(`QR Generation failed: ${error.message}`);
+    throw new Error(`QR Generation failed: ${error.message}`, { cause: error });
   }
 };
