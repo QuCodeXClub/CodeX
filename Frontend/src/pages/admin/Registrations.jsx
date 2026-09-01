@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
   fetchAdminRegistrations,
+  fetchLatestRegistrationsOnly,
   updateRegistrationStatus,
   updateAdminRegistrationDetails,
   createManualRegistration,
@@ -86,9 +87,44 @@ export default function Registrations() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [rejectingRegistration, setRejectingRegistration] = useState(null);
   const [editingRegistration, setEditingRegistration] = useState(null);
+  const [refreshToast, setRefreshToast] = useState(null);
 
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
+
+  const handleRefreshNewEntriesOnly = async () => {
+    try {
+      const res = await dispatch(
+        fetchLatestRegistrationsOnly({
+          academicYear: academicYearFilter,
+          search: debouncedSearch,
+          status: statusFilter,
+          course: courseFilter,
+          paymentMode: paymentModeFilter,
+        })
+      ).unwrap();
+
+      const newCount = res.newItems?.length || 0;
+      if (newCount > 0) {
+        setRefreshToast({
+          type: "success",
+          message: `${newCount} new registration${newCount > 1 ? "s" : ""} added to list!`,
+        });
+      } else {
+        setRefreshToast({
+          type: "info",
+          message: "No new registrations found.",
+        });
+      }
+      setTimeout(() => setRefreshToast(null), 3500);
+    } catch {
+      setRefreshToast({
+        type: "error",
+        message: "Failed to check for new entries.",
+      });
+      setTimeout(() => setRefreshToast(null), 3500);
+    }
+  };
 
   const handleSaveEdit = async (id, data) => {
     await dispatch(updateAdminRegistrationDetails({ id, data })).unwrap();
@@ -164,6 +200,7 @@ export default function Registrations() {
         paymentMode: paymentModeFilter,
         page: currentPage,
         limit: itemsPerPage,
+        force: true,
       })
     );
     return result;
@@ -199,6 +236,11 @@ export default function Registrations() {
         return;
       }
 
+      // Sort oldest first (chronological order) for CSV export
+      const sortedExportData = [...finalExportData].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+
       const headers = [
         "Name",
         "Father's Name",
@@ -216,30 +258,42 @@ export default function Registrations() {
         "Registration Date",
       ];
 
+      const formatCell = (value, forceText = false) => {
+        if (value === null || value === undefined || value === "") return '""';
+        const str = String(value).replace(/"/g, '""');
+        if (forceText) {
+          // Wrap as Excel text formula to preserve digits and avoid scientific notation (e.g. 9.878E+11)
+          return `="${str}"`;
+        }
+        return `"${str}"`;
+      };
+
       const csvRows = [headers.join(",")];
 
-      finalExportData.forEach((reg) => {
+      sortedExportData.forEach((reg) => {
         const row = [
-          `"${reg.name || ""}"`,
-          `"${reg.fatherName || ""}"`,
-          `"${reg.email || ""}"`,
-          `"${reg.phone || ""}"`,
-          `"${reg.course || ""}"`,
-          `"${reg.year || ""}"`,
-          `"${reg.semester || ""}"`,
-          `"${reg.section || ""}"`,
-          `"${reg.set || ""}"`,
-          `"${reg.studentId || ""}"`,
-          `"${reg.transactionId || ""}"`,
-          `"${reg.paymentMode || "ONLINE"}"`,
-          `"${reg.status || ""}"`,
-          `"${new Date(reg.createdAt).toLocaleDateString("en-IN")}"`,
+          formatCell(reg.name),
+          formatCell(reg.fatherName),
+          formatCell(reg.email),
+          formatCell(reg.phone, true),
+          formatCell(reg.course),
+          formatCell(reg.year),
+          formatCell(reg.semester),
+          formatCell(reg.section),
+          formatCell(reg.set),
+          formatCell(reg.studentId, true),
+          formatCell(reg.transactionId, true),
+          formatCell(reg.paymentMode || "ONLINE"),
+          formatCell(reg.status),
+          formatCell(new Date(reg.createdAt).toLocaleDateString("en-IN")),
         ];
         csvRows.push(row.join(","));
       });
 
       const csvString = csvRows.join("\n");
-      const blob = new Blob([csvString], { type: "text/csv" });
+      const blob = new Blob(["\uFEFF" + csvString], {
+        type: "text/csv;charset=utf-8;",
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -310,30 +364,39 @@ export default function Registrations() {
             <span>+ Add Student (Cash)</span>
           </button>
           <button
-            onClick={() =>
-              dispatch(
-                fetchAdminRegistrations({
-                  academicYear: academicYearFilter,
-                  search: debouncedSearch,
-                  status: statusFilter,
-                  course: courseFilter,
-                  paymentMode: paymentModeFilter,
-                  page: currentPage,
-                  limit: itemsPerPage,
-                })
-              )
-            }
+            onClick={handleRefreshNewEntriesOnly}
             disabled={loading}
-            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50"
-            title="Refresh Data"
+            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50 relative"
+            title="Check for New Registrations"
           >
             <RefreshCw
-              className={`w-5 h-5 ${loading ? "animate-spin text-accent" : ""
-                }`}
+              className={`w-5 h-5 ${loading ? "animate-spin text-accent" : ""}`}
             />
           </button>
         </div>
       </header>
+
+      {/* Refresh Status Toast */}
+      {refreshToast && (
+        <div
+          className={`mb-4 px-4 py-2.5 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 shadow-sm ${
+            refreshToast.type === "success"
+              ? "bg-accent/10 border-accent/30 text-accent"
+              : refreshToast.type === "error"
+              ? "bg-error/10 border-error/30 text-error"
+              : "bg-card border-border text-text-muted"
+          }`}
+        >
+          <span>{refreshToast.message}</span>
+          <button
+            type="button"
+            onClick={() => setRefreshToast(null)}
+            className="text-text-muted hover:text-text cursor-pointer ml-3"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Control Bar */}
       <div className="flex flex-col xl:flex-row justify-between gap-4 mb-6">

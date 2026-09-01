@@ -172,7 +172,40 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchPublicEvents.fulfilled, (state, action) => {
         state.loading = false;
-        state.events = action.payload;
+        const eventsList = action.payload || [];
+        state.events = eventsList;
+
+        // If 'all' is not yet loaded, pre-populate from general fetch so user sees events instantly
+        if (!state.all.isLoaded && eventsList.length > 0) {
+          state.all.events = eventsList.slice(0, 6);
+          state.all.isLoaded = true;
+          state.all.pagination = {
+            page: 1,
+            limit: 6,
+            total: eventsList.length,
+            totalPages: Math.ceil(eventsList.length / 6) || 1,
+            hasNextPage: eventsList.length > 6,
+            hasPrevPage: false,
+          };
+        }
+
+        // If 'upcoming' is not yet loaded, pre-populate upcoming events
+        if (!state.upcoming.isLoaded && eventsList.length > 0) {
+          const now = new Date();
+          const upcomingList = eventsList.filter((e) => new Date(e.date) >= now);
+          if (upcomingList.length > 0) {
+            state.upcoming.events = upcomingList.slice(0, 6);
+            state.upcoming.isLoaded = true;
+            state.upcoming.pagination = {
+              page: 1,
+              limit: 6,
+              total: upcomingList.length,
+              totalPages: Math.ceil(upcomingList.length / 6) || 1,
+              hasNextPage: upcomingList.length > 6,
+              hasPrevPage: false,
+            };
+          }
+        }
       })
       .addCase(fetchPublicEvents.rejected, (state) => {
         state.loading = false;
