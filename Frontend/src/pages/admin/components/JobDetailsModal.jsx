@@ -190,10 +190,10 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
                   <span className="text-accent font-bold">{payload.student.qid}</span>
                 </div>
               )}
-              {payload.student?.citeNumber && (
+              {payload.student?.deskNumber && (
                 <div className="flex justify-between border-b border-border/40 pb-2">
                   <span className="text-text-muted">Desk Number:</span>
-                  <span className="text-text">{payload.student.citeNumber}</span>
+                  <span className="text-text">{payload.student.deskNumber}</span>
                 </div>
               )}
               {payload.emailList && (

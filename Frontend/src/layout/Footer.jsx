@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ASSETS } from "../config/assets";
+import { CodeXLogo } from "../components/common/CodeXLogo";
 
 const GithubIcon = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -59,12 +60,13 @@ const Footer = ({ layout, onFooterClick }) => {
           {/* Column 1: Brand & Info */}
           <div className="flex flex-col gap-4 lg:col-span-2">
             <div className="flex items-center gap-3">
-              <span
+              <div
                 onClick={onFooterClick}
-                className="cursor-pointer select-none font-display font-black text-3xl uppercase tracking-widest text-text inline-block hover:text-accent transition-colors"
+                className="cursor-pointer select-none inline-flex items-center group"
+                aria-label="CodeX Logo"
               >
-                CODE<span className="text-accent">X</span>
-              </span>
+                <CodeXLogo className="h-6 sm:h-7 w-auto text-text transition-transform duration-300 group-hover:scale-105" />
+              </div>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-success/10 text-success border border-success/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
                 SYSTEM OPERATIONAL

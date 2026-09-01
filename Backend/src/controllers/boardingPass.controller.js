@@ -83,6 +83,8 @@ const getAllBoardingPasses = asyncHandler(async (req, res) => {
       { studentEmail: { $regex: safeSearch, $options: 'i' } },
       { eventName: { $regex: safeSearch, $options: 'i' } },
       { qid: { $regex: safeSearch, $options: 'i' } },
+      { teamName: { $regex: safeSearch, $options: 'i' } },
+      { deskNumber: { $regex: safeSearch, $options: 'i' } },
       { boardingPassId: { $regex: safeSearch, $options: 'i' } },
     ];
   }

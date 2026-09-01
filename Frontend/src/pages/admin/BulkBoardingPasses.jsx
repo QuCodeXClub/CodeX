@@ -29,6 +29,8 @@ export default function BulkBoardingPasses() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isImportingCsv, setIsImportingCsv] = useState(false);
+  const [importStatus, setImportStatus] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
 
@@ -43,7 +45,7 @@ export default function BulkBoardingPasses() {
       eventName: "",
       eventDescription: "",
       time: "",
-      students: [{ name: "", email: "", qid: "", time: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" }],
+      students: [{ name: "", email: "", qid: "", teamName: "", time: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", deskNumber: "" }],
     },
   });
 
@@ -59,98 +61,124 @@ export default function BulkBoardingPasses() {
     const file = e.target.files[0];
     if (!file) return;
 
+    setIsImportingCsv(true);
+    setImportStatus(`Reading ${file.name}...`);
+
     const reader = new FileReader();
 
     reader.onload = (event) => {
-      const text = event.target.result;
-      const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
+      setImportStatus("Parsing and validating records...");
 
-      if (rows.length === 0) return;
+      setTimeout(() => {
+        try {
+          const text = event.target.result;
+          const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
 
-      let startIndex = 0;
-      let headerMap = {
-        name: -1,
-        email: -1,
-        qid: -1,
-        time: -1,
-        loginUser: -1,
-        loginPass: -1,
-        wifiUser: -1,
-        wifiPass: -1,
-        citeNumber: -1,
-      };
+          if (rows.length === 0) {
+            setIsImportingCsv(false);
+            setImportStatus("");
+            dispatch(setError("CSV file is empty."));
+            return;
+          }
 
-      const firstRowCols = rows[0]
-        .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-        .map((col) => col.replace(/^"|"$/g, "").trim().toLowerCase());
+          let startIndex = 0;
+          let headerMap = {
+            name: -1,
+            email: -1,
+            qid: -1,
+            teamName: -1,
+            time: -1,
+            loginUser: -1,
+            loginPass: -1,
+            wifiUser: -1,
+            wifiPass: -1,
+            deskNumber: -1,
+          };
 
-      if (
-        firstRowCols.some(c => c.includes("name") || c.includes("email") || c.includes("qid"))
-      ) {
-        startIndex = 1;
-        firstRowCols.forEach((col, idx) => {
-          if (col === "name" || col.includes("student name")) headerMap.name = idx;
-          else if (col === "email" || col.includes("student email")) headerMap.email = idx;
-          else if (col === "qid" || col.includes("q_id") || col.includes("q id") || col === "id") headerMap.qid = idx;
-          else if (col.includes("time") || col.includes("slot")) headerMap.time = idx;
-          else if (col.includes("loginid") || col.includes("login_id") || col.includes("loginuser")) headerMap.loginUser = idx;
-          else if (col.includes("loginpass") || col.includes("login_pass")) headerMap.loginPass = idx;
-          else if (col.includes("wifiid") || col.includes("wifi_id") || col.includes("wifiuser")) headerMap.wifiUser = idx;
-          else if (col.includes("wifipass") || col.includes("wifi_pass")) headerMap.wifiPass = idx;
-          else if (col.includes("citenumber") || col.includes("cite") || col.includes("desk")) headerMap.citeNumber = idx;
-        });
-      }
+          const firstRowCols = rows[0]
+            .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+            .map((col) => col.replace(/^"|"$/g, "").trim().toLowerCase());
 
-      const parsedStudents = [];
-
-      for (let i = startIndex; i < rows.length; i++) {
-        const cols = rows[i]
-          .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-          .map((col) => col.replace(/^"|"$/g, "").trim());
-
-        if (cols.length >= 2) {
-          const name = headerMap.name !== -1 ? cols[headerMap.name] : cols[0];
-          const email = headerMap.email !== -1 ? cols[headerMap.email] : cols[1];
-          const qid = headerMap.qid !== -1 ? cols[headerMap.qid] : (headerMap.name === -1 && cols.length > 2 ? cols[2] : "");
-          const time = headerMap.time !== -1 ? cols[headerMap.time] : "";
-
-          let loginUser = headerMap.loginUser !== -1 ? cols[headerMap.loginUser] : (headerMap.name === -1 ? cols[3] : "");
-          let loginPass = headerMap.loginPass !== -1 ? cols[headerMap.loginPass] : (headerMap.name === -1 ? cols[4] : "");
-          let wifiUser = headerMap.wifiUser !== -1 ? cols[headerMap.wifiUser] : (headerMap.name === -1 ? cols[5] : "");
-          let wifiPass = headerMap.wifiPass !== -1 ? cols[headerMap.wifiPass] : (headerMap.name === -1 ? cols[6] : "");
-          let citeNumber = headerMap.citeNumber !== -1 ? cols[headerMap.citeNumber] : (headerMap.name === -1 ? cols[7] : "");
-
-          if (name || email) {
-            parsedStudents.push({
-              name: name || "",
-              email: email || "",
-              qid: qid || "",
-              time: time || "",
-              loginUser: loginUser || "",
-              loginPass: loginPass || "",
-              wifiUser: wifiUser || "",
-              wifiPass: wifiPass || "",
-              citeNumber: citeNumber || "",
+          if (
+            firstRowCols.some(c => c.includes("name") || c.includes("email") || c.includes("qid") || c.includes("team") || c.includes("desk"))
+          ) {
+            startIndex = 1;
+            firstRowCols.forEach((col, idx) => {
+              if (col === "name" || col.includes("student name")) headerMap.name = idx;
+              else if (col === "email" || col.includes("student email")) headerMap.email = idx;
+              else if (col === "qid" || col.includes("q_id") || col.includes("q id") || col === "id") headerMap.qid = idx;
+              else if (col === "team" || col.includes("team name") || col.includes("teamname") || col.includes("team_name") || col === "group" || col.includes("group name")) headerMap.teamName = idx;
+              else if (col.includes("time") || col.includes("slot")) headerMap.time = idx;
+              else if (col.includes("loginid") || col.includes("login_id") || col.includes("loginuser")) headerMap.loginUser = idx;
+              else if (col.includes("loginpass") || col.includes("login_pass")) headerMap.loginPass = idx;
+              else if (col.includes("wifiid") || col.includes("wifi_id") || col.includes("wifiuser")) headerMap.wifiUser = idx;
+              else if (col.includes("wifipass") || col.includes("wifi_pass")) headerMap.wifiPass = idx;
+              else if (col.includes("desknumber") || col.includes("desk") || col.includes("seat")) headerMap.deskNumber = idx;
             });
           }
-        }
-      }
 
-      if (parsedStudents.length > 0) {
-        if (fields.length === 1 && !fields[0].name && !fields[0].email) {
-          replace(parsedStudents);
-        } else {
-          append(parsedStudents);
+          const parsedStudents = [];
+
+          for (let i = startIndex; i < rows.length; i++) {
+            const cols = rows[i]
+              .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+              .map((col) => col.replace(/^"|"$/g, "").trim());
+
+            if (cols.length >= 2) {
+              const name = headerMap.name !== -1 ? cols[headerMap.name] : cols[0];
+              const email = headerMap.email !== -1 ? cols[headerMap.email] : cols[1];
+              const qid = headerMap.qid !== -1 ? cols[headerMap.qid] : (headerMap.name === -1 && cols.length > 2 ? cols[2] : "");
+              const teamName = headerMap.teamName !== -1 ? cols[headerMap.teamName] : "";
+              const time = headerMap.time !== -1 ? cols[headerMap.time] : "";
+
+              let loginUser = headerMap.loginUser !== -1 ? cols[headerMap.loginUser] : (headerMap.name === -1 ? cols[3] : "");
+              let loginPass = headerMap.loginPass !== -1 ? cols[headerMap.loginPass] : (headerMap.name === -1 ? cols[4] : "");
+              let wifiUser = headerMap.wifiUser !== -1 ? cols[headerMap.wifiUser] : (headerMap.name === -1 ? cols[5] : "");
+              let wifiPass = headerMap.wifiPass !== -1 ? cols[headerMap.wifiPass] : (headerMap.name === -1 ? cols[6] : "");
+              let deskNumber = headerMap.deskNumber !== -1 ? cols[headerMap.deskNumber] : (headerMap.name === -1 ? cols[7] : "");
+
+              if (name || email) {
+                parsedStudents.push({
+                  name: name || "",
+                  email: email || "",
+                  qid: qid || "",
+                  teamName: teamName || "",
+                  time: time || "",
+                  loginUser: loginUser || "",
+                  loginPass: loginPass || "",
+                  wifiUser: wifiUser || "",
+                  wifiPass: wifiPass || "",
+                  deskNumber: deskNumber || "",
+                });
+              }
+            }
+          }
+
+          if (parsedStudents.length > 0) {
+            if (fields.length === 1 && !fields[0].name && !fields[0].email) {
+              replace(parsedStudents);
+            } else {
+              append(parsedStudents);
+            }
+            dispatch(
+              setSuccess(`Successfully imported ${parsedStudents.length} attendee(s) from CSV.`)
+            );
+          } else {
+            dispatch(setError("Could not parse valid students from the CSV."));
+          }
+        } catch (err) {
+          console.error("CSV import error:", err);
+          dispatch(setError("Failed to parse CSV file."));
+        } finally {
+          setIsImportingCsv(false);
+          setImportStatus("");
         }
-        dispatch(
-          setSuccess(`${parsedStudents.length} students imported from CSV.`)
-        );
-      } else {
-        dispatch(setError("Could not parse valid students from the CSV."));
-      }
+      }, 300);
     };
 
     reader.onerror = () => {
+      setIsImportingCsv(false);
+      setImportStatus("");
       dispatch(setError("Failed to read the CSV file."));
     };
 
@@ -159,7 +187,7 @@ export default function BulkBoardingPasses() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,Time,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber\n";
+    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,TeamName,Time,LoginID,LoginPassword,WiFiID,WiFiPassword,DeskNumber\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -344,18 +372,37 @@ export default function BulkBoardingPasses() {
                 accept=".csv"
                 ref={csvInputRef}
                 onChange={handleCsvUpload}
+                disabled={isImportingCsv}
                 className="hidden"
               />
               <button
                 type="button"
+                disabled={isImportingCsv}
                 onClick={() => csvInputRef.current.click()}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <Upload className="w-4 h-4" />
-                Import CSV
+                {isImportingCsv ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                    <span>Importing CSV...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    <span>Import CSV</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
+
+          {/* CSV Import In-Progress Feedback Banner */}
+          {isImportingCsv && (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-semibold animate-pulse mb-6 shadow-sm">
+              <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+              <span>{importStatus || "Importing attendee records from CSV..."}</span>
+            </div>
+          )}
 
           <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
             {fields.map((field, index) => (
@@ -364,7 +411,7 @@ export default function BulkBoardingPasses() {
                 className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start bg-card-hover border border-border rounded-xl p-5"
               >
                 {/* Row 1: Core Info */}
-                <div className="md:col-span-3 relative">
+                <div className="md:col-span-2 relative">
                   <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
@@ -420,12 +467,22 @@ export default function BulkBoardingPasses() {
                 </div>
 
                 <div className="md:col-span-2 relative">
+                  <Users className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
+                  <input
+                    type="text"
+                    placeholder="Team Name (Opt)"
+                    {...register(`students.${index}.teamName`)}
+                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+
+                <div className="md:col-span-1 relative">
                   <Clock className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                   <input
                     type="text"
                     placeholder="Time (Opt)"
                     {...register(`students.${index}.time`)}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
 
@@ -433,7 +490,7 @@ export default function BulkBoardingPasses() {
                   <input
                     type="text"
                     placeholder="Desk No"
-                    {...register(`students.${index}.citeNumber`)}
+                    {...register(`students.${index}.deskNumber`)}
                     className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
@@ -500,7 +557,7 @@ export default function BulkBoardingPasses() {
             <button
               type="button"
               onClick={() =>
-                append({ name: "", email: "", qid: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", citeNumber: "" })
+                append({ name: "", email: "", qid: "", teamName: "", time: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", deskNumber: "" })
               }
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-text hover:bg-card-hover transition-all font-medium shadow-sm"
             >

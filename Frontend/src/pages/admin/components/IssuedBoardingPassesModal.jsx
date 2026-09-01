@@ -7,6 +7,7 @@ import {
   Loader2,
   Mail,
   User,
+  Users,
   ShieldCheck,
   Copy,
   Check,
@@ -71,7 +72,7 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
           <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-muted" />
           <input
             type="text"
-            placeholder="Search by student name, email, QID, event, or Pass ID..."
+            placeholder="Search by student name, email, QID, team, event, or Pass ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-card border border-border text-text rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium focus:outline-none focus:border-cyan-500 transition-all shadow-sm"
@@ -152,8 +153,15 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                             <Mail className="w-3.5 h-3.5 shrink-0" />
                             <span>{pass.studentEmail}</span>
                           </div>
-                          <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[11px] font-mono font-bold">
-                            <Hash className="w-3 h-3" /> QID: {pass.qid}
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[11px] font-mono font-bold">
+                              <Hash className="w-3 h-3" /> QID: {pass.qid}
+                            </span>
+                            {pass.teamName && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[11px] font-mono font-bold">
+                                <Users className="w-3 h-3" /> Team: {pass.teamName}
+                              </span>
+                            )}
                           </div>
                         </td>
 
@@ -164,9 +172,9 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                               Time: <span className="font-bold">{pass.time}</span>
                             </div>
                           )}
-                          {pass.citeNumber ? (
+                          {pass.deskNumber ? (
                             <div className="text-[11px] text-text-muted font-mono mt-1">
-                              Desk / Cite: <span className="text-text font-bold">{pass.citeNumber}</span>
+                              Desk Number: <span className="text-text font-bold">{pass.deskNumber}</span>
                             </div>
                           ) : (
                             <div className="text-[11px] text-text-muted font-mono mt-1">General Entry Pass</div>
@@ -222,10 +230,18 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                         <User className="w-4 h-4 text-cyan-400" />
                         <span>{pass.studentName}</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 text-[10px] font-mono font-bold">
-                        QID: {pass.qid}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 text-[10px] font-mono font-bold">
+                          QID: {pass.qid}
+                        </span>
+                      </div>
                     </div>
+
+                    {pass.teamName && (
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 text-[10px] font-mono font-bold">
+                        <Users className="w-3 h-3" /> Team: {pass.teamName}
+                      </div>
+                    )}
 
                     <div className="text-xs text-text-muted font-mono break-all flex items-center gap-1">
                       <Mail className="w-3.5 h-3.5 shrink-0" />

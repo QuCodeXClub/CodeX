@@ -15,7 +15,11 @@ export const fetchAdminEvents = createAsyncThunk(
 
       const queryParams = { page, limit, ...restFilters };
       for (const key in queryParams) {
-        if (queryParams[key] === "ALL" || queryParams[key] === "") {
+        if (
+          queryParams[key] === "ALL" ||
+          queryParams[key] === "" ||
+          queryParams[key] === undefined
+        ) {
           delete queryParams[key];
         }
       }
@@ -43,7 +47,7 @@ export const fetchAdminEvents = createAsyncThunk(
         events: payload.events || (Array.isArray(payload) ? payload : []),
         page: payload.pagination?.page || page,
         limit: payload.pagination?.limit || limit,
-        total: payload.pagination?.total || 0,
+        total: payload.pagination?.total ?? (payload.events ? payload.events.length : 0),
         totalPages: payload.pagination?.totalPages || 1,
       };
     } catch (err) {
@@ -51,11 +55,6 @@ export const fetchAdminEvents = createAsyncThunk(
         err.response?.data?.message || err.message || "Failed to fetch events"
       );
     }
-  },
-  {
-    condition: (_, { getState }) => {
-      if (getState().adminEvents.loading) return false;
-    },
   }
 );
 
@@ -126,22 +125,34 @@ const adminEventsSlice = createSlice({
       state.currentPage = action.payload;
     },
     setFilterType: (state, action) => {
-      state.filterType = action.payload;
-      state.currentPage = 1;
-      state.pages = {};
+      if (state.filterType !== action.payload) {
+        state.filterType = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
     },
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
     },
     setDebouncedSearch: (state, action) => {
-      state.debouncedSearch = action.payload;
-      state.currentPage = 1;
-      state.pages = {};
+      if (state.debouncedSearch !== action.payload) {
+        state.debouncedSearch = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
     },
     setLimit: (state, action) => {
-      state.limit = action.payload;
-      state.currentPage = 1;
-      state.pages = {};
+      if (state.limit !== action.payload) {
+        state.limit = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
     },
     clearFilters: (state) => {
       state.filterType = "ALL";
@@ -149,6 +160,8 @@ const adminEventsSlice = createSlice({
       state.debouncedSearch = "";
       state.currentPage = 1;
       state.pages = {};
+      state.loading = true;
+      state.isLoaded = false;
     },
     invalidateEvents: (state) => {
       state.pages = {};

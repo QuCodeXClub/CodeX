@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { Users } from "lucide-react";
 import { boardingPassService } from "../services/boardingPassService";
 import VerificationLayout from "../layout/VerificationLayout";
 import { ASSETS } from "../config/assets";
@@ -42,6 +43,7 @@ const VerifyBoardingPass = () => {
   const metadata = boardingPass
     ? [
         { label: "Attendee", value: boardingPass.studentName || "Attendee" },
+        ...(boardingPass.teamName ? [{ label: "Team", value: boardingPass.teamName }] : []),
         { label: "Event", value: boardingPass.eventName || "CodeX Event" },
         { label: "Pass ID", value: boardingPass.boardingPassId || "BP-2026", isMono: true },
         { label: "Status", value: "Valid Entry", isBadge: true },
@@ -156,8 +158,14 @@ const VerifyBoardingPass = () => {
               </span>
             </div>
 
-            {/* Attendee Name */}
+            {/* Attendee Name & Team */}
             <div className="relative z-10 mb-8 md:mb-12">
+              {boardingPass.teamName && (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2EC5D4]/10 border border-[#2EC5D4]/30 text-[#2EC5D4] font-mono text-xs font-bold uppercase tracking-wider mb-3 shadow-[0_0_15px_rgba(46,197,212,0.15)]">
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Team: {boardingPass.teamName}</span>
+                </div>
+              )}
               <h1 className="text-5xl md:text-7xl font-sans font-bold uppercase text-[#F5F5F5] leading-none mb-2 tracking-wide">
                 {boardingPass.studentName}
               </h1>
@@ -179,6 +187,18 @@ const VerifyBoardingPass = () => {
                 </p>
               </div>
 
+              {/* Team Name */}
+              {boardingPass.teamName && (
+                <div>
+                  <p className="font-mono text-[10px] text-[#2EC5D4] uppercase tracking-[0.2em] mb-1">
+                    Team Name
+                  </p>
+                  <p className="font-sans text-xl md:text-2xl font-bold uppercase text-[#F5F5F5]">
+                    {boardingPass.teamName}
+                  </p>
+                </div>
+              )}
+
               {/* Event Time */}
               {boardingPass.time && (
                 <div>
@@ -197,7 +217,7 @@ const VerifyBoardingPass = () => {
                   Desk Number
                 </p>
                 <p className="font-sans text-2xl font-bold uppercase text-[#F5F5F5]">
-                  {boardingPass.citeNumber || "TBD"}
+                  {boardingPass.deskNumber || "TBD"}
                 </p>
               </div>
 

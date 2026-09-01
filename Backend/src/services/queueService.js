@@ -380,6 +380,8 @@ class QueueService {
 
     const eventTime = (student.time || time || '').toString().trim();
     const studentQid = student.qid ? student.qid.trim() : '';
+    const studentTeamName = (student.teamName || student.team || '').toString().trim();
+    const studentDeskNumber = (student.deskNumber || student.desk || '').toString().trim();
     const boardingPassId = crypto.randomBytes(8).toString('hex');
     const verificationLink = `${process.env.FRONTEND_URL}/verify-boarding-pass/${boardingPassId}`;
 
@@ -397,6 +399,7 @@ class QueueService {
     await BoardingPass.create({
       studentName: student.name,
       studentEmail: student.email,
+      teamName: studentTeamName || undefined,
       eventName,
       eventDescription,
       time: eventTime,
@@ -405,19 +408,20 @@ class QueueService {
       wifiPass: student.wifiPass,
       loginUser: student.loginUser,
       loginPass: student.loginPass,
-      citeNumber: student.citeNumber,
+      deskNumber: studentDeskNumber || undefined,
       boardingPassId,
       qrCodeImage: qrCodeUrl,
     });
 
     const { html, text } = boardingPassEmail({
       studentName: student.name,
+      teamName: studentTeamName,
       eventName,
       eventDescription,
       time: eventTime,
       qid: studentQid,
       boardingPassId,
-      citeNumber: student.citeNumber,
+      deskNumber: studentDeskNumber,
       verificationLink,
     });
 

@@ -238,7 +238,7 @@ export default function ManageEvents() {
         </div>
 
         {/* Content Area */}
-        {loading && events.length === 0 ? (
+        {(!isLoaded || loading) && events.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: limit }).map((_, idx) => (
               <EventCardSkeleton key={idx} />
