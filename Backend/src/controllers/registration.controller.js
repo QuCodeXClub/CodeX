@@ -273,7 +273,7 @@ const addManualRegistration = asyncHandler(async (req, res) => {
 
   // Check if studentId already exists (excluding REJECTED)
   const existingRegistration = await StudentRegistration.findOne({
-    studentId,
+    studentId: { $eq: studentId },
     status: { $in: ['PENDING', 'APPROVED'] },
   });
   if (existingRegistration) {
