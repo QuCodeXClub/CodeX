@@ -28,6 +28,8 @@ export default function BulkCertificates() {
   const [loading, setLoading] = useState(false);
   const [signaturePreview, setSignaturePreview] = useState(null);
   const [previousSignatureUrl, setPreviousSignatureUrl] = useState(null);
+  const [isImportingCsv, setIsImportingCsv] = useState(false);
+  const [importStatus, setImportStatus] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
 
@@ -56,6 +58,7 @@ export default function BulkCertificates() {
     defaultValues: {
       eventName: "",
       eventDate: "",
+      template: "standard",
       coordinatorName: "",
       students: [{ name: "", email: "", position: "Participant" }],
     },
@@ -77,53 +80,75 @@ export default function BulkCertificates() {
     const file = e.target.files[0];
     if (!file) return;
 
+    setIsImportingCsv(true);
+    setImportStatus(`Reading ${file.name}...`);
+
     const reader = new FileReader();
 
     reader.onload = (event) => {
-      const text = event.target.result;
-      const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
+      setImportStatus("Parsing and validating records...");
 
-      if (rows.length === 0) return;
+      setTimeout(() => {
+        try {
+          const text = event.target.result;
+          const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
 
-      let startIndex = 0;
-      if (
-        rows[0].toLowerCase().includes("name") ||
-        rows[0].toLowerCase().includes("email")
-      ) {
-        startIndex = 1;
-      }
+          if (rows.length === 0) {
+            setIsImportingCsv(false);
+            setImportStatus("");
+            dispatch(setError("CSV file is empty."));
+            return;
+          }
 
-      const parsedStudents = [];
+          let startIndex = 0;
+          if (
+            rows[0].toLowerCase().includes("name") ||
+            rows[0].toLowerCase().includes("email")
+          ) {
+            startIndex = 1;
+          }
 
-      for (let i = startIndex; i < rows.length; i++) {
-        const cols = rows[i]
-          .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-          .map((col) => col.replace(/^"|"$/g, "").trim());
+          const parsedStudents = [];
 
-        if (cols.length >= 2) {
-          parsedStudents.push({
-            name: cols[0] || "",
-            email: cols[1] || "",
-            position: cols[2] || "Participant",
-          });
+          for (let i = startIndex; i < rows.length; i++) {
+            const cols = rows[i]
+              .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+              .map((col) => col.replace(/^"|"$/g, "").trim());
+
+            if (cols.length >= 2) {
+              parsedStudents.push({
+                name: cols[0] || "",
+                email: cols[1] || "",
+                position: cols[2] || "Participant",
+              });
+            }
+          }
+
+          if (parsedStudents.length > 0) {
+            if (fields.length === 1 && !fields[0].name && !fields[0].email) {
+              replace(parsedStudents);
+            } else {
+              append(parsedStudents);
+            }
+            dispatch(
+              setSuccess(`Successfully imported ${parsedStudents.length} student(s) from CSV.`)
+            );
+          } else {
+            dispatch(setError("Could not parse valid students from the CSV."));
+          }
+        } catch (err) {
+          console.error("CSV import error:", err);
+          dispatch(setError("Failed to parse CSV file."));
+        } finally {
+          setIsImportingCsv(false);
+          setImportStatus("");
         }
-      }
-
-      if (parsedStudents.length > 0) {
-        if (fields.length === 1 && !fields[0].name && !fields[0].email) {
-          replace(parsedStudents);
-        } else {
-          append(parsedStudents);
-        }
-        dispatch(
-          setSuccess(`${parsedStudents.length} students imported from CSV.`)
-        );
-      } else {
-        dispatch(setError("Could not parse valid students from the CSV."));
-      }
+      }, 300);
     };
 
     reader.onerror = () => {
+      setIsImportingCsv(false);
+      setImportStatus("");
       dispatch(setError("Failed to read the CSV file."));
     };
 
@@ -377,18 +402,37 @@ export default function BulkCertificates() {
                 accept=".csv"
                 ref={csvInputRef}
                 onChange={handleCsvUpload}
+                disabled={isImportingCsv}
                 className="hidden"
               />
               <button
                 type="button"
+                disabled={isImportingCsv}
                 onClick={() => csvInputRef.current.click()}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <Upload className="w-4 h-4" />
-                Import CSV
+                {isImportingCsv ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                    <span>Importing CSV...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    <span>Import CSV</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
+
+          {/* CSV Import In-Progress Feedback Banner */}
+          {isImportingCsv && (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-semibold animate-pulse mb-6 shadow-sm">
+              <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+              <span>{importStatus || "Importing student records from CSV..."}</span>
+            </div>
+          )}
 
           <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
             {fields.map((field, index) => (

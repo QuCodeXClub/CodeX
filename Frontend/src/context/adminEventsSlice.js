@@ -3,16 +3,57 @@ import axiosInstance from "../services/axiosInstance";
 
 export const fetchAdminEvents = createAsyncThunk(
   "adminEvents/fetch",
-  async (params = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue, getState }) => {
     try {
-      const response = await axiosInstance.get("/events", { params });
+      const state = getState().adminEvents;
+      const {
+        page = state.currentPage || 1,
+        limit = state.limit || 12,
+        force = false,
+        ...restFilters
+      } = params;
+
+      const queryParams = { page, limit, ...restFilters };
+      for (const key in queryParams) {
+        if (
+          queryParams[key] === "ALL" ||
+          queryParams[key] === "" ||
+          queryParams[key] === undefined
+        ) {
+          delete queryParams[key];
+        }
+      }
+
+      // Check if filters changed (excluding page/limit)
+      const currentFiltersStr = JSON.stringify(state.filters);
+      const newFiltersStr = JSON.stringify(restFilters);
+      const filtersChanged = currentFiltersStr !== newFiltersStr;
+
+      if (
+        !force &&
+        !filtersChanged &&
+        state.pages[page] &&
+        state.pages[page].length > 0
+      ) {
+        return { fromCache: true, page };
+      }
+
+      const response = await axiosInstance.get("/events", { params: queryParams });
       const payload = response.data?.data || response.data || response;
       return {
+        fromCache: false,
+        resetCache: filtersChanged || force,
+        newFilters: restFilters,
         events: payload.events || (Array.isArray(payload) ? payload : []),
-        pagination: payload.pagination || null,
+        page: payload.pagination?.page || page,
+        limit: payload.pagination?.limit || limit,
+        total: payload.pagination?.total ?? (payload.events ? payload.events.length : 0),
+        totalPages: payload.pagination?.totalPages || 1,
       };
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Failed to fetch events"
+      );
     }
   }
 );
@@ -24,9 +65,11 @@ export const createAdminEvent = createAsyncThunk(
       const response = await axiosInstance.post("/events", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response;
+      return response.data?.data || response.data || response;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Failed to create event"
+      );
     }
   }
 );
@@ -38,9 +81,11 @@ export const updateAdminEvent = createAsyncThunk(
       const response = await axiosInstance.put(`/events/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response;
+      return response.data?.data || response.data || response;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Failed to update event"
+      );
     }
   }
 );
@@ -52,7 +97,9 @@ export const deleteAdminEvent = createAsyncThunk(
       await axiosInstance.delete(`/events/${id}`);
       return id;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Failed to delete event"
+      );
     }
   }
 );
@@ -60,63 +107,136 @@ export const deleteAdminEvent = createAsyncThunk(
 const adminEventsSlice = createSlice({
   name: "adminEvents",
   initialState: {
-    events: [],
-    pagination: {
-      page: 1,
-      limit: 12,
-      total: 0,
-      totalPages: 1,
-      hasNextPage: false,
-      hasPrevPage: false,
-    },
+    pages: {},
+    filters: {},
+    currentPage: 1,
+    filterType: "ALL",
+    searchQuery: "",
+    debouncedSearch: "",
+    limit: 12,
+    total: 0,
+    totalPages: 1,
     loading: false,
     error: null,
     isLoaded: false,
   },
   reducers: {
-    invalidateEvents: (state) => {
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
+    },
+    setFilterType: (state, action) => {
+      if (state.filterType !== action.payload) {
+        state.filterType = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
+    },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+    setDebouncedSearch: (state, action) => {
+      if (state.debouncedSearch !== action.payload) {
+        state.debouncedSearch = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
+    },
+    setLimit: (state, action) => {
+      if (state.limit !== action.payload) {
+        state.limit = action.payload;
+        state.currentPage = 1;
+        state.pages = {};
+        state.loading = true;
+        state.isLoaded = false;
+      }
+    },
+    clearFilters: (state) => {
+      state.filterType = "ALL";
+      state.searchQuery = "";
+      state.debouncedSearch = "";
+      state.currentPage = 1;
+      state.pages = {};
+      state.loading = true;
       state.isLoaded = false;
     },
-    setPagination: (state, action) => {
-      state.pagination = { ...state.pagination, ...action.payload };
+    invalidateEvents: (state) => {
+      state.pages = {};
+      state.isLoaded = false;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminEvents.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchAdminEvents.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoaded = true;
-        state.events = action.payload.events;
-        if (action.payload.pagination) {
-          state.pagination = action.payload.pagination;
+        const payload = action.payload;
+
+        if (payload.fromCache) {
+          state.currentPage = payload.page;
+          return;
         }
+
+        if (payload.resetCache) {
+          state.pages = {};
+          state.filters = payload.newFilters;
+        }
+
+        state.pages[payload.page] = payload.events;
+        state.total = payload.total;
+        state.totalPages = payload.totalPages;
+        state.currentPage = payload.page;
+        state.limit = payload.limit;
       })
       .addCase(fetchAdminEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       .addCase(createAdminEvent.fulfilled, (state) => {
+        state.pages = {};
         state.isLoaded = false;
       })
       .addCase(updateAdminEvent.fulfilled, (state, action) => {
-        const updated = action.payload?.data?.data || action.payload?.data || action.payload;
+        const updated = action.payload;
         if (updated && updated._id) {
-          state.events = state.events.map((e) => (e._id === updated._id ? updated : e));
+          Object.keys(state.pages).forEach((pageNum) => {
+            state.pages[pageNum] = state.pages[pageNum].map((e) =>
+              e._id === updated._id ? { ...e, ...updated } : e
+            );
+          });
         }
       })
       .addCase(deleteAdminEvent.fulfilled, (state, action) => {
-        state.events = state.events.filter((e) => e._id !== action.payload);
-        if (state.pagination.total > 0) {
-          state.pagination.total -= 1;
-          state.pagination.totalPages = Math.ceil(state.pagination.total / (state.pagination.limit || 12)) || 1;
+        const deletedId = action.payload;
+        Object.keys(state.pages).forEach((pageNum) => {
+          state.pages[pageNum] = state.pages[pageNum].filter(
+            (e) => e._id !== deletedId
+          );
+        });
+        if (state.total > 0) {
+          state.total -= 1;
+          state.totalPages = Math.ceil(state.total / (state.limit || 12)) || 1;
         }
       });
   },
 });
 
-export const { invalidateEvents, setPagination } = adminEventsSlice.actions;
+export const {
+  setCurrentPage,
+  setFilterType,
+  setSearchQuery,
+  setDebouncedSearch,
+  setLimit,
+  clearFilters,
+  invalidateEvents,
+} = adminEventsSlice.actions;
+
 export default adminEventsSlice.reducer;
 

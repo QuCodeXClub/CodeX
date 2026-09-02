@@ -816,8 +816,8 @@ paths:
                   example: secure_pass456
                 studentsStr:
                   type: string
-                  example: '[{"name":"John","email":"john@test.com"}]'
-                  description: JSON stringified array of {name, email}
+                  example: '[{"name":"John","email":"john@test.com","qid":"QID-123","teamName":"Alpha","deskNumber":"D-01"}]'
+                  description: JSON stringified array of {name, email, qid, teamName, time, loginUser, loginPass, wifiUser, wifiPass, deskNumber}
       responses:
         "201":
           description: Boarding passes generated and emails sent

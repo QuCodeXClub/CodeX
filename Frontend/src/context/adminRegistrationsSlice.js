@@ -6,7 +6,7 @@ export const fetchAdminRegistrations = createAsyncThunk(
   async (params = {}, { rejectWithValue, getState }) => {
     try {
       const state = getState().adminRegistrations;
-      const { page = 1, limit = 100, ...restFilters } = params;
+      const { page = 1, limit = 100, force = false, ...restFilters } = params;
 
       const queryParams = { page, limit, ...restFilters };
       for (const key in queryParams) {
@@ -24,8 +24,9 @@ export const fetchAdminRegistrations = createAsyncThunk(
         queryParams.page = 1;
       }
 
-      // If filters are same and we already have this page cached, we can skip fetching
+      // If filters are same and we already have this page cached, skip fetching unless force: true
       if (
+        !force &&
         !filtersChanged &&
         state.pages[page] &&
         state.pages[page].length > 0
@@ -38,7 +39,7 @@ export const fetchAdminRegistrations = createAsyncThunk(
 
       return {
         fromCache: false,
-        resetCache: filtersChanged,
+        resetCache: filtersChanged || force,
         newFilters: restFilters,
         data: payload.registrations || (Array.isArray(payload) ? payload : []),
         page: payload.page || page,
@@ -47,6 +48,55 @@ export const fetchAdminRegistrations = createAsyncThunk(
       };
     } catch (err) {
       return rejectWithValue(err);
+    }
+  },
+  {
+    condition: (_, { getState }) => {
+      if (getState().adminRegistrations.loading) return false;
+    },
+  }
+);
+
+export const fetchLatestRegistrationsOnly = createAsyncThunk(
+  "adminRegistrations/fetchLatestOnly",
+  async (params = {}, { rejectWithValue, getState }) => {
+    try {
+      const state = getState().adminRegistrations;
+      const { ...restFilters } = params;
+
+      // Find the latest registration createdAt currently stored in Redux
+      let newestCreatedAt = null;
+      Object.values(state.pages).forEach((pageList) => {
+        pageList.forEach((reg) => {
+          if (!newestCreatedAt || new Date(reg.createdAt) > new Date(newestCreatedAt)) {
+            newestCreatedAt = reg.createdAt;
+          }
+        });
+      });
+
+      const queryParams = { ...restFilters, limit: 100 };
+      if (newestCreatedAt) {
+        queryParams.since = newestCreatedAt;
+      }
+      for (const key in queryParams) {
+        if (queryParams[key] === "ALL" || queryParams[key] === "") {
+          delete queryParams[key];
+        }
+      }
+
+      const response = await registrationService.getRegistrations(queryParams);
+      const payload = response.data?.data || response.data || response;
+      const newItems = payload.registrations || (Array.isArray(payload) ? payload : []);
+
+      return {
+        newItems,
+        total: payload.total !== undefined ? payload.total : state.total + newItems.length,
+        hasSince: Boolean(newestCreatedAt),
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Failed to check for new registrations"
+      );
     }
   },
   {
@@ -157,6 +207,32 @@ const adminRegistrationsSlice = createSlice({
         state.currentPage = payload.page;
       })
       .addCase(fetchAdminRegistrations.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchLatestRegistrationsOnly.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchLatestRegistrationsOnly.fulfilled, (state, action) => {
+        state.loading = false;
+        const { newItems, total, hasSince } = action.payload;
+        state.total = total;
+        state.totalPages = Math.max(1, Math.ceil(total / 100));
+
+        if (newItems.length > 0) {
+          if (!hasSince || !state.pages[1]) {
+            state.pages[1] = newItems;
+          } else {
+            const existingPage1 = state.pages[1] || [];
+            const existingIds = new Set(existingPage1.map((r) => r._id));
+            const uniqueNew = newItems.filter((r) => !existingIds.has(r._id));
+            if (uniqueNew.length > 0) {
+              state.pages[1] = [...uniqueNew, ...existingPage1];
+            }
+          }
+        }
+      })
+      .addCase(fetchLatestRegistrationsOnly.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

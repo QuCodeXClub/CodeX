@@ -1,10 +1,10 @@
 import { TeamMember } from '../models/teamMember.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
+import { BackgroundJob } from '../models/backgroundJob.model.js';
 import { announcementEmail } from '../utils/emailTemplates.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-
 import { queueService } from '../services/queueService.js';
 
 const sendAnnouncement = asyncHandler(async (req, res) => {
@@ -14,7 +14,7 @@ const sendAnnouncement = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Target audience, subject, and message are required');
   }
 
-  let emailList = [];
+  let emailList;
 
   if (targetAudience === 'team') {
     const query = {};
@@ -73,8 +73,6 @@ const sendAnnouncement = asyncHandler(async (req, res) => {
     )
   );
 });
-
-import { BackgroundJob } from '../models/backgroundJob.model.js';
 
 const getAnnouncementsHistory = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;

@@ -144,7 +144,7 @@ const VerificationLayout = ({
                             {item.value}
                           </span>
                         ) : (
-                          <span className="font-semibold text-text text-right max-w-[160px] sm:max-w-[190px] truncate text-[11px] sm:text-xs" title={item.value}>
+                          <span className="font-semibold text-text text-right max-w-40 sm:max-w-47.5 truncate text-[11px] sm:text-xs" title={item.value}>
                             {item.value}
                           </span>
                         )}

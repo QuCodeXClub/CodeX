@@ -21,7 +21,9 @@ export default [
         setInterval: "readonly",
         clearInterval: "readonly",
         fetch: "readonly",
-        URLSearchParams: "readonly"
+        URLSearchParams: "readonly",
+        URL: "readonly",
+        AbortSignal: "readonly"
       }
     },
     rules: {

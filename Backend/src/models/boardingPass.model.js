@@ -28,9 +28,17 @@ const boardingPassSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    venue: {
+      type: String,
+      trim: true,
+    },
     qid: {
       type: String,
       required: [true, "QID is required"],
+      trim: true,
+    },
+    teamName: {
+      type: String,
       trim: true,
     },
     wifiUser: {
@@ -49,7 +57,7 @@ const boardingPassSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    citeNumber: {
+    deskNumber: {
       type: String,
       trim: true,
     },

@@ -1,4 +1,4 @@
-Name,Email,QID,LoginID,LoginPassword,WiFiID,WiFiPassword,CiteNumber
+Name,Email,QID,LoginID,LoginPassword,WiFiID,WiFiPassword,DeskNumber
 Aarav Sharma,[EMAIL_ADDRESS],QID202601,aarav01,Pass@01,wifi_aarav01,WifiPass@01,DESK-01
 Ananya Verma,[EMAIL_ADDRESS],QID202602,ananya02,Pass@02,wifi_ananya02,WifiPass@02,DESK-02
 Rohan Gupta,[EMAIL_ADDRESS],QID202603,rohan03,Pass@03,wifi_rohan03,WifiPass@03,DESK-03
