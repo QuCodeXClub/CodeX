@@ -12,6 +12,15 @@ const tempUploadDir = path.resolve('public/temp');
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const toSafeQueryString = (value, maxLength = 50) => {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim();
+  if (!normalized) return null;
+  return normalized.slice(0, maxLength);
+};
+
+const inAllowedSet = (value, allowedValues) => allowedValues.includes(value);
+
 const resolveSafeTempFilePath = (filePath) => {
   if (!filePath || typeof filePath !== 'string') {
     throw new ApiError(400, 'Invalid file path');
@@ -39,9 +48,16 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
   const defaultLimit = process.env.NODE_ENV === 'development' ? 10 : 100;
   const { status, search, academicYear, paymentMode, course, page = 1, limit = defaultLimit, since } = req.query;
 
+  const safeStatus = toSafeQueryString(status);
+  const safeCourse = toSafeQueryString(course);
+  const safePaymentMode = toSafeQueryString(paymentMode);
+
+  const allowedStatuses = ['PENDING', 'APPROVED', 'REJECTED'];
+  const allowedPaymentModes = ['CASH', 'ONLINE', 'UPI', 'CARD', 'BANK_TRANSFER'];
+
   const query = {};
-  if (status) query.status = status;
-  if (course && course !== 'ALL') query.course = course;
+  if (safeStatus && inAllowedSet(safeStatus, allowedStatuses)) query.status = safeStatus;
+  if (safeCourse && safeCourse !== 'ALL') query.course = safeCourse;
   if (search) {
     const escapedSearch = escapeRegExp(String(search).trim()).slice(0, 100);
     query.$or = [
@@ -52,11 +68,11 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
     ];
   }
 
-  if (paymentMode && paymentMode !== 'ALL') {
-    if (paymentMode === 'ONLINE') {
+  if (safePaymentMode && safePaymentMode !== 'ALL' && inAllowedSet(safePaymentMode, allowedPaymentModes)) {
+    if (safePaymentMode === 'ONLINE') {
       query.paymentMode = { $ne: 'CASH' };
     } else {
-      query.paymentMode = paymentMode;
+      query.paymentMode = safePaymentMode;
     }
   }
 
