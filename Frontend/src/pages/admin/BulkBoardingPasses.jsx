@@ -10,6 +10,7 @@ import {
   Users,
   User,
   Mail,
+  MapPin,
   Calendar,
   Clock,
   Info,
@@ -44,8 +45,9 @@ export default function BulkBoardingPasses() {
     defaultValues: {
       eventName: "",
       eventDescription: "",
+      venue: "",
       time: "",
-      students: [{ name: "", email: "", qid: "", teamName: "", time: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", deskNumber: "" }],
+      students: [{ name: "", email: "", qid: "", teamName: "", time: "", venue: "", loginUser: "", loginPass: "", wifiUser: "", wifiPass: "", deskNumber: "" }],
     },
   });
 
@@ -88,6 +90,7 @@ export default function BulkBoardingPasses() {
             qid: -1,
             teamName: -1,
             time: -1,
+            venue: -1,
             loginUser: -1,
             loginPass: -1,
             wifiUser: -1,
@@ -100,7 +103,7 @@ export default function BulkBoardingPasses() {
             .map((col) => col.replace(/^"|"$/g, "").trim().toLowerCase());
 
           if (
-            firstRowCols.some(c => c.includes("name") || c.includes("email") || c.includes("qid") || c.includes("team") || c.includes("desk"))
+            firstRowCols.some(c => c.includes("name") || c.includes("email") || c.includes("qid") || c.includes("team") || c.includes("desk") || c.includes("venue"))
           ) {
             startIndex = 1;
             firstRowCols.forEach((col, idx) => {
@@ -109,6 +112,7 @@ export default function BulkBoardingPasses() {
               else if (col === "qid" || col.includes("q_id") || col.includes("q id") || col === "id") headerMap.qid = idx;
               else if (col === "team" || col.includes("team name") || col.includes("teamname") || col.includes("team_name") || col === "group" || col.includes("group name")) headerMap.teamName = idx;
               else if (col.includes("time") || col.includes("slot")) headerMap.time = idx;
+              else if (col.includes("venue") || col.includes("location") || col.includes("place") || col.includes("hall") || col.includes("auditorium") || col.includes("lab")) headerMap.venue = idx;
               else if (col.includes("loginid") || col.includes("login_id") || col.includes("loginuser")) headerMap.loginUser = idx;
               else if (col.includes("loginpass") || col.includes("login_pass")) headerMap.loginPass = idx;
               else if (col.includes("wifiid") || col.includes("wifi_id") || col.includes("wifiuser")) headerMap.wifiUser = idx;
@@ -130,6 +134,7 @@ export default function BulkBoardingPasses() {
               const qid = headerMap.qid !== -1 ? cols[headerMap.qid] : (headerMap.name === -1 && cols.length > 2 ? cols[2] : "");
               const teamName = headerMap.teamName !== -1 ? cols[headerMap.teamName] : "";
               const time = headerMap.time !== -1 ? cols[headerMap.time] : "";
+              const venue = headerMap.venue !== -1 ? cols[headerMap.venue] : "";
 
               let loginUser = headerMap.loginUser !== -1 ? cols[headerMap.loginUser] : (headerMap.name === -1 ? cols[3] : "");
               let loginPass = headerMap.loginPass !== -1 ? cols[headerMap.loginPass] : (headerMap.name === -1 ? cols[4] : "");
@@ -144,6 +149,7 @@ export default function BulkBoardingPasses() {
                   qid: qid || "",
                   teamName: teamName || "",
                   time: time || "",
+                  venue: venue || "",
                   loginUser: loginUser || "",
                   loginPass: loginPass || "",
                   wifiUser: wifiUser || "",
@@ -187,7 +193,7 @@ export default function BulkBoardingPasses() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,TeamName,Time,LoginID,LoginPassword,WiFiID,WiFiPassword,DeskNumber\n";
+    const csvContent = "data:text/csv;charset=utf-8,Name,Email,QID,TeamName,Time,Venue,LoginID,LoginPassword,WiFiID,WiFiPassword,DeskNumber\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -218,6 +224,7 @@ export default function BulkBoardingPasses() {
       const submitData = {
         eventName: data.eventName,
         eventDescription: data.eventDescription,
+        venue: data.venue,
         time: data.time,
         studentsStr: JSON.stringify(validStudents)
       };
@@ -283,7 +290,7 @@ export default function BulkBoardingPasses() {
             Event Details
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
             {/* Event Name */}
             <div>
               <label className="block text-sm font-semibold text-text mb-2">
@@ -300,6 +307,22 @@ export default function BulkBoardingPasses() {
                   {errors.eventName.message}
                 </p>
               )}
+            </div>
+
+            {/* Event Venue */}
+            <div>
+              <label className="block text-sm font-semibold text-text mb-2">
+                Event Venue
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
+                <input
+                  type="text"
+                  {...register("venue")}
+                  placeholder="e.g. Audi 2 / Lab 4 / Online"
+                  className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
             </div>
 
             {/* Event Time */}

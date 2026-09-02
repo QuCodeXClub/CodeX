@@ -524,11 +524,12 @@ const certificateEmail = ({ studentName, eventName, certificateId, verificationL
 /**
  * Boarding Pass Email
  */
-const boardingPassEmail = ({ studentName, teamName, eventName, eventDescription, time, qid, boardingPassId, deskNumber, verificationLink }) => {
+const boardingPassEmail = ({ studentName, teamName, eventName, eventDescription, time, venue, qid, boardingPassId, deskNumber, verificationLink }) => {
   const rows = [
     infoRow('Event', eventName),
     ...(teamName ? [infoRow('Team', teamName)] : []),
     ...(time ? [infoRow('Time', time)] : []),
+    ...(venue ? [infoRow('Venue', venue)] : []),
     infoRow('QID', qid),
     ...(deskNumber ? [infoRow('Desk Number', deskNumber)] : []),
     infoRow('Pass ID', boardingPassId, true)
@@ -550,7 +551,7 @@ const boardingPassEmail = ({ studentName, teamName, eventName, eventDescription,
         ${paragraph('Please present this boarding pass or the pass ID above at the event.')}
       `,
     }),
-    text: `Your boarding pass for ${eventName} is ready\n\nBOARDING PASS READY.\n\nDear ${studentName},\n\nYour boarding pass for ${eventName} has been generated.\n\n${eventDescription}\n\nEvent: ${eventName}\n${teamName ? `Team: ${teamName}\n` : ''}${time ? `Time: ${time}\n` : ''}QID: ${qid}\n${deskNumber ? `Desk Number: ${deskNumber}\n` : ''}Pass ID: ${boardingPassId}\n\nView Boarding Pass at: ${verificationLink}\n\nPlease present this boarding pass or the pass ID above at the event.\n`,
+    text: `Your boarding pass for ${eventName} is ready\n\nBOARDING PASS READY.\n\nDear ${studentName},\n\nYour boarding pass for ${eventName} has been generated.\n\n${eventDescription}\n\nEvent: ${eventName}\n${teamName ? `Team: ${teamName}\n` : ''}${time ? `Time: ${time}\n` : ''}${venue ? `Venue: ${venue}\n` : ''}QID: ${qid}\n${deskNumber ? `Desk Number: ${deskNumber}\n` : ''}Pass ID: ${boardingPassId}\n\nView Boarding Pass at: ${verificationLink}\n\nPlease present this boarding pass or the pass ID above at the event.\n`,
   };
 };
 

@@ -172,6 +172,11 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                               Time: <span className="font-bold">{pass.time}</span>
                             </div>
                           )}
+                          {pass.venue && (
+                            <div className="text-[11px] text-cyan-400 font-mono mt-0.5">
+                              Venue: <span className="font-bold">{pass.venue}</span>
+                            </div>
+                          )}
                           {pass.deskNumber ? (
                             <div className="text-[11px] text-text-muted font-mono mt-1">
                               Desk Number: <span className="text-text font-bold">{pass.deskNumber}</span>
@@ -251,6 +256,7 @@ export default function IssuedBoardingPassesModal({ onClose, isModal = false }) 
                     <div className="p-2.5 rounded-lg bg-card border border-border/80 space-y-1">
                       <div className="text-[10px] font-mono text-text-muted uppercase">Event & Pass ID</div>
                       <div className="font-semibold text-text">{pass.eventName}</div>
+                      {pass.venue && <div className="text-[10px] text-cyan-400 font-mono">Venue: {pass.venue}</div>}
                       {pass.time && <div className="text-[10px] text-accent font-mono">Time: {pass.time}</div>}
                       <div className="text-xs font-mono font-bold text-accent">{pass.boardingPassId}</div>
                     </div>

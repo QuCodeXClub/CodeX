@@ -368,7 +368,7 @@ class QueueService {
    * Handle single student boarding pass generation job
    */
   async handleBoardingPassBulk(job) {
-    const { eventName, eventDescription, time, student } = job.payload;
+    const { eventName, eventDescription, time, venue, student } = job.payload;
 
     if (!student || !student.name || !student.email) {
       await BackgroundJob.findByIdAndUpdate(job._id, {
@@ -379,6 +379,7 @@ class QueueService {
     }
 
     const eventTime = (student.time || time || '').toString().trim();
+    const eventVenue = (student.venue || venue || '').toString().trim();
     const studentQid = student.qid ? student.qid.trim() : '';
     const studentTeamName = (student.teamName || student.team || '').toString().trim();
     const studentDeskNumber = (student.deskNumber || student.desk || '').toString().trim();
@@ -403,6 +404,7 @@ class QueueService {
       eventName,
       eventDescription,
       time: eventTime,
+      venue: eventVenue || undefined,
       qid: studentQid,
       wifiUser: student.wifiUser,
       wifiPass: student.wifiPass,
@@ -419,6 +421,7 @@ class QueueService {
       eventName,
       eventDescription,
       time: eventTime,
+      venue: eventVenue,
       qid: studentQid,
       boardingPassId,
       deskNumber: studentDeskNumber,
