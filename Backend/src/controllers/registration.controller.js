@@ -271,9 +271,13 @@ const addManualRegistration = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'All fields are required');
   }
 
+  if (typeof studentId !== 'string') {
+    throw new ApiError(400, 'Invalid student ID');
+  }
+
   // Check if studentId already exists (excluding REJECTED)
   const existingRegistration = await StudentRegistration.findOne({
-    studentId,
+    studentId: { $eq: studentId },
     status: { $in: ['PENDING', 'APPROVED'] },
   });
   if (existingRegistration) {
