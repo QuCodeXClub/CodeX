@@ -49,43 +49,26 @@ const EventList = () => {
 
   // Fetch events on mount and when debouncedSearch changes
   useEffect(() => {
-    let isMounted = true;
-
     // Reset pagination to page 1 on search change
     setAllPage(1);
     setUpcomingPage(1);
     setPastPage(1);
 
-    // Fetch active tab first, then the remaining tabs in background
-    if (activeTab === "ALL") {
-      dispatch(fetchAllEvents({ page: 1, limit, search: debouncedSearch }));
-    } else if (activeTab === "UPCOMING") {
-      dispatch(fetchUpcomingEvents({ page: 1, limit, search: debouncedSearch }));
-    } else {
-      dispatch(fetchPastEvents({ page: 1, limit, search: debouncedSearch }));
-    }
-
-    const backgroundTimer = setTimeout(() => {
-      if (!isMounted) return;
-      if (activeTab !== "ALL") {
-        dispatch(fetchAllEvents({ page: 1, limit, search: debouncedSearch }));
-      }
-      if (activeTab !== "UPCOMING") {
-        dispatch(fetchUpcomingEvents({ page: 1, limit, search: debouncedSearch }));
-      }
-      if (activeTab !== "PAST") {
-        dispatch(fetchPastEvents({ page: 1, limit, search: debouncedSearch }));
-      }
-    }, 150);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(backgroundTimer);
-    };
-  }, [dispatch, debouncedSearch, limit, activeTab]);
+    // Fetch active tab first, then remaining tabs in background
+    dispatch(fetchAllEvents({ page: 1, limit, search: debouncedSearch }));
+    dispatch(fetchUpcomingEvents({ page: 1, limit, search: debouncedSearch }));
+    dispatch(fetchPastEvents({ page: 1, limit, search: debouncedSearch }));
+  }, [dispatch, debouncedSearch, limit]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    if (tab === "ALL" && !all.isLoaded) {
+      dispatch(fetchAllEvents({ page: allPage, limit, search: debouncedSearch }));
+    } else if (tab === "UPCOMING" && !upcoming.isLoaded) {
+      dispatch(fetchUpcomingEvents({ page: upcomingPage, limit, search: debouncedSearch }));
+    } else if (tab === "PAST" && !past.isLoaded) {
+      dispatch(fetchPastEvents({ page: pastPage, limit, search: debouncedSearch }));
+    }
   };
 
   const handlePageChange = (newPage) => {
@@ -126,7 +109,12 @@ const EventList = () => {
   };
 
   const getCurrentFeed = () => {
-    if (activeTab === "ALL") return all;
+    if (activeTab === "ALL") {
+      if (all.events.length === 0 && upcoming.events.length > 0 && !debouncedSearch) {
+        return upcoming;
+      }
+      return all;
+    }
     if (activeTab === "UPCOMING") return upcoming;
     return past;
   };

@@ -368,7 +368,7 @@ class QueueService {
    * Handle single student boarding pass generation job
    */
   async handleBoardingPassBulk(job) {
-    const { eventName, eventDescription, time, student } = job.payload;
+    const { eventName, eventDescription, time, venue, student } = job.payload;
 
     if (!student || !student.name || !student.email) {
       await BackgroundJob.findByIdAndUpdate(job._id, {
@@ -379,7 +379,10 @@ class QueueService {
     }
 
     const eventTime = (student.time || time || '').toString().trim();
+    const eventVenue = (student.venue || venue || '').toString().trim();
     const studentQid = student.qid ? student.qid.trim() : '';
+    const studentTeamName = (student.teamName || student.team || '').toString().trim();
+    const studentDeskNumber = (student.deskNumber || student.desk || '').toString().trim();
     const boardingPassId = crypto.randomBytes(8).toString('hex');
     const verificationLink = `${process.env.FRONTEND_URL}/verify-boarding-pass/${boardingPassId}`;
 
@@ -397,27 +400,31 @@ class QueueService {
     await BoardingPass.create({
       studentName: student.name,
       studentEmail: student.email,
+      teamName: studentTeamName || undefined,
       eventName,
       eventDescription,
       time: eventTime,
+      venue: eventVenue || undefined,
       qid: studentQid,
       wifiUser: student.wifiUser,
       wifiPass: student.wifiPass,
       loginUser: student.loginUser,
       loginPass: student.loginPass,
-      citeNumber: student.citeNumber,
+      deskNumber: studentDeskNumber || undefined,
       boardingPassId,
       qrCodeImage: qrCodeUrl,
     });
 
     const { html, text } = boardingPassEmail({
       studentName: student.name,
+      teamName: studentTeamName,
       eventName,
       eventDescription,
       time: eventTime,
+      venue: eventVenue,
       qid: studentQid,
       boardingPassId,
-      citeNumber: student.citeNumber,
+      deskNumber: studentDeskNumber,
       verificationLink,
     });
 

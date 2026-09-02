@@ -5,8 +5,9 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
 
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
-  const { eventName, eventDescription, time, eventTime, studentsStr } = req.body;
+  const { eventName, eventDescription, time, eventTime, venue, eventVenue, studentsStr } = req.body;
   const globalTime = (time || eventTime || '').toString().trim();
+  const globalVenue = (venue || eventVenue || '').toString().trim();
   
   if (!eventName || !eventDescription || !studentsStr) {
     throw new ApiError(400, 'Event Name, Event Description, and students data are required');
@@ -37,6 +38,7 @@ const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
       eventName,
       eventDescription,
       time: (student.time || globalTime || '').toString().trim(),
+      venue: (student.venue || globalVenue || '').toString().trim(),
       student,
     },
   }));
@@ -82,7 +84,10 @@ const getAllBoardingPasses = asyncHandler(async (req, res) => {
       { studentName: { $regex: safeSearch, $options: 'i' } },
       { studentEmail: { $regex: safeSearch, $options: 'i' } },
       { eventName: { $regex: safeSearch, $options: 'i' } },
+      { venue: { $regex: safeSearch, $options: 'i' } },
       { qid: { $regex: safeSearch, $options: 'i' } },
+      { teamName: { $regex: safeSearch, $options: 'i' } },
+      { deskNumber: { $regex: safeSearch, $options: 'i' } },
       { boardingPassId: { $regex: safeSearch, $options: 'i' } },
     ];
   }

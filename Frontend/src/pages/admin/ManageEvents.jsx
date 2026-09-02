@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Edit,
@@ -15,13 +15,18 @@ import {
   Search,
   X,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
   fetchAdminEvents,
   deleteAdminEvent,
+  setCurrentPage,
+  setFilterType,
+  setSearchQuery,
+  setDebouncedSearch,
+  setLimit,
+  clearFilters,
 } from "../../context/adminEventsSlice";
 import {
   normalizeEvent,
@@ -35,66 +40,54 @@ import EmptyState from "../../components/admin/events/EmptyState";
 import EventModal from "../../components/admin/events/EventModal";
 
 export default function ManageEvents() {
-  const { events, pagination, loading, isLoaded } = useSelector(
-    (state) => state.adminEvents
-  );
+  const {
+    pages,
+    currentPage,
+    filterType,
+    searchQuery,
+    debouncedSearch,
+    limit,
+    total,
+    totalPages,
+    loading,
+    isLoaded,
+  } = useSelector((state) => state.adminEvents);
+
+  const events = pages[currentPage] || [];
   const dispatch = useDispatch();
   const confirm = useConfirm();
   const navigate = useNavigate();
 
-  // State
+  // Local Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(12);
-  const [filterType, setFilterType] = useState("ALL"); // "ALL" | "UPCOMING" | "PAST"
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const containerRef = useRef(null);
 
   // Debounce search query (350ms)
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery.trim());
+      dispatch(setDebouncedSearch(searchQuery.trim()));
     }, 350);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, dispatch]);
 
-  // Reset to page 1 whenever filters or search query change
-  const isFirstRender = useRef(true);
+  // Fetch data on dependency changes (uses cache if available)
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    setCurrentPage(1);
-  }, [filterType, debouncedSearch, limit]);
+    const params = {
+      page: currentPage,
+      limit,
+    };
+    if (filterType === "UPCOMING") params.type = "upcoming";
+    if (filterType === "PAST") params.type = "past";
+    if (debouncedSearch) params.search = debouncedSearch;
 
-  // Data fetching handler
-  const loadEvents = useCallback(
-    (page = currentPage) => {
-      const params = {
-        page,
-        limit,
-      };
-      if (filterType === "UPCOMING") params.type = "upcoming";
-      if (filterType === "PAST") params.type = "past";
-      if (debouncedSearch) params.search = debouncedSearch;
-
-      dispatch(fetchAdminEvents(params));
-    },
-    [dispatch, limit, filterType, debouncedSearch, currentPage]
-  );
-
-  // Trigger fetch on dependencies change
-  useEffect(() => {
-    loadEvents(currentPage);
-  }, [currentPage, limit, filterType, debouncedSearch, loadEvents]);
+    dispatch(fetchAdminEvents(params));
+  }, [dispatch, currentPage, limit, filterType, debouncedSearch]);
 
   // Scroll to top of section on page change
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+    dispatch(setCurrentPage(newPage));
     if (containerRef.current) {
       containerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
@@ -127,22 +120,25 @@ export default function ManageEvents() {
       const remainingOnPage = events.length - 1;
       const targetPage =
         remainingOnPage === 0 && currentPage > 1 ? currentPage - 1 : currentPage;
-      setCurrentPage(targetPage);
-      loadEvents(targetPage);
+      dispatch(setCurrentPage(targetPage));
+      dispatch(
+        fetchAdminEvents({
+          page: targetPage,
+          limit,
+          type: filterType === "UPCOMING" ? "upcoming" : filterType === "PAST" ? "past" : undefined,
+          search: debouncedSearch || undefined,
+          force: true,
+        })
+      );
     } catch {
       // Error handled in thunk
     }
   };
 
-  const clearFilters = () => {
-    setFilterType("ALL");
-    setSearchQuery("");
-    setDebouncedSearch("");
-    setCurrentPage(1);
+  const handleClearFilters = () => {
+    dispatch(clearFilters());
   };
 
-  const totalPages = pagination?.totalPages || 1;
-  const total = pagination?.total || 0;
   const startItem = total === 0 ? 0 : (currentPage - 1) * limit + 1;
   const endItem = Math.min(currentPage * limit, total);
   const isFiltered = Boolean(debouncedSearch || filterType !== "ALL");
@@ -156,7 +152,22 @@ export default function ManageEvents() {
         {/* Header */}
         <EventHeader
           openCreateModal={openCreateModal}
-          onRefresh={() => loadEvents(currentPage)}
+          onRefresh={() =>
+            dispatch(
+              fetchAdminEvents({
+                page: currentPage,
+                limit,
+                type:
+                  filterType === "UPCOMING"
+                    ? "upcoming"
+                    : filterType === "PAST"
+                    ? "past"
+                    : undefined,
+                search: debouncedSearch || undefined,
+                force: true,
+              })
+            )
+          }
           loading={loading}
         />
 
@@ -171,7 +182,7 @@ export default function ManageEvents() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setFilterType(tab.id)}
+                onClick={() => dispatch(setFilterType(tab.id))}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                   filterType === tab.id
                     ? "bg-accent text-text-inverse shadow-sm"
@@ -191,14 +202,14 @@ export default function ManageEvents() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                 placeholder="Search event name, location, tags..."
                 className="w-full bg-card border border-border rounded-xl pl-9 pr-9 py-2 text-xs font-mono text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm"
               />
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => dispatch(setSearchQuery(""))}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text rounded-md transition-colors cursor-pointer"
                   title="Clear Search"
                 >
@@ -212,7 +223,7 @@ export default function ManageEvents() {
               <SlidersHorizontal className="w-3.5 h-3.5 text-text-muted hidden sm:block" />
               <select
                 value={limit}
-                onChange={(e) => setLimit(Number(e.target.value))}
+                onChange={(e) => dispatch(setLimit(Number(e.target.value)))}
                 className="bg-card border border-border rounded-xl px-2.5 py-2 text-xs font-mono text-text focus:outline-none focus:border-accent cursor-pointer transition-colors shadow-sm"
                 title="Items per page"
               >
@@ -226,7 +237,7 @@ export default function ManageEvents() {
         </div>
 
         {/* Content Area */}
-        {loading ? (
+        {(!isLoaded || loading) && events.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: limit }).map((_, idx) => (
               <EventCardSkeleton key={idx} />
@@ -235,7 +246,7 @@ export default function ManageEvents() {
         ) : events.length === 0 ? (
           <EmptyState
             isFiltered={isFiltered}
-            onClearFilters={clearFilters}
+            onClearFilters={handleClearFilters}
             openCreateModal={openCreateModal}
           />
         ) : (
@@ -531,7 +542,22 @@ export default function ManageEvents() {
         <EventModal
           setIsModalOpen={setIsModalOpen}
           editingEvent={editingEvent}
-          onSuccess={() => loadEvents(currentPage)}
+          onSuccess={() =>
+            dispatch(
+              fetchAdminEvents({
+                page: currentPage,
+                limit,
+                type:
+                  filterType === "UPCOMING"
+                    ? "upcoming"
+                    : filterType === "PAST"
+                    ? "past"
+                    : undefined,
+                search: debouncedSearch || undefined,
+                force: true,
+              })
+            )
+          }
         />
       )}
     </div>

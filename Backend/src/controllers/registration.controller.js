@@ -37,7 +37,7 @@ const removeTempFile = (absolutePath) => {
 // Get all registrations (Admin only)
 const getAllRegistrations = asyncHandler(async (req, res) => {
   const defaultLimit = process.env.NODE_ENV === 'development' ? 10 : 100;
-  const { status, search, academicYear, paymentMode, course, page = 1, limit = defaultLimit } = req.query;
+  const { status, search, academicYear, paymentMode, course, page = 1, limit = defaultLimit, since } = req.query;
 
   const query = {};
   if (status) query.status = status;
@@ -70,6 +70,19 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
     };
   }
 
+  const baseQuery = { ...query };
+
+  if (since) {
+    const sinceDate = new Date(since);
+    if (!isNaN(sinceDate.getTime())) {
+      if (query.createdAt) {
+        query.createdAt = { ...query.createdAt, $gt: sinceDate };
+      } else {
+        query.createdAt = { $gt: sinceDate };
+      }
+    }
+  }
+
   const options = {
     page: parseInt(page, 10),
     limit: parseInt(limit, 10),
@@ -82,7 +95,7 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(options.limit);
 
-  const total = await StudentRegistration.countDocuments(query);
+  const total = await StudentRegistration.countDocuments(baseQuery);
 
   return res.status(200).json(
     new ApiResponse(
@@ -92,6 +105,7 @@ const getAllRegistrations = asyncHandler(async (req, res) => {
         total,
         page: options.page,
         totalPages: Math.ceil(total / options.limit),
+        newCount: since ? registrations.length : undefined,
       },
       'Registrations fetched successfully'
     )
