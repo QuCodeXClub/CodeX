@@ -92,7 +92,13 @@ export default function VerificationDetailsForm({
     );
 
   const upiDeepLink = TREASURER_UPI_ID
-    ? `upi://pay?pa=${encodeURIComponent(TREASURER_UPI_ID)}&pn=CodeX%20Club&am=50&cu=INR&tn=CodeX%20Membership%20Fee`
+    ? `upi://pay?${new URLSearchParams({
+        pa: TREASURER_UPI_ID,
+        pn: "QUANTUM UNIVERSITY",
+        am: "50.00",
+        cu: "INR",
+        tn: "CodeX Membership Fee",
+      }).toString()}`
     : null;
 
   const handlePayViaUpiApp = (e) => {
