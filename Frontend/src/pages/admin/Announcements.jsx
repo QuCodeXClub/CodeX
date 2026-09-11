@@ -88,14 +88,14 @@ export default function Announcements() {
             <Send className="w-3.5 h-3.5" />
             <span>BULK MESSAGING</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             ANNOUNCEMENT <span className="text-accent">CENTER</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">Target specific demographics and dispatch bulk email announcements.</p>
         </div>
         <button
           onClick={() => navigate("/admin/history?tab=announcements")}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-bold hover:bg-indigo-500/20 transition-all shadow-md self-start md:self-auto cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-bold hover:bg-indigo-500/20 transition-all shadow-md cursor-pointer whitespace-nowrap"
         >
           <History className="w-4 h-4" />
           <span>Sent Announcements History</span>
@@ -129,16 +129,16 @@ export default function Announcements() {
 
         {/* Control Bar for Filters */}
         <div className="flex flex-col xl:flex-row gap-4 mb-6 shrink-0">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-3 w-full">
 
             {/* Target Audience Dropdown */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               {targetAudience === "team" ? (
                 <Users className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
               ) : (
                 <GraduationCap className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
               )}
-              <select {...register("targetAudience")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+              <select {...register("targetAudience")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                 <option value="team">Team Members</option>
                 <option value="students">Registered Students</option>
               </select>
@@ -148,9 +148,9 @@ export default function Announcements() {
             {/* Team Filters */}
             {targetAudience === "team" && (
               <>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-                  <select {...register("teamSubTeam")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+                  <select {...register("teamSubTeam")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                     <option value="">All Teams</option>
                     <option value="Admin Team">Admin Team</option>
                     <option value="Core Team">Core Team</option>
@@ -159,9 +159,9 @@ export default function Announcements() {
                   </select>
                   <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
                 </div>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-                  <select {...register("teamAcademicYear")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+                  <select {...register("teamAcademicYear")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                     <option value="">All Years</option>
                     {formAcademicYears.map(year => <option key={year} value={year}>{year}</option>)}
                   </select>
@@ -173,9 +173,9 @@ export default function Announcements() {
             {/* Student Filters */}
             {targetAudience === "students" && (
               <>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-                  <select {...register("studentCourse")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+                  <select {...register("studentCourse")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                     <option value="">All Courses</option>
                     <option value="B.Tech">B.Tech</option>
                     <option value="M.Tech">M.Tech</option>
@@ -184,17 +184,17 @@ export default function Announcements() {
                   </select>
                   <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
                 </div>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-                  <select {...register("studentAcademicYear")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+                  <select {...register("studentAcademicYear")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                     <option value="">All Years</option>
                     {formAcademicYears.map(year => <option key={year} value={year}>{year}</option>)}
                   </select>
                   <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
                 </div>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-                  <select {...register("studentStatus")} className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
+                  <select {...register("studentStatus")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                     <option value="APPROVED">Approved Only</option>
                     <option value="PENDING">Pending Only</option>
                     <option value="REJECTED">Rejected Only</option>
@@ -209,37 +209,53 @@ export default function Announcements() {
 
         {/* Composer Section */}
         <div className="flex-1 flex flex-col min-h-0 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg">
-          <div className="p-6 border-b border-border-soft flex items-center justify-between shrink-0">
-            <h2 className="text-lg font-bold text-text">Compose Message</h2>
+          <div className="p-4 sm:p-6 border-b border-border-soft flex items-center justify-between shrink-0">
+            <h2 className="text-base sm:text-lg font-bold text-text">Compose Message</h2>
             <span className="text-xs bg-bg border border-border-soft px-3 py-1.5 rounded-md text-text-muted font-medium">HTML Supported</span>
           </div>
 
-          <div className="p-6 flex flex-col flex-1 gap-6 min-h-0">
-            <div>
-              <label className="block text-sm font-semibold text-text mb-1.5">Subject</label>
+          <div className="p-4 sm:p-6 flex flex-col flex-1 gap-4 sm:gap-6 min-h-0">
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-semibold text-text">
+                  Subject <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 type="text"
+                title="Subject — Type: String (Mandatory)"
                 {...register("subject", { required: "Subject is required" })}
                 placeholder="Important Announcement"
                 className={`w-full bg-card text-text rounded-lg border ${errors.subject ? "border-danger focus:ring-danger" : "border-border focus:ring-accent"} p-2.5 text-sm focus:outline-none focus:ring-2`}
               />
             </div>
 
-            <div className="flex-1 flex flex-col min-h-0">
-              <label className="block text-sm font-semibold text-text mb-1.5">Message Body</label>
+            <div className="flex-1 flex flex-col min-h-0 group/field relative">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-semibold text-text">
+                  Message Body <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (HTML)
+                </span>
+              </div>
               <textarea
                 {...register("message", { required: "Message is required" })}
+                title="Message Body — Type: String (HTML Content, Mandatory)"
                 placeholder="Write your HTML message here..."
-                className={`w-full flex-1 bg-card text-text rounded-lg border ${errors.message ? "border-danger focus:ring-danger" : "border-border focus:ring-accent"} p-2.5 text-sm focus:outline-none focus:ring-2 resize-none font-mono leading-relaxed`}
+                className={`w-full flex-1 min-h-[200px] sm:min-h-[260px] bg-card text-text rounded-lg border ${errors.message ? "border-danger focus:ring-danger" : "border-border focus:ring-accent"} p-3 text-sm focus:outline-none focus:ring-2 resize-none font-mono leading-relaxed`}
               ></textarea>
             </div>
           </div>
 
-          <div className="p-6 border-t border-border-soft bg-card-hover/30 shrink-0 flex justify-end rounded-b-2xl">
+          <div className="p-4 sm:p-6 border-t border-border-soft bg-card-hover/30 shrink-0 flex justify-end rounded-b-2xl">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center justify-center gap-2 bg-accent text-[#111111] px-8 py-3 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-accent text-[#111111] px-8 py-3 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-sm cursor-pointer"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

@@ -95,7 +95,7 @@ export default function ManageContacts() {
             <MessageSquare className="w-3.5 h-3.5" />
             <span>INBOX & DISPATCH</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             MESSAGES <span className="text-accent">INBOX</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
@@ -155,7 +155,7 @@ export default function ManageContacts() {
                 className={`transition-colors ${!msg.isRead ? "bg-accent/10" : "hover:bg-card-hover/50"}`}
               >
                 <div
-                  className="p-4 cursor-pointer flex items-center gap-4"
+                  className="p-3.5 sm:p-4 cursor-pointer flex items-center gap-3 sm:gap-4"
                   onClick={() => handleToggleExpand(msg)}
                 >
                   <div className="shrink-0 flex items-center justify-center">
@@ -167,7 +167,7 @@ export default function ManageContacts() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1 gap-1">
                       <h4
                         className={`text-sm truncate ${!msg.isRead ? "font-bold text-text" : "font-medium text-text"}`}
                       >
@@ -176,12 +176,12 @@ export default function ManageContacts() {
                           ({msg.email})
                         </span>
                         {msg.isReplied && (
-                          <span className="text-[10px] uppercase tracking-wider bg-accent/10 border border-accent/20 text-accent px-2 py-0.5 rounded-full ml-2">
+                          <span className="text-[10px] uppercase tracking-wider bg-accent/10 border border-accent/20 text-accent px-2 py-0.5 rounded-full ml-2 inline-block">
                             Replied
                           </span>
                         )}
                       </h4>
-                      <div className="shrink-0 text-xs text-text-muted flex items-center gap-1.5 ml-4">
+                      <div className="shrink-0 text-xs text-text-muted flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" />
                         {new Date(msg.createdAt).toLocaleDateString("en-IN")}
                       </div>
@@ -204,7 +204,7 @@ export default function ManageContacts() {
 
                 {/* Expanded Content */}
                 {expandedId === msg._id && (
-                  <div className="px-10 pb-5 pt-2 border-t border-border-soft bg-card-hover/50">
+                  <div className="px-4 sm:px-10 pb-5 pt-2 border-t border-border-soft bg-card-hover/50">
                     <div className="mb-4 whitespace-pre-wrap text-sm text-text leading-relaxed bg-card p-4 rounded-xl border border-border">
                       {msg.message}
                     </div>

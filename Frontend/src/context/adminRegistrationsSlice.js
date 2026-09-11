@@ -163,6 +163,34 @@ export const createBulkRegistration = createAsyncThunk(
   }
 );
 
+export const fetchRegistrationSystemStatus = createAsyncThunk(
+  "adminRegistrations/fetchSystemStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await registrationService.getAdminRegistrationStatus();
+      return response.data?.data || response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch registration status"
+      );
+    }
+  }
+);
+
+export const updateRegistrationSystemStatus = createAsyncThunk(
+  "adminRegistrations/updateSystemStatus",
+  async (payloadData, { rejectWithValue }) => {
+    try {
+      const response = await registrationService.updateAdminRegistrationStatus(payloadData);
+      return response.data?.data || response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update registration status"
+      );
+    }
+  }
+);
+
 const adminRegistrationsSlice = createSlice({
   name: "adminRegistrations",
   initialState: {
@@ -173,6 +201,14 @@ const adminRegistrationsSlice = createSlice({
     totalPages: 1,
     loading: false,
     error: null,
+    systemStatus: {
+      isRegistrationOpen: true,
+      closedMessage: "",
+      openedAt: null,
+      closedAt: null,
+      updatedBy: null,
+      loading: false,
+    },
   },
   reducers: {
     setCurrentPage: (state, action) => {
@@ -182,6 +218,7 @@ const adminRegistrationsSlice = createSlice({
       state.pages = {};
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminRegistrations.pending, (state) => {
@@ -266,9 +303,42 @@ const adminRegistrationsSlice = createSlice({
           state.pages[1] = [action.payload];
         }
         state.total += 1;
+      })
+      .addCase(fetchRegistrationSystemStatus.pending, (state) => {
+        state.systemStatus.loading = true;
+      })
+      .addCase(fetchRegistrationSystemStatus.fulfilled, (state, action) => {
+        state.systemStatus.loading = false;
+        if (action.payload) {
+          state.systemStatus.isRegistrationOpen = action.payload.isRegistrationOpen ?? true;
+          state.systemStatus.closedMessage = action.payload.closedMessage || "";
+          state.systemStatus.openedAt = action.payload.openedAt;
+          state.systemStatus.closedAt = action.payload.closedAt;
+          state.systemStatus.updatedBy = action.payload.updatedBy;
+        }
+      })
+      .addCase(fetchRegistrationSystemStatus.rejected, (state) => {
+        state.systemStatus.loading = false;
+      })
+      .addCase(updateRegistrationSystemStatus.pending, (state) => {
+        state.systemStatus.loading = true;
+      })
+      .addCase(updateRegistrationSystemStatus.fulfilled, (state, action) => {
+        state.systemStatus.loading = false;
+        if (action.payload) {
+          state.systemStatus.isRegistrationOpen = action.payload.isRegistrationOpen ?? true;
+          state.systemStatus.closedMessage = action.payload.closedMessage || "";
+          state.systemStatus.openedAt = action.payload.openedAt;
+          state.systemStatus.closedAt = action.payload.closedAt;
+          state.systemStatus.updatedBy = action.payload.updatedBy;
+        }
+      })
+      .addCase(updateRegistrationSystemStatus.rejected, (state) => {
+        state.systemStatus.loading = false;
       });
   },
 });
 
 export const { setCurrentPage, clearCache } = adminRegistrationsSlice.actions;
 export default adminRegistrationsSlice.reducer;
+

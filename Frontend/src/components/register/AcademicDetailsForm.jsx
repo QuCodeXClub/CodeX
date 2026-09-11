@@ -30,12 +30,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
       </div>
 
       <div className="space-y-3.5 sm:space-y-4 flex-1 flex flex-col justify-around py-0.5 sm:py-1">
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-            University ID (QID) <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              University ID (QID) <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (Q-ID)
+            </span>
+          </div>
           <input
             type="text"
+            title="University ID (QID) — Format: String (e.g. 230101001, Mandatory)"
             {...register("studentId", {
               required: "University ID is required",
               onChange: () => {
@@ -52,12 +58,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
           )}
         </div>
 
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-            Course Program <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              Course Program <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (Enum)
+            </span>
+          </div>
           <select
             {...register("course", { required: "Course is required" })}
+            title="Course Program — Format: String (Enum, Mandatory)"
             className={errors.course ? errorSelectStyle : selectBaseStyle}
           >
             <option value="">Select Course</option>
@@ -84,12 +96,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-          <div>
-            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-              Year <span className="text-danger">*</span>
-            </label>
+          <div className="group/field relative">
+            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+              <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+                Year <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+              </label>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String (Enum)
+              </span>
+            </div>
             <select
               {...register("year", { required: "Year is required" })}
+              title="Academic Year — Format: String (Enum, Mandatory)"
               className={errors.year ? errorSelectStyle : selectBaseStyle}
             >
               <option value="">Year</option>
@@ -106,12 +124,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             )}
           </div>
 
-          <div>
-            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-              Semester <span className="text-danger">*</span>
-            </label>
+          <div className="group/field relative">
+            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+              <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+                Semester <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+              </label>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String (Enum)
+              </span>
+            </div>
             <select
               {...register("semester", { required: "Semester is required" })}
+              title="Semester — Format: String (Enum, Mandatory)"
               className={errors.semester ? errorSelectStyle : selectBaseStyle}
             >
               <option value="">Sem</option>
@@ -132,12 +156,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-          <div>
-            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-              Section <span className="text-danger">*</span>
-            </label>
+          <div className="group/field relative">
+            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+              <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+                Section <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+              </label>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String
+              </span>
+            </div>
             <input
               type="text"
+              title="Section — Format: String (e.g. 1, 2, A, B, Mandatory)"
               {...register("section", { required: "Section is required" })}
               className={errors.section ? errorInputStyle : inputBaseStyle}
               placeholder="e.g. 1, 2"
@@ -149,12 +179,18 @@ export default function AcademicDetailsForm({ register, errors, clearErrors }) {
             )}
           </div>
 
-          <div>
-            <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1 sm:mb-1.5 uppercase tracking-wider">
-              Set / Group <span className="text-danger">*</span>
-            </label>
+          <div className="group/field relative">
+            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+              <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+                Set / Group <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+              </label>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String
+              </span>
+            </div>
             <input
               type="text"
+              title="Set / Group — Format: String (e.g. A, B, Set 1, Mandatory)"
               {...register("set", { required: "Set/Group is required" })}
               className={errors.set ? errorInputStyle : inputBaseStyle}
               placeholder="e.g. A, B"

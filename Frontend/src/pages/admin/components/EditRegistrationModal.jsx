@@ -89,13 +89,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
         <form onSubmit={handleSubmit(handleFormSubmit)} className="p-5 sm:p-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Student Name */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Full Name <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Full Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("name", { required: "Name is required" })}
                 type="text"
+                title="Full Name — Type: String (Mandatory)"
+                placeholder="Full student name"
                 className={`w-full bg-card text-text border ${
                   errors.name ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -106,13 +113,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Father's Name */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Father's Name <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Father's Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("fatherName", { required: "Father's name is required" })}
                 type="text"
+                title="Father's Name — Type: String (Mandatory)"
+                placeholder="Father's name"
                 className={`w-full bg-card text-text border ${
                   errors.fatherName ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -123,16 +137,23 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Email Address */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Email Address <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Email Address <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Email)
+                </span>
+              </div>
               <input
                 {...register("email", {
                   required: "Email is required",
                   pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
                 })}
                 type="email"
+                title="Email Address — Type: String (Email, Mandatory)"
+                placeholder="student@quantum.edu.in"
                 className={`w-full bg-card text-text border ${
                   errors.email ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -143,10 +164,15 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Phone Number */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Phone Number <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Phone Number <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (10 Digits)
+                </span>
+              </div>
               <input
                 {...register("phone", {
                   required: "Phone is required",
@@ -154,6 +180,8 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
                 })}
                 type="tel"
                 maxLength={10}
+                title="Phone Number — Type: String (10 Digits, Mandatory)"
+                placeholder="10-digit mobile number"
                 className={`w-full bg-card text-text border ${
                   errors.phone ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -164,13 +192,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Student ID (Q-ID) */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Student ID (Q-ID) <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Student ID (Q-ID) <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Q-ID)
+                </span>
+              </div>
               <input
                 {...register("studentId", { required: "Student ID is required" })}
                 type="text"
+                title="Student ID / Q-ID — Type: String (Mandatory)"
+                placeholder="e.g. 220101001"
                 className={`w-full bg-card text-text border ${
                   errors.studentId ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -181,12 +216,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Course Program */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Course <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Course <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("course", { required: "Course is required" })}
+                title="Course Program — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent cursor-pointer"
               >
                 {["B.Tech", "M.Tech", "BCA", "MCA", "BBA", "MBA", "B.Sc", "M.Sc"].map((c) => (
@@ -198,12 +239,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Year */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Academic Year <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Academic Year <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("year", { required: "Year is required" })}
+                title="Academic Year — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent cursor-pointer"
               >
                 {["1st Year", "2nd Year", "3rd Year", "4th Year"].map((y) => (
@@ -215,12 +262,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Semester */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Semester <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Semester <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("semester", { required: "Semester is required" })}
+                title="Semester — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent cursor-pointer"
               >
                 {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].map((s) => (
@@ -232,13 +285,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Section */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Section <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Section <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("section", { required: "Section is required" })}
                 type="text"
+                title="Section — Type: String (Mandatory)"
+                placeholder="e.g. A, B, CS-1"
                 className={`w-full bg-card text-text border ${
                   errors.section ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -249,13 +309,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Set / Group */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Set / Group <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Set / Group <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("set", { required: "Set is required" })}
                 type="text"
+                title="Set/Group — Type: String (Mandatory)"
+                placeholder="e.g. Set 1, Group A"
                 className={`w-full bg-card text-text border ${
                   errors.set ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -266,13 +333,20 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Transaction ID / UTR */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Transaction ID / UTR <span className="text-danger">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Transaction ID / UTR <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("transactionId", { required: "Transaction ID is required" })}
                 type="text"
+                title="Transaction ID / UTR — Type: String (Mandatory)"
+                placeholder="e.g. UPI/NEFT/IMPS Ref Number"
                 className={`w-full bg-card text-text border ${
                   errors.transactionId ? "border-danger" : "border-border"
                 } rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
@@ -285,12 +359,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
             </div>
 
             {/* Payment Mode */}
-            <div>
-              <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                Payment Mode
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                  Payment Mode
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("paymentMode")}
+                title="Payment Mode — Type: String (Enum: ONLINE / CASH)"
                 className="w-full bg-card text-text border border-border rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent cursor-pointer"
               >
                 <option value="ONLINE">ONLINE</option>
@@ -302,12 +382,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
           {/* Status Selection */}
           <div className="pt-2 border-t border-border/60">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-text mb-1 uppercase tracking-wider">
-                  Registration Status
-                </label>
+              <div className="group/field relative">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-text uppercase tracking-wider">
+                    Registration Status
+                  </label>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    String (Enum)
+                  </span>
+                </div>
                 <select
                   {...register("status")}
+                  title="Registration Status — Type: String (Enum: PENDING / APPROVED / REJECTED)"
                   className="w-full bg-card text-text border border-border rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent cursor-pointer font-bold"
                 >
                   <option value="PENDING">PENDING</option>
@@ -317,13 +403,19 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
               </div>
 
               {selectedStatus === "REJECTED" && (
-                <div>
-                  <label className="block text-xs font-semibold text-danger mb-1 uppercase tracking-wider">
-                    Rejection Reason
-                  </label>
+                <div className="group/field relative">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-danger uppercase tracking-wider">
+                      Rejection Reason
+                    </label>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-danger/10 border border-danger/20 text-danger font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </div>
                   <input
                     {...register("rejectionReason")}
                     type="text"
+                    title="Rejection Reason — Type: String"
                     placeholder="e.g. Invalid UTR or Unverified Payment"
                     className="w-full bg-card text-text border border-danger/60 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-danger focus:ring-1 focus:ring-danger"
                   />

@@ -16,6 +16,7 @@ import {
   Sparkles,
   Ticket,
   Eye,
+  Database,
 } from "lucide-react";
 import { adminService } from "../../services/adminService";
 import { useConfirm } from "../../context/ConfirmContext";
@@ -30,6 +31,20 @@ export default function BackgroundJobs() {
     completed: 0,
     failed: 0,
     suppressed: 0,
+    passRate: 100,
+    globalDb: {
+      totalCertificates: 0,
+      totalBoardingPasses: 0,
+      totalJobs: 0,
+      passedJobs: 0,
+      failedJobs: 0,
+    },
+    byType: {
+      certificate: { total: 0, completed: 0, failed: 0, emailsSent: 0, totalGeneratedInDb: 0 },
+      boardingPass: { total: 0, completed: 0, failed: 0, emailsSent: 0, totalGeneratedInDb: 0 },
+      announcement: { total: 0, completed: 0, failed: 0 },
+      email: { total: 0, completed: 0, failed: 0 },
+    },
   });
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -331,23 +346,31 @@ export default function BackgroundJobs() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Award className="w-16 h-16 text-teal-400" />
           </div>
-          <div className="flex items-center gap-2.5 text-teal-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-teal-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
             <Award className="w-4 h-4" />
-            <span>CERTIFICATES & EMAILS</span>
+            <span>GLOBAL DB: CERTIFICATES</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-text">
-              {stats.byType?.certificate?.completed || 0}
+              {stats.globalDb?.totalCertificates ?? stats.byType?.certificate?.totalGeneratedInDb ?? stats.byType?.certificate?.completed ?? 0}
             </span>
             <span className="text-xs text-text-muted font-mono">
-              Certificates Generated
+              Generated in DB (All Pages)
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2">
-            <span className="text-text-muted">Emails Sent:</span>
-            <span className="text-teal-400 font-bold bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20">
-              {stats.byType?.certificate?.emailsSent || 0} Delivered
-            </span>
+            <span className="text-text-muted">Task Status:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                {stats.byType?.certificate?.completed || 0} Pass
+              </span>
+              <span className="text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">
+                {stats.byType?.certificate?.failed || 0} Fail
+              </span>
+              <span className="text-teal-400 font-bold bg-teal-500/10 px-1.5 py-0.5 rounded border border-teal-500/20">
+                {stats.byType?.certificate?.emailsSent || 0} Sent
+              </span>
+            </div>
           </div>
         </div>
 
@@ -356,48 +379,61 @@ export default function BackgroundJobs() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Ticket className="w-16 h-16 text-cyan-400" />
           </div>
-          <div className="flex items-center gap-2.5 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
             <Ticket className="w-4 h-4" />
-            <span>BOARDING PASSES & EMAILS</span>
+            <span>GLOBAL DB: BOARDING PASSES</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-text">
-              {stats.byType?.boardingPass?.completed || 0}
+              {stats.globalDb?.totalBoardingPasses ?? stats.byType?.boardingPass?.totalGeneratedInDb ?? stats.byType?.boardingPass?.completed ?? 0}
             </span>
             <span className="text-xs text-text-muted font-mono">
-              Passes Built
+              Passes Built in DB (All Pages)
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2">
-            <span className="text-text-muted">Emails Sent:</span>
-            <span className="text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
-              {stats.byType?.boardingPass?.emailsSent || 0} Delivered
-            </span>
+            <span className="text-text-muted">Task Status:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                {stats.byType?.boardingPass?.completed || 0} Pass
+              </span>
+              <span className="text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">
+                {stats.byType?.boardingPass?.failed || 0} Fail
+              </span>
+              <span className="text-cyan-400 font-bold bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+                {stats.byType?.boardingPass?.emailsSent || 0} Sent
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Announcements Card */}
-        <div className="bg-card/85 backdrop-blur-xl p-5 rounded-2xl border border-indigo-500/30 shadow-lg relative overflow-hidden group">
+        {/* Global Task Pass/Fail Rate Card */}
+        <div className="bg-card/85 backdrop-blur-xl p-5 rounded-2xl border border-emerald-500/30 shadow-lg relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Megaphone className="w-16 h-16 text-indigo-400" />
+            <CheckCircle2 className="w-16 h-16 text-emerald-400" />
           </div>
-          <div className="flex items-center gap-2.5 text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
-            <Megaphone className="w-4 h-4" />
-            <span>ANNOUNCEMENTS</span>
+          <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>GLOBAL DB: PASS / FAIL RATE</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-text">
-              {stats.byType?.announcement?.total || 0}
+              {stats.passRate ?? 100}%
             </span>
             <span className="text-xs text-text-muted font-mono">
-              Broadcasts
+              Completion Rate (All Pages)
             </span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2 text-text-muted">
-            <span>Routing:</span>
-            <span className="text-indigo-400 font-bold">
-              Queued for dispatch
-            </span>
+          <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2">
+            <span className="text-text-muted">Database Totals:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                {stats.completed} Passed
+              </span>
+              <span className="text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                {stats.failed} Failed
+              </span>
+            </div>
           </div>
         </div>
 
@@ -406,67 +442,83 @@ export default function BackgroundJobs() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Mail className="w-16 h-16 text-accent" />
           </div>
-          <div className="flex items-center gap-2.5 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-2">
+          <div className="flex items-center gap-2 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-2">
             <Mail className="w-4 h-4" />
-            <span>EMAILS SENT (12/s)</span>
+            <span>GLOBAL DB: EMAILS (12/S)</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-text">
               {stats.byType?.email?.completed || 0}
             </span>
             <span className="text-xs text-text-muted font-mono">
-              / {stats.byType?.email?.total || 0} Total
+              / {stats.byType?.email?.total || 0} Dispatched (All Pages)
             </span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2 text-text-muted">
-            <span>Queue Rate:</span>
-            <span className="text-accent font-bold">
-              Rate Limited (12/sec)
-            </span>
+          <div className="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-border/40 pt-2">
+            <span className="text-text-muted">Dispatch Status:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-accent font-bold bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                {stats.byType?.email?.completed || 0} Pass
+              </span>
+              <span className="text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                {stats.byType?.email?.failed || 0} Fail
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Summary Status Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-text-muted uppercase">TOTAL JOBS</span>
-          <span className="text-2xl font-black text-text mt-1">{stats.total}</span>
+      {/* Global DB Status Summary Cards */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs font-mono text-text-muted px-1">
+          <span className="flex items-center gap-1.5 uppercase font-bold text-accent">
+            <Database className="w-3.5 h-3.5" /> GLOBAL DATABASE TASK METRICS (ALL PAGES)
+          </span>
+          <span className="text-[11px] text-text-muted/70">
+            Real-time DB query across all pages
+          </span>
         </div>
 
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-amber-400/90 uppercase flex items-center gap-1">
-            <Clock className="w-3 h-3" /> PENDING
-          </span>
-          <span className="text-2xl font-black text-amber-400 mt-1">{stats.pending}</span>
-        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-text-muted uppercase">TOTAL JOBS (GLOBAL)</span>
+            <span className="text-2xl font-black text-text mt-1">{stats.total}</span>
+          </div>
 
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-blue-400/90 uppercase flex items-center gap-1">
-            <Loader2 className="w-3 h-3 animate-spin" /> RUNNING
-          </span>
-          <span className="text-2xl font-black text-blue-400 mt-1">{stats.processing}</span>
-        </div>
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-amber-400/90 uppercase flex items-center gap-1">
+              <Clock className="w-3 h-3" /> PENDING (GLOBAL)
+            </span>
+            <span className="text-2xl font-black text-amber-400 mt-1">{stats.pending}</span>
+          </div>
 
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-emerald-400/90 uppercase flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> DONE
-          </span>
-          <span className="text-2xl font-black text-emerald-400 mt-1">{stats.completed}</span>
-        </div>
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-blue-400/90 uppercase flex items-center gap-1">
+              <Loader2 className="w-3 h-3 animate-spin" /> RUNNING (GLOBAL)
+            </span>
+            <span className="text-2xl font-black text-blue-400 mt-1">{stats.processing}</span>
+          </div>
 
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-rose-400/90 uppercase flex items-center gap-1">
-            <AlertTriangle className="w-3 h-3" /> FAILED
-          </span>
-          <span className="text-2xl font-black text-rose-400 mt-1">{stats.failed}</span>
-        </div>
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-emerald-400 uppercase flex items-center gap-1 font-bold">
+              <CheckCircle2 className="w-3 h-3" /> PASS / DONE (GLOBAL)
+            </span>
+            <span className="text-2xl font-black text-emerald-400 mt-1">{stats.completed}</span>
+          </div>
 
-        <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
-          <span className="text-[10px] font-mono text-purple-400/90 uppercase flex items-center gap-1">
-            <Ban className="w-3 h-3" /> BLOCKED
-          </span>
-          <span className="text-2xl font-black text-purple-400 mt-1">{stats.suppressed}</span>
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-rose-400 uppercase flex items-center gap-1 font-bold">
+              <AlertTriangle className="w-3 h-3" /> FAIL / ERROR (GLOBAL)
+            </span>
+            <span className="text-2xl font-black text-rose-400 mt-1">{stats.failed}</span>
+          </div>
+
+          <div className="bg-card/85 backdrop-blur-xl p-4 rounded-2xl border border-border/80 shadow-sm flex flex-col">
+            <span className="text-[10px] font-mono text-purple-400/90 uppercase flex items-center gap-1">
+              <Ban className="w-3 h-3" /> BLOCKED (GLOBAL)
+            </span>
+            <span className="text-2xl font-black text-purple-400 mt-1">{stats.suppressed}</span>
+          </div>
         </div>
       </div>
 
@@ -498,8 +550,8 @@ export default function BackgroundJobs() {
             <option value="">All Statuses</option>
             <option value="PENDING">PENDING</option>
             <option value="PROCESSING">PROCESSING</option>
-            <option value="COMPLETED">COMPLETED</option>
-            <option value="FAILED">FAILED</option>
+            <option value="COMPLETED">COMPLETED (PASS)</option>
+            <option value="FAILED">FAILED (FAIL)</option>
             <option value="SUPPRESSED">SUPPRESSED</option>
           </select>
 
@@ -525,6 +577,27 @@ export default function BackgroundJobs() {
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-accent" : ""}`} />
           </button>
+        </div>
+      </div>
+
+      {/* Queue Scope & Global Sync Indicator */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 px-4 py-3 rounded-2xl bg-card/85 backdrop-blur-xl border border-border/80 text-xs font-mono shadow-sm">
+        <div className="flex items-center gap-2 text-text-muted">
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span>
+            Queue Scope: Showing <strong className="text-text">Page {pagination.page} of {pagination.totalPages || 1}</strong> ({items.length} tasks on current page | {pagination.total} matching query)
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 text-[11px]">
+            ✓ {stats.completed} Passed (Global DB)
+          </span>
+          <span className="text-rose-400 font-bold bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20 text-[11px]">
+            ✕ {stats.failed} Failed (Global DB)
+          </span>
+          <span className="text-text-muted font-bold bg-card px-2.5 py-1 rounded-full border border-border text-[11px]">
+            {stats.total} Total in DB
+          </span>
         </div>
       </div>
 

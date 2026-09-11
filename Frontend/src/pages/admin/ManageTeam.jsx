@@ -192,7 +192,7 @@ export default function ManageTeam() {
             <Users className="w-3.5 h-3.5" />
             <span>PERSONNEL & ROSTER</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             TEAM <span className="text-accent">ROSTER</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
@@ -200,7 +200,7 @@ export default function ManageTeam() {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() =>
               dispatch(fetchAdminTeam({ year: filterYear, force: true }))
@@ -213,7 +213,7 @@ export default function ManageTeam() {
               className={`w-4 h-4 ${loading ? "animate-spin text-accent" : ""}`}
             />
           </button>
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
             <select
               value={filterYear}
@@ -231,7 +231,7 @@ export default function ManageTeam() {
 
           <button
             onClick={openCreateModal}
-            className="flex items-center justify-center gap-2 bg-accent text-[#111111] px-5 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-accent text-[#111111] px-4 sm:px-5 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             Add Member
@@ -291,28 +291,34 @@ export default function ManageTeam() {
 
       {/* Creation/Edit Modal via Portal */}
       {isModalOpen && createPortal(
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-panel/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-card rounded-2xl shadow-xl w-full max-w-2xl relative my-auto">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-panel/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-card rounded-2xl shadow-xl w-full max-w-2xl relative my-auto max-h-[90vh] overflow-y-auto border border-border">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors"
+              className="absolute top-4 right-4 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-6 md:p-8">
-              <h2 className="text-xl font-bold text-text border-b border-border-soft pb-4 mb-6">
+            <div className="p-4 sm:p-6 md:p-8">
+              <h2 className="text-lg sm:text-xl font-bold text-text border-b border-border-soft pb-4 mb-6">
                 {editingId ? "Edit Team Member" : "Add Team Member"}
               </h2>
 
               <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-text mb-1.5">
-                      Full Name
-                    </label>
+                  <div className="group/field relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-semibold text-text">
+                        Full Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                      </label>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </div>
                     <input
                       type="text"
+                      title="Full Name — Type: String (Mandatory)"
                       {...register("name", { required: "Name is required" })}
                       className={`w-full bg-card border ${errors.name ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                       placeholder="Full Name"
@@ -324,16 +330,22 @@ export default function ManageTeam() {
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-text mb-1.5">
-                      Role / Post
-                    </label>
+                  <div className="group/field relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-semibold text-text">
+                        Role / Post <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                      </label>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </div>
                     <input
                       type="text"
+                      title="Role / Post — Type: String (Mandatory)"
                       {...register("post", {
                         required: "Post/Role is required",
                       })}
-                      placeholder="Position"
+                      placeholder="Position (e.g. Lead, Coordinator)"
                       className={`w-full bg-card border ${errors.post ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                     />
                     {errors.post && (
@@ -343,15 +355,21 @@ export default function ManageTeam() {
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-text mb-1.5">
-                      Sub-Team / Department
-                    </label>
+                  <div className="group/field relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-semibold text-text">
+                        Sub-Team / Department <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                      </label>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String (Enum)
+                      </span>
+                    </div>
                     <select
                       {...register("subTeam", {
                         required: "Sub-Team is required",
                       })}
-                      className={`w-full bg-card border ${errors.subTeam ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      title="Sub-Team — Type: String (Enum, Mandatory)"
+                      className={`w-full bg-card border ${errors.subTeam ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm cursor-pointer`}
                     >
                       <option value="">Select Sub-Team</option>
                       <option value="Admin Team">Admin Team</option>
@@ -366,15 +384,21 @@ export default function ManageTeam() {
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-text mb-1.5">
-                      Academic Year
-                    </label>
+                  <div className="group/field relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-semibold text-text">
+                        Academic Year <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                      </label>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String (YYYY-YYYY)
+                      </span>
+                    </div>
                     <select
                       {...register("academicYear", {
                         required: "Academic Year is required",
                       })}
-                      className={`w-full bg-card border ${errors.academicYear ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
+                      title="Academic Year — Format: String (e.g. 2024-2025, Mandatory)"
+                      className={`w-full bg-card border ${errors.academicYear ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm cursor-pointer`}
                     >
                       <option value="">Select Academic Year</option>
                       {formAcademicYears.map((year) => (
@@ -390,12 +414,18 @@ export default function ManageTeam() {
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-text mb-1.5">
-                      Email (Private)
-                    </label>
+                  <div className="group/field relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-semibold text-text">
+                        Email (Private)
+                      </label>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String (Email)
+                      </span>
+                    </div>
                     <input
                       type="email"
+                      title="Email — Format: String (user@domain.com, Optional)"
                       {...register("email")}
                       className={`w-full bg-card border ${errors.email ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border focus:ring-accent/20 focus:border-accent"} text-text rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 transition-colors shadow-sm`}
                       placeholder="Optional private email"
@@ -409,13 +439,19 @@ export default function ManageTeam() {
                 </div>
 
                 {/* Photo Upload */}
-                <div>
-                  <label className="block text-sm font-semibold text-text mb-1.5">
-                    Profile Photo
-                  </label>
-                  <div className="flex items-center gap-4">
+                <div className="group/field relative">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-semibold text-text">
+                      Profile Photo {!editingId && <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>}
+                    </label>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      Image File (JPG, PNG, WebP)
+                    </span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <label
-                      className={`flex-1 border-2 border-dashed ${errors.photo ? "border-danger bg-danger/10" : "border-border bg-card-hover hover:bg-accent/10 hover:border-accent"} rounded-xl p-6 text-center cursor-pointer transition-colors group`}
+                      title="Profile Photo — Format: Image File (JPG, PNG, WebP, Mandatory on creation)"
+                      className={`flex-1 border-2 border-dashed ${errors.photo ? "border-danger bg-danger/10" : "border-border bg-card-hover hover:bg-accent/10 hover:border-accent"} rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-colors group`}
                     >
                       <input
                         type="file"
@@ -429,16 +465,16 @@ export default function ManageTeam() {
                         })}
                       />
                       <ImageIcon
-                        className={`w-8 h-8 mx-auto mb-2 transition-colors ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
+                        className={`w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-2 transition-colors ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
                       />
                       <span
-                        className={`text-sm font-medium ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
+                        className={`text-xs sm:text-sm font-medium ${errors.photo ? "text-danger" : "text-text-muted group-hover:text-accent"}`}
                       >
                         Click to browse or drag image here
                       </span>
                     </label>
                     {imagePreview && (
-                      <div className="w-28 h-28 border border-border rounded-xl overflow-hidden shrink-0 bg-card-hover shadow-sm">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 border border-border rounded-xl overflow-hidden shrink-0 bg-card-hover shadow-sm mx-auto sm:mx-0">
                         <img
                           src={imagePreview}
                           alt="Preview"

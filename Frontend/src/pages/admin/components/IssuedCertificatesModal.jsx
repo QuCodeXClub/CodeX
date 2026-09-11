@@ -78,7 +78,7 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
         </div>
 
         {/* Quick Stat Cards */}
-        <div className="lg:col-span-6 grid grid-cols-3 gap-3">
+        <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-teal-500/10 text-teal-400">
               <FileCheck className="w-4 h-4" />

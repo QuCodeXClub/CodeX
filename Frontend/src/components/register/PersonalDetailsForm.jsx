@@ -26,12 +26,18 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
       </div>
 
       <div className="space-y-3.5 sm:space-y-4 md:space-y-5">
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1.5 sm:mb-2 uppercase tracking-wider">
-            Full Name <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              Full Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (Text)
+            </span>
+          </div>
           <input
             type="text"
+            title="Full Name — Format: String (Mandatory)"
             {...register("name", { required: "Name is required" })}
             className={errors.name ? errorInputStyle : inputBaseStyle}
             placeholder="Enter Your Full Name"
@@ -43,12 +49,18 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
           )}
         </div>
 
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1.5 sm:mb-2 uppercase tracking-wider">
-            Father's Name <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              Father's Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (Text)
+            </span>
+          </div>
           <input
             type="text"
+            title="Father's Name — Format: String (Mandatory)"
             {...register("fatherName", {
               required: "Father's name is required",
             })}
@@ -62,12 +74,18 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
           )}
         </div>
 
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1.5 sm:mb-2 uppercase tracking-wider">
-            Email Address <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              Email Address <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (user@domain.com)
+            </span>
+          </div>
           <input
             type="email"
+            title="Email Address — Format: String (user@domain.com, Mandatory)"
             {...register("email", {
               required: "Email is required",
               pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" },
@@ -85,13 +103,19 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
           )}
         </div>
 
-        <div>
-          <label className="block text-[11px] sm:text-xs font-semibold text-text mb-1.5 sm:mb-2 uppercase tracking-wider">
-            Phone Number <span className="text-danger">*</span>
-          </label>
+        <div className="group/field relative">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <label className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider">
+              Phone Number <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            </label>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              String (10 Digits)
+            </span>
+          </div>
           <input
             type="tel"
             maxLength={10}
+            title="Phone Number — Format: 10 Digits (e.g. 9876543210, Mandatory)"
             {...register("phone", {
               required: "Phone number is required",
               pattern: {
@@ -103,7 +127,7 @@ export default function PersonalDetailsForm({ register, errors, clearErrors }) {
               },
             })}
             className={errors.phone ? errorInputStyle : inputBaseStyle}
-            placeholder="10-digit Phone Number"
+            placeholder="10-digit Phone Number (e.g. 9876543210)"
           />
           {errors.phone && (
             <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-danger font-semibold">

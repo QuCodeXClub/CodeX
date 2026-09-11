@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { registerStudent } from '../controllers/student.controller.js';
+import { registerStudent, getRegistrationPublicStatus } from '../controllers/student.controller.js';
 
 const router = Router();
 
-// Public route
+// Public routes
+router.route('/registration-status').get(getRegistrationPublicStatus);
 router.route('/register').post(registerStudent);
 
 export default router;
+

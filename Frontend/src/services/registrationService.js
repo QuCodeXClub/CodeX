@@ -28,7 +28,20 @@ class RegistrationService {
       },
     });
   }
+
+  async getRegistrationStatus() {
+    return axiosInstance.get("/students/registration-status");
+  }
+
+  async getAdminRegistrationStatus() {
+    return axiosInstance.get("/admin/registration-status");
+  }
+
+  async updateAdminRegistrationStatus(data) {
+    return axiosInstance.patch("/admin/registration-status", data);
+  }
 }
 
 export const registrationService = new RegistrationService();
 export default RegistrationService;
+
