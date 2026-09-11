@@ -2,6 +2,8 @@ import { Admin } from '../models/admin.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
 import { Event } from '../models/event.model.js';
 import { TeamMember } from '../models/teamMember.model.js';
+import { SystemSetting } from '../models/systemSetting.model.js';
+
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -455,4 +457,73 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
   );
 });
 
-export { loginAdmin, verifyOtp, logoutAdmin, updateProfile, requestPasswordChange, changePassword, getAdminSessions, killSession, getCurrentAdmin, getDashboardMetrics };
+const getAdminRegistrationStatus = asyncHandler(async (req, res) => {
+  let setting = await SystemSetting.findOne({ key: 'registration' }).populate('updatedBy', 'fullName email');
+  if (!setting) {
+    setting = await SystemSetting.create({
+      key: 'registration',
+      isRegistrationOpen: true,
+      closedMessage: 'Registrations are currently closed. Please check back later or contact the CodeX team.',
+    });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      setting,
+      'Registration status fetched successfully'
+    )
+  );
+});
+
+const updateAdminRegistrationStatus = asyncHandler(async (req, res) => {
+  const { isRegistrationOpen, closedMessage } = req.body;
+
+  let setting = await SystemSetting.findOne({ key: 'registration' });
+  if (!setting) {
+    setting = new SystemSetting({ key: 'registration' });
+  }
+
+  if (typeof isRegistrationOpen === 'boolean') {
+    if (setting.isRegistrationOpen !== isRegistrationOpen) {
+      if (isRegistrationOpen) {
+        setting.openedAt = new Date();
+      } else {
+        setting.closedAt = new Date();
+      }
+    }
+    setting.isRegistrationOpen = isRegistrationOpen;
+  }
+
+  if (typeof closedMessage === 'string' && closedMessage.trim() !== '') {
+    setting.closedMessage = closedMessage.trim();
+  }
+
+  setting.updatedBy = req.admin?._id;
+  await setting.save();
+
+  const populatedSetting = await SystemSetting.findById(setting._id).populate('updatedBy', 'fullName email');
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      populatedSetting,
+      `Registration portal is now ${setting.isRegistrationOpen ? 'OPEN' : 'CLOSED'}`
+    )
+  );
+});
+
+export {
+  loginAdmin,
+  verifyOtp,
+  logoutAdmin,
+  updateProfile,
+  requestPasswordChange,
+  changePassword,
+  getAdminSessions,
+  killSession,
+  getCurrentAdmin,
+  getDashboardMetrics,
+  getAdminRegistrationStatus,
+  updateAdminRegistrationStatus,
+};

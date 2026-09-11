@@ -15,10 +15,66 @@ import {
   MessageSquare
 } from "lucide-react";
 
+const InputField = React.forwardRef(
+  ({ id, label, icon: Icon, type = "text", error, rows, required = true, formatBadge = "String (Text)", title, ...props }, ref) => {
+    return (
+      <div className="flex flex-col gap-2 group/field relative">
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor={id}
+            title={title}
+            className="font-mono text-xs text-text-muted uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+          >
+            {Icon && <Icon size={14} className="text-accent" />}
+            <span>{label}</span>
+            {required && (
+              <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+            )}
+          </label>
+          {formatBadge && (
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+              {formatBadge}
+            </span>
+          )}
+        </div>
+        <div className="relative">
+          {type === "textarea" ? (
+            <textarea
+              id={id}
+              rows={rows || 3}
+              ref={ref}
+              className={`w-full bg-card/60 backdrop-blur-md border ${
+                error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-border focus:border-accent focus:ring-accent/20"
+              } focus:ring-1 rounded-xl px-4 py-3 text-text placeholder-text-muted/40 font-mono text-sm outline-none transition-all duration-300 resize-none`}
+              {...props}
+            />
+          ) : (
+            <input
+              id={id}
+              type={type}
+              ref={ref}
+              className={`w-full bg-card/60 backdrop-blur-md border ${
+                error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-border focus:border-accent focus:ring-accent/20"
+              } focus:ring-1 rounded-xl px-4 py-3 text-text placeholder-text-muted/40 font-mono text-sm outline-none transition-all duration-300`}
+              {...props}
+            />
+          )}
+        </div>
+        {error && (
+          <span className="font-mono text-xs text-danger flex items-center gap-1 mt-1">
+            {error.message}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+InputField.displayName = "InputField";
+
 const ContactSection = () => {
   const { contactSection } = contentData.landing;
   const highlightPhrase = "love to hear";
-  const titleParts = contactSection.headline.split(highlightPhrase);
+  const titleParts = contactSection?.headline ? contactSection.headline.split(highlightPhrase) : [];
 
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -61,61 +117,21 @@ const ContactSection = () => {
     }
   };
 
-  const InputField = ({ label, id, icon: Icon, error, type = "text", ...props }) => (
-    <div className="flex flex-col gap-2 group">
-      <label htmlFor={id} className="font-mono text-[0.7rem] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors flex items-center gap-2">
-        {label}
-      </label>
-      <div className="relative flex items-center">
-        {type === "textarea" ? (
-          <textarea
-            id={id}
-            {...props}
-            className={`w-full bg-card/40 backdrop-blur-sm border ${error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
-              } text-text rounded-2xl p-4 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 resize-none focus:ring-4 shadow-inner`}
-          />
-        ) : (
-          <input
-            id={id}
-            type={type}
-            {...props}
-            className={`w-full bg-card/40 backdrop-blur-sm border ${error ? "border-danger focus:ring-danger/20" : "border-border-soft hover:border-accent/40 focus:border-accent focus:ring-accent/20"
-              } text-text rounded-2xl px-4 py-3.5 pr-11 text-sm font-mono placeholder:text-text-muted/30 outline-none transition-all duration-300 focus:ring-4 shadow-inner`}
-          />
-        )}
-        {Icon && type !== "textarea" && (
-          <div className="absolute right-4 text-text-muted/40 group-focus-within:text-accent group-focus-within:scale-110 transition-all duration-300 pointer-events-none">
-            <Icon size={18} strokeWidth={2} />
-          </div>
-        )}
-      </div>
-      {error && (
-        <span className="font-mono text-[0.7rem] text-danger font-bold uppercase flex items-center gap-1.5 mt-0.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse"></div>
-          {error.message}
-        </span>
-      )}
-    </div>
-  );
-
   return (
-    <section className="relative overflow-hidden py-12 lg:py-20 px-4 md:px-6" id="contact">
-      {/* Background ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-accent/5 to-transparent pointer-events-none -z-10 blur-3xl rounded-full"></div>
+    <section id="contact" className="relative py-24 sm:py-32 overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"></div>
 
-      <div className="max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20 items-center">
-
-          {/* Left Side: Typography & Info */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-[2px] bg-accent"></div>
-              <p className="m-0 text-accent font-mono text-xs md:text-sm font-bold tracking-[0.25em] uppercase">
-                // {contactSection.eyebrow?.replace(/^\/\/\s*/, '') || "GET IN TOUCH"}
-              </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Side: Editorial context */}
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/20 bg-accent/5 text-accent font-mono text-xs mb-6">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+              {contactSection?.eyebrow || "Contact Us"}
             </div>
 
-            <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight text-text leading-[1.1] mb-6">
+            <h2 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black text-text tracking-tight uppercase leading-[1.1] mb-6">
               {titleParts.length === 2 ? (
                 <>
                   {titleParts[0]}
@@ -125,12 +141,12 @@ const ContactSection = () => {
                   {titleParts[1]}
                 </>
               ) : (
-                contactSection.headline
+                contactSection?.headline
               )}
             </h2>
 
             <p className="text-text-muted font-mono text-sm md:text-base leading-[1.8] max-w-md mb-10">
-              {contactSection.description}
+              {contactSection?.description || contactSection?.subheadline}
             </p>
 
             <div className="hidden lg:flex items-center gap-4 text-border-soft opacity-60">
@@ -166,7 +182,7 @@ const ContactSection = () => {
                   <button
                     type="button"
                     onClick={() => setIsSuccess(false)}
-                    className="group flex items-center gap-3 px-8 py-4 rounded-full bg-text text-bg font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:bg-accent hover:text-bg hover:shadow-[0_0_25px_rgba(46,197,212,0.4)] transition-all duration-300 border-0 cursor-pointer"
+                    className="group flex items-center gap-3 px-8 py-4 rounded-full bg-text text-white dark:text-bg font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:bg-accent hover:text-white hover:shadow-[0_0_25px_rgba(46,197,212,0.4)] transition-all duration-300 border-0 cursor-pointer"
                   >
                     <span>Send Another</span>
                     <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -187,6 +203,8 @@ const ContactSection = () => {
                     <InputField
                       id="name"
                       label="Full Name"
+                      formatBadge="String (Text)"
+                      title="Full Name — Format: String (Text) (Mandatory)"
                       icon={User}
                       placeholder="John Doe"
                       error={errors.name}
@@ -196,6 +214,8 @@ const ContactSection = () => {
                       id="email"
                       type="email"
                       label="Email Address"
+                      formatBadge="String (Email)"
+                      title="Email Address — Format: String (user@domain.com) (Mandatory)"
                       icon={Mail}
                       placeholder="john@example.com"
                       error={errors.email}
@@ -209,6 +229,8 @@ const ContactSection = () => {
                   <InputField
                     id="subject"
                     label="Subject"
+                    formatBadge="String (Text)"
+                    title="Subject — Format: String (Text) (Mandatory)"
                     icon={FileText}
                     placeholder="What is this regarding?"
                     error={errors.subject}
@@ -219,6 +241,8 @@ const ContactSection = () => {
                     id="message"
                     type="textarea"
                     label="Message"
+                    formatBadge="String (Text)"
+                    title="Message — Format: String (Text) (Mandatory)"
                     rows={4}
                     placeholder="How can we help you?"
                     error={errors.message}
@@ -246,7 +270,7 @@ const ContactSection = () => {
                     <button
                       type="submit"
                       disabled={loading || !turnstileToken}
-                      className="w-full sm:w-auto relative group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-accent text-bg font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:shadow-[0_0_20px_rgba(46,197,212,0.4)] disabled:opacity-50 disabled:hover:shadow-none transition-all duration-300 overflow-hidden shrink-0 border-0 cursor-pointer"
+                      className="w-full sm:w-auto relative group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-accent text-white font-sans text-[0.85rem] font-bold tracking-widest uppercase hover:shadow-[0_0_20px_rgba(46,197,212,0.4)] disabled:opacity-50 disabled:hover:shadow-none transition-all duration-300 overflow-hidden shrink-0 border-0 cursor-pointer shadow-md"
                     >
                       <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
                       <span className="relative z-10">

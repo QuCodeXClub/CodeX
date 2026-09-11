@@ -318,18 +318,23 @@ export default function VerificationDetailsForm({
 
           <div className="space-y-2.5 sm:space-y-3">
             {/* Single UTR Field */}
-            <div>
-              <label
-                htmlFor="utr-field"
-                className="block text-[11px] sm:text-xs font-semibold text-text mb-1.5 sm:mb-2 uppercase tracking-wider"
-              >
-                UTR / Transaction Reference Number
-                <span className="text-danger ml-1">*</span>
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                <label
+                  htmlFor="utr-field"
+                  className="block text-[11px] sm:text-xs font-semibold text-text uppercase tracking-wider"
+                >
+                  UTR / Transaction Reference Number <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (12-digit UTR)
+                </span>
+              </div>
               <input
                 id="utr-field"
                 type="text"
-                placeholder="Enter your 12-digit UTR / Transaction ID"
+                title="UTR / Transaction Reference Number — Format: String (12-digit UTR, Mandatory)"
+                placeholder="Enter your 12-digit UTR / Transaction ID (e.g. 423456789012)"
                 autoComplete="off"
                 {...register("transactionId", {
                   required: "UTR / Transaction Reference Number is required",

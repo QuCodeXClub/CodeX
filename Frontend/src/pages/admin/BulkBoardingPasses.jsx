@@ -251,29 +251,29 @@ export default function BulkBoardingPasses() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full">
-      <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
+      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
             <Ticket className="w-3.5 h-3.5" />
             <span>ACCESS CONTROL</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             BOARDING PASS <span className="text-accent">FORGE</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Bulk generate, verify, and email event access boarding passes.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => navigate("/admin/history?tab=boarding-passes")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold hover:bg-cyan-500/20 transition-all shadow-md cursor-pointer"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold hover:bg-cyan-500/20 transition-all shadow-md cursor-pointer whitespace-nowrap"
           >
             <History className="w-4 h-4" />
             <span>Issued Boarding Passes History</span>
           </button>
-          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md shrink-0">
             <Ticket className="w-7 h-7 text-accent" />
           </div>
         </div>
@@ -284,20 +284,26 @@ export default function BulkBoardingPasses() {
         className="space-y-8"
       >
         {/* Top Section : Event Details */}
-        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
-          <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4 mb-6">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+          <h2 className="flex items-center gap-2 text-base sm:text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4 mb-6">
             <Calendar className="w-5 h-5 text-accent" />
             Event Details
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
             {/* Event Name */}
-            <div>
-              <label className="block text-sm font-semibold text-text mb-2">
-                Event Name
+            <div className="group/field">
+              <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                <span>
+                  Event Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
               </label>
               <input
                 type="text"
+                title="Event Name — Type: String (Mandatory)"
                 {...register("eventName", { required: "Event name is required" })}
                 placeholder="CodeX 2026"
                 className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -310,14 +316,18 @@ export default function BulkBoardingPasses() {
             </div>
 
             {/* Event Venue */}
-            <div>
-              <label className="block text-sm font-semibold text-text mb-2">
-                Event Venue
+            <div className="group/field">
+              <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                <span>Event Venue</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
               </label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                 <input
                   type="text"
+                  title="Event Venue — Type: String (Optional)"
                   {...register("venue")}
                   placeholder="e.g. Audi 2 / Lab 4 / Online"
                   className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -326,14 +336,18 @@ export default function BulkBoardingPasses() {
             </div>
 
             {/* Event Time */}
-            <div>
-              <label className="block text-sm font-semibold text-text mb-2">
-                Event Time
+            <div className="group/field">
+              <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                <span>Event Time</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (HH:MM)
+                </span>
               </label>
               <div className="relative">
                 <Clock className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                 <input
                   type="text"
+                  title="Event Time — Format: String (e.g. 10:00 AM - 01:00 PM, Optional)"
                   {...register("time")}
                   placeholder="e.g. 10:00 AM - 01:00 PM"
                   className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -342,13 +356,19 @@ export default function BulkBoardingPasses() {
             </div>
 
             {/* Event Description */}
-            <div>
-              <label className="block text-sm font-semibold text-text mb-2">
-                Event Description
+            <div className="group/field">
+              <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                <span>
+                  Event Description <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Text)
+                </span>
               </label>
               <div className="relative">
                 <Info className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
                 <textarea
+                  title="Event Description — Type: String (Mandatory)"
                   {...register("eventDescription", { required: "Description is required" })}
                   placeholder="Join us for the ultimate coding showdown..."
                   rows="1"
@@ -365,27 +385,30 @@ export default function BulkBoardingPasses() {
         </div>
 
         {/* Bottom Section : Student Details */}
-        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-4 mb-6 gap-4">
-            <div className="flex items-center gap-3">
-              <h2 className="flex items-center gap-2 text-lg font-bold">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-4 mb-6 gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <h2 className="flex items-center gap-2 text-base sm:text-lg font-bold">
                 <Users className="w-5 h-5 text-accent" />
                 Attendee Details
               </h2>
-              <span className="text-xs font-semibold bg-accent/10 text-accent px-3 py-1 rounded-full">
+              <span className="text-xs font-semibold bg-accent/10 text-accent px-2.5 sm:px-3 py-1 rounded-full whitespace-nowrap">
                 {fields.length} Attendee(s)
+              </span>
+              <span className="text-[11px] font-mono text-text-muted hidden md:inline-flex items-center gap-1.5 ml-2">
+                <span className="text-red-500 font-bold">*</span> Mandatory fields | Hover over fields to view data types (String / Number)
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
               {/* CSV Download Template */}
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 text-xs sm:text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm whitespace-nowrap"
                 title="Download CSV Template"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Template
               </button>
 
@@ -402,16 +425,16 @@ export default function BulkBoardingPasses() {
                 type="button"
                 disabled={isImportingCsv}
                 onClick={() => csvInputRef.current.click()}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 text-xs sm:text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {isImportingCsv ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
-                    <span>Importing CSV...</span>
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-accent" />
+                    <span>Importing...</span>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4" />
+                    <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>Import CSV</span>
                   </>
                 )}
@@ -431,144 +454,243 @@ export default function BulkBoardingPasses() {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start bg-card-hover border border-border rounded-xl p-5"
+                className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start bg-card-hover border border-border rounded-xl p-4 sm:p-5"
               >
                 {/* Row 1: Core Info */}
-                <div className="md:col-span-2 relative">
-                  <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="text"
-                    placeholder="Attendee Name"
-                    {...register(`students.${index}.name`, {
-                      required: "Name is required",
-                    })}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                {/* Name */}
+                <div className="md:col-span-3 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-text mb-1">
+                    <span>
+                      Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                    </span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="text"
+                      title="Attendee Name — Type: String (Mandatory)"
+                      placeholder="Attendee Name *"
+                      {...register(`students.${index}.name`, {
+                        required: "Name is required",
+                      })}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                   {errors.students?.[index]?.name && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].name.message}
                     </p>
                   )}
                 </div>
 
-                <div className="md:col-span-3 relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="email"
-                    placeholder="attendee@email.com"
-                    {...register(`students.${index}.email`, {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                {/* Email */}
+                <div className="md:col-span-3 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-text mb-1">
+                    <span>
+                      Email <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                    </span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="email"
+                      title="Attendee Email — Type: String (Mandatory)"
+                      placeholder="attendee@email.com *"
+                      {...register(`students.${index}.email`, {
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Invalid email address",
+                        },
+                      })}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                   {errors.students?.[index]?.email && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].email.message}
                     </p>
                   )}
                 </div>
 
-                <div className="md:col-span-2 relative">
-                  <Hash className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="text"
-                    placeholder="QID (Required)"
-                    {...register(`students.${index}.qid`, {
-                      required: "QID is required",
-                    })}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                {/* QID */}
+                <div className="md:col-span-2 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-text mb-1">
+                    <span>
+                      QID <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                    </span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <Hash className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="text"
+                      title="Student QID — Type: String (Mandatory)"
+                      placeholder="QID (e.g. 24001) *"
+                      {...register(`students.${index}.qid`, {
+                        required: "QID is required",
+                      })}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent font-mono"
+                    />
+                  </div>
                   {errors.students?.[index]?.qid && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].qid.message}
                     </p>
                   )}
                 </div>
 
-                <div className="md:col-span-2 relative">
-                  <Users className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="text"
-                    placeholder="Team Name (Opt)"
-                    {...register(`students.${index}.teamName`)}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                {/* Team Name */}
+                <div className="md:col-span-2 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-semibold uppercase text-text-muted mb-1">
+                    <span>Team</span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <Users className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="text"
+                      title="Team Name — Type: String (Optional)"
+                      placeholder="Team Name (Opt)"
+                      {...register(`students.${index}.teamName`)}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                 </div>
 
-                <div className="md:col-span-1 relative">
-                  <Clock className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="text"
-                    placeholder="Time (Opt)"
-                    {...register(`students.${index}.time`)}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                {/* Time */}
+                <div className="md:col-span-1 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-semibold uppercase text-text-muted mb-1">
+                    <span>Time</span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      title="Time Slot — Type: String (Optional)"
+                      placeholder="Time"
+                      {...register(`students.${index}.time`)}
+                      className="w-full bg-card text-text rounded-lg border border-border p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                 </div>
 
-                <div className="md:col-span-1 relative">
-                  <input
-                    type="text"
-                    placeholder="Desk No"
-                    {...register(`students.${index}.deskNumber`)}
-                    className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-
-                <div className="md:col-span-1 flex justify-end md:justify-center">
+                {/* Desk Number & Delete Action */}
+                <div className="md:col-span-1 flex items-end gap-1.5">
+                  <div className="flex-1 group/field">
+                    <label className="flex items-center justify-between text-[11px] font-mono font-semibold uppercase text-text-muted mb-1">
+                      <span>Desk</span>
+                      <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      title="Desk Number — Type: String (Optional)"
+                      placeholder="Desk"
+                      {...register(`students.${index}.deskNumber`)}
+                      className="w-full bg-card text-text rounded-lg border border-border p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="text-text-muted hover:text-danger disabled:opacity-40 p-2 md:p-0 md:mt-2 transition-colors"
+                    title="Remove Attendee"
+                    className="text-text-muted hover:text-danger disabled:opacity-40 p-2 mb-0.5 transition-colors"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Row 2: Optional Credentials */}
-                <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-4 gap-4 mt-2 pt-4 border-t border-border-soft">
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                    <input
-                      type="text"
-                      placeholder="Login ID (Opt)"
-                      {...register(`students.${index}.loginUser`)}
-                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
+                <div className="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-1 pt-3 border-t border-border/50">
+                  <div className="group/field">
+                    <label className="flex items-center justify-between text-[10px] font-mono font-semibold uppercase text-text-muted mb-1">
+                      <span>Login ID</span>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                      <input
+                        type="text"
+                        title="Login ID — Type: String (Optional)"
+                        placeholder="Login ID (Optional)"
+                        {...register(`students.${index}.loginUser`)}
+                        className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
                   </div>
 
-                  <div className="relative">
-                    <KeyRound className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                    <input
-                      type="text"
-                      placeholder="Login Pass (Opt)"
-                      {...register(`students.${index}.loginPass`)}
-                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
+                  <div className="group/field">
+                    <label className="flex items-center justify-between text-[10px] font-mono font-semibold uppercase text-text-muted mb-1">
+                      <span>Login Password</span>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                      <input
+                        type="text"
+                        title="Login Password — Type: String (Optional)"
+                        placeholder="Login Password (Optional)"
+                        {...register(`students.${index}.loginPass`)}
+                        className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
                   </div>
 
-                  <div className="relative">
-                    <Wifi className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                    <input
-                      type="text"
-                      placeholder="WiFi ID (Opt)"
-                      {...register(`students.${index}.wifiUser`)}
-                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
+                  <div className="group/field">
+                    <label className="flex items-center justify-between text-[10px] font-mono font-semibold uppercase text-text-muted mb-1">
+                      <span>WiFi ID</span>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <Wifi className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                      <input
+                        type="text"
+                        title="WiFi ID — Type: String (Optional)"
+                        placeholder="WiFi ID (Optional)"
+                        {...register(`students.${index}.wifiUser`)}
+                        className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
                   </div>
 
-                  <div className="relative">
-                    <KeyRound className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                    <input
-                      type="text"
-                      placeholder="WiFi Pass (Opt)"
-                      {...register(`students.${index}.wifiPass`)}
-                      className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
+                  <div className="group/field">
+                    <label className="flex items-center justify-between text-[10px] font-mono font-semibold uppercase text-text-muted mb-1">
+                      <span>WiFi Password</span>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                        String
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                      <input
+                        type="text"
+                        title="WiFi Password — Type: String (Optional)"
+                        placeholder="WiFi Password (Optional)"
+                        {...register(`students.${index}.wifiPass`)}
+                        className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

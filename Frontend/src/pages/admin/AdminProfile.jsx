@@ -676,21 +676,21 @@ export default function AdminProfile() {
 
         {/* 3. SESSIONS TAB */}
         {currentTab === "#sessions" && (
-          <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-5 sm:p-8">
+          <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-4 sm:p-6 lg:p-8">
             <ManageSessions />
           </div>
         )}
 
         {/* 4. BLOCKLIST TAB */}
         {currentTab === "#blocklist" && (
-          <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-5 sm:p-8">
+          <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-4 sm:p-6 lg:p-8">
             <EmailBlocklist />
           </div>
         )}
 
         {/* 5. SETTINGS TAB */}
         {currentTab === "#settings" && (
-          <div id="settings-tab" className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-5 sm:p-8">
+          <div id="settings-tab" className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 p-4 sm:p-6 lg:p-8">
             <AdminSettings />
           </div>
         )}

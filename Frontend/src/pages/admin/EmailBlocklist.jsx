@@ -362,11 +362,19 @@ export default function EmailBlocklist() {
             </div>
 
             <form onSubmit={handleAddSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Email Address</label>
+              <div className="group/field relative">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-mono text-text-muted uppercase">
+                    Email Address <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    String (Email)
+                  </span>
+                </div>
                 <input
                   type="email"
                   required
+                  title="Email Address — Type: String (Email, Mandatory)"
                   placeholder="e.g. user@domain.com"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
@@ -374,12 +382,20 @@ export default function EmailBlocklist() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Category</label>
+              <div className="group/field relative">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-mono text-text-muted uppercase">
+                    Category <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    String (Enum)
+                  </span>
+                </div>
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value)}
-                  className="w-full px-3.5 py-2 text-xs bg-card-hover border border-border rounded-xl focus:outline-none focus:border-accent text-text"
+                  title="Category — Type: String (Enum: MANUAL / BOUNCE / COMPLAINT, Mandatory)"
+                  className="w-full px-3.5 py-2 text-xs bg-card-hover border border-border rounded-xl focus:outline-none focus:border-accent text-text cursor-pointer"
                 >
                   <option value="MANUAL">MANUAL (Admin Block)</option>
                   <option value="BOUNCE">BOUNCE (Invalid Address)</option>
@@ -387,10 +403,18 @@ export default function EmailBlocklist() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Reason / Notes</label>
+              <div className="group/field relative">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-mono text-text-muted uppercase">
+                    Reason / Notes
+                  </label>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    String
+                  </span>
+                </div>
                 <textarea
                   rows={3}
+                  title="Reason / Notes — Type: String (Optional)"
                   placeholder="Optional reason for suppressing this email..."
                   value={newReason}
                   onChange={(e) => setNewReason(e.target.value)}

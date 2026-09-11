@@ -91,13 +91,19 @@ export default function RejectRegistrationModal({ registration, onClose, onConfi
           </div>
 
           {/* Reason Textarea */}
-          <div className="space-y-2">
-            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-text">
-              Rejection Details / Custom Message
-            </label>
+          <div className="space-y-2 group/field relative">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-mono font-bold uppercase tracking-wider text-text">
+                Rejection Details / Custom Message <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+              </label>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String
+              </span>
+            </div>
             <textarea
               required
               rows={3}
+              title="Rejection Reason — Type: String (Mandatory)"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Explain why this application is being rejected..."

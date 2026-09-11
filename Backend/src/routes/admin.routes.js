@@ -1,5 +1,18 @@
 import { Router } from 'express';
-import { loginAdmin, verifyOtp, logoutAdmin, updateProfile, requestPasswordChange, changePassword, getAdminSessions, killSession , getCurrentAdmin, getDashboardMetrics} from '../controllers/admin.controller.js';
+import {
+  loginAdmin,
+  verifyOtp,
+  logoutAdmin,
+  updateProfile,
+  requestPasswordChange,
+  changePassword,
+  getAdminSessions,
+  killSession,
+  getCurrentAdmin,
+  getDashboardMetrics,
+  getAdminRegistrationStatus,
+  updateAdminRegistrationStatus,
+} from '../controllers/admin.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { sendAnnouncement, getAnnouncementsHistory } from '../controllers/announcement.controller.js';
@@ -20,5 +33,10 @@ router.route("/current").get(verifyJWT, getCurrentAdmin);
 router.route("/dashboard").get(verifyJWT, getDashboardMetrics);
 router.route("/announcement").post(verifyJWT, sendAnnouncement);
 router.route("/announcements-history").get(verifyJWT, getAnnouncementsHistory);
+router
+  .route("/registration-status")
+  .get(verifyJWT, getAdminRegistrationStatus)
+  .patch(verifyJWT, updateAdminRegistrationStatus);
 
 export default router;
+
