@@ -354,19 +354,17 @@ export default function Registrations() {
           {/* Registration Status Indicator & Quick Toggle */}
           <button
             onClick={() => setShowStatusModal(true)}
-            className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-lg border text-xs font-mono font-bold transition-all shadow-sm ${
-              systemStatus?.isRegistrationOpen
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-                : "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
-            }`}
+            className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-lg border text-xs font-mono font-bold transition-all shadow-sm ${systemStatus?.isRegistrationOpen
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+              : "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
+              }`}
             title="Click to change registration open/closed status"
           >
             <span
-              className={`w-2 h-2 rounded-full ${
-                systemStatus?.isRegistrationOpen
-                  ? "bg-emerald-400 animate-pulse"
-                  : "bg-rose-400"
-              }`}
+              className={`w-2 h-2 rounded-full ${systemStatus?.isRegistrationOpen
+                ? "bg-emerald-400 animate-pulse"
+                : "bg-rose-400"
+                }`}
             />
             <span>PORTAL: {systemStatus?.isRegistrationOpen ? "OPEN" : "CLOSED"}</span>
           </button>
@@ -414,13 +412,12 @@ export default function Registrations() {
       {/* Refresh Status Toast */}
       {refreshToast && (
         <div
-          className={`mb-4 px-4 py-2.5 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 shadow-sm ${
-            refreshToast.type === "success"
-              ? "bg-accent/10 border-accent/30 text-accent"
-              : refreshToast.type === "error"
+          className={`mb-4 px-4 py-2.5 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 shadow-sm ${refreshToast.type === "success"
+            ? "bg-accent/10 border-accent/30 text-accent"
+            : refreshToast.type === "error"
               ? "bg-error/10 border-error/30 text-error"
               : "bg-card border-border text-text-muted"
-          }`}
+            }`}
         >
           <span>{refreshToast.message}</span>
           <button
@@ -434,15 +431,15 @@ export default function Registrations() {
       )}
 
       {/* Control Bar */}
-      <div className="flex flex-col xl:flex-row justify-between gap-3 sm:gap-4 mb-6">
-        <div className="relative w-full xl:max-w-md">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 sm:gap-4 mb-6">
+        <div className="relative w-full xl:max-w-xs 2xl:max-w-sm shrink-0">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
           <input
             type="text"
             placeholder="Search by Name, Email, or Q-ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-card border border-border text-text rounded-lg p-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm"
+            className="w-full bg-card border border-border text-text rounded-lg p-2 pl-9 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm"
           />
         </div>
 
@@ -756,4 +753,4 @@ export default function Registrations() {
       )}
     </div>
   );
-}
+}

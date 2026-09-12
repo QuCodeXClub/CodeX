@@ -180,7 +180,7 @@ const Navbar = ({ layout }) => {
                   className={`absolute left-0 -bottom-2 w-full h-[2.5px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] transition-all duration-300 origin-left ${location.pathname === '/' ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"}`}
                 />
               </Link>
-              
+
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-300 ease-out z-50">
                 <div className="flex flex-col min-w-[160px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
@@ -213,7 +213,7 @@ const Navbar = ({ layout }) => {
                   className={`absolute left-0 -bottom-2 w-full h-[2.5px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] transition-all duration-300 origin-left ${location.pathname === '/about' ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"}`}
                 />
               </Link>
-              
+
               {/* Dropdown Menu */}
               <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-300 ease-out z-50">
                 <div className="flex flex-col min-w-[170px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
@@ -243,7 +243,7 @@ const Navbar = ({ layout }) => {
         {/* Right Actions */}
         <div className="flex items-center gap-3 md:gap-4 shrink-0">
 
-         
+
 
           {/* Theme Toggle Button */}
           <button
@@ -314,7 +314,7 @@ const Navbar = ({ layout }) => {
                 >
                   HOME
                 </Link>
-                <button 
+                <button
                   onClick={() => setIsHomeExpanded(!isHomeExpanded)}
                   className="p-3 text-text-muted hover:text-accent focus:outline-none"
                   aria-label="Toggle Home Menu"
@@ -322,7 +322,7 @@ const Navbar = ({ layout }) => {
                   <span className={`inline-block transition-transform duration-300 ${isHomeExpanded ? "rotate-180" : ""}`}>▼</span>
                 </button>
               </div>
-              
+
               <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isHomeExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
                 <div className="flex flex-col pl-6 pr-2 py-2 gap-1 border-l border-border/40 ml-4 mb-2">
                   {sectionNavItems.filter(item => item.targetId !== 'home').map((item) => (
@@ -352,7 +352,7 @@ const Navbar = ({ layout }) => {
                 >
                   ABOUT
                 </Link>
-                <button 
+                <button
                   onClick={() => setIsAboutExpanded(!isAboutExpanded)}
                   className="p-3 text-text-muted hover:text-accent focus:outline-none cursor-pointer"
                   aria-label="Toggle About Menu"
@@ -360,7 +360,7 @@ const Navbar = ({ layout }) => {
                   <span className={`inline-block transition-transform duration-300 ${isAboutExpanded ? "rotate-180" : ""}`}>▼</span>
                 </button>
               </div>
-              
+
               <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isAboutExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
                 <div className="flex flex-col pl-6 pr-2 py-2 gap-1 border-l border-border/40 ml-4 mb-2">
                   {[

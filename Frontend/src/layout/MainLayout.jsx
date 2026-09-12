@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useLayoutEffect, Suspense } from "react";
-import { Outlet, useNavigate, useLocation, useNavigation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, useNavigation, ScrollRestoration } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import contentData from "../data/content.json";
 import RouteProgressBar from "../components/common/RouteProgressBar";
+import { fetchRegistrationStatus } from "../context/registrationSlice";
 
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const MainLayout = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const navigation = useNavigation();
   const [footerClicks, setFooterClicks] = useState(0);
   const { layout } = contentData;
   const isPageLoading = navigation.state === "loading";
+
+  // Check registration portal status from backend on initial mount
+  useEffect(() => {
+    dispatch(fetchRegistrationStatus());
+  }, [dispatch]);
 
   // Scroll to top when shifting to any page (e.g. Events, Team, Register), unless there is a hash or target section
   useIsomorphicLayoutEffect(() => {
@@ -55,6 +63,16 @@ const MainLayout = () => {
       />
       
       <Navbar layout={layout} />
+
+      <ScrollRestoration
+        getKey={(loc) => {
+          // If navigating with in-page anchor or state, prevent overwriting custom scroll
+          if (loc.state?.scrollTo || loc.hash) {
+            return null;
+          }
+          return loc.pathname;
+        }}
+      />
 
       {isPageLoading && <RouteProgressBar />}
 

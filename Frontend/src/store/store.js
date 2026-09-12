@@ -10,12 +10,14 @@ import adminSessionsReducer from "../context/adminSessionsSlice";
 import adminDashboardReducer from "../context/adminDashboardSlice";
 import adminContactReducer from "../context/adminContactSlice";
 import adminQrReducer from "../context/adminQrSlice";
+import registrationReducer from "../context/registrationSlice";
 
 const appReducer = combineReducers({
   auth: authReducer,
   message: messageReducer,
   events: eventsReducer,
   team: teamReducer,
+  registration: registrationReducer,
   adminEvents: adminEventsReducer,
   adminTeam: adminTeamReducer,
   adminRegistrations: adminRegistrationsReducer,
