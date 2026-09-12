@@ -113,9 +113,14 @@ export default function ManageSessions() {
     }
   };
 
+  const handleRefresh = () => {
+    dispatch(fetchAdminSessions());
+  };
+
   const handleCopyIp = (id, ip) => {
     if (!ip) return;
-    navigator.clipboard.writeText(ip);
+    const cleanIp = ip === "::1" ? "127.0.0.1" : ip;
+    navigator.clipboard.writeText(cleanIp);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -211,7 +216,7 @@ export default function ManageSessions() {
             </p>
           </div>
           <button
-            onClick={() => dispatch(fetchAdminSessions())}
+            onClick={handleRefresh}
             disabled={loading}
             className="self-stretch sm:self-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-card/85 backdrop-blur-xl border border-border/80 rounded-xl text-xs font-mono font-bold text-text-muted hover:text-accent hover:border-accent/40 transition-all shadow-sm disabled:opacity-50 cursor-pointer whitespace-nowrap min-h-[42px]"
             title="Refresh Sessions"
@@ -233,7 +238,7 @@ export default function ManageSessions() {
             </p>
           </div>
           <button
-            onClick={() => dispatch(fetchAdminSessions())}
+            onClick={handleRefresh}
             disabled={loading}
             className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 bg-card border border-border rounded-xl text-xs font-medium text-text-muted hover:text-accent hover:bg-accent/10 hover:border-accent transition-colors shadow-sm disabled:opacity-50 cursor-pointer min-h-[38px]"
           >
@@ -471,7 +476,14 @@ export default function ManageSessions() {
                 {/* Middle Row: Responsive Metadata Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5 pt-3 border-t border-border/50 text-xs font-mono">
                   {/* IP Address chip with copy button */}
-                  <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-card-hover/50 border border-border/40 text-text-muted">
+                  <div
+                    className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-card-hover/50 border border-border/40 text-text-muted"
+                    title={
+                      !session.ipAddress || session.ipAddress === "::1" || session.ipAddress.includes("127.0.0.1")
+                        ? "Local development loopback connection. In production, Cloudflare/Proxy provides the visitor's public internet IP."
+                        : `Client IP: ${session.ipAddress}`
+                    }
+                  >
                     <div className="flex items-center gap-2 truncate min-w-0">
                       <Globe className="w-3.5 h-3.5 text-accent shrink-0" />
                       <span className="truncate">
