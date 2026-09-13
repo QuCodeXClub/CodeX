@@ -44,6 +44,15 @@ const sendAnnouncement = asyncHandler(async (req, res) => {
 
     const students = await StudentRegistration.find(query).select('email');
     emailList = students.map((s) => s.email).filter(Boolean);
+  } else if (targetAudience === 'custom') {
+    if (!filters?.customEmails) {
+      throw new ApiError(400, 'Custom emails are required');
+    }
+    const emails = typeof filters.customEmails === 'string' 
+      ? filters.customEmails.split(',')
+      : Array.isArray(filters.customEmails) ? filters.customEmails : [];
+    
+    emailList = emails.map(e => e.trim()).filter(e => e.length > 0);
   } else {
     throw new ApiError(400, 'Invalid target audience');
   }
