@@ -289,6 +289,11 @@ export default function ManageEvents() {
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/75 text-text-muted border border-white/10 backdrop-blur-md">
                           Completed
                         </span>
+                      ) : event.isRegistrationFree ? (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Open to All (Free)
+                        </span>
                       ) : regOpen ? (
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent text-text-inverse border border-accent/40 shadow-sm flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
