@@ -49,6 +49,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
         ? formatLocalDatetime(normalized.registrationCloseDate)
         : "",
       registrationLink: normalized?.registrationLink || "",
+      isRegistrationFree: normalized?.isRegistrationFree || false,
       locationType: normalized?.locationType || "Offline",
       location: normalized?.location || "",
     },
@@ -129,6 +130,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
       submitData.append("description", description);
       if (data.registrationLink)
         submitData.append("registrationLink", data.registrationLink);
+      submitData.append("isRegistrationFree", data.isRegistrationFree);
       if (coverImageFile) submitData.append("coverImage", coverImageFile);
 
       // New fields
@@ -399,6 +401,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                     <LinkIcon className={`absolute left-3.5 top-3.5 w-4 h-4 ${errors.registrationLink ? 'text-danger' : 'text-accent'}`} />
                     <input
                       type="url"
+                      disabled={watch("isRegistrationFree")}
                       title="Registration URL — Type: String (URL, Optional)"
                       {...register("registrationLink", {
                         pattern: {
@@ -411,6 +414,18 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                     />
                   </div>
                   {errors.registrationLink && <p className="mt-1 text-xs text-danger font-medium">{errors.registrationLink.message}</p>}
+                  
+                  <div className="mt-3 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="isRegistrationFree"
+                      {...register("isRegistrationFree")}
+                      className="w-4 h-4 rounded border-border bg-card text-accent focus:ring-accent/20 cursor-pointer"
+                    />
+                    <label htmlFor="isRegistrationFree" className="text-sm font-sans text-text cursor-pointer">
+                      Open to All (No Registration Required)
+                    </label>
+                  </div>
                 </div>
 
                 <div className="group/field">

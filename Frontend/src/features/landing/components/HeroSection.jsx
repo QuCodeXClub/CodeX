@@ -38,7 +38,7 @@ const HeroSection = () => {
 
       {/* Left Content Area */}
       <div className="flex-1 relative z-10 lg:w-[55%] flex flex-col justify-center max-w-3xl">
-        
+
         {/* Eyebrow Tech Badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-widest w-fit mb-6 shadow-sm hover:scale-105 transition-all">
           <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="w-4 h-4 object-contain drop-shadow-sm" />
@@ -88,7 +88,7 @@ const HeroSection = () => {
       {/* Right Fancy Terminal & Stats Widget */}
       <div className="lg:w-[42%] mt-12 lg:mt-0 relative z-10 w-full max-w-lg mx-auto lg:max-w-none">
         <div className="flex flex-col gap-6">
-          
+
           {/* Fancy Code Terminal Widget */}
           <div className="bg-card/90 backdrop-blur-xl border border-border/80 rounded-2xl p-5 shadow-xl relative overflow-hidden group hover:border-accent/40 transition-all">
             <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">

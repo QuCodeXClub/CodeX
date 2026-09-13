@@ -11,6 +11,9 @@ import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
+// Trust proxy to properly inspect forwarded client IP addresses behind reverse proxies
+app.set("trust proxy", true);
+
 // Security Headers
 app.use(helmet());
 

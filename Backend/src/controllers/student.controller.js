@@ -49,7 +49,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     turnstileToken,
     acceptedTerms,
   } = req.body;
-  const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
+  const clientIp = req.headers['cf-connecting-ip'] || req.headers['x-real-ip'] || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.body?.clientIp;
 
   // 0. Verify Registration Portal Status
   const setting = await getRegistrationStatusHelper();

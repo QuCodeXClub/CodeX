@@ -308,14 +308,20 @@ export default function EventDetails() {
               {/* Mobile Sticky Bottom Registration Bar */}
               <div className="lg:hidden sticky bottom-6 z-50 flex items-center justify-center pointer-events-none mt-6">
                 {isRegistrationOpen(event) ? (
-                  <a
-                    href={event.registrationLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    Register <ExternalLink className="w-4 h-4" />
-                  </a>
+                  event.isRegistrationFree ? (
+                    <div className="w-full pointer-events-auto bg-emerald-500 hover:bg-emerald-400 shadow-[0_4px_20px_rgba(0,0,0,0.25)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-default">
+                      Open to All (Free)
+                    </div>
+                  ) : (
+                    <a
+                      href={event.registrationLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      Register <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )
                 ) : (
                   <button
                     disabled
@@ -337,6 +343,10 @@ export default function EventDetails() {
                   {new Date(event.date) < new Date() ? (
                     <div className="bg-card-hover text-text-muted border-b border-r border-border px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0">
                       Completed
+                    </div>
+                  ) : event.isRegistrationFree ? (
+                    <div className="bg-emerald-500 text-text-inverse px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0 shadow-sm">
+                      Open to All (Free)
                     </div>
                   ) : isRegistrationOpen(event) ? (
                     <div className="bg-accent text-text-inverse px-5 py-2 text-xs font-mono font-bold uppercase tracking-widest flex justify-between items-center rounded-br-2xl inline-flex absolute top-0 left-0 shadow-sm">
@@ -365,14 +375,20 @@ export default function EventDetails() {
 
                     {/* Action Button */}
                     {isRegistrationOpen(event) ? (
-                      <a
-                        href={event.registrationLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer"
-                      >
-                        Register <ExternalLink className="w-4 h-4" />
-                      </a>
+                      event.isRegistrationFree ? (
+                        <div className="w-full flex items-center justify-center gap-2 bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider cursor-default">
+                          Open to All (Free)
+                        </div>
+                      ) : (
+                        <a
+                          href={event.registrationLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer"
+                        >
+                          Register <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )
                     ) : (
                       <div className="space-y-2">
                         <button disabled className="w-full bg-card-hover border border-border text-text-muted px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider cursor-not-allowed">

@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { registrationService } from "../services/registrationService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../context/messageSlice";
+import { fetchRegistrationStatus } from "../context/registrationSlice";
 import RegistrationSuccess from "../components/register/RegistrationSuccess";
 import PersonalDetailsForm from "../components/register/PersonalDetailsForm";
 import AcademicDetailsForm from "../components/register/AcademicDetailsForm";
@@ -29,29 +30,27 @@ const Register = () => {
   const [turnstileToken, setTurnstileToken] = useState(null);
   const turnstileRef = useRef(null);
 
-  // Registration Portal Status State
-  const [statusLoading, setStatusLoading] = useState(true);
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
-  const [closedMessage, setClosedMessage] = useState("");
+  // Registration Portal Status State from Redux
+  const {
+    isOpen: isRegistrationOpen,
+    closedMessage,
+    loading: isStatusLoading,
+    loaded: isStatusLoaded,
+  } = useSelector(
+    (state) =>
+      state.registration || {
+        isOpen: true,
+        closedMessage: "",
+        loading: false,
+        loaded: true,
+      }
+  );
+
+  const statusLoading = !isStatusLoaded && isStatusLoading;
 
   useEffect(() => {
-    const checkStatus = async () => {
-      try {
-        const res = await registrationService.getRegistrationStatus();
-        const data = res.data?.data || res.data;
-        if (data) {
-          setIsRegistrationOpen(data.isRegistrationOpen ?? true);
-          setClosedMessage(data.closedMessage || "");
-        }
-      } catch (err) {
-        // In case of error, assume default open so users aren't blocked by transient network issues
-        console.error("Failed to check registration status:", err);
-      } finally {
-        setStatusLoading(false);
-      }
-    };
-    checkStatus();
-  }, []);
+    dispatch(fetchRegistrationStatus());
+  }, [dispatch]);
 
   const resetSecurityCheck = () => {
     setTurnstileToken(null);

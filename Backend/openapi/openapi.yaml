@@ -149,6 +149,11 @@ components:
           format: uri
           example: https://forms.google.com/xxxxxxxx
 
+        isRegistrationFree:
+          type: boolean
+          default: false
+          example: true
+
         locationType:
           type: string
           enum:
