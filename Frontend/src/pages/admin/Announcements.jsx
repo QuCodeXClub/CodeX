@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Send, Loader2, CheckCircle2, AlertCircle, Filter, Users, GraduationCap, History } from "lucide-react";
+import { Send, Loader2, CheckCircle2, AlertCircle, Filter, Users, GraduationCap, History, Mail } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
 import { generateAcademicYears } from "../../utils/helpers";
 import AnnouncementsHistoryModal from "./components/AnnouncementsHistoryModal";
@@ -31,6 +31,7 @@ export default function Announcements() {
       studentAcademicYear: "",
       studentCourse: "",
       studentStatus: "APPROVED",
+      customEmails: "",
     },
   });
 
@@ -51,6 +52,8 @@ export default function Announcements() {
         if (data.studentAcademicYear) filters.academicYear = data.studentAcademicYear;
         if (data.studentCourse) filters.course = data.studentCourse;
         if (data.studentStatus) filters.status = data.studentStatus;
+      } else if (data.targetAudience === "custom") {
+        if (data.customEmails) filters.customEmails = data.customEmails;
       }
 
       const payload = {
@@ -135,12 +138,15 @@ export default function Announcements() {
             <div className="relative w-full sm:w-auto">
               {targetAudience === "team" ? (
                 <Users className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
-              ) : (
+              ) : targetAudience === "students" ? (
                 <GraduationCap className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
+              ) : (
+                <Mail className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
               )}
               <select {...register("targetAudience")} className="w-full sm:w-auto appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer">
                 <option value="team">Team Members</option>
                 <option value="students">Registered Students</option>
+                <option value="custom">Custom Emails</option>
               </select>
               <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
             </div>
@@ -203,6 +209,20 @@ export default function Announcements() {
                   <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
                 </div>
               </>
+            )}
+
+            {/* Custom Emails */}
+            {targetAudience === "custom" && (
+              <div className="relative w-full lg:flex-1">
+                <Mail className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
+                <textarea
+                  {...register("customEmails", { required: targetAudience === "custom" ? "Emails are required" : false })}
+                  placeholder="admin@example.com, user@domain.com..."
+                  className={`w-full bg-card border ${errors.customEmails ? "border-danger focus:ring-danger" : "border-border focus:ring-accent"} text-text rounded-lg py-2 pl-9 pr-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 hover:border-border transition-colors shadow-sm resize-y min-h-[42px]`}
+                  rows="1"
+                ></textarea>
+                {errors.customEmails && <span className="text-danger text-xs mt-1 block absolute -bottom-5 left-0">{errors.customEmails.message}</span>}
+              </div>
             )}
           </div>
         </div>
