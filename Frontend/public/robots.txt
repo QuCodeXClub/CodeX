@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /verify-certificate/
+Disallow: /verify-boarding-pass/
+
+Sitemap: https://qucodex.com/sitemap.xml
