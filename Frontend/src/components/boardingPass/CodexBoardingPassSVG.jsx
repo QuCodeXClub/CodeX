@@ -518,8 +518,8 @@ const CodexBoardingPassBackSVG = memo(({
   const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const eventName = (boardingPass?.eventName || "").trim().toUpperCase();
   const tagLine = "Coding the Future, Today.".toUpperCase();
-  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim();
-  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim();
+  const userId = (boardingPass?.loginUser || "").trim();
+  const userPassword = (boardingPass?.loginPass || "").trim();
 
   // Format issue date
   const issueDateRaw = boardingPass?.issuedAt || boardingPass?.dateOfIssue || boardingPass?.eventDate || boardingPass?.date || "";
@@ -702,13 +702,13 @@ const CodexBoardingPassBackSVG = memo(({
           <g>
             {userId && (
               <g>
-                <text fill="#ffffff" x={userPassword ? 488 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">WIFI ID</text>
+                <text fill="#ffffff" x={userPassword ? 488 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">LOGIN ID</text>
                 <text fill="#02bed3" x={userPassword ? 488 : 520} y={57} textAnchor="middle" fontSize={backLoginFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono">{userId}</text>
               </g>
             )}
             {userPassword && (
               <g>
-                <text fill="#ffffff" x={userId ? 553 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">WIFI PASS</text>
+                <text fill="#ffffff" x={userId ? 553 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">PASSWORD</text>
                 <text fill="#02bed3" x={userId ? 553 : 520} y={57} textAnchor="middle" fontSize={backPasswordFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono">{userPassword}</text>
               </g>
             )}
