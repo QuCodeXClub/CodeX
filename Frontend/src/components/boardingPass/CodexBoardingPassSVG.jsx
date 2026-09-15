@@ -20,8 +20,8 @@ const CodexBoardingPassFrontSVG = memo(({
   const venue = (boardingPass?.venue || boardingPass?.eventVenue || boardingPass?.event?.venue || boardingPass?.eventId?.venue || "").trim().toUpperCase();
   const seat = (boardingPass?.deskNumber || "").trim().toUpperCase();
   const time = (boardingPass?.time || "").trim().toUpperCase();
-  const userId = (boardingPass?.loginUser || "").trim().toUpperCase();
-  const userPassword = (boardingPass?.loginPass || "").trim().toUpperCase();
+  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim().toUpperCase();
+  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim().toUpperCase();
   const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const qid = (boardingPass?.qid || "").trim().toUpperCase();
 
@@ -413,7 +413,7 @@ const CodexBoardingPassFrontSVG = memo(({
           {userId && (
             <>
               <g>
-                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 116.82273)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">USER ID</tspan></text>
+                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 116.82273)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WIFI ID</tspan></text>
               </g>
               <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 129.16539)" fontSize={userIdFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{userId}</tspan></text>
             </>
@@ -421,7 +421,7 @@ const CodexBoardingPassFrontSVG = memo(({
           {userPassword && (
             <>
               <g>
-                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 148.89475)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">USER PASSWORD</tspan></text>
+                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 148.89475)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WIFI PASSWORD</tspan></text>
               </g>
               <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 161.2374)" fontSize={userPasswordFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{userPassword}</tspan></text>
             </>
@@ -518,8 +518,8 @@ const CodexBoardingPassBackSVG = memo(({
   const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const eventName = (boardingPass?.eventName || "").trim().toUpperCase();
   const tagLine = "Coding the Future, Today.".toUpperCase();
-  const userId = (boardingPass?.loginUser || "").trim();
-  const userPassword = (boardingPass?.loginPass || "").trim();
+  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim();
+  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim();
 
   // Format issue date
   const issueDateRaw = boardingPass?.issuedAt || boardingPass?.dateOfIssue || boardingPass?.eventDate || boardingPass?.date || "";
@@ -702,13 +702,13 @@ const CodexBoardingPassBackSVG = memo(({
           <g>
             {userId && (
               <g>
-                <text fill="#ffffff" x={userPassword ? 488 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">LOGIN ID</text>
+                <text fill="#ffffff" x={userPassword ? 488 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">WIFI ID</text>
                 <text fill="#02bed3" x={userPassword ? 488 : 520} y={57} textAnchor="middle" fontSize={backLoginFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono">{userId}</text>
               </g>
             )}
             {userPassword && (
               <g>
-                <text fill="#ffffff" x={userId ? 553 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">PASSWORD</text>
+                <text fill="#ffffff" x={userId ? 553 : 520} y={44} textAnchor="middle" fontSize={7.25} fontFamily="Space Mono" className="bp-mono" opacity="0.7">WIFI PASS</text>
                 <text fill="#02bed3" x={userId ? 553 : 520} y={57} textAnchor="middle" fontSize={backPasswordFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono">{userPassword}</text>
               </g>
             )}
