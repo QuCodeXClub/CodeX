@@ -16,12 +16,11 @@ const CodexBoardingPassFrontSVG = memo(({
   const studentName = (boardingPass?.studentName || "").trim().toUpperCase();
   const teamName = (boardingPass?.teamName || "").trim().toUpperCase();
   const eventName = (boardingPass?.eventName || "").trim().toUpperCase();
-  const tagLine = (boardingPass?.tagline || boardingPass?.eventTagline || "").trim().toUpperCase();
   const venue = (boardingPass?.venue || boardingPass?.eventVenue || boardingPass?.event?.venue || boardingPass?.eventId?.venue || "").trim().toUpperCase();
   const seat = (boardingPass?.deskNumber || "").trim().toUpperCase();
   const time = (boardingPass?.time || "").trim().toUpperCase();
-  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim();
-  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim();
+  const wifiId = (boardingPass?.wifiUser || "").trim();
+  const wifiPass = (boardingPass?.wifiPass || "").trim();
   const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const qid = (boardingPass?.qid || "").trim().toUpperCase();
 
@@ -123,7 +122,7 @@ const CodexBoardingPassFrontSVG = memo(({
 
   // Responsive font scaling for user id
   const userIdFontSize = (() => {
-    const len = userId.length;
+    const len = wifiId.length;
     if (len > 18) return 9.0;
     if (len > 14) return 10.5;
     if (len > 10) return 12.0;
@@ -132,7 +131,7 @@ const CodexBoardingPassFrontSVG = memo(({
 
   // Responsive font scaling for user password
   const userPasswordFontSize = (() => {
-    const len = userPassword.length;
+    const len = wifiPass.length;
     if (len > 18) return 9.0;
     if (len > 14) return 10.5;
     if (len > 10) return 12.0;
@@ -162,7 +161,7 @@ const CodexBoardingPassFrontSVG = memo(({
   const nameLabelY = 31.5;
   const nameTextY = nameLabelY + studentFontSize; // label height ~7.5 + font size
   const teamLabelY = nameTextY + 15;                   // gap of 5.5 after student name
-  const teamTextY = teamLabelY  + teamFontSize;    // label height ~7.5 + font size
+  const teamTextY = teamLabelY + teamFontSize;    // label height ~7.5 + font size
 
   return (
     <svg
@@ -410,20 +409,20 @@ const CodexBoardingPassFrontSVG = memo(({
               </text>
             </g>
           )}
-          {userId && (
+          {wifiId && (
             <>
               <g>
-                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 116.82273)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WIFI ID</tspan></text>
+                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 116.82273)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WI-FI ID</tspan></text>
               </g>
-              <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 129.16539)" fontSize={userIdFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{userId}</tspan></text>
+              <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 129.16539)" fontSize={userIdFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{wifiId}</tspan></text>
             </>
           )}
-          {userPassword && (
+          {wifiPass && (
             <>
               <g>
-                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 148.89475)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WIFI PASSWORD</tspan></text>
+                <text xmlSpace="preserve" transform="matrix(.62500259 0 0 .62500259 375.3127 148.89475)" fontSize="12" fontFamily="Space Mono" className="bp-mono"><tspan y="11">WI-FI PASSWORD</tspan></text>
               </g>
-              <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 161.2374)" fontSize={userPasswordFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{userPassword}</tspan></text>
+              <text xmlSpace="preserve" transform="matrix(.75 0 0 .75 375.3127 161.2374)" fontSize={userPasswordFontSize} fontFamily="Space Mono" fontWeight="bold" className="bp-mono"><tspan y="14">{wifiPass}</tspan></text>
             </>
           )}
         </g>
