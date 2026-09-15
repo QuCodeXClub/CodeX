@@ -20,8 +20,8 @@ const CodexBoardingPassFrontSVG = memo(({
   const venue = (boardingPass?.venue || boardingPass?.eventVenue || boardingPass?.event?.venue || boardingPass?.eventId?.venue || "").trim().toUpperCase();
   const seat = (boardingPass?.deskNumber || "").trim().toUpperCase();
   const time = (boardingPass?.time || "").trim().toUpperCase();
-  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim().toUpperCase();
-  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim().toUpperCase();
+  const userId = (boardingPass?.wifiUser || boardingPass?.loginUser || "").trim();
+  const userPassword = (boardingPass?.wifiPass || boardingPass?.loginPass || "").trim();
   const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const qid = (boardingPass?.qid || "").trim().toUpperCase();
 
