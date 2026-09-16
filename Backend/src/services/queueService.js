@@ -22,6 +22,9 @@ class QueueService {
     this.blocklistSet = new Set();
     this.blocklistLastSync = 0;
     this.BLOCKLIST_TTL_MS = 30000; // Sync blocklist every 30 seconds
+
+    // In-memory cache for shared email templates (Storage Optimization)
+    this.templateCache = new Map();
   }
 
   /**
@@ -75,7 +78,17 @@ class QueueService {
       scheduledAt: item.scheduledAt || new Date(),
     }));
 
-    return await BackgroundJob.insertMany(formattedJobs, { ordered: false });
+    // Chunk size of 100 to prevent MongoDB connection timeouts for large payloads (e.g., HTML emails)
+    const CHUNK_SIZE = 100;
+    let results = [];
+    
+    for (let i = 0; i < formattedJobs.length; i += CHUNK_SIZE) {
+      const chunk = formattedJobs.slice(i, i + CHUNK_SIZE);
+      const res = await BackgroundJob.insertMany(chunk, { ordered: false });
+      results = results.concat(res);
+    }
+
+    return results;
   }
 
   /**
@@ -236,8 +249,35 @@ class QueueService {
    * Handle single email send with zero-overhead in-memory blocklist check and rate ceiling
    */
   async handleEmailSend(job) {
-    const { email, subject, message, textMessage, bcc } = job.payload;
+    let { email, subject, message, textMessage, bcc, announcementJobId } = job.payload;
     const recipientEmail = email ? email.toLowerCase().trim() : null;
+
+    // Storage Optimization: Resolve parent announcement template if it's a bulk broadcast
+    if (announcementJobId) {
+      const cacheKey = announcementJobId.toString();
+      let template = this.templateCache.get(cacheKey);
+      
+      if (!template) {
+        const parentJob = await BackgroundJob.findById(announcementJobId).lean();
+        if (parentJob && parentJob.payload) {
+          template = {
+            subject: parentJob.payload.subject,
+            message: parentJob.payload.messageHtml,
+            textMessage: parentJob.payload.messageText,
+          };
+          this.templateCache.set(cacheKey, template);
+          
+          // Auto-clean cache after 1 hour (bulk jobs typically finish in minutes)
+          setTimeout(() => this.templateCache.delete(cacheKey), 3600000);
+        } else {
+          throw new Error('Parent announcement job not found for storage-optimized email send');
+        }
+      }
+      
+      subject = template.subject;
+      message = template.message;
+      textMessage = template.textMessage;
+    }
 
     // 0ms In-Memory Blocklist Check
     if (recipientEmail && this.blocklistSet.has(recipientEmail)) {
@@ -448,14 +488,18 @@ class QueueService {
   async handleAnnouncementBulk(job) {
     const { emailList, subject, messageHtml, messageText } = job.payload;
 
-    if (Array.isArray(emailList) && emailList.length > 0) {
+    // Idempotency Check: Prevent duplicate email jobs from being created if this bulk job is retried
+    const alreadyEnqueued = await BackgroundJob.exists({
+      type: 'EMAIL_SEND',
+      'payload.announcementJobId': job._id,
+    });
+
+    if (!alreadyEnqueued && Array.isArray(emailList) && emailList.length > 0) {
       const emailJobs = emailList.map((email) => ({
         type: 'EMAIL_SEND',
         payload: {
           email,
-          subject,
-          message: messageHtml,
-          textMessage: messageText,
+          announcementJobId: job._id, // Storage optimization: reference parent instead of duplicating HTML
         },
       }));
 
