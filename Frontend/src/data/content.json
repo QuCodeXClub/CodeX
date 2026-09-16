@@ -121,6 +121,16 @@
           "name": "Memcode",
           "description": "Spaced repetition flashcards for developers.",
           "url": "https://memcode.com"
+        },
+        {
+          "name": "OSEN",
+          "description": "Open Source Educational Network.",
+          "url": "https://osen.live"
+        },
+        {
+          "name": "Interview Buddy",
+          "description": "Platform for mock technical interviews.",
+          "url": "https://interviewbuddy.in"
         }
       ]
     },
@@ -395,6 +405,14 @@
       {
         "name": "Instagram",
         "url": "https://instagram.com/qucodex/"
+      },
+      {
+        "name": "YouTube",
+        "url": "https://youtube.com/@qucodex"
+      },
+      {
+        "name": "X",
+        "url": "https://x.com/qucodex"
       }
     ],
     "meta": "",
@@ -469,14 +487,14 @@
           }
         },
         {
-          "id": "techsprint",
-          "name": "TECHSPRINT",
+          "id": "ignite",
+          "name": "IGNITE",
           "tagline": "Rapid Prototyping Challenge",
           "description": "Our premier coding festival featuring competitive programming, project expos, and technical challenges.",
-          "website": "https://techsprint.qucodex.com",
+          "website": "https://ignite.qucodex.com",
           "image": {
-            "assetKey": "ABOUT_FLAGSHIP_TECHSPRINT",
-            "alt": "TechSprint"
+            "assetKey": "ABOUT_FLAGSHIP_IGNITE",
+            "alt": "Ignite"
           }
         }
       ]

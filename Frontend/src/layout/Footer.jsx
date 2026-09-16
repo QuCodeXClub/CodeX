@@ -26,6 +26,26 @@ const InstagramIcon = ({ className }) => (
   </svg>
 );
 
+const MapPinIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+    <circle cx="12" cy="10" r="3"></circle>
+  </svg>
+);
+
+const YoutubeIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+  </svg>
+);
+
+const XIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+  </svg>
+);
+
 const getSocialIcon = (name) => {
   const lowerName = name.toLowerCase();
   const iconClass = "w-5 h-5 opacity-75 group-hover:opacity-100 transition-opacity duration-200 group-hover:text-accent text-text";
@@ -38,6 +58,12 @@ const getSocialIcon = (name) => {
   }
   if (lowerName.includes("instagram")) {
     return <InstagramIcon className={iconClass} />;
+  }
+  if (lowerName.includes("youtube")) {
+    return <YoutubeIcon className={iconClass} />;
+  }
+  if (lowerName.includes("x") || lowerName.includes("twitter")) {
+    return <XIcon className={iconClass} />;
   }
 
   return <span className="text-xs font-bold uppercase tracking-wider group-hover:text-accent transition-colors">{name}</span>;
@@ -55,10 +81,10 @@ const Footer = ({ layout, onFooterClick }) => {
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-accent/5 blur-[120px] pointer-events-none rounded-full" />
 
       <div className="max-w-[1400px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10 mb-12">
+        <div className="flex flex-col lg:flex-row justify-between gap-12 mb-12">
 
           {/* Column 1: Brand & Info */}
-          <div className="flex flex-col gap-4 lg:col-span-2">
+          <div className="flex flex-col gap-4 max-w-md">
             <div className="flex items-center gap-3">
               <div
                 onClick={onFooterClick}
@@ -77,13 +103,27 @@ const Footer = ({ layout, onFooterClick }) => {
               Empowering student developers through code, innovation, collaboration, and community building.
             </p>
 
-            <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-card-hover/50 border border-border/60 w-fit">
-              <span className="text-xs text-text-muted font-mono tracking-wider uppercase">AN INITIATIVE BY</span>
-              <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="h-5 w-5 object-contain" />
-              <span className="text-xs text-text font-bold font-sans tracking-wider uppercase">Quantum University</span>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-card-hover/50 border border-border/60 w-fit">
+                <span className="text-xs text-text-muted font-mono tracking-wider uppercase">AN INITIATIVE BY</span>
+                <img src={ASSETS.IMAGES.UNIVERSITY_LOGO_ICON} alt="Quantum University" className="h-5 w-5 object-contain" />
+                <span className="text-xs text-text font-bold font-sans tracking-wider uppercase">Quantum University</span>
+              </div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Quantum+University,+22+Km+Milestone,+Roorkee%E2%80%93Dehradun+Highway,+NH+73,+Mandawar,+Roorkee,+Uttarakhand+247167,+India"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-start gap-2.5 group w-full sm:w-fit sm:max-w-[340px]"
+                aria-label="View Quantum University on Google Maps"
+              >
+                <MapPinIcon className="w-4 h-4 mt-1 text-accent shrink-0 group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-sm text-text-muted group-hover:text-text transition-colors leading-relaxed break-words">
+                  Quantum University, 22 Km Milestone, Roorkee–Dehradun Highway, NH 73, Mandawar, Roorkee, Uttarakhand 247167, India.
+                </span>
+              </a>
             </div>
 
-            <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
               {layout?.socials?.map((link) => (
                 <a
                   key={link.name}
@@ -111,50 +151,54 @@ const Footer = ({ layout, onFooterClick }) => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-              Navigation
-            </h3>
-            <div className="flex flex-col gap-2.5">
-              <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
-              <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
-              <Link to="/about" state={{ scrollTo: "partners" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Partners</Link>
-              <Link to="/" state={{ scrollTo: "contact" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Contact</Link>
+          {/* Links Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-16">
+            
+            {/* Column 2: Quick Links */}
+            <div className="flex flex-col gap-4">
+              <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                Navigation
+              </h3>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/events" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Events</Link>
+                <Link to="/team" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Team Roster</Link>
+                <Link to="/about" state={{ scrollTo: "partners" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Partners</Link>
+                <Link to="/" state={{ scrollTo: "contact" }} className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Contact</Link>
+              </div>
             </div>
-          </div>
 
-          {/* Column 3: Legal & Privacy */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-              Legal & Compliance
-            </h3>
-            <div className="flex flex-col gap-2.5">
-              <Link to="/privacy-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Privacy Policy</Link>
-              <Link to="/terms-conditions" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Terms & Conditions</Link>
-              <Link to="/accessibility" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Accessibility</Link>
+            {/* Column 3: Legal & Privacy */}
+            <div className="flex flex-col gap-4">
+              <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                Legal & Compliance
+              </h3>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/privacy-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Privacy Policy</Link>
+                <Link to="/terms-conditions" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Terms & Conditions</Link>
+                <Link to="/accessibility" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Accessibility</Link>
+              </div>
             </div>
-          </div>
 
-          {/* Column 4: Community */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-              Governance
-            </h3>
-            <div className="flex flex-col gap-2.5">
-              <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Guidelines</Link>
-              <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Event Policy</Link>
-              <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment & Registration Guide</Link>
+            {/* Column 4: Community */}
+            <div className="flex flex-col gap-4">
+              <h3 className="font-mono font-bold text-accent uppercase tracking-widest text-xs flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                Governance
+              </h3>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/community-guidelines" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Guidelines</Link>
+                <Link to="/event-policy" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Event Policy</Link>
+                <Link to="/payment-registration-guide" className="text-sm text-text-muted hover:text-accent transition-colors w-fit">Payment & Registration Guide</Link>
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-border/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
           <p
             onClick={onFooterClick}
             className="text-xs text-text-muted font-mono uppercase tracking-wider text-center md:text-left select-none cursor-pointer hover:text-accent transition-colors"
@@ -164,7 +208,7 @@ const Footer = ({ layout, onFooterClick }) => {
 
           {layout?.meta && (
             <div className="flex items-center gap-3">
-              <p className="text-xs text-text-muted font-mono uppercase tracking-widest">
+              <p className="text-xs text-text-muted font-mono uppercase tracking-widest text-center md:text-right">
                 {layout.meta}
               </p>
             </div>

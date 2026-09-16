@@ -10,7 +10,7 @@ import { useImageZoom } from "../../../context/ImageZoomContext";
  */
 const EVENT_LOGOS = {
   techthrive: ASSETS.IMAGES.ABOUT_FLAGSHIP_TECHTHRIVE_LOGO,
-  techsprint: ASSETS.IMAGES.ABOUT_FLAGSHIP_TECHSPRINT_LOGO,
+  ignite: ASSETS.IMAGES.ABOUT_FLAGSHIP_IGNITE_LOGO,
   "q-hackathon": ASSETS.IMAGES.ABOUT_FLAGSHIP_QHACKATHON_LOGO,
 };
 
@@ -21,7 +21,7 @@ const DEFAULT_FALLBACK_IMAGE =
 /**
  * AboutFlagshipEvents Component
  * 
- * Displays CodeX's flagship events (TechThrive, Q-Hackathon, TechSprint)
+ * Displays CodeX's flagship events (TechThrive, Q-Hackathon, Ignite)
  * in an interactive, accessible, hardware-accelerated carousel with
  * infinite auto-rotation, pause-on-hover, and keyboard navigation.
  */
@@ -197,6 +197,7 @@ const AboutFlagshipEvents = () => {
                         href={event.website}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-accent text-white font-sans text-xs sm:text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] transition-all duration-300 hover:-translate-y-0.5 group/btn border border-accent/50 cursor-pointer"
                       >
                         Visit Website{" "}
