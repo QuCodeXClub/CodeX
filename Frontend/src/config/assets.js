@@ -24,14 +24,16 @@ export const ASSETS = {
     PARTNER_COLLAGECART: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981666/collagecart_n12fpb.svg",
     PARTNER_CODECRAFTERS: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981671/codecrafters_esxtat.svg",
     PARTNER_MEMCODE: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787981661/memcode_vc0ncj.svg",
+    PARTNER_OSEN: "https://res.cloudinary.com/fswmfdcp/image/upload/v1789585371/osen-icon_rmsrfx.svg",
+    PARTNER_INTERVIEWBUDDY: "https://res.cloudinary.com/fswmfdcp/image/upload/v1789585371/interviewbuddy_jt2twl.svg",
 
     // About Section
     ABOUT_FLAGSHIP_TECHTHRIVE_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980365/techthrive-logo_dtu9hw.svg",
     ABOUT_FLAGSHIP_QHACKATHON_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980407/qhackathon-logo_wf5ehk.svg",
-    ABOUT_FLAGSHIP_TECHSPRINT_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/f_auto,q_auto/v1787980369/techsprint-logo_xed01t.svg",
+    ABOUT_FLAGSHIP_IGNITE_LOGO: "https://res.cloudinary.com/fswmfdcp/image/upload/v1789585810/ignite_dlqnht.svg",
     ABOUT_FLAGSHIP_TECHTHRIVE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0627_rn1b2f.jpg",
     ABOUT_FLAGSHIP_QHACKATHON: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475195/3R5A5324_mlzhos.jpg",
-    ABOUT_FLAGSHIP_TECHSPRINT: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",
+    ABOUT_FLAGSHIP_IGNITE: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_1200/v1787475669/IMG_0624_ixv8wd.jpg",
     ABOUT_COMMUNITY_1: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0627_rn1b2f.jpg",
     ABOUT_COMMUNITY_2: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_6902_oyq9by.jpg",
     ABOUT_COMMUNITY_3: "https://res.cloudinary.com/ddfwdj4jn/image/upload/f_auto,q_auto,w_800/v1787475669/IMG_0619_migrdi.jpg",
