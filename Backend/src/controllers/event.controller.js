@@ -82,6 +82,7 @@ const createEvent = asyncHandler(async (req, res) => {
     registrationCloseDate,
     description,
     registrationLink,
+    isRegistrationFree,
     locationType,
     location,
     tags,
@@ -119,6 +120,7 @@ const createEvent = asyncHandler(async (req, res) => {
     registrationCloseDate: parsedRegistrationCloseDate,
     description,
     registrationLink: registrationLink ? String(registrationLink).trim() : "",
+    isRegistrationFree: isRegistrationFree === "true" || isRegistrationFree === true,
     locationType: locationType
       ? normalizeLocationType(locationType)
       : "Offline",
@@ -167,10 +169,15 @@ const getEvents = asyncHandler(async (req, res) => {
           $and: [
             { $gte: ["$date", now] },
             {
-              $gt: [
-                { $strLenCP: { $ifNull: ["$registrationLink", ""] } },
-                0,
-              ],
+              $or: [
+                { $eq: ["$isRegistrationFree", true] },
+                {
+                  $gt: [
+                    { $strLenCP: { $ifNull: ["$registrationLink", ""] } },
+                    0,
+                  ],
+                },
+              ]
             },
             {
               $or: [
@@ -319,6 +326,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     registrationCloseDate,
     description,
     registrationLink,
+    isRegistrationFree,
     locationType,
     location,
     tags,
@@ -360,6 +368,9 @@ const updateEvent = asyncHandler(async (req, res) => {
   if (description !== undefined) event.description = description;
   if (registrationLink !== undefined) {
     event.registrationLink = registrationLink ? String(registrationLink).trim() : "";
+  }
+  if (isRegistrationFree !== undefined) {
+    event.isRegistrationFree = isRegistrationFree === "true" || isRegistrationFree === true;
   }
   if (locationType !== undefined) {
     event.locationType = normalizeLocationType(locationType);

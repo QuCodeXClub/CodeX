@@ -233,23 +233,23 @@ export default function BulkCertificates() {
             <Award className="w-3.5 h-3.5" />
             <span>CERTIFICATE PORTAL</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
-            CREDENTIAL <span className="text-accent">FORGE</span>
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
+            BULK <span className="text-accent">CERTIFICATES</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Bulk generate, verify, and email cryptographic completion certificates.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => navigate("/admin/history?tab=certificates")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition-all shadow-md cursor-pointer"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition-all shadow-md cursor-pointer whitespace-nowrap"
           >
             <History className="w-4 h-4" />
             <span>Issued Certificates History</span>
           </button>
-          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md">
+          <div className="hidden sm:block p-3 rounded-2xl bg-accent/10 border border-accent/30 shadow-md shrink-0">
             <Award className="w-7 h-7 text-accent" />
           </div>
         </div>
@@ -260,19 +260,26 @@ export default function BulkCertificates() {
         className="grid grid-cols-1 lg:grid-cols-12 gap-8"
       >
         {/* Left Panel : Event Details */}
-        <div className="lg:col-span-4 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8 h-fit space-y-6">
-          <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4">
+        <div className="lg:col-span-4 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 h-fit space-y-6">
+          <h2 className="flex items-center gap-2 text-base sm:text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4">
             <Calendar className="w-5 h-5 text-accent" />
             Event Details
           </h2>
 
           {/* Event Name */}
-          <div>
-            <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-              Event Name
+          {/* Event Name */}
+          <div className="group/field">
+            <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+              <span>
+                Event Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String
+              </span>
             </label>
             <input
               type="text"
+              title="Event Name — Type: String (Mandatory)"
               {...register("eventName", { required: "Event name is required" })}
               placeholder="CodeX Workshop 2026"
               className="w-full bg-card-hover/60 border border-border/80 text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all shadow-sm font-sans placeholder:text-text-muted/50"
@@ -285,13 +292,18 @@ export default function BulkCertificates() {
           </div>
 
           {/* Event Date */}
-          <div>
-            <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider flex items-center justify-between">
-              <span>Event Date</span>
-              <span className="text-[10px] text-accent font-normal">CYAN CALENDAR</span>
+          <div className="group/field">
+            <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+              <span>
+                Event Date <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                Date (YYYY-MM-DD)
+              </span>
             </label>
             <input
               type="date"
+              title="Event Date — Format: Date (YYYY-MM-DD, Mandatory)"
               {...register("eventDate", { required: "Event date is required" })}
               className="w-full bg-card-hover/60 border border-border/80 text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all shadow-sm font-mono"
             />
@@ -303,14 +315,20 @@ export default function BulkCertificates() {
           </div>
 
           {/* Coordinator */}
-          <div>
-            <label className="block text-sm font-semibold text-text mb-2">
-              Coordinator Name
+          <div className="group/field">
+            <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+              <span>
+                Coordinator Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                String (Text)
+              </span>
             </label>
             <div className="relative">
               <UserCheck className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
               <input
                 type="text"
+                title="Coordinator Name — Format: String (Mandatory)"
                 {...register("coordinatorName", {
                   required: "Coordinator name is required",
                 })}
@@ -326,11 +344,19 @@ export default function BulkCertificates() {
           </div>
 
           {/* Signature Upload */}
-          <div>
-            <label className="block text-sm font-semibold text-text mb-2">
-              Signature Image
+          <div className="group/field">
+            <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+              <span>
+                Signature Image <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                Image File (PNG, JPG)
+              </span>
             </label>
-            <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl p-6 cursor-pointer hover:border-accent hover:bg-accent/10 transition">
+            <label
+              title="Signature Image — Format: Image File (PNG, JPG, Mandatory)"
+              className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl p-6 cursor-pointer hover:border-accent hover:bg-accent/10 transition"
+            >
               <input
                 type="file"
                 accept="image/*"
@@ -373,26 +399,27 @@ export default function BulkCertificates() {
         </div>
 
         {/* Right Panel : Student Details */}
-        <div className="lg:col-span-8 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8">
-          <div className="flex items-center justify-between border-b border-border/60 pb-4 mb-6">
-            <h2 className="flex items-center gap-2 text-lg font-display font-bold uppercase text-text">
-              <Users className="w-5 h-5 text-accent" />
-              Student Details
-            </h2>
-
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-semibold bg-accent/10 text-accent px-3 py-1 rounded-full">
+        <div className="lg:col-span-8 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-4 mb-6 gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <h2 className="flex items-center gap-2 text-base sm:text-lg font-display font-bold uppercase text-text">
+                <Users className="w-5 h-5 text-accent" />
+                Student Details
+              </h2>
+              <span className="text-xs font-semibold bg-accent/10 text-accent px-2.5 sm:px-3 py-1 rounded-full whitespace-nowrap">
                 {fields.length} Student(s)
               </span>
+            </div>
 
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
               {/* CSV Download Template */}
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 text-xs sm:text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm whitespace-nowrap"
                 title="Download CSV Template (Name, Email, Position)"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Template
               </button>
 
@@ -409,16 +436,16 @@ export default function BulkCertificates() {
                 type="button"
                 disabled={isImportingCsv}
                 onClick={() => csvInputRef.current.click()}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 text-xs sm:text-sm rounded-lg border border-border bg-card hover:bg-card-hover text-text font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {isImportingCsv ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
-                    <span>Importing CSV...</span>
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-accent" />
+                    <span>Importing...</span>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4" />
+                    <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>Import CSV</span>
                   </>
                 )}
@@ -441,52 +468,81 @@ export default function BulkCertificates() {
                 className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start bg-card-hover border border-border rounded-xl p-4"
               >
                 {/* Name */}
-                <div className="md:col-span-4 relative">
-                  <User className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="text"
-                    placeholder="Student Name"
-                    {...register(`students.${index}.name`, {
-                      required: "Name is required",
-                    })}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                <div className="md:col-span-4 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-text mb-1">
+                    <span>
+                      Student Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                    </span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="text"
+                      title="Student Name — Type: String (Mandatory)"
+                      placeholder="Student Name *"
+                      {...register(`students.${index}.name`, {
+                        required: "Name is required",
+                      })}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                   {errors.students?.[index]?.name && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].name.message}
                     </p>
                   )}
                 </div>
 
                 {/* Email */}
-                <div className="md:col-span-4 relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-text-muted" />
-                  <input
-                    type="email"
-                    placeholder="student@email.com"
-                    {...register(`students.${index}.email`, {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    className="w-full bg-card text-text rounded-lg border border-border pl-10 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
+                <div className="md:col-span-4 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-text mb-1">
+                    <span>
+                      Email Address <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                    </span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 w-3.5 h-3.5 text-text-muted" />
+                    <input
+                      type="email"
+                      title="Student Email — Type: String (Mandatory)"
+                      placeholder="student@email.com *"
+                      {...register(`students.${index}.email`, {
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Invalid email address",
+                        },
+                      })}
+                      className="w-full bg-card text-text rounded-lg border border-border pl-9 p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
                   {errors.students?.[index]?.email && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].email.message}
                     </p>
                   )}
                 </div>
 
                 {/* Position */}
-                <div className="md:col-span-3">
+                <div className="md:col-span-3 group/field">
+                  <label className="flex items-center justify-between text-[11px] font-mono font-semibold uppercase text-text-muted mb-1">
+                    <span>Position</span>
+                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
+                  </label>
                   <select
+                    title="Student Award / Position — Type: String (Option Selection)"
                     {...register(`students.${index}.position`, {
                       required: "Position is required",
                     })}
-                    className="w-full bg-card text-text rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full bg-card text-text rounded-lg border border-border p-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   >
                     <option value="Participant">Participant</option>
                     <option value="Winner">Winner</option>
@@ -497,21 +553,22 @@ export default function BulkCertificates() {
                     <option value="Organizer">Organizer</option>
                   </select>
                   {errors.students?.[index]?.position && (
-                    <p className="mt-1 text-xs text-danger">
+                    <p className="mt-1 text-[11px] text-danger">
                       {errors.students[index].position.message}
                     </p>
                   )}
                 </div>
 
                 {/* Delete */}
-                <div className="md:col-span-1 flex justify-center">
+                <div className="md:col-span-1 flex items-end justify-center pb-1">
                   <button
                     type="button"
                     onClick={() => remove(index)}
                     disabled={fields.length === 1}
-                    className="text-text-muted hover:text-danger disabled:opacity-40 mt-2 transition-colors"
+                    title="Remove Student"
+                    className="text-text-muted hover:text-danger disabled:opacity-40 p-2 transition-colors"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>

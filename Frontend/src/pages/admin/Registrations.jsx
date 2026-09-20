@@ -20,6 +20,8 @@ import {
   updateAdminRegistrationDetails,
   createManualRegistration,
   createBulkRegistration,
+  fetchRegistrationSystemStatus,
+  updateRegistrationSystemStatus,
   setCurrentPage,
 } from "../../context/adminRegistrationsSlice";
 import { registrationService } from "../../services/registrationService";
@@ -30,9 +32,10 @@ import AddRegistrationModal from "./components/AddRegistrationModal";
 import EditRegistrationModal from "./components/EditRegistrationModal";
 import ImportRegistrationModal from "./components/ImportRegistrationModal";
 import RejectRegistrationModal from "./components/RejectRegistrationModal";
+import RegistrationStatusModal from "./components/RegistrationStatusModal";
 
 export default function Registrations() {
-  const { pages, currentPage, total, totalPages, loading } = useSelector(
+  const { pages, currentPage, total, totalPages, loading, systemStatus } = useSelector(
     (state) => state.adminRegistrations
   );
   const currentData = pages[currentPage] || [];
@@ -85,9 +88,24 @@ export default function Registrations() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const [rejectingRegistration, setRejectingRegistration] = useState(null);
   const [editingRegistration, setEditingRegistration] = useState(null);
   const [refreshToast, setRefreshToast] = useState(null);
+
+  // Fetch registration open/closed status on mount
+  useEffect(() => {
+    dispatch(fetchRegistrationSystemStatus());
+  }, [dispatch]);
+
+  const handleSaveSystemStatus = async (statusData) => {
+    await dispatch(updateRegistrationSystemStatus(statusData)).unwrap();
+    setRefreshToast({
+      type: "success",
+      message: `Registration portal is now ${statusData.isRegistrationOpen ? "OPEN" : "CLOSED"}`,
+    });
+    setTimeout(() => setRefreshToast(null), 3500);
+  };
 
   const [updatingId, setUpdatingId] = useState(null);
   const confirm = useConfirm();
@@ -332,56 +350,74 @@ export default function Registrations() {
             Manage, audit, and verify student applicant records in real-time.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          {/* Registration Status Indicator & Quick Toggle */}
+          <button
+            onClick={() => setShowStatusModal(true)}
+            className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-lg border text-xs font-mono font-bold transition-all shadow-sm ${systemStatus?.isRegistrationOpen
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+              : "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
+              }`}
+            title="Click to change registration open/closed status"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${systemStatus?.isRegistrationOpen
+                ? "bg-emerald-400 animate-pulse"
+                : "bg-rose-400"
+                }`}
+            />
+            <span>PORTAL: {systemStatus?.isRegistrationOpen ? "OPEN" : "CLOSED"}</span>
+          </button>
+
           <button
             onClick={handleExportCSV}
             disabled={isExporting || loading || total === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-card border border-border text-text rounded-lg text-xs sm:text-sm font-medium hover:bg-card-hover transition-colors shadow-sm disabled:opacity-50"
             title="Export to CSV"
           >
             {isExporting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
             ) : (
-              <Download className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
             <span>{isExporting ? "Exporting..." : "Export CSV"}</span>
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-text rounded-lg text-sm font-medium hover:bg-card-hover transition-colors shadow-sm"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-card border border-border text-text rounded-lg text-xs sm:text-sm font-medium hover:bg-card-hover transition-colors shadow-sm"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Bulk Import</span>
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-[#111111] rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-accent text-[#111111] rounded-lg text-xs sm:text-sm font-bold hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap"
           >
             <span>+ Add Student (Cash)</span>
           </button>
           <button
             onClick={handleRefreshNewEntriesOnly}
             disabled={loading}
-            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50 relative"
+            className="p-2 bg-card border border-border rounded-lg text-text-muted hover:text-accent hover:border-accent transition-colors shadow-sm disabled:opacity-50 relative shrink-0"
             title="Check for New Registrations"
           >
             <RefreshCw
-              className={`w-5 h-5 ${loading ? "animate-spin text-accent" : ""}`}
+              className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? "animate-spin text-accent" : ""}`}
             />
           </button>
         </div>
+
       </header>
 
       {/* Refresh Status Toast */}
       {refreshToast && (
         <div
-          className={`mb-4 px-4 py-2.5 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 shadow-sm ${
-            refreshToast.type === "success"
-              ? "bg-accent/10 border-accent/30 text-accent"
-              : refreshToast.type === "error"
+          className={`mb-4 px-4 py-2.5 rounded-xl border text-xs font-mono font-bold flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 shadow-sm ${refreshToast.type === "success"
+            ? "bg-accent/10 border-accent/30 text-accent"
+            : refreshToast.type === "error"
               ? "bg-error/10 border-error/30 text-error"
               : "bg-card border-border text-text-muted"
-          }`}
+            }`}
         >
           <span>{refreshToast.message}</span>
           <button
@@ -395,27 +431,27 @@ export default function Registrations() {
       )}
 
       {/* Control Bar */}
-      <div className="flex flex-col xl:flex-row justify-between gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 sm:gap-4 mb-6">
+        <div className="relative w-full xl:max-w-xs 2xl:max-w-sm shrink-0">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
           <input
             type="text"
             placeholder="Search by Name, Email, or Q-ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-card border border-border text-text rounded-lg p-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm"
+            className="w-full bg-card border border-border text-text rounded-lg p-2 pl-9 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors shadow-sm"
           />
         </div>
 
         {/* Filter Dropdowns Container */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-2 sm:gap-3 w-full xl:w-auto">
           {/* Course Filter */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
             <select
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
-              className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
+              className="w-full appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
             >
               <option value="ALL">All Courses</option>
               <option value="B.Tech">B.Tech</option>
@@ -427,16 +463,16 @@ export default function Registrations() {
               <option value="B.Sc">B.Sc</option>
               <option value="M.Sc">M.Sc</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-3.5 sm:top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Academic Year Filter */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
             <select
               value={academicYearFilter}
               onChange={(e) => setAcademicYearFilter(e.target.value)}
-              className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
+              className="w-full appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
             >
               <option value="ALL">All Academic Years</option>
               {formAcademicYears.map((yr) => (
@@ -445,38 +481,38 @@ export default function Registrations() {
                 </option>
               ))}
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-3.5 sm:top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Status Filter */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
+              className="w-full appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="PENDING">Pending</option>
               <option value="APPROVED">Approved</option>
               <option value="REJECTED">Rejected</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-3.5 sm:top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
 
           {/* Payment Mode Filter */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <Filter className="absolute left-3 top-2.5 w-4 h-4 text-accent pointer-events-none" />
             <select
               value={paymentModeFilter}
               onChange={(e) => setPaymentModeFilter(e.target.value)}
-              className="appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
+              className="w-full appearance-none bg-card border border-border text-text rounded-lg py-2 pl-9 pr-10 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent hover:border-border transition-colors shadow-sm cursor-pointer"
             >
               <option value="ALL">All Payments</option>
               <option value="ONLINE">Online</option>
               <option value="CASH">Cash</option>
             </select>
-            <div className="absolute right-3 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
+            <div className="absolute right-3 top-3.5 sm:top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none"></div>
           </div>
         </div>
       </div>
@@ -484,7 +520,8 @@ export default function Registrations() {
       {/* Data Table */}
       <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg overflow-hidden">
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm border-collapse">
+          <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[760px]">
+
             <thead className="bg-card-hover/90 border-b border-border/80">
               <tr>
                 <th className="px-3 sm:px-4 py-3 font-mono font-semibold text-text-muted text-[11px] uppercase tracking-wider">
@@ -634,8 +671,8 @@ export default function Registrations() {
 
         {/* Pagination Controls */}
         {!loading && total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-card-hover">
-            <div className="text-sm text-text-muted">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-4 border-t border-border bg-card-hover">
+            <div className="text-xs sm:text-sm text-text-muted text-center sm:text-left">
               Showing{" "}
               <span className="font-medium text-text">
                 {(currentPage - 1) * itemsPerPage + 1}
@@ -647,17 +684,17 @@ export default function Registrations() {
               of <span className="font-medium text-text">{total}</span>{" "}
               results
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() =>
                   dispatch(setCurrentPage(Math.max(1, currentPage - 1)))
                 }
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm font-medium text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
+                className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium text-text-muted bg-card border border-border rounded-lg hover:bg-card-hover disabled:opacity-50 transition-colors"
               >
                 Previous
               </button>
-              <div className="flex items-center px-3 text-sm font-medium text-text">
+              <div className="flex items-center px-2 sm:px-3 text-xs sm:text-sm font-medium text-text whitespace-nowrap">
                 Page {currentPage} of {totalPages}
               </div>
               <button
@@ -667,7 +704,7 @@ export default function Registrations() {
                   )
                 }
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm font-medium text-text-muted bg-card border border-border rounded hover:bg-card-hover disabled:opacity-50 transition-colors"
+                className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium text-text-muted bg-card border border-border rounded-lg hover:bg-card-hover disabled:opacity-50 transition-colors"
               >
                 Next
               </button>
@@ -704,6 +741,14 @@ export default function Registrations() {
           registration={rejectingRegistration}
           onClose={() => setRejectingRegistration(null)}
           onConfirm={handleConfirmReject}
+        />
+      )}
+      {/* Registration Status Modal */}
+      {showStatusModal && (
+        <RegistrationStatusModal
+          currentStatus={systemStatus}
+          onClose={() => setShowStatusModal(false)}
+          onSave={handleSaveSystemStatus}
         />
       )}
     </div>

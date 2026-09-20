@@ -1,8 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { registrationService } from "../services/registrationService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setError } from "../context/messageSlice";
+import { fetchRegistrationStatus } from "../context/registrationSlice";
 import RegistrationSuccess from "../components/register/RegistrationSuccess";
 import PersonalDetailsForm from "../components/register/PersonalDetailsForm";
 import AcademicDetailsForm from "../components/register/AcademicDetailsForm";
@@ -13,6 +15,12 @@ import {
   Sparkles,
   ShieldCheck,
   CheckCircle2,
+  Lock,
+  Calendar,
+  Users,
+  ArrowRight,
+  HelpCircle,
+  Loader2,
 } from "lucide-react";
 
 const Register = () => {
@@ -21,6 +29,28 @@ const Register = () => {
   const dispatch = useDispatch();
   const [turnstileToken, setTurnstileToken] = useState(null);
   const turnstileRef = useRef(null);
+
+  // Registration Portal Status State from Redux
+  const {
+    isOpen: isRegistrationOpen,
+    closedMessage,
+    loading: isStatusLoading,
+    loaded: isStatusLoaded,
+  } = useSelector(
+    (state) =>
+      state.registration || {
+        isOpen: true,
+        closedMessage: "",
+        loading: false,
+        loaded: true,
+      }
+  );
+
+  const statusLoading = !isStatusLoaded && isStatusLoading;
+
+  useEffect(() => {
+    dispatch(fetchRegistrationStatus());
+  }, [dispatch]);
 
   const resetSecurityCheck = () => {
     setTurnstileToken(null);
@@ -61,6 +91,11 @@ const Register = () => {
   });
 
   const onFormSubmit = async (data) => {
+    if (!isRegistrationOpen) {
+      dispatch(setError(closedMessage || "Registrations are currently closed."));
+      return;
+    }
+
     setLoading(true);
 
     if (!turnstileToken) {
@@ -137,6 +172,90 @@ const Register = () => {
 
   if (isSuccess) {
     return <RegistrationSuccess />;
+  }
+
+  // Loading state while checking portal status
+  if (statusLoading) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center font-sans">
+        <Loader2 className="w-8 h-8 text-accent animate-spin mb-3" />
+        <p className="text-xs font-mono text-text-muted tracking-widest uppercase">
+          Verifying Registration Portal Status...
+        </p>
+      </div>
+    );
+  }
+
+  // Closed State Screen
+  if (!isRegistrationOpen) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center relative font-sans py-12 px-4">
+        {/* Glow backdrop effects */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
+
+        <PageContainer>
+          <div className="max-w-2xl mx-auto text-center relative z-10">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-rose-500" />
+              <span>REGISTRATIONS CURRENTLY CLOSED</span>
+            </div>
+
+            {/* Icon Card */}
+            <div className="mx-auto w-20 h-20 rounded-3xl bg-card/85 backdrop-blur-xl border border-rose-500/30 flex items-center justify-center mb-6 shadow-2xl relative group">
+              <div className="absolute inset-0 rounded-3xl bg-rose-500/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
+              <Lock className="w-9 h-9 text-rose-400 relative z-10" />
+            </div>
+
+            {/* Title */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-text uppercase tracking-tight mb-4">
+              REGISTRATION IS <span className="text-rose-400">PAUSED</span>
+            </h1>
+
+            {/* Message Box */}
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-border/80 shadow-xl mb-8 text-left bg-card/60 backdrop-blur-xl">
+              <p className="text-text font-medium text-sm sm:text-base leading-relaxed text-center">
+                {closedMessage ||
+                  "The CodeX membership registration portal is currently closed. New student submissions are not being accepted at this time."}
+              </p>
+            </div>
+
+            {/* Helpful Links & Alternative Actions */}
+            <p className="text-xs font-mono uppercase tracking-widest text-text-muted mb-4">
+              Explore other CodeX initiatives in the meantime
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <Link
+                to="/events"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent text-[#111111] font-bold text-sm hover:opacity-90 transition-all shadow-md"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Upcoming Events</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                to="/team"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card border border-border text-text font-medium text-sm hover:bg-card-hover transition-all shadow-sm"
+              >
+                <Users className="w-4 h-4 text-accent" />
+                <span>Meet the Team</span>
+              </Link>
+
+              <Link
+                to="/payment-registration-guide"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card border border-border text-text font-medium text-sm hover:bg-card-hover transition-all shadow-sm"
+              >
+                <HelpCircle className="w-4 h-4 text-accent" />
+                <span>Registration Guide</span>
+              </Link>
+            </div>
+          </div>
+        </PageContainer>
+      </div>
+    );
   }
 
   return (

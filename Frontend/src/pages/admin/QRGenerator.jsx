@@ -197,7 +197,7 @@ export default function QRGenerator() {
             <QrCode className="w-3.5 h-3.5" />
             <span>DYNAMIC ENCODING</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             QR <span className="text-accent">GENERATOR</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
@@ -211,24 +211,30 @@ export default function QRGenerator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Form Section */}
-        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-6 sm:p-8 h-fit">
+        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 h-fit">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/60">
             <div className="p-2 bg-accent/10 rounded-xl border border-accent/20 text-accent">
               <QrCode className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-display font-bold uppercase text-text">New QR Code</h2>
+            <h2 className="text-base sm:text-lg font-display font-bold uppercase text-text">New QR Code</h2>
           </div>
 
           <form onSubmit={handleGenerate} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-text-muted mb-2 uppercase tracking-wider">
-                Destination Link
-              </label>
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-text-muted uppercase tracking-wider">
+                  Destination Link <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (URL)
+                </span>
+              </div>
               <div className="relative">
                 <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="url"
                   required
+                  title="Destination Link — Type: String (URL, Mandatory)"
                   placeholder="https://qucodex.com/events/..."
                   value={link}
                   onChange={(e) => {
@@ -264,16 +270,16 @@ export default function QRGenerator() {
         </div>
 
         {/* Preview Section */}
-        <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 flex flex-col items-center justify-center min-h-[400px]">
+        <div className="bg-card border border-border rounded-2xl shadow-sm p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-[360px] sm:min-h-[400px]">
           {qrUrl ? (
-            <div className="flex flex-col items-center space-y-8 animate-in fade-in zoom-in duration-300 w-full">
+            <div className="flex flex-col items-center space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-300 w-full">
               {/* Keep bg-white so the QR remains scannable! */}
-              <div className="p-6 bg-white rounded-2xl shadow-sm border border-border relative group">
+              <div className="p-4 sm:p-6 bg-white rounded-2xl shadow-sm border border-border relative group">
                 <div className="absolute inset-0 bg-accent/5 blur-xl -z-10 group-hover:bg-accent/20 transition-all duration-500"></div>
                 <img
                   src={qrUrl}
                   alt="Generated QR Code"
-                  className="w-56 h-56 md:w-64 md:h-64 object-contain relative z-10"
+                  className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 object-contain relative z-10"
                 />
               </div>
 
@@ -303,7 +309,7 @@ export default function QRGenerator() {
                   <button
                     onClick={() => handleDownload(qrUrl, 'svg', history.find(i => i.qrUrl === qrUrl)?.link || link)}
                     disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'svg'}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-xs sm:text-sm transition-all duration-200 disabled:opacity-50"
                   >
                     {downloadingState?.url === qrUrl && downloadingState?.format === 'svg' ? (
                       <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
@@ -315,7 +321,7 @@ export default function QRGenerator() {
                   <button
                     onClick={() => handleDownload(qrUrl, 'png', history.find(i => i.qrUrl === qrUrl)?.link || link)}
                     disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'png'}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-xs sm:text-sm transition-all duration-200 disabled:opacity-50"
                   >
                     {downloadingState?.url === qrUrl && downloadingState?.format === 'png' ? (
                       <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
@@ -327,7 +333,7 @@ export default function QRGenerator() {
                   <button
                     onClick={() => handleDownload(qrUrl, 'jpg', history.find(i => i.qrUrl === qrUrl)?.link || link)}
                     disabled={downloadingState?.url === qrUrl && downloadingState?.format === 'jpg'}
-                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-sm transition-all duration-200 disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center py-2.5 rounded-xl border border-border bg-card hover:bg-card-hover hover:border-accent/50 text-text text-xs sm:text-sm transition-all duration-200 disabled:opacity-50"
                   >
                     {downloadingState?.url === qrUrl && downloadingState?.format === 'jpg' ? (
                       <Loader2 className="w-4 h-4 mr-1.5 animate-spin text-accent" />
@@ -341,25 +347,27 @@ export default function QRGenerator() {
             </div>
           ) : (
             <div className="text-center text-text-muted flex flex-col items-center">
-              <div className="w-24 h-24 mb-6 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-card-hover relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent rounded-full animate-pulse"></div>
-                <QrCode className="w-8 h-8 opacity-20 relative z-10" />
+              <div className="w-16 h-16 rounded-2xl bg-card-hover border border-border flex items-center justify-center mb-4 text-text-muted">
+                <QrCode className="w-8 h-8" />
               </div>
-              <p className="text-sm">Preview will appear here</p>
+              <p className="text-sm font-medium">No QR Code Generated Yet</p>
+              <p className="text-xs text-text-muted mt-1 max-w-xs">
+                Enter a link above and click generate to create a branded QR code.
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* History Section */}
-      <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 mt-8">
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-          <div className="p-2 bg-card-hover rounded-lg text-text-muted">
+      <div className="mt-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-accent/10 rounded-xl border border-accent/20 text-accent">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-lg font-semibold text-text">Recent Generations</h2>
+          <h2 className="text-base sm:text-lg font-semibold text-text">Recent Generations</h2>
         </div>
 
         {historyLoading ? (
@@ -371,18 +379,19 @@ export default function QRGenerator() {
             <p>No QR codes generated yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {history.map((item) => (
-              <div key={item._id} className="bg-card-hover border border-border p-4 rounded-2xl hover:border-accent/50 transition-all duration-300 group flex flex-col h-full shadow-sm">
+              <div key={item._id} className="bg-card-hover border border-border p-3.5 sm:p-4 rounded-2xl hover:border-accent/50 transition-all duration-300 group flex flex-col h-full shadow-sm">
 
                 {/* Keep bg-white so history QR remains scannable! */}
-                <div className="bg-white p-3 rounded-xl mb-4 relative overflow-hidden flex-shrink-0 border border-border">
-                  <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
+                <div className="bg-white p-3 rounded-xl mb-3 relative overflow-hidden flex-shrink-0 border border-border">
+                  {/* Desktop hover overlay */}
+                  <div className="hidden sm:flex absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleDownload(item.qrUrl, 'svg', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg'}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
                         title="Download SVG"
                       >
                         {downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg' ? (
@@ -394,7 +403,7 @@ export default function QRGenerator() {
                       <button
                         onClick={() => handleDownload(item.qrUrl, 'png', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'png'}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
                         title="Download PNG"
                       >
                         {downloadingState?.url === item.qrUrl && downloadingState?.format === 'png' ? (
@@ -406,7 +415,7 @@ export default function QRGenerator() {
                       <button
                         onClick={() => handleDownload(item.qrUrl, 'jpg', item.link)}
                         disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg'}
-                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100"
+                        className="px-2 py-1.5 bg-accent/90 rounded-lg text-white text-xs font-bold hover:scale-110 transition-transform shadow-sm min-w-[44px] flex justify-center disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
                         title="Download JPG"
                       >
                         {downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg' ? (
@@ -419,7 +428,7 @@ export default function QRGenerator() {
                     <button
                       onClick={() => handleDeleteClick(item._id)}
                       disabled={deletingId === item._id}
-                      className="mt-1 p-2 bg-danger rounded-lg text-white hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100 shadow-sm"
+                      className="mt-1 p-2 bg-danger rounded-lg text-white hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100 shadow-sm cursor-pointer"
                       title="Delete"
                     >
                       {deletingId === item._id ? (
@@ -430,6 +439,41 @@ export default function QRGenerator() {
                     </button>
                   </div>
                   <img src={item.qrUrl} alt="QR Code" className="w-full aspect-square object-contain" />
+                </div>
+
+                {/* Mobile action buttons (visible on touch/mobile screens) */}
+                <div className="flex sm:hidden items-center justify-between gap-1.5 mb-3 p-1.5 bg-card rounded-xl border border-border">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleDownload(item.qrUrl, 'svg', item.link)}
+                      disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'svg'}
+                      className="px-2 py-1 bg-accent/20 text-accent rounded-md text-[11px] font-bold disabled:opacity-50"
+                    >
+                      SVG
+                    </button>
+                    <button
+                      onClick={() => handleDownload(item.qrUrl, 'png', item.link)}
+                      disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'png'}
+                      className="px-2 py-1 bg-accent/20 text-accent rounded-md text-[11px] font-bold disabled:opacity-50"
+                    >
+                      PNG
+                    </button>
+                    <button
+                      onClick={() => handleDownload(item.qrUrl, 'jpg', item.link)}
+                      disabled={downloadingState?.url === item.qrUrl && downloadingState?.format === 'jpg'}
+                      className="px-2 py-1 bg-accent/20 text-accent rounded-md text-[11px] font-bold disabled:opacity-50"
+                    >
+                      JPG
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteClick(item._id)}
+                    disabled={deletingId === item._id}
+                    className="p-1.5 text-danger hover:bg-danger/10 rounded-md transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between">

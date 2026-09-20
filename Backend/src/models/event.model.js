@@ -22,6 +22,10 @@ const eventSchema = new mongoose.Schema(
     registrationLink: {
       type: String, // URL
     },
+    isRegistrationFree: {
+      type: Boolean,
+      default: false,
+    },
     registrationCloseDate: {
       type: Date, // Deadline after which registration is closed
       default: null,

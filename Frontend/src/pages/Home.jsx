@@ -4,6 +4,7 @@ import HeroSection from "../features/landing/components/HeroSection";
 import lazyWithRetry from "../utils/lazyWithRetry";
 import { fetchPublicEvents } from "../context/eventsSlice";
 import { fetchPublicTeam } from "../context/teamSlice";
+import { fetchRegistrationStatus } from "../context/registrationSlice";
 import { generateAcademicYears } from "../utils/helpers";
 
 const MissionSection = lazyWithRetry(() => import("../features/landing/components/MissionSection"));
@@ -18,9 +19,10 @@ const Home = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Wake up the backend and load data on landing page
+    // Check registration portal status and load public data on welcome page
+    dispatch(fetchRegistrationStatus());
     dispatch(fetchPublicEvents());
-    
+
     // Pre-fetch the latest academic year team
     const formAcademicYears = generateAcademicYears();
     if (formAcademicYears.length > 0) {

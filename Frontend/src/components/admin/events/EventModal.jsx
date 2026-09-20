@@ -49,6 +49,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
         ? formatLocalDatetime(normalized.registrationCloseDate)
         : "",
       registrationLink: normalized?.registrationLink || "",
+      isRegistrationFree: normalized?.isRegistrationFree || false,
       locationType: normalized?.locationType || "Offline",
       location: normalized?.location || "",
     },
@@ -129,6 +130,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
       submitData.append("description", description);
       if (data.registrationLink)
         submitData.append("registrationLink", data.registrationLink);
+      submitData.append("isRegistrationFree", data.isRegistrationFree);
       if (coverImageFile) submitData.append("coverImage", coverImageFile);
 
       // New fields
@@ -191,12 +193,18 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
 
               {/* Row 1: Event Name + Date */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                    Event Name
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                    <span>
+                      Event Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
                   </label>
                   <input
                     type="text"
+                    title="Event Name — Type: String (Mandatory)"
                     {...register("eventName", {
                       required: "Event name is required",
                     })}
@@ -210,14 +218,19 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider flex items-center justify-between">
-                    <span>Date & Time</span>
-                    <span className="text-[10px] text-accent font-normal">CYAN CALENDAR ENCODED</span>
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                    <span>
+                      Date & Time <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      Date (YYYY-MM-DDTHH:mm)
+                    </span>
                   </label>
                   <div className="relative">
                     <input
                       type="datetime-local"
+                      title="Event Date & Time — Format: Date (YYYY-MM-DDTHH:mm, Mandatory)"
                       {...register("date", { required: "Date is required" })}
                       className={`w-full bg-card-hover/60 border ${errors.date ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border/80 focus:ring-accent/20 focus:border-accent"} text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm font-mono`}
                     />
@@ -231,9 +244,14 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
               </div>
 
               {/* Description */}
-              <div className="flex-1 flex flex-col min-h-[220px]">
-                <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                  Description
+              <div className="flex-1 flex flex-col min-h-[220px] group/field">
+                <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                  <span>
+                    Description <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    String (HTML)
+                  </span>
                 </label>
                 <RichTextEditor value={description} onChange={setDescription} />
                 {descError && (
@@ -245,9 +263,14 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
 
               {/* Row 3: Location Type + Location */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                    Location Type
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                    <span>
+                      Location Type <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String (Enum: Online / Offline)
+                    </span>
                   </label>
                   <div className="relative">
                     {locationType === "Online" ? (
@@ -262,6 +285,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                           ["Online", "Offline"].includes(v) ||
                           "Must be Online or Offline",
                       })}
+                      title="Location Type — Type: String (Enum: Online/Offline, Mandatory)"
                       className={`w-full bg-card-hover/60 border ${errors.locationType ? "border-danger focus:ring-danger/20 focus:border-danger" : "border-border/80 focus:ring-accent/20 focus:border-accent"} text-text rounded-xl p-3 pl-10 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm font-sans appearance-none cursor-pointer`}
                     >
                       <option value="Offline">Offline</option>
@@ -275,13 +299,19 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                    Location{" "}
-                    <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                    <span>
+                      Location{" "}
+                      <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String
+                    </span>
                   </label>
                   <input
                     type="text"
+                    title="Location — Type: String (Optional)"
                     {...register("location")}
                     className="w-full bg-card-hover/60 border border-border/80 focus:ring-accent/20 focus:border-accent text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm font-sans placeholder:text-text-muted/50"
                     placeholder={
@@ -294,15 +324,21 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
               </div>
 
               {/* Row 4: Tags */}
-              <div className="shrink-0">
-                <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                  Tags{" "}
-                  <span className="text-text-muted font-normal text-[11px]">(Optional — press Enter to add)</span>
+              <div className="shrink-0 group/field">
+                <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                  <span>
+                    Tags{" "}
+                    <span className="text-text-muted font-normal text-[11px]">(Optional — press Enter to add)</span>
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    Array [String]
+                  </span>
                 </label>
 
                 {/* Tag chip display + input */}
                 <div
                   onClick={() => tagInputRef.current?.focus()}
+                  title="Tags — Type: Array of Strings (Optional)"
                   className="min-h-[46px] w-full bg-card-hover/60 border border-border/80 focus-within:ring-2 focus-within:ring-accent/20 focus-within:border-accent text-text rounded-xl px-3 py-2 flex flex-wrap gap-2 items-center transition-all cursor-text"
                 >
                   <Tag className="w-4 h-4 text-accent shrink-0" />
@@ -351,15 +387,22 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
 
               {/* Row 5: Registration Settings (URL + Close Date) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0 pt-2">
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                    Registration URL{" "}
-                    <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                    <span>
+                      Registration URL{" "}
+                      <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-card border border-border text-text-muted opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      String (URL)
+                    </span>
                   </label>
                   <div className="relative">
                     <LinkIcon className={`absolute left-3.5 top-3.5 w-4 h-4 ${errors.registrationLink ? 'text-danger' : 'text-accent'}`} />
                     <input
                       type="url"
+                      disabled={watch("isRegistrationFree")}
+                      title="Registration URL — Type: String (URL, Optional)"
                       {...register("registrationLink", {
                         pattern: {
                           value: /^https?:\/\/.+/,
@@ -371,18 +414,33 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                     />
                   </div>
                   {errors.registrationLink && <p className="mt-1 text-xs text-danger font-medium">{errors.registrationLink.message}</p>}
+                  
+                  <div className="mt-3 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="isRegistrationFree"
+                      {...register("isRegistrationFree")}
+                      className="w-4 h-4 rounded border-border bg-card text-accent focus:ring-accent/20 cursor-pointer"
+                    />
+                    <label htmlFor="isRegistrationFree" className="text-sm font-sans text-text cursor-pointer">
+                      Open to All (No Registration Required)
+                    </label>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider flex items-center justify-between">
+                <div className="group/field">
+                  <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
                     <span>
                       Registration Closes At{" "}
                       <span className="text-text-muted font-normal text-[11px]">(Optional)</span>
                     </span>
-                    <span className="text-[10px] text-accent font-normal">AUTO-CLOSING DEADLINE</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                      Date (YYYY-MM-DDTHH:mm)
+                    </span>
                   </label>
                   <input
                     type="datetime-local"
+                    title="Registration Closes At — Format: Date (YYYY-MM-DDTHH:mm, Optional)"
                     {...register("registrationCloseDate")}
                     className="w-full bg-card-hover/60 border border-border/80 focus:ring-accent/20 focus:border-accent text-text rounded-xl p-3 text-sm focus:outline-none focus:ring-2 transition-all shadow-sm font-mono"
                   />
@@ -393,12 +451,20 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
               </div>
 
               {/* Row 6: Cover Image */}
-              <div className="shrink-0 pt-2">
-                <label className="block text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
-                  Cover Banner Image
+              <div className="shrink-0 pt-2 group/field">
+                <label className="flex items-center justify-between text-xs font-mono font-bold uppercase text-text mb-2 tracking-wider">
+                  <span>
+                    Cover Banner Image {!editingEvent && <span className="text-red-500 font-bold ml-0.5" title="Mandatory Field">*</span>}
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                    Image File (JPG, PNG, WebP)
+                  </span>
                 </label>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <label className="w-full sm:flex-1 border-2 border-dashed border-border/80 bg-card-hover/50 hover:bg-accent/10 hover:border-accent/50 rounded-xl p-4 text-center cursor-pointer transition-all group">
+                  <label
+                    title="Cover Banner Image — Format: Image File (JPG, PNG, WebP, Mandatory on create)"
+                    className="w-full sm:flex-1 border-2 border-dashed border-border/80 bg-card-hover/50 hover:bg-accent/10 hover:border-accent/50 rounded-xl p-4 text-center cursor-pointer transition-all group"
+                  >
                     <input
                       type="file"
                       accept="image/*"
@@ -407,7 +473,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                     />
                     <ImageIcon className="w-6 h-6 text-text-muted mx-auto mb-1 group-hover:text-accent transition-colors" />
                     <span className="text-xs font-mono font-semibold text-text-muted group-hover:text-accent block uppercase">
-                      Browse Cover Banner
+                      Browse Cover Banner (JPG, PNG, WebP)
                     </span>
                   </label>
                   {imagePreview && (

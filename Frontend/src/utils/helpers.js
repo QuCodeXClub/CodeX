@@ -110,6 +110,7 @@ export const normalizeEvent = (event) => {
     locationType: event.locationType || "Offline",
     location: event.location || "",
     tags: Array.isArray(event.tags) ? event.tags : [],
+    isRegistrationFree: event.isRegistrationFree || false,
   };
 };
 
@@ -121,7 +122,8 @@ export const normalizeEvent = (event) => {
  * 3. Registration close deadline (if configured) has not passed
  */
 export const isRegistrationOpen = (event) => {
-  if (!event || !event.registrationLink) return false;
+  if (!event) return false;
+  if (!event.isRegistrationFree && !event.registrationLink) return false;
   const now = new Date();
   if (event.date && new Date(event.date) < now) return false;
   if (event.registrationCloseDate && new Date(event.registrationCloseDate) < now) return false;

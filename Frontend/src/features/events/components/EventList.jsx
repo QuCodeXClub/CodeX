@@ -291,6 +291,11 @@ const EventList = () => {
                           <span className="w-1.5 h-1.5 rounded-full mr-2 bg-text-muted" />
                           COMPLETED
                         </span>
+                      ) : event.isRegistrationFree ? (
+                        <span className="inline-flex items-center text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full mr-2 bg-emerald-400 animate-pulse" />
+                          OPEN TO ALL (FREE)
+                        </span>
                       ) : regOpen ? (
                         <span className="inline-flex items-center text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-accent/10 text-accent border border-accent/30 shadow-sm">
                           <span className="w-1.5 h-1.5 rounded-full mr-2 bg-accent animate-pulse" />

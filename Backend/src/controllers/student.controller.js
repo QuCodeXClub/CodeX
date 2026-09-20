@@ -1,9 +1,37 @@
 import { StudentRegistration } from '../models/studentRegistration.model.js';
+import { SystemSetting } from '../models/systemSetting.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-
 import { verifyTurnstileToken } from '../utils/turnstile.js';
+
+export const getRegistrationStatusHelper = async () => {
+  let setting = await SystemSetting.findOne({ key: 'registration' });
+  if (!setting) {
+    setting = await SystemSetting.create({
+      key: 'registration',
+      isRegistrationOpen: true,
+      closedMessage: 'Registrations are currently closed. Please check back later or contact the CodeX team.',
+    });
+  }
+  return setting;
+};
+
+const getRegistrationPublicStatus = asyncHandler(async (req, res) => {
+  const setting = await getRegistrationStatusHelper();
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        isRegistrationOpen: setting.isRegistrationOpen,
+        closedMessage: setting.closedMessage,
+        openedAt: setting.openedAt,
+        closedAt: setting.closedAt,
+      },
+      'Registration status fetched successfully'
+    )
+  );
+});
 
 const registerStudent = asyncHandler(async (req, res) => {
   const {
@@ -21,7 +49,16 @@ const registerStudent = asyncHandler(async (req, res) => {
     turnstileToken,
     acceptedTerms,
   } = req.body;
-  const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
+  const clientIp = req.headers['cf-connecting-ip'] || req.headers['x-real-ip'] || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.body?.clientIp;
+
+  // 0. Verify Registration Portal Status
+  const setting = await getRegistrationStatusHelper();
+  if (!setting.isRegistrationOpen) {
+    throw new ApiError(
+      403,
+      setting.closedMessage || 'Registrations are currently closed by administrator.'
+    );
+  }
 
   // 1. Verify Bot Token
   if (!turnstileToken) {
@@ -95,4 +132,5 @@ const registerStudent = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerStudent };
+export { registerStudent, getRegistrationPublicStatus };
+

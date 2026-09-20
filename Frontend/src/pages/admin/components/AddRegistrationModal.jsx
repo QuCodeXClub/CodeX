@@ -41,13 +41,21 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
           className="p-6 space-y-4"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Student Name
-              </label>
+            {/* Student Name */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Student Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("name", { required: "Name is required" })}
                 type="text"
+                title="Student Name — Type: String (Mandatory)"
+                placeholder="Full student name"
                 className={`w-full bg-card text-text border ${errors.name ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.name && (
@@ -56,15 +64,24 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Father's Name
-              </label>
+
+            {/* Father's Name */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Father's Name <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("fatherName", {
                   required: "Father's name is required",
                 })}
                 type="text"
+                title="Father's Name — Type: String (Mandatory)"
+                placeholder="Father's name"
                 className={`w-full bg-card text-text border ${errors.fatherName ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.fatherName && (
@@ -73,16 +90,25 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Email
-              </label>
+
+            {/* Email */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Email <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Email)
+                </span>
+              </div>
               <input
                 {...register("email", {
                   required: "Email is required",
                   pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
                 })}
                 type="email"
+                title="Email — Type: String (Mandatory)"
+                placeholder="student@quantum.edu.in"
                 className={`w-full bg-card text-text border ${errors.email ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.email && (
@@ -91,10 +117,17 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Phone
-              </label>
+
+            {/* Phone */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Phone <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (10 Digits)
+                </span>
+              </div>
               <input
                 {...register("phone", {
                   required: "Phone is required",
@@ -103,7 +136,10 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                     message: "Must be 10 digits",
                   },
                 })}
-                type="text"
+                type="tel"
+                maxLength={10}
+                title="Phone Number — Type: String (10 Digits, Mandatory)"
+                placeholder="10-digit mobile number"
                 className={`w-full bg-card text-text border ${errors.phone ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.phone && (
@@ -112,12 +148,20 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Course
-              </label>
+
+            {/* Course */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Course <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("course")}
+                title="Course Program — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {[
@@ -136,12 +180,20 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Year
-              </label>
+
+            {/* Year */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Year <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("year")}
+                title="Academic Year — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {["1st Year", "2nd Year", "3rd Year", "4th Year"].map((y) => (
@@ -151,12 +203,20 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Semester
-              </label>
+
+            {/* Semester */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Semester <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Enum)
+                </span>
+              </div>
               <select
                 {...register("semester")}
+                title="Semester — Type: String (Enum, Mandatory)"
                 className="w-full bg-card text-text border border-border rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].map(
@@ -168,13 +228,22 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 )}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Section
-              </label>
+
+            {/* Section */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Section <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("section", { required: "Section is required" })}
                 type="text"
+                title="Section — Type: String (Mandatory)"
+                placeholder="e.g. A, B, CS-1"
                 className={`w-full bg-card text-text border ${errors.section ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.section && (
@@ -183,13 +252,22 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Set
-              </label>
+
+            {/* Set */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Set <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String
+                </span>
+              </div>
               <input
                 {...register("set", { required: "Set is required" })}
                 type="text"
+                title="Set/Group — Type: String (Mandatory)"
+                placeholder="e.g. Set 1, Group A"
                 className={`w-full bg-card text-text border ${errors.set ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.set && (
@@ -198,13 +276,22 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
                 </p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-text mb-1">
-                Q-ID
-              </label>
+
+            {/* Q-ID */}
+            <div className="group/field relative">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-text">
+                  Q-ID <span className="text-red-500 font-bold ml-0.5" title="Mandatory">*</span>
+                </label>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold opacity-0 group-hover/field:opacity-100 transition-opacity">
+                  String (Q-ID)
+                </span>
+              </div>
               <input
                 {...register("studentId", { required: "Q-ID is required" })}
                 type="text"
+                title="Student ID / Q-ID — Type: String (Mandatory)"
+                placeholder="e.g. 220101001"
                 className={`w-full bg-card text-text border ${errors.studentId ? "border-danger" : "border-border"} rounded-lg p-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent`}
               />
               {errors.studentId && (

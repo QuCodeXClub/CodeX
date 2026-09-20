@@ -7,18 +7,18 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     const message = Object.values(err.errors).map(val => val.message).join('. ');
     error = new ApiError(400, message || "Validation failed. Please verify all fields.");
-  } 
+  }
   // 2. Handle MongoDB Duplicate Key Error (11000)
   else if (err.code === 11000) {
     const field = Object.keys(err.keyValue || err.keyPattern || {})[0];
     const fieldLabel =
       field === 'studentId' ? 'Student ID (Q-ID)' :
-      field === 'transactionId' ? 'Transaction UTR' :
-      field === 'email' ? 'Email Address' :
-      field === 'eventName' ? 'Event Name' :
-      field === 'certificateId' ? 'Certificate ID' :
-      field === 'passId' ? 'Boarding Pass ID' :
-      field ? `${field}` : 'record';
+        field === 'transactionId' ? 'Transaction UTR' :
+          field === 'email' ? 'Email Address' :
+            field === 'eventName' ? 'Event Name' :
+              field === 'certificateId' ? 'Certificate ID' :
+                field === 'passId' ? 'Boarding Pass ID' :
+                  field ? `${field}` : 'record';
     const message = `A record with this ${fieldLabel} already exists in the system.`;
     error = new ApiError(400, message);
   }
@@ -42,7 +42,11 @@ const errorHandler = (err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') message = "File is too large. Please upload a smaller file.";
     error = new ApiError(400, message);
   }
-  // 6. Generic Exception Fallback
+  // 6. Handle JSON / Payload Too Large Errors
+  else if (err.type === 'entity.too.large' || err.status === 413) {
+    error = new ApiError(413, "Request payload is too large. Please reduce the batch size or image resolution.");
+  }
+  // 7. Generic Exception Fallback
   else if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || 500;
     const message = "An unexpected error occurred. Please try again.";

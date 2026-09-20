@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, NavLink, useLocation, Link } from "react-router-dom";
+import { useTheme } from "../../hooks/useTheme";
 
 import {
   LayoutDashboard,
@@ -16,11 +17,14 @@ import {
   Megaphone,
   Cpu,
   History,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export default function DashboardLayout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const contentRef = React.useRef(null);
 
@@ -70,16 +74,17 @@ export default function DashboardLayout() {
       {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-bg/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-bg/70 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card/85 backdrop-blur-xl border-r border-border/80 flex flex-col shrink-0 h-full transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] lg:w-64 bg-card/95 lg:bg-card/85 backdrop-blur-2xl lg:backdrop-blur-xl border-r border-border/80 flex flex-col shrink-0 h-full transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-2xl lg:shadow-xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
-        <div className="p-6 pb-4 flex items-center justify-between border-b border-border/60 shrink-0">
+        <div className="p-5 sm:p-6 pb-4 flex items-center justify-between border-b border-border/60 shrink-0">
           <div>
             <h1 className="text-2xl font-display font-black tracking-tight text-text flex items-center gap-2">
               CODE <span className="text-accent">X</span>
@@ -91,13 +96,13 @@ export default function DashboardLayout() {
           </div>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="p-2 text-text-muted hover:text-text lg:hidden"
+            className="p-2 text-text-muted hover:text-text lg:hidden rounded-lg hover:bg-card-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.name}
@@ -110,8 +115,8 @@ export default function DashboardLayout() {
                 }`
               }
             >
-              <item.icon className="w-4 h-4 text-accent/90" />
-              {item.name}
+              <item.icon className="w-4 h-4 text-accent/90 shrink-0" />
+              <span className="truncate">{item.name}</span>
             </NavLink>
           ))}
         </nav>
@@ -120,19 +125,44 @@ export default function DashboardLayout() {
       {/* Main Content Area */}
       <main className="flex-1 relative overflow-hidden flex flex-col h-full w-full min-w-0 z-10">
         {/* Mobile Header */}
-        <header className="bg-card/85 backdrop-blur-xl border-b border-border/80 px-4 py-3.5 flex items-center justify-between lg:hidden z-30 shrink-0">
-          <div className="flex items-center gap-3">
+        <header className="bg-card/90 backdrop-blur-xl border-b border-border/80 px-4 py-3 flex items-center justify-between lg:hidden z-30 shrink-0 shadow-sm">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 -ml-2 text-text-muted hover:bg-card-hover rounded-lg"
+              className="p-2 -ml-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl transition-colors cursor-pointer"
+              aria-label="Open sidebar navigation"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-display font-black tracking-tight text-text leading-none">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-display font-black tracking-tight text-text leading-none">
                 CODE <span className="text-accent">X</span>
               </h1>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20">
+                Admin
+              </span>
             </div>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-text-muted hover:text-text hover:bg-card-hover rounded-xl transition-colors cursor-pointer"
+              title="Toggle Theme"
+            >
+              {theme === "light" ? (
+                <Moon className="w-4 h-4 text-accent" />
+              ) : (
+                <Sun className="w-4 h-4 text-accent" />
+              )}
+            </button>
+            <Link
+              to="/admin/profile"
+              className="p-2 text-text-muted hover:text-text hover:bg-card-hover rounded-xl transition-colors cursor-pointer"
+              title="Admin Profile"
+            >
+              <User className="w-4 h-4 text-accent" />
+            </Link>
           </div>
         </header>
 

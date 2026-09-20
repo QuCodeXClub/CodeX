@@ -11,6 +11,9 @@ import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
+// Trust proxy to properly inspect forwarded client IP addresses behind reverse proxies
+app.set("trust proxy", 1);
+
 // Security Headers
 app.use(helmet());
 
@@ -46,8 +49,38 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+// Route-specific payload limit: 10MB for bulk operations, 1MB safe limit for standard endpoints
+const isBulkRoute = (url) => {
+  if (!url) return false;
+  const path = url.toLowerCase();
+  return (
+    path.includes('/generate-bulk') ||
+    path.includes('/bulk') ||
+    path.includes('/boarding-passes') ||
+    path.includes('/certificates') ||
+    path.includes('/announcement')
+  );
+};
+
+const standardJson = express.json({ limit: "1mb" });
+const standardUrlencoded = express.urlencoded({ extended: true, limit: "1mb" });
+const bulkJson = express.json({ limit: "10mb" });
+const bulkUrlencoded = express.urlencoded({ extended: true, limit: "10mb" });
+
+app.use((req, res, next) => {
+  const url = req.originalUrl || req.url;
+  if (isBulkRoute(url)) {
+    bulkJson(req, res, (err) => {
+      if (err) return next(err);
+      bulkUrlencoded(req, res, next);
+    });
+  } else {
+    standardJson(req, res, (err) => {
+      if (err) return next(err);
+      standardUrlencoded(req, res, next);
+    });
+  }
+});
 app.use(express.static("public"));
 app.use(cookieParser());
 

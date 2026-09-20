@@ -9,18 +9,18 @@ export default function EventHeader({ openCreateModal, onRefresh, loading }) {
           <Calendar className="w-3.5 h-3.5" />
           <span>EVENTS & WORKSHOPS</span>
         </div>
-        <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
           EVENT <span className="text-accent">MANAGEMENT</span>
         </h1>
         <p className="text-xs sm:text-sm text-text-muted mt-1">
           Create, edit, schedule, and publish community events.
         </p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
         <button
           onClick={onRefresh}
           disabled={loading}
-          className="p-2.5 bg-card/85 backdrop-blur-xl border border-border/80 rounded-xl text-text-muted hover:text-accent hover:border-accent/40 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+          className="p-2.5 bg-card/85 backdrop-blur-xl border border-border/80 rounded-xl text-text-muted hover:text-accent hover:border-accent/40 transition-all shadow-sm disabled:opacity-50 cursor-pointer shrink-0"
           title="Refresh Data"
         >
           <RefreshCw
@@ -29,7 +29,7 @@ export default function EventHeader({ openCreateModal, onRefresh, loading }) {
         </button>
         <button
           onClick={openCreateModal}
-          className="flex items-center justify-center gap-2 bg-accent text-white px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider hover:bg-accent/90 transition-all shadow-md shadow-accent/20 cursor-pointer border-0"
+          className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-accent text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider hover:bg-accent/90 transition-all shadow-md shadow-accent/20 cursor-pointer border-0 whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
           Create Event

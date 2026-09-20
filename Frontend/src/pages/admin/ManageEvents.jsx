@@ -174,7 +174,7 @@ export default function ManageEvents() {
         {/* Filter & Search Bar */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4 mb-6">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-card border border-border rounded-xl overflow-x-auto shadow-sm">
+          <div className="flex items-center gap-1.5 p-1 bg-card border border-border rounded-xl overflow-x-auto shadow-sm no-scrollbar">
             {[
               { id: "ALL", label: "All Events" },
               { id: "UPCOMING", label: "Upcoming" },
@@ -183,7 +183,7 @@ export default function ManageEvents() {
               <button
                 key={tab.id}
                 onClick={() => dispatch(setFilterType(tab.id))}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex-1 sm:flex-initial text-center ${
                   filterType === tab.id
                     ? "bg-accent text-text-inverse shadow-sm"
                     : "text-text-muted hover:text-text hover:bg-card-hover"
@@ -195,9 +195,9 @@ export default function ManageEvents() {
           </div>
 
           {/* Search and Limit Controls */}
-          <div className="flex flex-1 items-center gap-3 sm:gap-4 justify-end">
+          <div className="flex items-center gap-2 sm:gap-4 justify-between lg:justify-end w-full lg:w-auto">
             {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 lg:w-72 xl:w-80">
               <Search className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -288,6 +288,11 @@ export default function ManageEvents() {
                       {isPast ? (
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/75 text-text-muted border border-white/10 backdrop-blur-md">
                           Completed
+                        </span>
+                      ) : event.isRegistrationFree ? (
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Open to All (Free)
                         </span>
                       ) : regOpen ? (
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent text-text-inverse border border-accent/40 shadow-sm flex items-center gap-1">
@@ -445,7 +450,7 @@ export default function ManageEvents() {
       {/* Pagination Footer */}
       {!loading && totalPages > 1 && (
         <div className="mt-8 pt-5 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs font-mono text-text-muted flex items-center gap-1.5">
+          <div className="text-xs font-mono text-text-muted flex items-center gap-1.5 flex-wrap justify-center sm:justify-start text-center">
             <span>
               Showing <strong className="text-text">{startItem}–{endItem}</strong> of{" "}
               <strong className="text-text">{total}</strong> events
@@ -457,16 +462,16 @@ export default function ManageEvents() {
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
             {/* First Page */}
             <button
               type="button"
               onClick={() => handlePageChange(1)}
               disabled={currentPage <= 1 || loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
+              className="p-1.5 sm:p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
               title="First Page"
             >
-              <ChevronsLeft className="w-4 h-4" />
+              <ChevronsLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
             {/* Previous Page */}
@@ -474,10 +479,10 @@ export default function ManageEvents() {
               type="button"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage <= 1 || loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
+              className="p-1.5 sm:p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
               title="Previous Page"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
             {/* Page Buttons */}
@@ -492,7 +497,7 @@ export default function ManageEvents() {
                 return (
                   <div key={p} className="flex items-center gap-1">
                     {showEllipsis && (
-                      <span className="px-1 text-xs font-mono text-text-muted select-none">
+                      <span className="px-0.5 sm:px-1 text-xs font-mono text-text-muted select-none">
                         ...
                       </span>
                     )}
@@ -500,7 +505,7 @@ export default function ManageEvents() {
                       type="button"
                       onClick={() => handlePageChange(p)}
                       disabled={loading}
-                      className={`min-w-[36px] h-9 px-2 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
+                      className={`min-w-[32px] sm:min-w-[36px] h-8 sm:h-9 px-1.5 sm:px-2 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
                         currentPage === p
                           ? "bg-accent text-text-inverse shadow-accent/20 border border-accent scale-105"
                           : "bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40"
@@ -517,10 +522,10 @@ export default function ManageEvents() {
               type="button"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage >= totalPages || loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
+              className="p-1.5 sm:p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
               title="Next Page"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
             {/* Last Page */}
@@ -528,10 +533,10 @@ export default function ManageEvents() {
               type="button"
               onClick={() => handlePageChange(totalPages)}
               disabled={currentPage >= totalPages || loading}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
+              className="p-1.5 sm:p-2 rounded-xl bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
               title="Last Page"
             >
-              <ChevronsRight className="w-4 h-4" />
+              <ChevronsRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
         </div>

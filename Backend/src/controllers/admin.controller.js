@@ -2,6 +2,8 @@ import { Admin } from '../models/admin.model.js';
 import { StudentRegistration } from '../models/studentRegistration.model.js';
 import { Event } from '../models/event.model.js';
 import { TeamMember } from '../models/teamMember.model.js';
+import { SystemSetting } from '../models/systemSetting.model.js';
+
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -13,6 +15,55 @@ import { Token } from '../models/token.model.js';
 import { UAParser } from 'ua-parser-js';
 import mongoSanitize from 'express-mongo-sanitize';
 import crypto from 'crypto';
+
+// Helper to detect client IP: backend-observed IP is the authoritative source of truth for security & sessions
+const getClientIp = (req) => {
+  // 1. Primary: Cloudflare / CDN connecting IP header
+  const cfIp = req.headers['cf-connecting-ip'];
+  if (cfIp && typeof cfIp === 'string' && cfIp.trim()) {
+    return cfIp.trim();
+  }
+
+  // 2. Primary: Nginx / reverse proxy real IP header
+  const xRealIp = req.headers['x-real-ip'];
+  if (xRealIp && typeof xRealIp === 'string' && xRealIp.trim()) {
+    return xRealIp.trim();
+  }
+
+  // 3. Primary: Standard X-Forwarded-For chain (original client is first in chain)
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded && typeof forwarded === 'string' && forwarded.trim()) {
+    const firstIp = forwarded.split(',')[0].trim();
+    if (firstIp && firstIp.toLowerCase() !== 'unknown') return firstIp;
+  }
+
+  // 4. Express-resolved IP (with trust proxy enabled) or socket remote address
+  const reqIp = req.ip || req.socket?.remoteAddress;
+  if (reqIp && reqIp !== '::1' && !reqIp.includes('127.0.0.1')) {
+    if (reqIp.startsWith('::ffff:')) {
+      return reqIp.replace('::ffff:', '');
+    }
+    return reqIp;
+  }
+
+  // 5. Optional fallback: client-provided IP only if network-observed IP is local/unknown
+  const bodyIp = req.body?.clientIp || req.body?.ipAddress || req.body?.ip || req.headers['x-client-ip'] || req.query?.clientIp;
+  if (bodyIp && typeof bodyIp === 'string') {
+    const trimmed = bodyIp.trim();
+    if (trimmed && trimmed.length <= 45 && /^([0-9a-fA-F:.]+)$/.test(trimmed)) {
+      return trimmed;
+    }
+  }
+
+  if (reqIp) {
+    if (reqIp.startsWith('::ffff:')) {
+      return reqIp.replace('::ffff:', '');
+    }
+    return reqIp;
+  }
+
+  return 'Unknown IP';
+};
 
 const generateAuthSession = async (adminId, req) => {
   try {
@@ -28,6 +79,9 @@ const generateAuthSession = async (adminId, req) => {
     const deviceType = parsedUA.device.type ?
       parsedUA.device.type.charAt(0).toUpperCase() + parsedUA.device.type.slice(1) : 'Desktop';
 
+    // Detect client IP from req.body, custom header, or request socket/headers
+    const ipAddress = getClientIp(req);
+
     // Create a new session with 10-day validity
     const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000);
     let session = await Session.create({
@@ -39,7 +93,7 @@ const generateAuthSession = async (adminId, req) => {
       os,
       browser,
       device: deviceType,
-      ipAddress: req.ip || req.headers['x-forwarded-for'] || 'Unknown IP',
+      ipAddress,
     });
 
     const token = admin.generateAuthToken(session._id);
@@ -236,6 +290,20 @@ const getAdminSessions = asyncHandler(async (req, res) => {
       },
     }
   );
+
+  // If current active session has localhost/unknown IP and request provides a valid client IP, update it
+  if (req.sessionId) {
+    const detectedIp = getClientIp(req);
+    if (detectedIp && !['Unknown IP', '127.0.0.1', '::1', 'localhost'].includes(detectedIp)) {
+      await Session.updateOne(
+        {
+          _id: req.sessionId,
+          ipAddress: { $in: ['127.0.0.1', '::1', 'Unknown IP', 'localhost'] },
+        },
+        { $set: { ipAddress: detectedIp } }
+      );
+    }
+  }
 
   const rawSessions = await Session.find()
     .populate('adminId', 'name email profilePhoto')
@@ -455,4 +523,73 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
   );
 });
 
-export { loginAdmin, verifyOtp, logoutAdmin, updateProfile, requestPasswordChange, changePassword, getAdminSessions, killSession, getCurrentAdmin, getDashboardMetrics };
+const getAdminRegistrationStatus = asyncHandler(async (req, res) => {
+  let setting = await SystemSetting.findOne({ key: 'registration' }).populate('updatedBy', 'fullName email');
+  if (!setting) {
+    setting = await SystemSetting.create({
+      key: 'registration',
+      isRegistrationOpen: true,
+      closedMessage: 'Registrations are currently closed. Please check back later or contact the CodeX team.',
+    });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      setting,
+      'Registration status fetched successfully'
+    )
+  );
+});
+
+const updateAdminRegistrationStatus = asyncHandler(async (req, res) => {
+  const { isRegistrationOpen, closedMessage } = req.body;
+
+  let setting = await SystemSetting.findOne({ key: 'registration' });
+  if (!setting) {
+    setting = new SystemSetting({ key: 'registration' });
+  }
+
+  if (typeof isRegistrationOpen === 'boolean') {
+    if (setting.isRegistrationOpen !== isRegistrationOpen) {
+      if (isRegistrationOpen) {
+        setting.openedAt = new Date();
+      } else {
+        setting.closedAt = new Date();
+      }
+    }
+    setting.isRegistrationOpen = isRegistrationOpen;
+  }
+
+  if (typeof closedMessage === 'string' && closedMessage.trim() !== '') {
+    setting.closedMessage = closedMessage.trim();
+  }
+
+  setting.updatedBy = req.admin?._id;
+  await setting.save();
+
+  const populatedSetting = await SystemSetting.findById(setting._id).populate('updatedBy', 'fullName email');
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      populatedSetting,
+      `Registration portal is now ${setting.isRegistrationOpen ? 'OPEN' : 'CLOSED'}`
+    )
+  );
+});
+
+export {
+  loginAdmin,
+  verifyOtp,
+  logoutAdmin,
+  updateProfile,
+  requestPasswordChange,
+  changePassword,
+  getAdminSessions,
+  killSession,
+  getCurrentAdmin,
+  getDashboardMetrics,
+  getAdminRegistrationStatus,
+  updateAdminRegistrationStatus,
+};
