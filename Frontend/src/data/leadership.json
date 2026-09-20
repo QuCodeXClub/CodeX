@@ -1,0 +1,130 @@
+{
+  "universityLeadership": {
+    "title": "University / QST Leadership",
+    "subtitle": "Guiding the vision of Quantum University.",
+    "tag": "UNIVERSITY LEADERSHIP",
+    "icon": "Building",
+    "members": [
+      {
+        "id": "u1",
+        "name": "Dr. Vivek Kumar",
+        "role": "Vice Chancellor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "u2",
+        "name": "Dr. Satender Kumar",
+        "role": "Dean Academics",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "u3",
+        "name": "Dr. Brij Mohan Singh",
+        "role": "Director, Quantum School of Technology",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      }
+    ]
+  },
+  "computerApplications": {
+    "title": "Computer Applications (CA)",
+    "subtitle": "Department leadership and coordination.",
+    "tag": "DEPARTMENT LEADERSHIP",
+    "icon": "Monitor",
+    "members": [
+      {
+        "id": "c1",
+        "name": "Dr. Mridula Singh",
+        "role": "HoD, Computer Applications",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "c2",
+        "name": "Dr. Ankur Rana",
+        "role": "CA Coordinator",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "c3",
+        "name": "Dr. Chunnu Lal",
+        "role": "Department Coordinator",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      }
+    ]
+  },
+  "clubLeadership": {
+    "title": "Club Leadership",
+    "subtitle": "Leading the Codex community.",
+    "tag": "CLUB LEADERSHIP",
+    "icon": "Users",
+    "members": [
+      {
+        "id": "cl1",
+        "name": "Parul Tyagi",
+        "role": "Club Coordinator",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "cl2",
+        "name": "Himanshu Tyagi",
+        "role": "Club Incharge",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      }
+    ]
+  },
+  "facultyMentors": {
+    "title": "Faculty / Mentors",
+    "subtitle": "Our mentors and academic guides.",
+    "tag": "FACULTY & MENTORS",
+    "icon": "BookOpen",
+    "members": [
+      {
+        "id": "f1",
+        "name": "Neetu Mourya",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f2",
+        "name": "Anurag Chandna",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f3",
+        "name": "Monti Saini",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f4",
+        "name": "Amit Kumar",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f5",
+        "name": "Vineet Kumar Salar",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f6",
+        "name": "Mayank Chauhan",
+        "role": "Faculty",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f7",
+        "name": "Raj Kumar",
+        "role": "Assistant Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      },
+      {
+        "id": "f8",
+        "name": "Dr. Md. Iqbal",
+        "role": "Professor",
+        "photo": "https://res.cloudinary.com/demo/image/upload/v1689599557/docs/profile.png"
+      }
+    ]
+  }
+}

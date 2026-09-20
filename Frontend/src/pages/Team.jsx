@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Filter, Users, Sparkles } from "lucide-react";
+import { Filter, Users, Sparkles, Crown } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPublicTeam } from "../context/teamSlice";
 import { AdminTeamCardSkeleton } from "../components/common/skeletons";
 import { TeamMemberCard } from "../components/common/TeamMemberCard";
 import PageContainer from "../components/common/PageContainer";
 import { generateAcademicYears } from "../utils/helpers";
+import Leadership from "../components/team/Leadership";
 
 const formAcademicYears = generateAcademicYears();
 
@@ -13,6 +14,7 @@ const Team = () => {
   const dispatch = useDispatch();
   const { membersByYear, loading } = useSelector((state) => state.team);
   const [filterYear, setFilterYear] = useState(formAcademicYears[0]);
+  const [activeTab, setActiveTab] = useState("leadership");
 
   useEffect(() => {
     if (filterYear && !membersByYear[filterYear]) {
@@ -64,21 +66,48 @@ const Team = () => {
     <div className="team-page min-h-screen bg-transparent relative font-sans pb-24">
       <div className="relative z-10 pt-8 lg:pt-12">
         <PageContainer>
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-border/80 pb-8">
+          <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-border/80 pb-8">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-3">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>MEET THE TEAM</span>
               </div>
               <h1 className="text-4xl sm:text-5xl font-display font-black text-text uppercase tracking-tight">
-                CODEX <span className="text-accent">ROSTER</span>
+                CODEX <span className="text-accent">{activeTab === "roster" ? "ROSTER" : "LEADERSHIP"}</span>
               </h1>
               <p className="text-sm text-text-muted mt-2">
-                Meet the passionate leaders, engineers, and creators driving CodeX forward.
+                {activeTab === "roster"
+                  ? "Meet the passionate leaders, engineers, and creators driving CodeX forward."
+                  : "The people guiding, supporting, and inspiring Codex forward."}
               </p>
+
+              <div className="flex items-center gap-2 mt-8 p-1 bg-card border border-border/60 rounded-xl w-fit shadow-sm">
+                <button
+                  onClick={() => setActiveTab("roster")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-mono transition-colors ${
+                    activeTab === "roster"
+                      ? "bg-accent/10 border border-accent/20 text-accent"
+                      : "text-text-muted hover:text-text hover:bg-card-hover border border-transparent"
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  Team Roster
+                </button>
+                <button
+                  onClick={() => setActiveTab("leadership")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-mono transition-colors ${
+                    activeTab === "leadership"
+                      ? "bg-accent/10 border border-accent/20 text-accent"
+                      : "text-text-muted hover:text-text hover:bg-card-hover border border-transparent"
+                  }`}
+                >
+                  <Crown className="w-4 h-4" />
+                  Leadership
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-6 self-start md:self-auto w-full md:w-auto mt-4 md:mt-0">
               <div className="relative min-w-[220px]">
                 <Filter className="absolute left-3.5 top-3 w-4 h-4 text-accent pointer-events-none" />
                 <select
@@ -94,34 +123,43 @@ const Team = () => {
                 </select>
                 <div className="absolute right-3.5 top-4 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-text-muted pointer-events-none" />
               </div>
+              <p className="text-sm italic text-text-muted hidden md:block">
+                "Building a stronger tech community, together."
+              </p>
             </div>
           </header>
 
-          {loading ? (
-            <div className="flex flex-col gap-12 w-full">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <AdminTeamCardSkeleton key={i} />
-                ))}
-              </div>
-            </div>
-          ) : members.length === 0 ? (
-            <div className="glass-card rounded-2xl p-16 text-center shadow-sm w-full border border-dashed border-border">
-              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
-              <h3 className="text-lg font-bold font-display uppercase text-text mb-1">
-                No Team Members Found
-              </h3>
-              <p className="text-text-muted text-xs font-mono">
-                No roster records available for Academic Year {filterYear}.
-              </p>
-            </div>
+          {activeTab === "leadership" ? (
+            <Leadership />
           ) : (
-            <div className="flex flex-col gap-14 w-full">
-              {renderTeamSection("Admin Team", adminTeam)}
-              {renderTeamSection("Core Team", coreTeam)}
-              {renderTeamSection("Tech Team", techTeam)}
-              {renderTeamSection("Graphic & Media Team", graphicTeam)}
-            </div>
+            <>
+              {loading ? (
+                <div className="flex flex-col gap-12 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                      <AdminTeamCardSkeleton key={i} />
+                    ))}
+                  </div>
+                </div>
+              ) : members.length === 0 ? (
+                <div className="glass-card rounded-2xl p-16 text-center shadow-sm w-full border border-dashed border-border">
+                  <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                  <h3 className="text-lg font-bold font-display uppercase text-text mb-1">
+                    No Team Members Found
+                  </h3>
+                  <p className="text-text-muted text-xs font-mono">
+                    No roster records available for Academic Year {filterYear}.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-14 w-full">
+                  {renderTeamSection("Admin Team", adminTeam)}
+                  {renderTeamSection("Core Team", coreTeam)}
+                  {renderTeamSection("Tech Team", techTeam)}
+                  {renderTeamSection("Graphic & Media Team", graphicTeam)}
+                </div>
+              )}
+            </>
           )}
         </PageContainer>
       </div>
