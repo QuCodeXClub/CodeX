@@ -12,7 +12,7 @@ import {
   MailCheck,
 } from "lucide-react";
 import { adminService } from "../../../services/adminService";
-
+import DOMPurify from "dompurify";
 export default function AnnouncementsHistoryModal({ onClose, isModal = false }) {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -237,7 +237,7 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
             <div
               className="flex-1 overflow-y-auto text-xs text-text p-4 rounded-xl bg-card-hover border border-border/60 font-sans"
               dangerouslySetInnerHTML={{
-                __html: selectedAnnouncement.payload?.messageHtml || selectedAnnouncement.payload?.messageText || "No message content",
+                __html: DOMPurify.sanitize(selectedAnnouncement.payload?.messageHtml || selectedAnnouncement.payload?.messageText || "No message content"),
               }}
             />
 

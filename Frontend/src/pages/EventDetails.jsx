@@ -12,6 +12,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { eventService } from "../services/eventService";
+import DOMPurify from "dompurify";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
 import {
@@ -301,7 +302,7 @@ export default function EventDetails() {
                     [&_strong]:font-bold [&_strong]:text-text
                     [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:mb-6 [&_blockquote]:bg-card/60 [&_blockquote]:italic [&_blockquote]:rounded-r-xl [&_blockquote]:text-text
                   "
-                  dangerouslySetInnerHTML={{ __html: event.description }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
                 />
               </div>
 
