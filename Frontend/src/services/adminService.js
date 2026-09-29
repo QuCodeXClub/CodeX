@@ -95,6 +95,22 @@ class AdminService {
   async getAnnouncementsHistory(params = {}) {
     return axiosInstance.get("/admin/announcements-history", { params });
   }
+
+  async getActivityLogs(params = {}) {
+    return axiosInstance.get("/admin/logs/activity", { params });
+  }
+
+  async getAccessLogs(params = {}) {
+    return axiosInstance.get("/admin/logs/access", { params });
+  }
+
+  async clearActivityLogs() {
+    return axiosInstance.delete("/admin/logs/activity");
+  }
+
+  async clearAccessLogs() {
+    return axiosInstance.delete("/admin/logs/access");
+  }
 }
 
 export const adminService = new AdminService();

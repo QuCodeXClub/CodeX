@@ -161,8 +161,8 @@ export default function ManageEvents() {
                   filterType === "UPCOMING"
                     ? "upcoming"
                     : filterType === "PAST"
-                    ? "past"
-                    : undefined,
+                      ? "past"
+                      : undefined,
                 search: debouncedSearch || undefined,
                 force: true,
               })
@@ -183,11 +183,10 @@ export default function ManageEvents() {
               <button
                 key={tab.id}
                 onClick={() => dispatch(setFilterType(tab.id))}
-                className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex-1 sm:flex-initial text-center ${
-                  filterType === tab.id
+                className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex-1 sm:flex-initial text-center ${filterType === tab.id
                     ? "bg-accent text-text-inverse shadow-sm"
                     : "text-text-muted hover:text-text hover:bg-card-hover"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -378,11 +377,10 @@ export default function ManageEvents() {
                             : event.location || "Offline"}
                         </span>
                         <span
-                          className={`ml-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0 ${
-                            event.locationType === "Online"
+                          className={`ml-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shrink-0 ${event.locationType === "Online"
                               ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                               : "bg-accent/10 text-accent border border-accent/20"
-                          }`}
+                            }`}
                         >
                           {event.locationType}
                         </span>
@@ -505,11 +503,10 @@ export default function ManageEvents() {
                       type="button"
                       onClick={() => handlePageChange(p)}
                       disabled={loading}
-                      className={`min-w-[32px] sm:min-w-[36px] h-8 sm:h-9 px-1.5 sm:px-2 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
-                        currentPage === p
+                      className={`min-w-[32px] sm:min-w-[36px] h-8 sm:h-9 px-1.5 sm:px-2 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${currentPage === p
                           ? "bg-accent text-text-inverse shadow-accent/20 border border-accent scale-105"
                           : "bg-card border border-border/80 text-text hover:bg-card-hover hover:border-accent/40"
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>
@@ -556,8 +553,8 @@ export default function ManageEvents() {
                   filterType === "UPCOMING"
                     ? "upcoming"
                     : filterType === "PAST"
-                    ? "past"
-                    : undefined,
+                      ? "past"
+                      : undefined,
                 search: debouncedSearch || undefined,
                 force: true,
               })

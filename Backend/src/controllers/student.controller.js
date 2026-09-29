@@ -4,6 +4,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { verifyTurnstileToken } from '../utils/turnstile.js';
+import { logPublicEvent } from '../middlewares/log.middleware.js';
 
 export const getRegistrationStatusHelper = async () => {
   let setting = await SystemSetting.findOne({ key: 'registration' });
@@ -113,6 +114,8 @@ const registerStudent = asyncHandler(async (req, res) => {
       phone: phone.trim(),
       transactionId: transactionId.trim(),
     });
+    
+    await logPublicEvent(req, "Student registration submitted");
 
     return res.status(201).json(
       new ApiResponse(201, registration, 'Registration submitted successfully. Please wait for admin approval.')

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { generateBulkCertificates, verifyCertificate, getLatestSignature, getAllCertificates } from '../controllers/certificate.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
+import { logAdminActivity } from '../middlewares/log.middleware.js';
 
 const router = Router();
 
@@ -11,6 +12,6 @@ router.route('/verify/:certificateId').get(verifyCertificate);
 // Secured admin route
 router.route('/').get(verifyJWT, getAllCertificates);
 router.route('/latest-signature').get(verifyJWT, getLatestSignature);
-router.route('/generate-bulk').post(verifyJWT, upload.single('signatureImage'), generateBulkCertificates);
+router.route('/generate-bulk').post(verifyJWT, upload.single('signatureImage'), logAdminActivity("Admin generated bulk certificates"), generateBulkCertificates);
 
 export default router;

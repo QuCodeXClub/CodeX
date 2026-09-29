@@ -44,6 +44,7 @@ const AdminSettings = routeLazy(() => import("../pages/admin/AdminSettings"));
 const AdminAnnouncements = routeLazy(() => import("../pages/admin/Announcements"));
 const BackgroundJobs = routeLazy(() => import("../pages/admin/BackgroundJobs"));
 const AuditHistory = routeLazy(() => import("../pages/admin/AuditHistory"));
+const SystemLogs = routeLazy(() => import("../pages/admin/Logs"));
 
 // High-performance intent prefetching: loads route chunks upon hover/touch before click completes
 if (typeof window !== "undefined") {
@@ -61,14 +62,14 @@ if (typeof window !== "undefined") {
       pathname.includes("/accessibility") ||
       pathname.includes("/payment-registration-guide")
     ) {
-      import("../pages/PrivacyPolicy").catch(() => {});
+      import("../pages/PrivacyPolicy").catch(() => { });
     } else if (pathname.startsWith("/admin")) {
-      import("../layout/AdminLayout").catch(() => {});
-      import("../pages/admin/DashboardLayout").catch(() => {});
+      import("../layout/AdminLayout").catch(() => { });
+      import("../pages/admin/DashboardLayout").catch(() => { });
     } else if (pathname.includes("/verify-certificate")) {
-      import("../pages/VerifyCertificate").catch(() => {});
+      import("../pages/VerifyCertificate").catch(() => { });
     } else if (pathname.includes("/verify-boarding-pass")) {
-      import("../pages/VerifyBoardingPass").catch(() => {});
+      import("../pages/VerifyBoardingPass").catch(() => { });
     }
   };
 
@@ -84,9 +85,9 @@ if (typeof window !== "undefined") {
 
   // Idle background prefetch for legal pages
   if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(() => import("../pages/PrivacyPolicy").catch(() => {}), { timeout: 3000 });
+    window.requestIdleCallback(() => import("../pages/PrivacyPolicy").catch(() => { }), { timeout: 3000 });
   } else {
-    setTimeout(() => import("../pages/PrivacyPolicy").catch(() => {}), 2000);
+    setTimeout(() => import("../pages/PrivacyPolicy").catch(() => { }), 2000);
   }
 }
 
@@ -138,6 +139,7 @@ export const router = createBrowserRouter([
           { path: "messages", lazy: ManageContacts },
           { path: "tasks", lazy: BackgroundJobs },
           { path: "history", lazy: AuditHistory },
+          { path: "logs", lazy: SystemLogs },
           { path: "profile", lazy: AdminProfile },
           { path: "settings", lazy: AdminSettings },
           { path: "announcements", lazy: AdminAnnouncements },

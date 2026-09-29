@@ -9,6 +9,7 @@ import {
   updateOnCloudinary,
   getPublicIdFromUrl,
 } from "../utils/cloudinary.js";
+import { logPublicEvent } from "../middlewares/log.middleware.js";
 
 const parseDateSafe = (val, fieldName, isRequired = false) => {
   if (!val) {
@@ -128,6 +129,8 @@ const createEvent = asyncHandler(async (req, res) => {
     tags: parseTags(tags),
     coverImage: coverImage.url,
   });
+  
+  req.logAction = `Admin created event: ${event.eventName}`;
 
   return res
     .status(201)
@@ -249,6 +252,8 @@ const getEvents = asyncHandler(async (req, res) => {
 
   const totalPages = Math.ceil(total / limit) || 1;
 
+  await logPublicEvent(req, "Events page seen");
+
   return res.status(200).json(
     new ApiResponse(
       200,
@@ -281,6 +286,8 @@ const getEventById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Event not found");
   }
 
+  await logPublicEvent(req, `Event details seen: ${event.eventName}`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, event, "Event fetched successfully"));
@@ -312,6 +319,8 @@ const deleteEvent = asyncHandler(async (req, res) => {
   }
 
   await event.deleteOne();
+  
+  req.logAction = `Admin deleted event: ${event.eventName}`;
 
   return res
     .status(200)
@@ -384,6 +393,8 @@ const updateEvent = asyncHandler(async (req, res) => {
   event.coverImage = newCoverImageUrl;
 
   await event.save();
+  
+  req.logAction = `Admin updated event: ${event.eventName}`;
 
   return res
     .status(200)
