@@ -40,6 +40,10 @@ class RegistrationService {
   async updateAdminRegistrationStatus(data) {
     return axiosInstance.patch("/admin/registration-status", data);
   }
+
+  async logExport() {
+    return axiosInstance.post("/registrations/log-export");
+  }
 }
 
 export const registrationService = new RegistrationService();

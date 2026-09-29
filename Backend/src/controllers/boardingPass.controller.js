@@ -3,12 +3,13 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
+import { logPublicEvent } from '../middlewares/log.middleware.js';
 
 const generateBulkBoardingPasses = asyncHandler(async (req, res) => {
   const { eventName, eventDescription, time, eventTime, venue, eventVenue, studentsStr } = req.body;
   const globalTime = (time || eventTime || '').toString().trim();
   const globalVenue = (venue || eventVenue || '').toString().trim();
-  
+
   if (!eventName || !eventDescription || !studentsStr) {
     throw new ApiError(400, 'Event Name, Event Description, and students data are required');
   }
@@ -66,6 +67,8 @@ const verifyBoardingPass = asyncHandler(async (req, res) => {
   if (!boardingPass) {
     throw new ApiError(404, 'Invalid Boarding Pass ID');
   }
+
+  await logPublicEvent(req, `Boarding pass verified: ${boardingPassId}`);
 
   return res.status(200).json(new ApiResponse(200, boardingPass, 'Boarding pass verified successfully'));
 });

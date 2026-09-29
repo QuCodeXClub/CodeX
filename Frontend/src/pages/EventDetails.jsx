@@ -12,6 +12,7 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { eventService } from "../services/eventService";
+import DOMPurify from "dompurify";
 import PageContainer from "../components/common/PageContainer";
 import { ASSETS } from "../config/assets";
 import {
@@ -20,14 +21,25 @@ import {
   isRegistrationOpen,
 } from "../utils/helpers";
 import { useImageZoom } from "../context/ImageZoomContext";
+import { useDispatch } from "react-redux";
+import { setSuccess } from "../context/messageSlice";
+
+// Setup DOMPurify to safely open links in new tabs
+DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+  if (node.tagName && node.tagName.toLowerCase() === 'a') {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
 
 export default function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { openImage } = useImageZoom();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -46,8 +58,8 @@ export default function EventDetails() {
         const eventsList = Array.isArray(response)
           ? response
           : Array.isArray(response?.data)
-          ? response.data
-          : response?.data?.data?.events || response?.data?.events || [];
+            ? response.data
+            : response?.data?.data?.events || response?.data?.events || [];
         const foundEvent = eventsList.find((e) => e._id === id || e.id === id);
         setEvent(normalizeEvent(foundEvent));
       } catch (error) {
@@ -75,7 +87,20 @@ export default function EventDetails() {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Event link copied to clipboard!");
+      dispatch(setSuccess("Event link copied to clipboard!"));
+    }
+  };
+
+  const getSafeLink = (url) => {
+    if (!url) return "#";
+    try {
+      const parsed = new URL(url, window.location.origin);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return parsed.href;
+      }
+      return "#";
+    } catch {
+      return "#";
     }
   };
 
@@ -128,7 +153,7 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-transparent pb-8 lg:pb-20 font-sans relative">
       <div className="w-full relative z-10">
-        
+
         {/* Top Navigation Bar */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 pt-6 pb-4">
           <Link
@@ -141,7 +166,7 @@ export default function EventDetails() {
 
         {/* Hero Image Container (Fixed to 1920x557 Aspect Ratio) */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 mb-8">
-          <div 
+          <div
             onClick={() => event.coverImage && openImage({ src: event.coverImage, alt: event.eventName })}
             className={`w-full aspect-[1920/557] bg-card-hover relative border border-border/80 rounded-2xl overflow-hidden shadow-sm group ${event.coverImage ? 'cursor-zoom-in' : ''}`}
           >
@@ -171,10 +196,10 @@ export default function EventDetails() {
         {/* Content Section - 2 Column Layout (Unstop Style) */}
         <PageContainer>
           <div className="flex flex-col lg:flex-row gap-8">
-            
+
             {/* Left Column: Event Details */}
             <div className="flex-1 min-w-0 space-y-6">
-              
+
               {/* Main Info Card */}
               <div className="bg-card border border-border/80 rounded-2xl p-6 md:p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-2 text-text-muted text-sm font-medium">
@@ -188,7 +213,7 @@ export default function EventDetails() {
                   </div>
                   <div className="flex items-center gap-4">
                     {isRegistrationOpen(event) && event.registrationLink && (
-                      <a href={event.registrationLink} target="_blank" rel="noreferrer" title="Register on Website">
+                      <a href={getSafeLink(event.registrationLink)} target="_blank" rel="noreferrer" title="Register on Website">
                         <Globe className="w-4 h-4 cursor-pointer hover:text-accent transition-colors" />
                       </a>
                     )}
@@ -301,7 +326,7 @@ export default function EventDetails() {
                     [&_strong]:font-bold [&_strong]:text-text
                     [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:mb-6 [&_blockquote]:bg-card/60 [&_blockquote]:italic [&_blockquote]:rounded-r-xl [&_blockquote]:text-text
                   "
-                  dangerouslySetInnerHTML={{ __html: event.description }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
                 />
               </div>
 
@@ -314,7 +339,7 @@ export default function EventDetails() {
                     </div>
                   ) : (
                     <a
-                      href={event.registrationLink}
+                      href={getSafeLink(event.registrationLink)}
                       target="_blank"
                       rel="noreferrer"
                       className="w-full pointer-events-auto bg-accent hover:bg-accent/90 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-8 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
@@ -336,7 +361,7 @@ export default function EventDetails() {
             {/* Right Column: Sticky Registration Sidebar (Hidden on Mobile) */}
             <div className="hidden lg:block w-[380px] flex-shrink-0">
               <div className="sticky top-24 space-y-6">
-                
+
                 {/* Registration Card */}
                 <div className="bg-card border border-border/80 rounded-2xl shadow-sm relative overflow-hidden">
                   {/* Status Banner */}
@@ -362,10 +387,10 @@ export default function EventDetails() {
                     {/* Organizer/Event Info */}
                     <div className="flex items-center gap-4 p-4 border border-border/80 rounded-xl mb-6">
                       <div className="w-12 h-12 bg-card-hover rounded-full border border-border flex items-center justify-center overflow-hidden">
-                        <img 
-                          src={ASSETS.IMAGES.CODEX_LOGO_ICON} 
-                          alt="Codex Logo" 
-                          className="w-full h-full object-cover p-1" 
+                        <img
+                          src={ASSETS.IMAGES.CODEX_LOGO_ICON}
+                          alt="Codex Logo"
+                          className="w-full h-full object-cover p-1"
                         />
                       </div>
                       <div>
@@ -381,7 +406,7 @@ export default function EventDetails() {
                         </div>
                       ) : (
                         <a
-                          href={event.registrationLink}
+                          href={getSafeLink(event.registrationLink)}
                           target="_blank"
                           rel="noreferrer"
                           className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 hover:shadow-[0_0_20px_var(--color-accent-glow)] text-text-inverse px-6 py-3.5 rounded-xl font-bold font-sans text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer"

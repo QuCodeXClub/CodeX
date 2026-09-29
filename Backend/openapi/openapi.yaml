@@ -881,3 +881,63 @@ paths:
       responses:
         "200":
           description: Message marked as read
+  /admin/logs/activity:
+    get:
+      tags:
+        - Admin
+      summary: Get all admin activity logs
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Paginated list of activity logs
+    delete:
+      tags:
+        - Admin
+      summary: Clear all admin activity logs
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Activity logs cleared successfully
+  /admin/logs/access:
+    get:
+      tags:
+        - Admin
+      summary: Get all public access logs
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Paginated list of access logs
+    delete:
+      tags:
+        - Admin
+      summary: Clear all public access logs
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Access logs cleared successfully

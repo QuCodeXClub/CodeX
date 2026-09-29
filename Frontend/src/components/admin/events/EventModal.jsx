@@ -414,7 +414,7 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
                     />
                   </div>
                   {errors.registrationLink && <p className="mt-1 text-xs text-danger font-medium">{errors.registrationLink.message}</p>}
-                  
+
                   <div className="mt-3 flex items-center gap-2">
                     <input
                       type="checkbox"
