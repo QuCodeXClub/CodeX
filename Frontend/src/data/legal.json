@@ -94,7 +94,25 @@
         ]
       },
       {
-        "title": "8. Data Security",
+        "title": "8. Automated Access & Security Logging",
+        "content": [
+          "Information We Collect Automatically",
+          "To ensure the security, integrity, and optimal performance of our platform, we automatically collect and log certain technical information when you access or interact with our services (such as viewing an event, verifying a certificate, or scanning a boarding pass). This information includes:",
+          "• Device & Network Information: Your IP address, browser type, and user-agent string.",
+          "• Usage Data: The specific actions you performed (e.g., verifying a boarding pass) and the date/time of the action.",
+          "How We Use This Information",
+          "We use this log data strictly for internal purposes, including:",
+          "• Detecting and preventing fraudulent activities or unauthorized access.",
+          "• Auditing system usage and troubleshooting technical errors.",
+          "• Verifying the authenticity of issued certificates and boarding passes.",
+          "Administrative Audit Trails",
+          "For internal staff and administrators, the system strictly logs all administrative actions (such as modifying user data or event details) alongside the administrator's identity and IP address. This is done to maintain strict accountability and protect user data from unauthorized internal modifications.",
+          "Data Retention Policy",
+          "We practice strict data minimization. All automated security, access, and administrative logs are subject to a strict Time-To-Live (TTL) policy and are automatically and permanently deleted from our servers after 90 days (3 months)."
+        ]
+      },
+      {
+        "title": "9. Data Security",
         "content": [
           "We implement reasonable technical and organizational safeguards to protect your personal information from unauthorized access, alteration, disclosure, or destruction."
         ],
@@ -110,7 +128,7 @@
         ]
       },
       {
-        "title": "9. User Rights",
+        "title": "10. User Rights",
         "content": [
           "Subject to applicable laws and university regulations, you may request assistance regarding your personal information."
         ],
@@ -123,26 +141,26 @@
         ]
       },
       {
-        "title": "10. Children's Privacy",
+        "title": "11. Children's Privacy",
         "content": [
           "The CodeX website is primarily intended for students of Quantum University. We do not knowingly collect personal information from children in violation of applicable laws. If such information is identified, reasonable steps will be taken to remove it."
         ]
       },
       {
-        "title": "11. External Links",
+        "title": "12. External Links",
         "content": [
           "Our website may contain links to third-party websites, resources, or platforms. We are not responsible for the privacy practices, security, or content of external websites. Users should review the privacy policies of those websites before providing personal information."
         ]
       },
       {
-        "title": "12. Policy Updates",
+        "title": "13. Policy Updates",
         "content": [
           "This Privacy Policy may be updated periodically to reflect changes in our services, legal requirements, or university policies. The latest version will always be published on the CodeX website along with the updated revision date.",
           "Your continued use of the website after changes become effective constitutes acceptance of the updated Privacy Policy."
         ]
       },
       {
-        "title": "13. Contact Us",
+        "title": "14. Contact Us",
         "content": [
           "If you have any questions, concerns, or requests regarding this Privacy Policy or the handling of your personal information, please contact us."
         ],
