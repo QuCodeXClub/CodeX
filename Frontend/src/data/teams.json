@@ -1,0 +1,90 @@
+{
+  "universityLeadership": [
+    {
+      "name": "Dr. Vivek Kumar",
+      "designation": "Vice Chancellor",
+      "imageKey": "VIVEK_KUMAR"
+    },
+    {
+      "name": "Dr. Satender Kumar",
+      "designation": "Dean Academics",
+      "imageKey": "SATENDER_KUMAR"
+    },
+    {
+      "name": "Dr. Brij Mohan Singh",
+      "designation": "Director, Quantum School of Technology",
+      "imageKey": "BRIJ_MOHAN_SINGH"
+    }
+  ],
+  "computerApplications": [
+    {
+      "name": "Dr. Mridula Singh",
+      "designation": "HoD, Computer Applications",
+      "imageKey": "MRIDULA_SINGH"
+    },
+    {
+      "name": "Dr. Ankur Rana",
+      "designation": "CA Coordinator",
+      "imageKey": "ANKUR_RANA"
+    },
+    {
+      "name": "Dr. Chunnu Lal",
+      "designation": "Department Coordinator",
+      "imageKey": "CHUNNU_LAL"
+    }
+  ],
+  "clubLeadership": [
+    {
+      "name": "Parul Tyagi",
+      "designation": "Club Coordinator",
+      "imageKey": "PARUL_TYAGI"
+    },
+    {
+      "name": "Himanshu Tyagi",
+      "designation": "Club Incharge",
+      "imageKey": "HIMANSHU_TYAGI"
+    }
+  ],
+  "facultyMentors": [
+    {
+      "name": "Neetu Mourya",
+      "designation": "Assistant Professor",
+      "imageKey": "NEETU_MOURYA"
+    },
+    {
+      "name": "Dr. Md. Iqbal",
+      "designation": "Professor",
+      "imageKey": "MD_IQBAL"
+    },
+    {
+      "name": "Anurag Chandna",
+      "designation": "Assistant Professor",
+      "imageKey": "ANURAG_CHANDNA"
+    },
+    {
+      "name": "Monti Saini",
+      "designation": "Assistant Professor",
+      "imageKey": "MONTI_SAINI"
+    },
+    {
+      "name": "Amit Kumar",
+      "designation": "Assistant Professor",
+      "imageKey": "AMIT_KUMAR"
+    },
+    {
+      "name": "Vineet Kumar Salar",
+      "designation": "Assistant Professor",
+      "imageKey": "VINEET_KUMAR_SALAR"
+    },
+    {
+      "name": "Mayank Chauhan",
+      "designation": "Assistant Professor",
+      "imageKey": "MAYANK_CHAUHAN"
+    },
+    {
+      "name": "Raj Kumar",
+      "designation": "Assistant Professor",
+      "imageKey": "RAJ_KUMAR"
+    }
+  ]
+}
