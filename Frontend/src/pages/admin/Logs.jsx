@@ -39,10 +39,10 @@ export default function Logs() {
         </div>
 
         {/* Tab Navigation Chips in Main Header */}
-        <div className="flex flex-wrap items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md">
+        <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md w-full md:w-auto">
           <button
             onClick={() => handleTabChange("activity")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 md:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
               activeTab === "activity"
                 ? "bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
@@ -54,7 +54,7 @@ export default function Logs() {
 
           <button
             onClick={() => handleTabChange("access")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 md:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
               activeTab === "access"
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
