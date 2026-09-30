@@ -40,10 +40,10 @@ export default function AuditHistory() {
         </div>
 
         {/* Tab Navigation Chips in Main Header */}
-        <div className="flex flex-wrap items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md">
+        <div className="flex flex-col lg:flex-row justify-center items-stretch lg:items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md w-full lg:w-auto">
           <button
             onClick={() => handleTabChange("certificates")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
               activeTab === "certificates"
                 ? "bg-teal-500/20 text-teal-400 border border-teal-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
@@ -55,7 +55,7 @@ export default function AuditHistory() {
 
           <button
             onClick={() => handleTabChange("boarding-passes")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
               activeTab === "boarding-passes"
                 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
@@ -67,7 +67,7 @@ export default function AuditHistory() {
 
           <button
             onClick={() => handleTabChange("announcements")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
               activeTab === "announcements"
                 ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
