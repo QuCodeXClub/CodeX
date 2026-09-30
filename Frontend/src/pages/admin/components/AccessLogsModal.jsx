@@ -48,21 +48,21 @@ export default function AccessLogsModal({ isModal = false }) {
   return (
     <div className="w-full flex flex-col space-y-6 animate-fadeIn">
       {/* Controls */}
-      <div className="flex items-center justify-between bg-card p-4 rounded-xl border border-border/80 shadow-sm shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-xl border border-border/80 shadow-sm shrink-0">
         <div className="text-xs font-mono text-text-muted flex items-center gap-2">
-          <Globe className="w-4 h-4 text-emerald-400" />
+          <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>Note: All logs auto delete after 3 months.</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <button
             onClick={fetchLogs}
-            className="px-4 py-2 rounded-xl border border-border bg-card text-text font-mono text-xs font-bold hover:bg-card-hover transition-colors"
+            className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-border bg-card text-text font-mono text-xs font-bold hover:bg-card-hover transition-colors"
           >
             Refresh
           </button>
           <button
             onClick={handleClearLogs}
-            className="px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs font-bold hover:bg-red-500/20 transition-colors"
+            className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs font-bold hover:bg-red-500/20 transition-colors"
           >
             Clear Logs
           </button>
@@ -84,7 +84,7 @@ export default function AccessLogsModal({ isModal = false }) {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
                   <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
                     <th className="p-4 pl-6">Action Performed</th>
@@ -122,22 +122,22 @@ export default function AccessLogsModal({ isModal = false }) {
 
         {/* Footer Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="p-4 border-t border-border/60 flex items-center justify-between text-xs text-text-muted bg-card-hover/50 shrink-0">
-            <span className="font-mono">
+          <div className="p-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted bg-card-hover/50 shrink-0">
+            <span className="font-mono text-center sm:text-left">
               Page <span className="text-text font-bold">{pagination.page}</span> of {pagination.totalPages} ({pagination.total} records)
             </span>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
+                className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
               >
                 Previous
               </button>
               <button
                 disabled={page >= pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
+                className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
               >
                 Next
               </button>
