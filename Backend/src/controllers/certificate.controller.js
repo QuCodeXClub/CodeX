@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { logPublicEvent } from '../middlewares/log.middleware.js';
 
 const generateBulkCertificates = asyncHandler(async (req, res) => {
   const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;
@@ -74,6 +75,8 @@ const verifyCertificate = asyncHandler(async (req, res) => {
   if (!certificate) {
     throw new ApiError(404, 'Invalid Certificate ID');
   }
+
+  await logPublicEvent(req, `Certificate verified: ${certificateId}`);
 
   return res.status(200).json(new ApiResponse(200, certificate, 'Certificate verified successfully'));
 });

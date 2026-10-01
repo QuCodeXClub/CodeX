@@ -266,6 +266,78 @@ Terminates a specific session.
 
 ---
 
+## Get Activity Logs
+
+### Endpoint
+
+```
+GET /logs/activity
+```
+
+### Authentication
+
+🔒 JWT Required
+
+### Purpose
+
+Returns all admin activity logs for auditing purposes.
+
+---
+
+## Clear Activity Logs
+
+### Endpoint
+
+```
+DELETE /logs/activity
+```
+
+### Authentication
+
+🔒 JWT Required
+
+### Purpose
+
+Deletes all admin activity logs.
+
+---
+
+## Get Access Logs
+
+### Endpoint
+
+```
+GET /logs/access
+```
+
+### Authentication
+
+🔒 JWT Required
+
+### Purpose
+
+Returns all public access logs (e.g. tracking events, passes).
+
+---
+
+## Clear Access Logs
+
+### Endpoint
+
+```
+DELETE /logs/access
+```
+
+### Authentication
+
+🔒 JWT Required
+
+### Purpose
+
+Deletes all public access logs.
+
+---
+
 # 🎓 Student APIs
 
 Base Route

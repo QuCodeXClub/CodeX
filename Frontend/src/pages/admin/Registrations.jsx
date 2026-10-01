@@ -320,6 +320,13 @@ export default function Registrations() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      
+      // Log export action
+      try {
+        await registrationService.logExport();
+      } catch (err) {
+        console.warn("Failed to log export action:", err);
+      }
     } catch {
       alert("Failed to fetch full data for export.");
     } finally {

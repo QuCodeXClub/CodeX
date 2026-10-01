@@ -137,6 +137,8 @@ const updateRegistrationStatus = asyncHandler(async (req, res) => {
     registration.rejectionReason = finalReason;
   }
   await registration.save();
+  
+  req.logAction = `Admin updated registration status to ${status} for Student ID: ${registration.studentId}`;
 
   // Send email notification
   if (status === 'APPROVED') {
@@ -242,6 +244,8 @@ const updateRegistrationDetails = asyncHandler(async (req, res) => {
   }
 
   await registration.save();
+  
+  req.logAction = `Admin updated registration details for Student ID: ${registration.studentId}`;
 
   return res
     .status(200)
@@ -425,10 +429,16 @@ const bulkRegistration = asyncHandler(async (req, res) => {
     });
 });
 
+const logExport = asyncHandler(async (req, res) => {
+  req.logAction = `Admin exported registrations list`;
+  return res.status(200).json(new ApiResponse(200, null, "Export logged successfully"));
+});
+
 export {
   getAllRegistrations,
   updateRegistrationStatus,
   updateRegistrationDetails,
   addManualRegistration,
   bulkRegistration,
+  logExport,
 };

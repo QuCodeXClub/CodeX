@@ -13,6 +13,7 @@ const Navbar = ({ layout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHomeExpanded, setIsHomeExpanded] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+  const [isTeamExpanded, setIsTeamExpanded] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const navRef = useRef(null);
@@ -26,6 +27,7 @@ const Navbar = ({ layout }) => {
     setIsMobileMenuOpen(false);
     setIsHomeExpanded(false);
     setIsAboutExpanded(false);
+    setIsTeamExpanded(false);
   }, [location.pathname, location.hash]);
 
   // Close mobile menu when clicking outside header
@@ -75,6 +77,37 @@ const Navbar = ({ layout }) => {
     setIsMobileMenuOpen(false);
     setIsAboutExpanded(false);
     if (location.pathname === "/about") {
+      if (e) e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleTeamSectionClick = (e, targetId) => {
+    if (e) e.preventDefault();
+    setIsMobileMenuOpen(false);
+    setIsTeamExpanded(false);
+
+    if (location.pathname === "/team") {
+      if (targetId === "hero" || targetId === "team") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const el = document.getElementById(targetId);
+        if (el) {
+          const navbarOffset = window.innerWidth < 768 ? 56 : 64;
+          const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = Math.max(0, Math.floor(elementPosition - navbarOffset));
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+      }
+    } else {
+      navigate("/team", { state: { scrollTo: targetId } });
+    }
+  };
+
+  const handleMainTeamClick = (e) => {
+    setIsMobileMenuOpen(false);
+    setIsTeamExpanded(false);
+    if (location.pathname === "/team") {
       if (e) e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -235,6 +268,43 @@ const Navbar = ({ layout }) => {
               </div>
             </div>
 
+            {/* Team Dropdown */}
+            <div className="relative group py-2">
+              <Link
+                to="/team"
+                onClick={handleMainTeamClick}
+                className={`relative font-sans text-xs xl:text-sm tracking-wider uppercase font-semibold transition-colors duration-200 whitespace-nowrap cursor-pointer flex items-center gap-1 ${location.pathname === '/team' ? "text-accent font-bold" : "text-text-muted hover:text-accent"}`}
+              >
+                TEAM
+                <span className="text-[10px] opacity-70 group-hover:rotate-180 transition-transform duration-300">▼</span>
+                <span
+                  className={`absolute left-0 -bottom-2 w-full h-[2.5px] rounded-full bg-accent shadow-[0_0_12px_var(--color-accent)] transition-all duration-300 origin-left ${location.pathname === '/team' ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"}`}
+                />
+              </Link>
+
+              {/* Dropdown Menu */}
+              <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-300 ease-out z-50">
+                <div className="flex flex-col min-w-[220px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
+                  {[
+                    { label: "University / QST Leadership", targetId: "university-leadership" },
+                    { label: "Computer Applications (CA)", targetId: "computer-applications" },
+                    { label: "Club Leadership", targetId: "club-leadership" },
+                    { label: "Faculty / Mentors", targetId: "faculty-mentors" },
+                    { label: "Team Members", targetId: "team-members" },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={(e) => handleTeamSectionClick(e, item.targetId)}
+                      className="text-left px-4 py-2.5 font-sans text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors whitespace-nowrap cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Standalone Page Links */}
             {pageNavItems.map((item) => renderNavItem(item, false, false))}
           </div>
@@ -372,6 +442,47 @@ const Navbar = ({ layout }) => {
                       key={item.label}
                       type="button"
                       onClick={(e) => handleAboutSectionClick(e, item.targetId)}
+                      className="text-left px-4 py-2 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Team Expandable */}
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between">
+                <Link
+                  to="/team"
+                  onClick={handleMainTeamClick}
+                  className={`flex-1 flex items-center px-4 py-3 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold transition-all duration-200 ${location.pathname === '/team' ? "text-accent bg-accent/10 font-bold border-l-2 border-accent" : "text-text-muted hover:text-accent hover:bg-card-hover"}`}
+                >
+                  TEAM
+                </Link>
+                <button
+                  onClick={() => setIsTeamExpanded(!isTeamExpanded)}
+                  className="p-3 text-text-muted hover:text-accent focus:outline-none cursor-pointer"
+                  aria-label="Toggle Team Menu"
+                >
+                  <span className={`inline-block transition-transform duration-300 ${isTeamExpanded ? "rotate-180" : ""}`}>▼</span>
+                </button>
+              </div>
+
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isTeamExpanded ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
+                <div className="flex flex-col pl-6 pr-2 py-2 gap-1 border-l border-border/40 ml-4 mb-2">
+                  {[
+                    { label: "University / QST Leadership", targetId: "university-leadership" },
+                    { label: "Computer Applications (CA)", targetId: "computer-applications" },
+                    { label: "Club Leadership", targetId: "club-leadership" },
+                    { label: "Faculty / Mentors", targetId: "faculty-mentors" },
+                    { label: "Team Members", targetId: "team-members" },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={(e) => handleTeamSectionClick(e, item.targetId)}
                       className="text-left px-4 py-2 rounded-lg font-mono text-xs tracking-wider uppercase font-semibold text-text-muted hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
                     >
                       {item.label}

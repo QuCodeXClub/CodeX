@@ -27,12 +27,12 @@ export const optimizeCloudinaryUrl = (url, width = 1200) => {
 
   try {
     const parsedUrl = new URL(url, window.location.origin);
-    
+
     // Strict protocol allowlist
     if (!['http:', 'https:', 'blob:', 'data:'].includes(parsedUrl.protocol)) {
       return "";
     }
-    
+
     // For data: URIs, ensure they are images
     if (parsedUrl.protocol === 'data:' && !parsedUrl.pathname.startsWith('image/')) {
       return "";
@@ -55,7 +55,7 @@ export const removeImageOptimization = (url) => {
 
   try {
     const parsedUrl = new URL(url, window.location.origin);
-    
+
     // Strict protocol allowlist
     if (!['http:', 'https:', 'blob:', 'data:'].includes(parsedUrl.protocol)) {
       return "";

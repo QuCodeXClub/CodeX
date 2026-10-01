@@ -16,7 +16,7 @@ export default function ConfirmModal({
       <div className="bg-card rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-in fade-in zoom-in duration-200 m-4">
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 text-text-text-muted hover:text-text-text-muted transition-colors"
+          className="absolute top-4 right-4 text-text-muted hover:text-text transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -30,11 +30,11 @@ export default function ConfirmModal({
             {title || "Confirm Action"}
           </h2>
 
-          <p className="text-text-text-muted mb-6 leading-relaxed text-sm">
+          <p className="text-text-muted mb-6 leading-relaxed text-sm">
             {message || "Are you sure you want to proceed?"}
           </p>
 
-          <div className="flex gap-3 w-full">
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
             <button
               onClick={onCancel}
               disabled={isLoading}

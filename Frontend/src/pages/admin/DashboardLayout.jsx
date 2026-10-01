@@ -19,6 +19,7 @@ import {
   History,
   Sun,
   Moon,
+  ScrollText,
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -52,6 +53,7 @@ export default function DashboardLayout() {
     { name: "Announcements", path: "/admin/announcements", icon: Megaphone },
     { name: "Task Queue", path: "/admin/tasks", icon: Cpu },
     { name: "Audit History", path: "/admin/history", icon: History },
+    { name: "System Logs", path: "/admin/logs", icon: ScrollText },
     { name: "Messages", path: "/admin/messages", icon: MessageSquare },
     { name: "Profile", path: "/admin/profile", icon: User },
   ];

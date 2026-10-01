@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary, deleteFromCloudinary, updateOnCloudinary, getPublicIdFromUrl } from '../utils/cloudinary.js';
+import { logPublicEvent } from '../middlewares/log.middleware.js';
 
 const addTeamMember = asyncHandler(async (req, res) => {
   const { academicYear, subTeam, name, post, sequenceNumber, email } = req.body;
@@ -32,6 +33,9 @@ const addTeamMember = asyncHandler(async (req, res) => {
     sequenceNumber: sequenceNumber ? Number(sequenceNumber) : 0,
     photo: photo.url,
   });
+  
+  req.logAction = `Admin added a team member: ${member.name} (${member.post})`;
+  
   return res.status(201).json(new ApiResponse(201, member, 'Team member added successfully'));
 });
 const getTeamMembers = asyncHandler(async (req, res) => {
@@ -41,6 +45,8 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   if (academicYear) query.academicYear = academicYear;
 
   const members = await TeamMember.find(query).select('-email').sort({ subTeam: 1, sequenceNumber: 1 });
+
+  await logPublicEvent(req, "Team page seen");
 
   return res.status(200).json(new ApiResponse(200, members, 'Team members fetched successfully'));
 });
@@ -58,6 +64,8 @@ const deleteTeamMember = asyncHandler(async (req, res) => {
 
   await deleteFromCloudinary(publicId);
   await member.deleteOne();
+  
+  req.logAction = `Admin deleted team member: ${member.name}`;
 
   return res.status(200).json(new ApiResponse(200, {}, 'Team member deleted successfully'));
 });
@@ -91,6 +99,9 @@ const updateTeamMember = asyncHandler(async (req, res) => {
   member.sequenceNumber = sequenceNumber !== undefined ? Number(sequenceNumber) : member.sequenceNumber;
   member.photo = newPhotoUrl;
   await member.save();
+  
+  req.logAction = `Admin updated team member: ${member.name}`;
+  
   return res.status(200).json(new ApiResponse(200, member, 'Team member updated successfully'));
 });
 
