@@ -10,9 +10,7 @@ export const usePageNavigation = () => {
 
   const pageNavItems = useMemo(
     () => [
-      { label: "EVENTS", path: "/events" },
-      { label: "TEAM", path: "/team" },
-      
+      { label: "EVENTS", path: "/events" }
     ],
     []
   );
