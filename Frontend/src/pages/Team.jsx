@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Filter, Users, Sparkles } from "lucide-react";
+import { Filter, Users, Sparkles, Building2, Monitor, BookOpen } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { fetchPublicTeam } from "../context/teamSlice";
@@ -108,31 +108,41 @@ const Team = () => {
     photo: ASSETS.IMAGES.FACULTY_MENTORS?.[item.imageKey] || null
   }));
 
-  const renderBentoBox = (title, teamMembers, id, className = "", colorTheme = "blue") => {
+  const renderBentoBox = (title, subtitle, Icon, teamMembers, id, className = "", colorTheme = "blue", cardLayout = "vertical") => {
     if (!teamMembers || teamMembers.length === 0) return null;
 
     const themeMap = {
-      blue: { bg: "dark:bg-blue-500/5", glow: "bg-blue-500/10", dot: "bg-blue-500", text: "text-blue-500", border: "border-blue-500/20", badgeBg: "bg-blue-500/10" },
-      emerald: { bg: "dark:bg-emerald-500/5", glow: "bg-emerald-500/10", dot: "bg-emerald-500", text: "text-emerald-500", border: "border-emerald-500/20", badgeBg: "bg-emerald-500/10" },
-      amber: { bg: "dark:bg-amber-500/5", glow: "bg-amber-500/10", dot: "bg-amber-500", text: "text-amber-500", border: "border-amber-500/20", badgeBg: "bg-amber-500/10" },
-      purple: { bg: "dark:bg-purple-500/5", glow: "bg-purple-500/10", dot: "bg-purple-500", text: "text-purple-500", border: "border-purple-500/20", badgeBg: "bg-purple-500/10" }
+      blue: { bg: "dark:bg-blue-500/5", glow: "bg-blue-500/10", dot: "bg-blue-500", text: "text-blue-500", border: "border-blue-500/20", badgeBg: "bg-blue-500/10", iconBg: "bg-blue-500/10", iconText: "text-blue-500" },
+      emerald: { bg: "dark:bg-emerald-500/5", glow: "bg-emerald-500/10", dot: "bg-emerald-500", text: "text-emerald-500", border: "border-emerald-500/20", badgeBg: "bg-emerald-500/10", iconBg: "bg-emerald-500/10", iconText: "text-emerald-500" },
+      amber: { bg: "dark:bg-amber-500/5", glow: "bg-amber-500/10", dot: "bg-amber-500", text: "text-amber-500", border: "border-amber-500/20", badgeBg: "bg-amber-500/10", iconBg: "bg-amber-500/10", iconText: "text-amber-500" },
+      purple: { bg: "dark:bg-purple-500/5", glow: "bg-purple-500/10", dot: "bg-purple-500", text: "text-purple-500", border: "border-purple-500/20", badgeBg: "bg-purple-500/10", iconBg: "bg-purple-500/10", iconText: "text-purple-500" }
     };
     const theme = themeMap[colorTheme] || themeMap.blue;
 
     return (
       <div id={id} className={`bg-card/5 ${theme.bg} backdrop-blur-xl shadow-xl border border-border/40 rounded-3xl p-6 lg:p-8 flex flex-col relative overflow-hidden transition-colors duration-300 ${className}`}>
 
-        <div className="flex items-center justify-center mb-8 relative z-10 w-full">
-          <h2 className="text-xl sm:text-2xl font-display font-black uppercase text-text tracking-wide text-center">
-            {title}
-          </h2>
+        <div className="flex items-start gap-4 mb-8 relative z-10 w-full">
+          {Icon && (
+            <div className={`p-3 rounded-xl ${theme.iconBg} border border-white/5`}>
+              <Icon className={`w-5 h-5 ${theme.iconText}`} />
+            </div>
+          )}
+          <div className="flex flex-col">
+            <h2 className="text-xl sm:text-2xl font-display font-black uppercase text-text tracking-wide text-left">
+              {title}
+            </h2>
+            {subtitle && (
+              <p className="text-xs sm:text-sm text-text-muted mt-1 font-sans">{subtitle}</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 relative z-10">
+        <div className={`flex flex-wrap justify-center ${cardLayout === 'horizontal' ? 'gap-8 sm:gap-10 lg:gap-20 xl:gap-24' : 'gap-4 sm:gap-6 lg:gap-8'} relative z-10`}>
           {teamMembers.map((member) => (
             <div
               key={member._id}
-              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.75rem)] md:w-[calc(25%-1.125rem)] lg:flex-1 lg:min-w-[160px] lg:max-w-[260px] flex-grow-0 lg:flex-grow"
+              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.75rem)] md:w-[calc(25%-1.125rem)] lg:w-[150px] xl:w-[170px] flex-shrink-0"
             >
               <TeamMemberCard member={member} />
             </div>
@@ -172,10 +182,10 @@ const Team = () => {
             <div className="flex flex-col gap-14 w-full">
               {/* Bento Grid for Leadership */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
-                {renderBentoBox("University / QST Leadership", mappedUniversityLeadership, "university-leadership", "lg:col-span-6", "blue")}
-                {renderBentoBox("Computer Applications (CA)", mappedCA, "computer-applications", "lg:col-span-6", "emerald")}
-                {renderBentoBox("Club Leadership", mappedClubLeadership, "club-leadership", "lg:col-span-4", "amber")}
-                {renderBentoBox("Faculty / Mentors", mappedFacultyMentors, "faculty-mentors", "lg:col-span-8", "purple")}
+                {renderBentoBox("University / QST Leadership", "Guiding the vision of Quantum University.", Building2, mappedUniversityLeadership, "university-leadership", "lg:col-span-6", "blue", "vertical")}
+                {renderBentoBox("Department leadership", "Department leadership and coordination.", Monitor, mappedCA, "computer-applications", "lg:col-span-6", "emerald", "vertical")}
+                {renderBentoBox("Club Leadership", "Leading the Codex community.", Users, mappedClubLeadership, "club-leadership", "lg:col-span-12", "amber", "horizontal")}
+                {renderBentoBox("Mentors & Judges", "Our mentors, academic guides, and expert judges.", BookOpen, mappedFacultyMentors, "faculty-mentors", "lg:col-span-12", "purple", "vertical")}
               </div>
 
               <div id="team-members" className="flex flex-col gap-14 w-full pt-10 border-t border-border/60">

@@ -12,49 +12,49 @@
     },
     {
       "name": "Dr. Brij Mohan Singh",
-      "designation": "Director, Quantum School of Technology",
+      "designation": "Director, QST",
       "imageKey": "BRIJ_MOHAN_SINGH"
     }
   ],
   "computerApplications": [
     {
       "name": "Dr. Mridula Singh",
-      "designation": "HoD, Computer Applications",
+      "designation": "Head of Department",
       "imageKey": "MRIDULA_SINGH"
+    },
+    {
+      "name": "Dr. Chunnu Lal",
+      "designation": "CSE Coordinator",
+      "imageKey": "CHUNNU_LAL"
     },
     {
       "name": "Dr. Ankur Rana",
       "designation": "CA Coordinator",
       "imageKey": "ANKUR_RANA"
-    },
-    {
-      "name": "Dr. Chunnu Lal",
-      "designation": "Department Coordinator",
-      "imageKey": "CHUNNU_LAL"
     }
   ],
   "clubLeadership": [
     {
-      "name": "Parul Tyagi",
-      "designation": "Club Coordinator",
-      "imageKey": "PARUL_TYAGI"
-    },
-    {
       "name": "Himanshu Tyagi",
       "designation": "Club Incharge",
       "imageKey": "HIMANSHU_TYAGI"
+    },
+    {
+      "name": "Parul Tyagi",
+      "designation": "Club Coordinator",
+      "imageKey": "PARUL_TYAGI"
     }
   ],
   "facultyMentors": [
     {
-      "name": "Neetu Mourya",
-      "designation": "Assistant Professor",
-      "imageKey": "NEETU_MOURYA"
-    },
-    {
       "name": "Dr. Md. Iqbal",
       "designation": "Professor",
       "imageKey": "MD_IQBAL"
+    },
+    {
+      "name": "Neetu Mourya",
+      "designation": "Assistant Professor",
+      "imageKey": "NEETU_MOURYA"
     },
     {
       "name": "Anurag Chandna",

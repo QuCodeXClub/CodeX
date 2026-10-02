@@ -11,7 +11,7 @@ export const TeamMemberCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-   <div className="bg-card/10 hover:bg-card/20 transition-all duration-300 backdrop-blur-md rounded-2xl p-3 sm:p-5 flex flex-col items-center group h-full relative border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+    <div className="bg-card/10 hover:bg-card/20 transition-all duration-300 backdrop-blur-md rounded-2xl p-3 sm:p-5 flex flex-col items-center group h-full relative border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
       {/* Academic Year Badge */}
       {member.academicYear && (
         <div className="absolute top-3 right-3 bg-card/90 backdrop-blur-md px-2 py-0.5 rounded border border-border/80 shadow-sm flex items-center z-10">
@@ -22,7 +22,7 @@ export const TeamMemberCard = ({
       )}
 
       {/* Circular Photo Section */}
-      <div 
+      <div
         className={`w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden mb-3 sm:mb-4 md:mb-5 border-[3px] border-card bg-card-hover shadow-md shrink-0 flex items-center justify-center relative z-0 ring-2 ring-border group-hover:ring-accent/40 transition-all duration-300 ${member.photo ? 'cursor-pointer' : ''}`}
         onClick={() => { if (member.photo) setIsModalOpen(true); }}
       >
