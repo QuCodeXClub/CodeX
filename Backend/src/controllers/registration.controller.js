@@ -330,7 +330,15 @@ const bulkRegistration = asyncHandler(async (req, res) => {
   const tempFilePath = resolveSafeTempFilePath(req.file.path);
 
   fs.createReadStream(tempFilePath)
+    .on('error', (error) => {
+      removeTempFile(tempFilePath);
+      if (!res.headersSent) return res.status(500).json(new ApiResponse(500, {}, "Error reading CSV file"));
+    })
     .pipe(csv())
+    .on('error', (error) => {
+      removeTempFile(tempFilePath);
+      if (!res.headersSent) return res.status(500).json(new ApiResponse(500, {}, "Error parsing CSV file"));
+    })
     .on('data', (data) => {
       rowCount++;
       // Clean up keys and values

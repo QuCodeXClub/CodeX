@@ -486,7 +486,7 @@ class QueueService {
    * Handle announcement bulk routing job with High Performance Batch Enqueueing
    */
   async handleAnnouncementBulk(job) {
-    const { emailList, subject, messageHtml, messageText } = job.payload;
+    const { emailList } = job.payload;
 
     // Idempotency Check: Prevent duplicate email jobs from being created if this bulk job is retried
     const alreadyEnqueued = await BackgroundJob.exists({

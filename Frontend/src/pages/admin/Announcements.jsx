@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import { useForm } from "react-hook-form";
 import { Send, Loader2, CheckCircle2, AlertCircle, Filter, Users, GraduationCap, History, Mail, X, Trash2, Eye, Megaphone } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
@@ -414,7 +415,7 @@ export default function Announcements() {
             <div
               className="flex-1 overflow-y-auto text-xs text-text p-4 rounded-xl bg-card-hover border border-border/60 font-sans break-words"
               dangerouslySetInnerHTML={{
-                __html: getValues("message") || "No message content yet...",
+                __html: getValues("message") ? DOMPurify.sanitize(getValues("message")) : "No message content yet...",
               }}
             />
 

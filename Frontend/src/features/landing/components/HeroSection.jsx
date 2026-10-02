@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, Users, Globe, ChevronRight, Sparkles, Terminal, Code2, Cpu } from "lucide-react";
+import { CalendarDays, Users, Globe, ChevronRight, Terminal, Code2, Cpu } from "lucide-react";
 import contentData from "../../../data/content.json";
 import { ASSETS } from "../../../config/assets";
 

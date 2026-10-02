@@ -42,7 +42,7 @@ const getTeamMembers = asyncHandler(async (req, res) => {
   const { academicYear } = req.query;
 
   const query = {};
-  if (academicYear) query.academicYear = academicYear;
+  if (academicYear) query.academicYear = String(academicYear);
 
   const members = await TeamMember.find(query).select('-email').sort({ subTeam: 1, sequenceNumber: 1 });
 

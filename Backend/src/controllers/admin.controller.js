@@ -118,7 +118,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Email and password are required');
   }
 
-  const normalizedEmail = email ? email.toString().toLowerCase().trim() : '';
+  const normalizedEmail = email.toString().toLowerCase().trim();
   const admin = await Admin.findOne({ email: normalizedEmail });
 
   if (!admin) {
@@ -184,7 +184,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Email and OTP are required');
   }
 
-  const normalizedEmail = email ? email.toString().toLowerCase().trim() : '';
+  const normalizedEmail = email.toString().toLowerCase().trim();
   const admin = await Admin.findOne({ email: normalizedEmail });
 
   if (!admin) {
