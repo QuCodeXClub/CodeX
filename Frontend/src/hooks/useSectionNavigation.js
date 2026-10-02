@@ -228,7 +228,7 @@ export const useSectionNavigation = () => {
       return false;
     };
 
-    const scrolledImmediately = attemptScroll();
+    attemptScroll();
 
     let pollTimerId = null;
     let attempts = 0;

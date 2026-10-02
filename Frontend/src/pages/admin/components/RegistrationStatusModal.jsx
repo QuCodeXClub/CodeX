@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Loader2, X as XIcon, ShieldAlert, Power, CheckCircle, AlertTriangle, Clock, User } from "lucide-react";
+import { Loader2, X as XIcon, Power, CheckCircle, AlertTriangle, Clock, User } from "lucide-react";
 
 export default function RegistrationStatusModal({
   currentStatus,

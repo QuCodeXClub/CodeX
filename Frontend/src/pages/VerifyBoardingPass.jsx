@@ -126,21 +126,7 @@ const VerifyBoardingPass = () => {
     }
   };
 
-  const formattedDate = (() => {
-    if (!boardingPass) return "August 08, 2026";
-    const eventDate = boardingPass?.eventDate || boardingPass?.issuedAt || "2026-08-08";
-    try {
-      const d = new Date(eventDate);
-      if (isNaN(d.getTime())) return "August 08, 2026";
-      return d.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return "August 08, 2026";
-    }
-  })();
+
 
   const metadata = boardingPass
     ? [

@@ -4,7 +4,6 @@ import {
   Sun,
   Moon,
   Power,
-  ShieldCheck,
   CheckCircle,
   AlertTriangle,
   Loader2,
