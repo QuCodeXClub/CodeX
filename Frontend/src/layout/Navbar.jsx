@@ -287,9 +287,9 @@ const Navbar = ({ layout }) => {
                 <div className="flex flex-col min-w-[220px] bg-bg/95 backdrop-blur-xl border border-border/80 rounded-xl shadow-xl overflow-hidden py-1">
                   {[
                     { label: "University / QST Leadership", targetId: "university-leadership" },
-                    { label: "Computer Applications (CA)", targetId: "computer-applications" },
+                    { label: "Department leadership", targetId: "computer-applications" },
                     { label: "Club Leadership", targetId: "club-leadership" },
-                    { label: "Faculty / Mentors", targetId: "faculty-mentors" },
+                    { label: "Mentors & Judges", targetId: "faculty-mentors" },
                     { label: "Team Members", targetId: "team-members" },
                   ].map((item) => (
                     <button
@@ -474,9 +474,9 @@ const Navbar = ({ layout }) => {
                 <div className="flex flex-col pl-6 pr-2 py-2 gap-1 border-l border-border/40 ml-4 mb-2">
                   {[
                     { label: "University / QST Leadership", targetId: "university-leadership" },
-                    { label: "Computer Applications (CA)", targetId: "computer-applications" },
+                    { label: "Department leadership", targetId: "computer-applications" },
                     { label: "Club Leadership", targetId: "club-leadership" },
-                    { label: "Faculty / Mentors", targetId: "faculty-mentors" },
+                    { label: "Mentors & Judges", targetId: "faculty-mentors" },
                     { label: "Team Members", targetId: "team-members" },
                   ].map((item) => (
                     <button
