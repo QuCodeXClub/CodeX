@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Loader2, Globe, Server, Activity } from "lucide-react";
+import { Loader2, Globe, Server } from "lucide-react";
 import { adminService } from "../../../services/adminService";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 

@@ -33,18 +33,6 @@ const CodexBoardingPassFrontSVG = memo(({
 
   // Format date
   const eventDate = boardingPass?.eventDate || boardingPass?.issuedAt || boardingPass?.date || "";
-  const formattedDate = (() => {
-    if (!eventDate) return "";
-    try {
-      const d = new Date(eventDate);
-      if (isNaN(d.getTime())) return String(eventDate).toUpperCase();
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = d.toLocaleDateString("en-US", { month: "long" }).toUpperCase();
-      return `${day} ${month}`;
-    } catch {
-      return String(eventDate).toUpperCase();
-    }
-  })();
 
   // Dynamic backend Event Description lines (auto-wrapped)
   const descLines = (() => {
@@ -90,7 +78,6 @@ const CodexBoardingPassFrontSVG = memo(({
     if (len > 16) return 16.5;
     return 21.33;
   })();
-  const eventNameScale = eventNameFontSize / 21.33;
   const eventNameTransformScale = 0.6635216 * (eventNameFontSize / 21.33);
 
   // Responsive font scaling for venue (medium width area ~100px)
@@ -514,7 +501,6 @@ const CodexBoardingPassBackSVG = memo(({
   ...props
 }) => {
   // Extract backend fields for the right stub
-  const boardingPassId = (boardingPass?.boardingPassId || "").trim();
   const eventName = (boardingPass?.eventName || "").trim().toUpperCase();
   const tagLine = "Coding the Future, Today.".toUpperCase();
   const userId = (boardingPass?.loginUser || "").trim();

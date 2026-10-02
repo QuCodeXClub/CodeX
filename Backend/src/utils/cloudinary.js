@@ -36,7 +36,6 @@ const uploadOnCloudinary = async (localFilePath, folderName = "CodeX Website") =
   try {
     if (!localFilePath) return null;
     
-    const isDataUri = localFilePath.startsWith('data:');
     const isSvgDataUri = localFilePath.startsWith('data:image/svg+xml');
     
     const uploadOptions = {

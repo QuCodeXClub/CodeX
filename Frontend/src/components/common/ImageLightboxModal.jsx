@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { X, ZoomIn, ZoomOut, RotateCcw, Loader2, Maximize2 } from "lucide-react";
+import { X, ZoomIn, ZoomOut, RotateCcw, Loader2 } from "lucide-react";
 
 export default function ImageLightboxModal({ isOpen, image, onClose }) {
   const [zoomLevel, setZoomLevel] = useState(1); // 1 = normal, 1.75 = zoomed, 2.5 = deep zoom

@@ -6,7 +6,7 @@ import { ASSETS } from "../../../config/assets";
 import { useImageZoom } from "../../../context/ImageZoomContext";
 
 const EventsHero = () => {
-  const { eventsHero, layout } = content;
+  const { eventsHero } = content;
   const { openImage } = useImageZoom();
   const images = {
     hackathon: ASSETS.IMAGES.EVENT_HACKATHON,

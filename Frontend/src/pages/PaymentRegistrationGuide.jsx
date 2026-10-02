@@ -98,7 +98,6 @@ const PaymentRegistrationGuide = () => {
   const guideData = legalData.paymentGuide;
   const header = guideData.header;
   const { openImage } = useImageZoom();
-  const [copiedUpi, setCopiedUpi] = useState(false);
   const [upiAppError, setUpiAppError] = useState(null);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
 
