@@ -11,7 +11,7 @@ export const TeamMemberCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="bg-card/10 hover:bg-card/20 transition-all duration-300 backdrop-blur-md rounded-2xl p-3 sm:p-5 flex flex-col items-center group h-full relative border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+    <div className="bg-card/10 hover:bg-card/20 transition-all duration-300 backdrop-blur-md rounded-2xl p-3 sm:p-5 flex flex-col items-center group h-full w-full relative border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
       {/* Academic Year Badge */}
       {member.academicYear && (
         <div className="absolute top-3 right-3 bg-card/90 backdrop-blur-md px-2 py-0.5 rounded border border-border/80 shadow-sm flex items-center z-10">
@@ -41,9 +41,9 @@ export const TeamMemberCard = ({
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 flex flex-col items-center text-center w-full">
+      <div className="flex-1 flex flex-col items-center justify-center text-center w-full">
         <h3
-          className="font-display font-bold text-sm sm:text-[15px] md:text-base lg:text-lg text-text mb-1 sm:mb-1.5 md:mb-2 line-clamp-1 w-full tracking-wide group-hover:text-accent transition-colors"
+          className="font-display font-bold text-sm sm:text-[15px] md:text-base lg:text-lg text-text mb-1 sm:mb-1.5 md:mb-2 w-full tracking-wide group-hover:text-accent transition-colors"
           title={member.name}
         >
           {member.name}
