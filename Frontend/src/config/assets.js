@@ -58,7 +58,7 @@ export const ASSETS = {
       CHUNNU_LAL: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790783006/media_faculties_images_chunnu_lal_1772096341_cb368b4d_ytmu0c.webp"
     },
     CLUB_FACULTY_LEADERSHIP: {
-      PARUL_TYAGI: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790782222/media_faculties_images_parul_tyagi_1760677905_207c6925_xs39jv.webp",
+      PARUL_TYAGI: "https://res.cloudinary.com/fswmfdcp/image/upload/v1791216518/Parul_Tyagi_wvsi9d.webp",
       HIMANSHU_TYAGI: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790782313/1755013343209_hdpxs1.webp"
     },
     FACULTY_MENTORS: {
@@ -69,7 +69,8 @@ export const ASSETS = {
       VINEET_KUMAR_SALAR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790782821/Screenshot_2026-09-18_140601-removebg-preview_szbiqn.webp",
       MAYANK_CHAUHAN: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790782843/Screenshot_2026-09-18_140549-removebg-preview_hsddpf.webp",
       RAJ_KUMAR: "https://res.cloudinary.com/fswmfdcp/image/upload/v1790782893/media_faculties_images_raj_kumar_1758356648_8b8d384c_qxrili.webp",
-      MD_IQBAL: "https://res.cloudinary.com/fswmfdcp/image/upload/v1789900359/media_faculties_images_iqbal_sir_1760173026_e409ab29_hbr1bi.webp"
+      MD_IQBAL: "https://res.cloudinary.com/fswmfdcp/image/upload/v1789900359/media_faculties_images_iqbal_sir_1760173026_e409ab29_hbr1bi.webp",
+      YASHVEER_SINGH: "https://res.cloudinary.com/fswmfdcp/image/upload/v1791041858/Untitled_design_5_d0tthv.webp"
     }
   },
 };
