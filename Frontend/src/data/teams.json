@@ -11,7 +11,7 @@
       "imageKey": "SATENDER_KUMAR"
     },
     {
-      "name": "Dr. Brij Mohan Singh",
+      "name": "Dr. B. M. Singh",
       "designation": "Director, QST",
       "imageKey": "BRIJ_MOHAN_SINGH"
     }
@@ -50,6 +50,11 @@
       "name": "Dr. Md. Iqbal",
       "designation": "Professor",
       "imageKey": "MD_IQBAL"
+    },
+    {
+      "name": "Dr. Yashveer Singh",
+      "designation": "Associate Professor",
+      "imageKey": "YASHVEER_SINGH"
     },
     {
       "name": "Neetu Mourya",

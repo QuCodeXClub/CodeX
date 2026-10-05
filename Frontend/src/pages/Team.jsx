@@ -70,7 +70,7 @@ const Team = () => {
           {teamMembers.map((member) => (
             <div
               key={member._id}
-              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.66rem)] md:w-[calc(25%-1.125rem)] lg:w-[calc(20%-1.2rem)] xl:w-[calc(16.666%-1.25rem)]"
+              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.66rem)] md:w-[calc(25%-1.125rem)] lg:w-[calc(20%-1.2rem)] xl:w-[calc(16.666%-1.25rem)] flex"
             >
               <TeamMemberCard member={member} />
             </div>
@@ -138,11 +138,11 @@ const Team = () => {
           </div>
         </div>
 
-        <div className={`flex flex-wrap justify-center ${cardLayout === 'horizontal' ? 'gap-8 sm:gap-10 lg:gap-20 xl:gap-24' : 'gap-4 sm:gap-6 lg:gap-8'} relative z-10`}>
+        <div className={`flex-1 flex flex-wrap justify-center ${cardLayout === 'horizontal' ? 'gap-4 sm:gap-10 lg:gap-20 xl:gap-24' : 'gap-4 sm:gap-6 lg:gap-8'} relative z-10`}>
           {teamMembers.map((member) => (
             <div
               key={member._id}
-              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.75rem)] md:w-[calc(25%-1.125rem)] lg:w-[150px] xl:w-[170px] flex-shrink-0"
+              className="w-[calc(50%-0.5rem)] sm:w-[calc(33.33%-0.75rem)] md:w-[calc(25%-1.125rem)] lg:w-[150px] xl:w-[170px] flex-shrink-0 flex"
             >
               <TeamMemberCard member={member} />
             </div>
