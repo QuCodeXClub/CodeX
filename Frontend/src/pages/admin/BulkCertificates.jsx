@@ -27,6 +27,7 @@ import { setError, setSuccess } from "../../context/messageSlice";
 import { certificateService } from "../../services/certificateService";
 import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
 import CertificateBatchesSection from "./components/CertificateBatchesSection";
+import { parseCertificateCsv, downloadCertificateCsvTemplate } from "../../utils/csvParser";
 
 export default function BulkCertificates() {
   const dispatch = useDispatch();
@@ -112,7 +113,7 @@ export default function BulkCertificates() {
   });
 
   //-----------------------------------------------------
-  // CSV Upload (Native JS, No Dependencies)
+  // CSV Upload (Production RFC-4180 Parser)
   //-----------------------------------------------------
   const handleCsvUpload = (e) => {
     const file = e.target.files[0];
@@ -129,51 +130,24 @@ export default function BulkCertificates() {
       setTimeout(() => {
         try {
           const text = event.target.result;
-          const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
+          const { success, students, skippedCount, error } = parseCertificateCsv(text);
 
-          if (rows.length === 0) {
-            setIsImportingCsv(false);
-            setImportStatus("");
-            dispatch(setError("CSV file is empty."));
+          if (!success) {
+            dispatch(setError(error || "Could not parse valid student records from the CSV."));
             return;
           }
 
-          let startIndex = 0;
-          if (
-            rows[0].toLowerCase().includes("name") ||
-            rows[0].toLowerCase().includes("email")
-          ) {
-            startIndex = 1;
-          }
-
-          const parsedStudents = [];
-
-          for (let i = startIndex; i < rows.length; i++) {
-            const cols = rows[i]
-              .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-              .map((col) => col.replace(/^"|"$/g, "").trim());
-
-            if (cols.length >= 2) {
-              parsedStudents.push({
-                name: cols[0] || "",
-                email: cols[1] || "",
-                position: cols[2] || "Participant",
-              });
-            }
-          }
-
-          if (parsedStudents.length > 0) {
-            if (fields.length === 1 && !fields[0].name && !fields[0].email) {
-              replace(parsedStudents);
-            } else {
-              append(parsedStudents);
-            }
-            dispatch(
-              setSuccess(`Successfully imported ${parsedStudents.length} student(s) from CSV.`)
-            );
+          if (fields.length === 1 && !fields[0].name && !fields[0].email) {
+            replace(students);
           } else {
-            dispatch(setError("Could not parse valid students from the CSV."));
+            append(students);
           }
+
+          let msg = `Successfully imported ${students.length} student(s) from CSV.`;
+          if (skippedCount > 0) {
+            msg += ` (${skippedCount} blank or invalid row(s) were skipped).`;
+          }
+          dispatch(setSuccess(msg));
         } catch (err) {
           console.error("CSV import error:", err);
           dispatch(setError("Failed to parse CSV file."));
@@ -181,7 +155,7 @@ export default function BulkCertificates() {
           setIsImportingCsv(false);
           setImportStatus("");
         }
-      }, 300);
+      }, 200);
     };
 
     reader.onerror = () => {
@@ -195,14 +169,7 @@ export default function BulkCertificates() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,Position\n";
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "certificate_template.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCertificateCsvTemplate();
   };
 
   //-----------------------------------------------------

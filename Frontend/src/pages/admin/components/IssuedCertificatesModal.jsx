@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { certificateService } from "../../../services/certificateService";
@@ -131,6 +132,36 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
     }
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportAll = async () => {
+    setIsExporting(true);
+    try {
+      const res = await certificateService.exportAllCertificates({ search: debouncedSearch });
+      const blob = new Blob([res.data], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const dateStr = new Date().toISOString().split("T")[0];
+      link.setAttribute("download", `CodeX_Certificates_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setFeedback({
+        type: "success",
+        text: `Exported certificates CSV successfully!`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.response?.data?.message || "Failed to export certificates CSV.",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const renderEmailStatus = (status) => {
     switch (status) {
       case "SENT":
@@ -192,16 +223,32 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
 
       {/* Control & Stat Summary Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 shrink-0">
-        {/* Search Input */}
-        <div className="lg:col-span-6 relative">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-muted" />
-          <input
-            type="text"
-            placeholder="Search by student name, email, event, or certificate ID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-card border border-border text-text rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium focus:outline-none focus:border-teal-500 transition-all shadow-sm"
-          />
+        {/* Search Input & CSV Export Button */}
+        <div className="lg:col-span-6 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-3 w-4 h-4 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Search by student name, email, event, or certificate ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-card border border-border text-text rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium focus:outline-none focus:border-teal-500 transition-all shadow-sm"
+            />
+          </div>
+
+          <button
+            onClick={handleExportAll}
+            disabled={isExporting || pagination.total === 0}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-card border border-border text-text hover:text-accent hover:bg-card-hover font-mono text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
+            title="Download CSV export of certificates"
+          >
+            {isExporting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
+            <span>Export CSV</span>
+          </button>
         </div>
 
         {/* Quick Stat Cards */}

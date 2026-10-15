@@ -50,6 +50,13 @@ class CertificateService {
       responseType: "blob",
     });
   }
+
+  async exportAllCertificates(params = {}) {
+    return axiosInstance.get('/certificates/export', {
+      params,
+      responseType: "blob",
+    });
+  }
 }
 
 export const certificateService = new CertificateService();

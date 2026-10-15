@@ -563,7 +563,10 @@ const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Certificate batch not found');
   }
 
-  const certs = await Certificate.find({ batchId: batch._id }).sort({ createdAt: 1 }).lean();
+  let certs = await Certificate.find({ batchId: batch._id }).sort({ createdAt: 1 }).lean();
+  if ((!certs || certs.length === 0) && batch.eventName) {
+    certs = await Certificate.find({ eventName: batch.eventName, eventDate: batch.eventDate }).sort({ createdAt: 1 }).lean();
+  }
 
   const rows = [
     ['Student Name', 'Email', 'Position', 'Certificate ID', 'Verification Link', 'Delivery Status', 'Issued At'],
@@ -596,11 +599,72 @@ const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
     }
   }
 
-  const csvContent = rows.map((r) => r.join(',')).join('\n');
-  const filename = `CodeX_Certificates_${(batch.eventName || 'Batch').replace(/[^a-zA-Z0-9]/g, '_')}_${batch.batchId}.csv`;
+  // Prepend UTF-8 BOM (\uFEFF) for seamless Microsoft Excel rendering
+  const csvContent = '\uFEFF' + rows.map((r) => r.join(',')).join('\r\n');
+  const filename = `CodeX_Certificates_${(batch.eventName || 'Batch').replace(/[^a-zA-Z0-9_-]/g, '_')}_${batch.batchId || batch._id}.csv`;
 
-  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+  return res.status(200).send(csvContent);
+});
+
+// @desc    Export All or Filtered Certificates as CSV
+// @route   GET /api/v1/certificates/export
+// @access  Private (Admin & Super Admin)
+const exportAllCertificatesCsv = asyncHandler(async (req, res) => {
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+  const query = {};
+
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
+    query.$or = [
+      { studentName: { $regex: safeSearch, $options: 'i' } },
+      { studentEmail: { $regex: safeSearch, $options: 'i' } },
+      { eventName: { $regex: safeSearch, $options: 'i' } },
+      { certificateId: { $regex: safeSearch, $options: 'i' } },
+    ];
+  }
+
+  const certs = await Certificate.find(query).sort({ createdAt: -1 }).limit(5000).lean();
+
+  const rows = [
+    [
+      'Student Name',
+      'Email',
+      'Event Name',
+      'Event Date',
+      'Position',
+      'Certificate ID',
+      'Verification Link',
+      'Delivery Status',
+      'Issued At',
+    ],
+  ];
+
+  for (const c of certs) {
+    const link = `${process.env.FRONTEND_URL}/verify-certificate/${c.certificateId}`;
+    const formattedDate = c.eventDate ? new Date(c.eventDate).toLocaleDateString('en-IN') : '';
+    const issuedDate = c.createdAt ? new Date(c.createdAt).toISOString() : '';
+    rows.push([
+      `"${(c.studentName || '').replace(/"/g, '""')}"`,
+      `"${(c.studentEmail || '').replace(/"/g, '""')}"`,
+      `"${(c.eventName || '').replace(/"/g, '""')}"`,
+      `"${formattedDate}"`,
+      `"${(c.position || 'Participant').replace(/"/g, '""')}"`,
+      `"${c.certificateId || ''}"`,
+      `"${link}"`,
+      `"${c.emailStatus || 'SENT'}"`,
+      `"${issuedDate}"`,
+    ]);
+  }
+
+  const csvContent = '\uFEFF' + rows.map((r) => r.join(',')).join('\r\n');
+  const filename = `CodeX_Certificates_Archive_${new Date().toISOString().split('T')[0]}.csv`;
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
   return res.status(200).send(csvContent);
 });
 
@@ -617,4 +681,5 @@ export {
   deleteCertificate,
   resendCertificateEmail,
   exportBatchCertificatesCsv,
+  exportAllCertificatesCsv,
 };

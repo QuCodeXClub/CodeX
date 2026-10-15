@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { certificateService } from "../../../services/certificateService";
 import { useConfirm } from "../../../context/ConfirmContext";
+import { parseCertificateCsv, downloadCertificateCsvTemplate } from "../../../utils/csvParser";
 
 export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCreate }) {
   const confirm = useConfirm();
@@ -222,42 +223,23 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     reader.onload = (event) => {
       try {
         const text = event.target.result;
-        const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
-        if (rows.length === 0) return;
+        const { success, students, skippedCount, error } = parseCertificateCsv(text);
 
-        let startIndex = 0;
-        if (
-          rows[0].toLowerCase().includes("name") ||
-          rows[0].toLowerCase().includes("email")
-        ) {
-          startIndex = 1;
+        if (!success) {
+          setFeedback({ type: "error", text: error || "Could not parse valid student records from CSV." });
+          return;
         }
 
-        const parsedStudents = [];
-        for (let i = startIndex; i < rows.length; i++) {
-          const cols = rows[i]
-            .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-            .map((col) => col.replace(/^"|"$/g, "").trim());
+        setEditForm((prev) => ({
+          ...prev,
+          students: [...prev.students, ...students],
+        }));
 
-          if (cols.length >= 2 && cols[0] && cols[1]) {
-            parsedStudents.push({
-              name: cols[0],
-              email: cols[1],
-              position: cols[2] || "Participant",
-            });
-          }
+        let msg = `Successfully imported ${students.length} student(s) from CSV.`;
+        if (skippedCount > 0) {
+          msg += ` (${skippedCount} blank or invalid row(s) were skipped).`;
         }
-
-        if (parsedStudents.length > 0) {
-          setEditForm((prev) => ({
-            ...prev,
-            students: [...prev.students, ...parsedStudents],
-          }));
-          setFeedback({
-            type: "success",
-            text: `Imported ${parsedStudents.length} student(s) from CSV.`,
-          });
-        }
+        setFeedback({ type: "success", text: msg });
       } catch (err) {
         setFeedback({ type: "error", text: "Failed to parse CSV file." });
       }
@@ -1114,6 +1096,15 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                   >
                     <Upload className="w-3.5 h-3.5" />
                     <span>Import CSV</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={downloadCertificateCsvTemplate}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-colors cursor-pointer"
+                    title="Download Sample CSV Template"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Template</span>
                   </button>
                   <button
                     type="button"

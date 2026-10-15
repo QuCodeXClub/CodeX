@@ -12,6 +12,7 @@ import {
   deleteCertificate,
   resendCertificateEmail,
   exportBatchCertificatesCsv,
+  exportAllCertificatesCsv,
 } from '../controllers/certificate.controller.js';
 import { verifyJWT, verifySuperAdmin } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
@@ -24,6 +25,7 @@ router.route('/verify/:certificateId').get(verifyCertificate);
 
 // Secured admin routes
 router.route('/').get(verifyJWT, getAllCertificates);
+router.route('/export').get(verifyJWT, exportAllCertificatesCsv);
 router.route('/:id').delete(
   verifyJWT,
   verifySuperAdmin,
