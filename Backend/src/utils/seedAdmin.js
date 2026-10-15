@@ -1,22 +1,47 @@
 import { Admin } from "../models/admin.model.js";
+import { getSuperAdminCredentials } from "./superAdminHelper.js";
 
 export const seedAdmin = async () => {
   try {
-    const adminCount = await Admin.countDocuments();
-    if (adminCount === 0) {
-      const defaultEmail = process.env.ADMIN_EMAIL || "admin@codex.com";
-      const defaultPassword = process.env.ADMIN_PASSWORD || "admin123";
+    // 1. Synchronize Super Admin from existing ADMIN_EMAIL / ADMIN_USERNAME and ADMIN_PASSWORD
+    const { email: superAdminEmail, password: superAdminPassword, name: superAdminName } = getSuperAdminCredentials();
 
+    let superAdmin = await Admin.findOne({
+      $or: [
+        { role: 'SuperAdmin' },
+        { email: superAdminEmail }
+      ]
+    });
+
+    if (!superAdmin) {
       await Admin.create({
-        name: "Admin",
-        email: defaultEmail,
-        password: defaultPassword,
+        name: superAdminName,
+        email: superAdminEmail,
+        password: superAdminPassword,
+        role: "SuperAdmin",
       });
-      console.log(`Default admin created. Email: ${defaultEmail}`);
+      console.log(`[AUTH] Super Admin initialized from ADMIN_EMAIL credentials: ${superAdminEmail}`);
     } else {
-      console.log("Admin already exists, skipping seed.");
+      let isUpdated = false;
+      if (superAdmin.role !== "SuperAdmin") {
+        superAdmin.role = "SuperAdmin";
+        isUpdated = true;
+      }
+      if (superAdmin.email !== superAdminEmail) {
+        superAdmin.email = superAdminEmail;
+        isUpdated = true;
+      }
+      // Only initialize password if the super admin has no password set
+      if (!superAdmin.password) {
+        superAdmin.password = superAdminPassword;
+        isUpdated = true;
+      }
+      if (isUpdated) {
+        await superAdmin.save();
+        console.log(`[AUTH] Super Admin credentials synchronized with ADMIN_PASSWORD in .env: ${superAdminEmail}`);
+      }
     }
   } catch (error) {
-    console.error("Error seeding admin:", error);
+    console.error("Error seeding or synchronizing admin:", error);
   }
 };

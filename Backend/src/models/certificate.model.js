@@ -53,6 +53,18 @@ const certificateSchema = new mongoose.Schema(
     qrCodeImage: {
       type: String,
     },
+    batchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CertificateBatch',
+    },
+    emailStatus: {
+      type: String,
+      enum: ['PENDING', 'SENT', 'FAILED', 'BOUNCED'],
+      default: 'PENDING',
+    },
+    emailSentAt: {
+      type: Date,
+    },
     issuedAt: {
       type: Date,
       default: Date.now,
@@ -60,5 +72,13 @@ const certificateSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// High-performance compound & sort indexes for verification, student lookups, and pagination
+// Idempotency: guarantees no duplicate certificates can ever exist for the same student within a batch
+certificateSchema.index({ batchId: 1, studentEmail: 1 }, { unique: true, sparse: true });
+certificateSchema.index({ batchId: 1, createdAt: -1 });
+certificateSchema.index({ createdAt: -1 });
+certificateSchema.index({ studentEmail: 1, createdAt: -1 });
+certificateSchema.index({ eventName: 1, createdAt: -1 });
 
 export const Certificate = mongoose.model('Certificate', certificateSchema);

@@ -13,10 +13,21 @@ import {
   Sparkles,
   Layers,
   FileCheck,
+  Trash2,
+  Send,
+  AlertTriangle,
+  CheckCircle2,
+  RefreshCw,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import { certificateService } from "../../../services/certificateService";
+import { useConfirm } from "../../../context/ConfirmContext";
 
-export default function IssuedCertificatesModal({ onClose, isModal = false }) {
+export default function IssuedCertificatesModal({ onClose, isModal = false, isSuperAdmin: propIsSuperAdmin }) {
+  const confirm = useConfirm();
+  const currentUser = useSelector((state) => state.auth.user);
+  const isSuperAdmin = propIsSuperAdmin ?? ((currentUser?.admin?.role || currentUser?.role) === "SuperAdmin");
+
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -24,6 +35,8 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ totalPages: 1, total: 0 });
   const [copiedId, setCopiedId] = useState(null);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [feedback, setFeedback] = useState({ type: "", text: "" });
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -46,6 +59,10 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
       setPagination(data.pagination || { totalPages: 1, total: 0 });
     } catch (err) {
       console.error("Failed to fetch issued certificates:", err);
+      setFeedback({
+        type: "error",
+        text: err.response?.data?.message || "Failed to fetch issued certificates.",
+      });
     } finally {
       setLoading(false);
     }
@@ -61,8 +78,112 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleResendEmail = async (cert) => {
+    setActionLoadingId(cert._id);
+    try {
+      const res = await certificateService.resendCertificateEmail(cert._id);
+      setFeedback({
+        type: "success",
+        text: res.message || `Certificate email queued for delivery to ${cert.studentEmail}.`,
+      });
+      setCertificates((prev) =>
+        prev.map((c) =>
+          c._id === cert._id ? { ...c, emailStatus: "SENT" } : c
+        )
+      );
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.response?.data?.message || "Failed to resend certificate email.",
+      });
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleDeleteCertificate = async (cert) => {
+    const isConfirmed = await confirm({
+      title: "Delete Certificate",
+      message: `Permanently delete certificate #${cert.certificateId} for ${cert.studentName}? This will revoke verification portal access immediately and cannot be undone.`,
+    });
+
+    if (!isConfirmed) return;
+
+    setActionLoadingId(cert._id);
+    try {
+      const res = await certificateService.deleteCertificate(cert._id);
+      setFeedback({
+        type: "success",
+        text: res.message || `Certificate #${cert.certificateId} deleted successfully.`,
+      });
+      setCertificates((prev) => prev.filter((c) => c._id !== cert._id));
+      setPagination((prev) => ({
+        ...prev,
+        total: Math.max(0, prev.total - 1),
+      }));
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.response?.data?.message || "Failed to delete certificate.",
+      });
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const renderEmailStatus = (status) => {
+    switch (status) {
+      case "SENT":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <Check className="w-3 h-3" /> Delivered
+          </span>
+        );
+      case "FAILED":
+      case "BOUNCED":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <AlertTriangle className="w-3 h-3" /> Delivery Failed
+          </span>
+        );
+      case "PENDING":
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            <Loader2 className="w-3 h-3 animate-spin" /> Pending Dispatch
+          </span>
+        );
+    }
+  };
+
   const containerContent = (
     <div className="w-full flex flex-col space-y-6 animate-fadeIn">
+      {/* Feedback banner */}
+      {feedback.text && (
+        <div
+          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${
+            feedback.type === "success"
+              ? "bg-accent/15 text-accent border-accent/40"
+              : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/40"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {feedback.type === "success" ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+            )}
+            <span>{feedback.text}</span>
+          </div>
+          <button
+            onClick={() => setFeedback({ type: "", text: "" })}
+            className="text-text-muted hover:text-text cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Control & Stat Summary Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 shrink-0">
         {/* Search Input */}
@@ -104,8 +225,8 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] font-mono text-text-muted uppercase">Audit Protocol</div>
-              <div className="font-mono font-bold text-emerald-400 text-xs">100% Validated</div>
+              <div className="text-[10px] font-mono text-text-muted uppercase">Verification</div>
+              <div className="font-mono font-bold text-emerald-400 text-xs">Cryptographic Audit</div>
             </div>
           </div>
         </div>
@@ -135,109 +256,189 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
                       <th className="p-4 pl-6">Student Information</th>
                       <th className="p-4">Event Details & Role</th>
                       <th className="p-4">Certificate ID</th>
+                      <th className="p-4">Delivery Status</th>
                       <th className="p-4">Issued Timestamp</th>
-                      <th className="p-4 pr-6 text-right">Verification Action</th>
+                      <th className="p-4 pr-6 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/40 text-xs font-sans">
-                    {certificates.map((cert) => (
-                      <tr key={cert._id} className="hover:bg-card-hover/40 transition-colors">
-                        <td className="p-4 pl-6">
-                          <div className="font-bold text-text flex items-center gap-2">
-                            <User className="w-4 h-4 text-teal-400 shrink-0" />
-                            <span>{cert.studentName}</span>
-                          </div>
-                          <div className="text-[11px] text-text-muted font-mono flex items-center gap-1.5 mt-1">
-                            <Mail className="w-3.5 h-3.5 shrink-0" />
-                            <span>{cert.studentEmail}</span>
-                          </div>
-                        </td>
+                    {certificates.map((cert) => {
+                      const isActionLoading = actionLoadingId === cert._id;
 
-                        <td className="p-4">
-                          <div className="font-semibold text-text text-sm">{cert.eventName}</div>
-                          <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20 text-[11px] font-mono font-medium">
-                            {cert.position || "Participant"}
-                          </div>
-                        </td>
+                      return (
+                        <tr key={cert._id} className="hover:bg-card-hover/40 transition-colors">
+                          {/* Student Info */}
+                          <td className="p-4 pl-6">
+                            <div className="font-bold text-text flex items-center gap-2">
+                              <User className="w-4 h-4 text-teal-400 shrink-0" />
+                              <span>{cert.studentName}</span>
+                            </div>
+                            <div className="text-[11px] text-text-muted font-mono flex items-center gap-1.5 mt-1">
+                              <Mail className="w-3.5 h-3.5 shrink-0" />
+                              <span>{cert.studentEmail}</span>
+                            </div>
+                          </td>
 
-                        <td className="p-4 font-mono">
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card border border-border/80 text-accent font-bold text-xs">
-                            <span>{cert.certificateId}</span>
-                            <button
-                              onClick={() => copyToClipboard(cert.certificateId, cert._id)}
-                              className="text-text-muted hover:text-text transition-colors"
-                              title="Copy Certificate ID"
-                            >
-                              {copiedId === cert._id ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5" />
+                          {/* Event & Position */}
+                          <td className="p-4">
+                            <div className="font-semibold text-text text-sm">{cert.eventName}</div>
+                            <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20 text-[11px] font-mono font-medium">
+                              {cert.position || "Participant"}
+                            </div>
+                          </td>
+
+                          {/* Certificate ID */}
+                          <td className="p-4 font-mono">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card border border-border/80 text-accent font-bold text-xs">
+                              <span>{cert.certificateId}</span>
+                              <button
+                                onClick={() => copyToClipboard(cert.certificateId, cert._id)}
+                                className="text-text-muted hover:text-text transition-colors cursor-pointer"
+                                title="Copy Certificate ID"
+                              >
+                                {copiedId === cert._id ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Delivery Status */}
+                          <td className="p-4 font-mono">
+                            {renderEmailStatus(cert.emailStatus)}
+                          </td>
+
+                          {/* Timestamp */}
+                          <td className="p-4 font-mono text-text-muted text-[11px]">
+                            <div>{new Date(cert.createdAt).toLocaleDateString("en-IN")}</div>
+                            <div className="text-text-muted/60">{new Date(cert.createdAt).toLocaleTimeString("en-IN")}</div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="p-4 pr-6 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {/* Verify Portal Link */}
+                              <a
+                                href={`/verify-certificate/${cert.certificateId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 hover:bg-teal-500/20 transition-all font-mono font-bold text-xs shadow-sm"
+                                title="Open Public Verification Link"
+                              >
+                                <ShieldCheck className="w-3.5 h-3.5" />
+                                <span>Verify</span>
+                                <ExternalLink className="w-3 h-3 ml-0.5" />
+                              </a>
+
+                              {/* Resend Email Button */}
+                              <button
+                                onClick={() => handleResendEmail(cert)}
+                                disabled={isActionLoading}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-all disabled:opacity-50 cursor-pointer"
+                                title="Resend Certificate Email to Student"
+                              >
+                                {isActionLoading ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <Mail className="w-3.5 h-3.5" />
+                                )}
+                                <span>Resend</span>
+                              </button>
+
+                              {/* Delete Certificate Button (Super Admin Only) */}
+                              {isSuperAdmin && (
+                                <button
+                                  onClick={() => handleDeleteCertificate(cert)}
+                                  disabled={isActionLoading}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                                  title="Permanently Delete Certificate and Revoke Verification"
+                                >
+                                  {isActionLoading ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                  <span>Delete</span>
+                                </button>
                               )}
-                            </button>
-                          </div>
-                        </td>
-
-                        <td className="p-4 font-mono text-text-muted text-[11px]">
-                          <div>{new Date(cert.createdAt).toLocaleDateString("en-IN")}</div>
-                          <div className="text-text-muted/60">{new Date(cert.createdAt).toLocaleTimeString("en-IN")}</div>
-                        </td>
-
-                        <td className="p-4 pr-6 text-right">
-                          <a
-                            href={`/verify-certificate/${cert.certificateId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 hover:bg-teal-500/20 transition-all font-mono font-bold text-xs shadow-sm"
-                          >
-                            <ShieldCheck className="w-4 h-4" />
-                            <span>Verify Portal</span>
-                            <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
               {/* Mobile Card View */}
               <div className="block md:hidden space-y-4">
-                {certificates.map((cert) => (
-                  <div key={cert._id} className="p-4 rounded-xl bg-card-hover/40 border border-border/60 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="font-bold text-text text-sm flex items-center gap-2">
-                        <User className="w-4 h-4 text-teal-400" />
-                        <span>{cert.studentName}</span>
+                {certificates.map((cert) => {
+                  const isActionLoading = actionLoadingId === cert._id;
+
+                  return (
+                    <div key={cert._id} className="p-4 rounded-xl bg-card-hover/40 border border-border/60 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="font-bold text-text text-sm flex items-center gap-2">
+                          <User className="w-4 h-4 text-teal-400" />
+                          <span>{cert.studentName}</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-[10px] font-mono">
+                          {cert.position || "Participant"}
+                        </span>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-[10px] font-mono">
-                        {cert.position || "Participant"}
-                      </span>
-                    </div>
 
-                    <div className="text-xs text-text-muted font-mono break-all flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 shrink-0" />
-                      <span>{cert.studentEmail}</span>
-                    </div>
+                      <div className="flex items-center justify-between text-xs text-text-muted font-mono">
+                        <div className="break-all flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 shrink-0" />
+                          <span>{cert.studentEmail}</span>
+                        </div>
+                        <div>{renderEmailStatus(cert.emailStatus)}</div>
+                      </div>
 
-                    <div className="p-2.5 rounded-lg bg-card border border-border/80 space-y-1">
-                      <div className="text-[10px] font-mono text-text-muted uppercase">Event & ID</div>
-                      <div className="font-semibold text-text">{cert.eventName}</div>
-                      <div className="text-xs font-mono font-bold text-accent">{cert.certificateId}</div>
-                    </div>
+                      <div className="p-2.5 rounded-lg bg-card border border-border/80 space-y-1">
+                        <div className="text-[10px] font-mono text-text-muted uppercase">Event & ID</div>
+                        <div className="font-semibold text-text">{cert.eventName}</div>
+                        <div className="text-xs font-mono font-bold text-accent">{cert.certificateId}</div>
+                      </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono">
-                      <span className="text-text-muted">{new Date(cert.createdAt).toLocaleDateString("en-IN")}</span>
-                      <a
-                        href={`/verify-certificate/${cert.certificateId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20 text-xs font-bold"
-                      >
-                        <ShieldCheck className="w-3.5 h-3.5" /> Verify
-                      </a>
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/40 text-[11px] font-mono">
+                        <span className="text-text-muted">{new Date(cert.createdAt).toLocaleDateString("en-IN")}</span>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/verify-certificate/${cert.certificateId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20 text-xs font-bold"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5" /> Verify
+                          </a>
+
+                          <button
+                            onClick={() => handleResendEmail(cert)}
+                            disabled={isActionLoading}
+                            className="p-1.5 rounded-lg bg-card border border-border text-text-muted hover:text-text cursor-pointer"
+                            title="Resend Email"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
+                          </button>
+
+                          {isSuperAdmin && (
+                            <button
+                              onClick={() => handleDeleteCertificate(cert)}
+                              disabled={isActionLoading}
+                              className="p-1.5 rounded-lg bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 cursor-pointer"
+                              title="Delete Certificate"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </>
           )}
@@ -253,14 +454,14 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
+                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors cursor-pointer"
               >
                 Previous
               </button>
               <button
                 disabled={page >= pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors"
+                className="px-4 py-2 rounded-xl border border-border bg-card text-text disabled:opacity-50 font-mono text-xs font-bold hover:bg-card-hover transition-colors cursor-pointer"
               >
                 Next
               </button>
@@ -280,7 +481,7 @@ export default function IssuedCertificatesModal({ onClose, isModal = false }) {
               <Award className="w-5 h-5 text-teal-400" />
               Issued Certificates Archive
             </h2>
-            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text">
+            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text cursor-pointer">
               <X className="w-5 h-5" />
             </button>
           </div>

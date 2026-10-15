@@ -2,6 +2,7 @@ import { BackgroundJob } from '../models/backgroundJob.model.js';
 import { EmailBlocklist } from '../models/emailBlocklist.model.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { Certificate } from '../models/certificate.model.js';
+import { CertificateBatch } from '../models/certificateBatch.model.js';
 import { BoardingPass } from '../models/boardingPass.model.js';
 import { generateQRCodeWithLogo } from '../utils/qrGenerator.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
@@ -242,6 +243,35 @@ class QueueService {
         scheduledAt: isMaxAttempts ? job.scheduledAt : nextSchedule,
         processedAt: isMaxAttempts ? new Date() : null,
       });
+
+      // Production resilience: If a certificate generation job permanently fails, record failure count on the batch
+      if (isMaxAttempts && job.type === 'CERTIFICATE_BULK' && job.payload?.batchId) {
+        try {
+          await CertificateBatch.findByIdAndUpdate(job.payload.batchId, {
+            $inc: { failedCount: 1 },
+          });
+
+          // Check if all remaining jobs for the batch are completed/failed
+          const remainingJobs = await BackgroundJob.countDocuments({
+            type: 'CERTIFICATE_BULK',
+            'payload.batchId': job.payload.batchId,
+            status: { $in: ['PENDING', 'PROCESSING'] },
+            _id: { $ne: job._id },
+          });
+
+          if (remainingJobs === 0) {
+            const currentBatch = await CertificateBatch.findById(job.payload.batchId).select('generatedCount studentCount');
+            const finalStatus = (currentBatch?.generatedCount || 0) > 0 ? 'COMPLETED' : 'FAILED';
+            await CertificateBatch.findByIdAndUpdate(job.payload.batchId, {
+              status: finalStatus,
+              completedAt: new Date(),
+              $unset: { students: 1 },
+            });
+          }
+        } catch (failCheckErr) {
+          console.error('[QueueService] Error updating batch failure metrics:', failCheckErr);
+        }
+      }
     }
   }
 
@@ -308,12 +338,28 @@ class QueueService {
     try {
       await sendEmail({ email, subject, message, textMessage, bcc });
 
+      // Track email delivery success on the certificate record if applicable
+      if (job.payload?.certificateId) {
+        await Certificate.updateOne(
+          { certificateId: job.payload.certificateId },
+          { emailStatus: 'SENT', emailSentAt: new Date() }
+        ).catch(() => {});
+      }
+
       await BackgroundJob.findByIdAndUpdate(job._id, {
         status: 'COMPLETED',
         processedAt: new Date(),
       });
     } catch (err) {
       const errorMsg = err.message || '';
+
+      // Track email delivery failure on the certificate record if max attempts exhausted
+      if (job.payload?.certificateId && (job.attempts + 1 >= (job.maxAttempts || 3))) {
+        await Certificate.updateOne(
+          { certificateId: job.payload.certificateId },
+          { emailStatus: 'FAILED' }
+        ).catch(() => {});
+      }
       
       // Auto-detect hard bounce or recipient rejection to add to blocklist automatically
       const isHardBounce =
@@ -347,6 +393,7 @@ class QueueService {
    */
   async handleCertificateBulk(job) {
     const { eventName, eventDate, coordinatorName, student, finalSignatureUrl } = job.payload;
+    const batchId = job.payload?.batchId;
 
     if (!student || !student.name || !student.email) {
       await BackgroundJob.findByIdAndUpdate(job._id, {
@@ -356,32 +403,53 @@ class QueueService {
       return;
     }
 
-    const certificateId = crypto.randomBytes(8).toString('hex');
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
+    const normalizedEmail = student.email.trim().toLowerCase();
 
-    let qrCodeUrl = '';
-    try {
-      const dataUri = await generateQRCodeWithLogo(verificationLink);
-      const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/certificate');
-      if (qrUpload) {
-        qrCodeUrl = qrUpload.secure_url || qrUpload.url;
-      }
-    } catch (qrError) {
-      console.error('[QueueService] QR generation failed for student:', student.email, qrError);
+    // Idempotency guard: prevent duplicate certificate generation for the same student within a batch on job retry
+    let cert = null;
+    if (batchId) {
+      cert = await Certificate.findOne({ batchId, studentEmail: normalizedEmail });
     }
 
-    await Certificate.create({
-      studentName: student.name,
-      studentEmail: student.email,
-      eventName,
-      eventDate,
-      coordinatorName,
-      signatureImage: finalSignatureUrl,
-      certificateId,
-      position: student.position || 'Participant',
-      qrCodeImage: qrCodeUrl,
-    });
+    let certificateId = cert?.certificateId;
+    if (!certificateId) {
+      certificateId = crypto.randomBytes(8).toString('hex');
+      const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
 
+      let qrCodeUrl = '';
+      try {
+        const dataUri = await generateQRCodeWithLogo(verificationLink);
+        const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/certificate');
+        if (qrUpload) {
+          qrCodeUrl = qrUpload.secure_url || qrUpload.url;
+        }
+      } catch (qrError) {
+        console.error('[QueueService] QR generation failed for student:', normalizedEmail, qrError);
+      }
+
+      cert = await Certificate.create({
+        batchId: batchId || undefined,
+        studentName: student.name.trim(),
+        studentEmail: normalizedEmail,
+        eventName,
+        eventDate,
+        coordinatorName,
+        signatureImage: finalSignatureUrl,
+        certificateId,
+        position: student.position?.trim() || 'Participant',
+        qrCodeImage: qrCodeUrl,
+        emailStatus: 'PENDING',
+      });
+
+      // Increment batch generated count atomically
+      if (batchId) {
+        await CertificateBatch.findByIdAndUpdate(batchId, {
+          $inc: { generatedCount: 1 },
+        });
+      }
+    }
+
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificateId}`;
     const { html, text } = certificateEmail({
       studentName: student.name,
       eventName,
@@ -390,9 +458,10 @@ class QueueService {
       position: student.position || 'Participant',
     });
 
-    // Enqueue individual email sending job
+    // Enqueue individual email sending job with certificateId tracking
     await this.enqueueJob('EMAIL_SEND', {
-      email: student.email,
+      certificateId,
+      email: normalizedEmail,
       subject: `Your Certificate for ${eventName}`,
       message: html,
       textMessage: text,
@@ -402,6 +471,30 @@ class QueueService {
       status: 'COMPLETED',
       processedAt: new Date(),
     });
+
+    // Check if this completes the whole certificate batch
+    if (batchId) {
+      try {
+        const remainingJobs = await BackgroundJob.countDocuments({
+          type: 'CERTIFICATE_BULK',
+          'payload.batchId': batchId,
+          status: { $in: ['PENDING', 'PROCESSING'] },
+          _id: { $ne: job._id },
+        });
+
+        if (remainingJobs === 0) {
+          const currentBatch = await CertificateBatch.findById(batchId).select('generatedCount studentCount');
+          const finalStatus = (currentBatch?.generatedCount || 0) > 0 ? 'COMPLETED' : 'FAILED';
+          await CertificateBatch.findByIdAndUpdate(batchId, {
+            status: finalStatus,
+            completedAt: new Date(),
+            $unset: { students: 1 },
+          });
+        }
+      } catch (batchErr) {
+        console.error('[QueueService] Error updating batch completion status:', batchErr);
+      }
+    }
   }
 
   /**

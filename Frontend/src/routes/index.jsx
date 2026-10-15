@@ -45,6 +45,7 @@ const AdminAnnouncements = routeLazy(() => import("../pages/admin/Announcements"
 const BackgroundJobs = routeLazy(() => import("../pages/admin/BackgroundJobs"));
 const AuditHistory = routeLazy(() => import("../pages/admin/AuditHistory"));
 const SystemLogs = routeLazy(() => import("../pages/admin/Logs"));
+const ManageAdmins = routeLazy(() => import("../pages/admin/ManageAdmins"));
 
 // High-performance intent prefetching: loads route chunks upon hover/touch before click completes
 if (typeof window !== "undefined") {
@@ -143,6 +144,7 @@ export const router = createBrowserRouter([
           { path: "profile", lazy: AdminProfile },
           { path: "settings", lazy: AdminSettings },
           { path: "announcements", lazy: AdminAnnouncements },
+          { path: "admins", lazy: ManageAdmins },
         ],
       },
     ],

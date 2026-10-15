@@ -25,6 +25,12 @@ const tokenSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    attempts: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 10,
+    },
     expiresAt: {
       type: Date,
       required: true,
@@ -45,5 +51,8 @@ tokenSchema.methods.isTokenCorrect = async function (token) {
 // Create a TTL (Time-To-Live) index on the expiresAt field. 
 // MongoDB will automatically delete the document when the current time reaches expiresAt.
 tokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+// Compound index for fast OTP & reset token lookups by user and token type
+tokenSchema.index({ userId: 1, type: 1 });
 
 export const Token = mongoose.model('Token', tokenSchema);

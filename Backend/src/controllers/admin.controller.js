@@ -3,6 +3,8 @@ import { StudentRegistration } from '../models/studentRegistration.model.js';
 import { Event } from '../models/event.model.js';
 import { TeamMember } from '../models/teamMember.model.js';
 import { SystemSetting } from '../models/systemSetting.model.js';
+import { CertificateBatch } from '../models/certificateBatch.model.js';
+import { SystemLog } from '../models/log.model.js';
 
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
@@ -15,6 +17,11 @@ import { Token } from '../models/token.model.js';
 import { UAParser } from 'ua-parser-js';
 import mongoSanitize from 'express-mongo-sanitize';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import { getSuperAdminCredentials } from '../utils/superAdminHelper.js';
+
+// Pre-computed dummy hash to prevent account enumeration via timing attacks
+const DUMMY_HASH = "$2a$10$wT0lqGhy59hD2214K5H/r.R49m64F1m6F1h7x7D1i8l0m2n3o4p5q";
 
 // Helper to detect client IP: backend-observed IP is the authoritative source of truth for security & sessions
 const getClientIp = (req) => {
@@ -118,27 +125,75 @@ const loginAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Email and password are required');
   }
 
+  // Prevent bcrypt Denial of Service via excessively large payloads
+  if (typeof password !== 'string' || password.length > 128) {
+    throw new ApiError(400, 'Invalid credentials');
+  }
+
   const normalizedEmail = email.toString().toLowerCase().trim();
-  const admin = await Admin.findOne({ email: normalizedEmail });
+  const { email: superAdminEmail, password: superAdminEnvPassword, name: superAdminName } = getSuperAdminCredentials();
+  const isSuperAdminLogin = normalizedEmail === superAdminEmail;
 
-  if (!admin) {
-    throw new ApiError(401, 'Invalid credentials');
+  let admin = await Admin.findOne({ email: normalizedEmail });
+
+  if (isSuperAdminLogin) {
+    if (!admin) {
+      admin = await Admin.create({
+        name: superAdminName,
+        email: superAdminEmail,
+        password: superAdminEnvPassword,
+        role: 'SuperAdmin',
+      });
+    } else if (admin.role !== 'SuperAdmin') {
+      admin.role = 'SuperAdmin';
+      await admin.save();
+    }
+
+    // Timing-safe byte comparison for direct environment variable match
+    let isDirectMatch = false;
+    if (typeof superAdminEnvPassword === 'string') {
+      const bufA = Buffer.from(password);
+      const bufB = Buffer.from(superAdminEnvPassword);
+      if (bufA.length === bufB.length) {
+        isDirectMatch = crypto.timingSafeEqual(bufA, bufB);
+      }
+    }
+
+    const isHashedMatch = await admin.isPasswordCorrect(password);
+
+    if (!isDirectMatch && !isHashedMatch) {
+      throw new ApiError(401, 'Invalid credentials');
+    }
+  } else {
+    // If account doesn't exist, execute dummy bcrypt compare to prevent timing-based user enumeration
+    if (!admin) {
+      await bcrypt.compare(password, DUMMY_HASH);
+      throw new ApiError(401, 'Invalid credentials');
+    }
+
+    const isPasswordValid = await admin.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+      throw new ApiError(401, 'Invalid credentials');
+    }
   }
 
-  const isPasswordValid = await admin.isPasswordCorrect(password);
-
-  if (!isPasswordValid) {
-    throw new ApiError(401, 'Invalid credentials');
-  }
   const existingOtp = await Token.findOne({
     userId: admin._id,
     userType: 'Admin',
     type: 'AUTH_OTP',
   });
   if (existingOtp) {
-    return res.status(200).json(
-      new ApiResponse(200, {}, 'OTP already sent,Please check your email')
-    );
+    // Rate limit OTP generation: allow resending only after 60 seconds
+    const secondsSinceIssued = (Date.now() - new Date(existingOtp.createdAt).getTime()) / 1000;
+    if (secondsSinceIssued < 60) {
+      const waitTime = Math.ceil(60 - secondsSinceIssued);
+      return res.status(200).json(
+        new ApiResponse(200, {}, `OTP already dispatched. Please wait ${waitTime}s before requesting a new code.`)
+      );
+    }
+    // Stale OTP beyond 60s is refreshed
+    await Token.deleteOne({ _id: existingOtp._id });
   }
   // Generate OTP
   const otp = crypto.randomInt(100000, 1000000).toString();
@@ -149,6 +204,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     userType: 'Admin',
     token: otp,
     type: 'AUTH_OTP',
+    attempts: 0,
     description: 'Auth OTP',
     expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
   });
@@ -159,7 +215,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
   try {
     await sendEmail({
       email: admin.email,
-      subject: 'CodeX Admin Login OTP',
+      subject: `CodeX ${admin.role === 'SuperAdmin' ? 'Super Admin' : 'Admin'} Login OTP`,
       message: html,
       textMessage: text,
     });
@@ -201,11 +257,24 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'OTP not requested or has expired');
   }
 
+  // Enforce brute-force attempt lockout (maximum 5 attempts)
+  if ((tokenDoc.attempts || 0) >= 5) {
+    await Token.deleteOne({ _id: tokenDoc._id });
+    throw new ApiError(429, 'Maximum OTP attempts exceeded. Code has been permanently revoked for security. Please request a new OTP.');
+  }
+
   const isOtpValid = await tokenDoc.isTokenCorrect(cleanedOtp);
 
   // Since MongoDB TTL thread runs every 60 seconds, we manually check the expiry as a fallback
   if (!isOtpValid || tokenDoc.expiresAt < new Date()) {
-    throw new ApiError(400, 'Invalid or expired OTP');
+    tokenDoc.attempts = (tokenDoc.attempts || 0) + 1;
+    if (tokenDoc.attempts >= 5) {
+      await Token.deleteOne({ _id: tokenDoc._id });
+      throw new ApiError(429, 'Maximum OTP verification attempts exceeded. Code has been revoked for security.');
+    }
+    await tokenDoc.save();
+    const remaining = 5 - tokenDoc.attempts;
+    throw new ApiError(400, `Invalid or expired OTP. ${remaining} attempt(s) remaining.`);
   }
 
   // OTP is correct, clear it
@@ -305,22 +374,27 @@ const getAdminSessions = asyncHandler(async (req, res) => {
     }
   }
 
-  const rawSessions = await Session.find()
-    .populate('adminId', 'name email profilePhoto')
-    .sort({ createdAt: -1 });
+  // Role-based session visibility:
+  // Regular Admin can only view their own sessions
+  // Super Admin can view all sessions (their own and other admins')
+  const sessionFilter = req.admin?.role === 'SuperAdmin' ? {} : { adminId: req.admin._id };
 
-  const sessions = rawSessions.map((session) => {
-    const obj = session.toObject();
-    obj.isCurrent = req.sessionId ? session._id.toString() === req.sessionId.toString() : false;
-    return obj;
-  });
+  const rawSessions = await Session.find(sessionFilter)
+    .populate('adminId', 'name email profilePhoto role')
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const sessions = rawSessions.map((session) => ({
+    ...session,
+    isCurrent: req.sessionId ? session._id.toString() === req.sessionId.toString() : false,
+  }));
 
   return res.status(200).json(new ApiResponse(200, sessions, 'Sessions fetched successfully'));
 });
 
-// @desc    Kill or delete a specific session across any admin account
+// @desc    Kill or delete a specific session across admin accounts
 // @route   DELETE /api/v1/admin/sessions/:id
-// @access  Private/Admin
+// @access  Private/Admin (Regular admins can only revoke their own sessions; Super Admin can revoke any session)
 const killSession = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -334,14 +408,26 @@ const killSession = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Session not found');
   }
 
-  session.status = 'REVOKED';
-  session.loggedOutAt = new Date();
-  session.cleanupAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  await session.save();
+  // Authorization check:
+  // Super Admin can revoke any session.
+  // Regular Admin can only revoke sessions belonging to their own admin account.
+  if (req.admin?.role !== 'SuperAdmin' && session.adminId?.toString() !== req.admin._id.toString()) {
+    throw new ApiError(403, 'Access denied. You can only revoke your own active sessions.');
+  }
 
-  await session.populate('adminId', 'name email profilePhoto');
+  const updatedSession = await Session.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        status: 'REVOKED',
+        loggedOutAt: new Date(),
+        cleanupAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    },
+    { new: true, runValidators: false }
+  ).populate('adminId', 'name email profilePhoto role');
 
-  return res.status(200).json(new ApiResponse(200, session, 'Session revoked successfully'));
+  return res.status(200).json(new ApiResponse(200, updatedSession, 'Session revoked successfully'));
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -393,8 +479,24 @@ const requestPasswordChange = asyncHandler(async (req, res) => {
   }
 
   const admin = await Admin.findById(req.admin._id);
+  if (!admin) {
+    throw new ApiError(404, 'Admin not found');
+  }
 
-  const isPasswordValid = await admin.isPasswordCorrect(oldPassword);
+  let isPasswordValid = await admin.isPasswordCorrect(oldPassword);
+
+  // If Super Admin, allow matching against either the hashed DB password or .env ADMIN_PASSWORD
+  if (!isPasswordValid && admin.role === 'SuperAdmin') {
+    const { password: envPassword } = getSuperAdminCredentials();
+    if (envPassword) {
+      const bufA = Buffer.from(oldPassword);
+      const bufB = Buffer.from(envPassword);
+      if (bufA.length === bufB.length) {
+        isPasswordValid = crypto.timingSafeEqual(bufA, bufB);
+      }
+    }
+  }
+
   if (!isPasswordValid) {
     throw new ApiError(400, 'Invalid old password');
   }
@@ -500,13 +602,40 @@ const getCurrentAdmin = asyncHandler(async (req, res) => {
 });
 
 const getDashboardMetrics = asyncHandler(async (req, res) => {
-  const [pendingApps, totalApps, activeEvents, liveSessions, teamSize, recentLogs] = await Promise.all([
+  const isSuperAdmin = req.admin?.role === 'SuperAdmin';
+
+  const [
+    pendingApps,
+    totalApps,
+    activeEvents,
+    liveSessions,
+    teamSize,
+    recentLogs,
+    totalAdmins,
+    pendingBatches,
+    totalBatches,
+    totalActivityLogs,
+    totalAccessLogs,
+    recentActivityLogs
+  ] = await Promise.all([
     StudentRegistration.countDocuments({ status: "PENDING" }),
     StudentRegistration.countDocuments(),
     Event.countDocuments(),
-    Session.countDocuments({ status: "ACTIVE" }),
+    Session.countDocuments({ status: "ACTIVE", expiresAt: { $gt: new Date() } }),
     TeamMember.countDocuments(),
-    StudentRegistration.find().sort({ createdAt: -1 }).limit(5)
+    StudentRegistration.find().sort({ createdAt: -1 }).limit(5).lean(),
+    isSuperAdmin ? Admin.countDocuments({ role: { $ne: 'SuperAdmin' } }) : 0,
+    isSuperAdmin ? CertificateBatch.countDocuments({ status: 'PENDING_APPROVAL' }) : 0,
+    isSuperAdmin ? CertificateBatch.countDocuments() : 0,
+    isSuperAdmin ? SystemLog.countDocuments({ type: 'ADMIN_ACTIVITY' }) : 0,
+    isSuperAdmin ? SystemLog.countDocuments({ type: 'PUBLIC_ACCESS' }) : 0,
+    isSuperAdmin
+      ? SystemLog.find({ type: 'ADMIN_ACTIVITY' })
+          .populate('adminId', 'name email role')
+          .sort({ createdAt: -1 })
+          .limit(6)
+          .lean()
+      : []
   ]);
 
   return res.status(200).json(
@@ -517,8 +646,15 @@ const getDashboardMetrics = asyncHandler(async (req, res) => {
         activeEvents,
         liveSessions,
         teamSize,
+        // Super Admin metrics
+        totalAdmins,
+        pendingBatches,
+        totalBatches,
+        totalActivityLogs,
+        totalAccessLogs,
       },
-      recentLogs
+      recentLogs,
+      recentActivityLogs,
     }, 'Dashboard metrics fetched successfully')
   );
 });

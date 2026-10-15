@@ -1,10 +1,14 @@
+import crypto from 'crypto';
 import { Certificate } from '../models/certificate.model.js';
+import { CertificateBatch } from '../models/certificateBatch.model.js';
+import { BackgroundJob } from '../models/backgroundJob.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { queueService } from '../services/queueService.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { logPublicEvent } from '../middlewares/log.middleware.js';
+import { certificateEmail } from '../utils/emailTemplates.js';
 
 const generateBulkCertificates = asyncHandler(async (req, res) => {
   const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;
@@ -39,28 +43,85 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     finalSignatureUrl = signatureImage.secure_url || signatureImage.url;
   }
 
-  const validStudents = students.filter(s => s && s.name && s.email);
+  const validStudents = students
+    .filter((s) => s && s.name && s.email)
+    .map((s) => ({
+      name: s.name.trim(),
+      email: s.email.trim().toLowerCase(),
+      position: s.position?.trim() || 'Participant',
+    }));
 
-  const bulkJobs = validStudents.map((student) => ({
-    type: 'CERTIFICATE_BULK',
-    payload: {
+  if (validStudents.length === 0) {
+    throw new ApiError(400, 'No valid student records provided');
+  }
+
+  const batchId = `CERT-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  const isSuperAdmin = req.admin?.role === 'SuperAdmin';
+
+  if (isSuperAdmin) {
+    // Super Admin direct issuance: Auto-approved and immediate background queuing
+    const batch = await CertificateBatch.create({
+      batchId,
       eventName,
       eventDate,
       coordinatorName,
-      student,
-      finalSignatureUrl,
-    },
-  }));
+      signatureImage: finalSignatureUrl,
+      students: validStudents,
+      studentCount: validStudents.length,
+      status: 'PROCESSING',
+      submittedBy: req.admin._id,
+      submittedByName: req.admin.name || 'Super Admin',
+      submittedByEmail: req.admin.email,
+      approvedBy: req.admin._id,
+      approvedByName: req.admin.name || 'Super Admin',
+      approvedAt: new Date(),
+    });
 
-  await queueService.enqueueJobBatch(bulkJobs);
+    const bulkJobs = validStudents.map((student) => ({
+      type: 'CERTIFICATE_BULK',
+      payload: {
+        batchId: batch._id,
+        eventName,
+        eventDate,
+        coordinatorName,
+        student,
+        finalSignatureUrl,
+      },
+    }));
 
-  return res.status(202).json(
-    new ApiResponse(
-      202,
-      { count: validStudents.length },
-      `Successfully queued ${validStudents.length} certificate jobs. Processing in the background with rate limiting.`
-    )
-  );
+    await queueService.enqueueJobBatch(bulkJobs);
+
+    return res.status(202).json(
+      new ApiResponse(
+        202,
+        { batch, count: validStudents.length, autoApproved: true },
+        `Super Admin direct issuance: ${validStudents.length} certificates approved and queued for processing.`
+      )
+    );
+  } else {
+    // Regular Admin submission: Requires Super Admin review & approval before generation begins
+    const batch = await CertificateBatch.create({
+      batchId,
+      eventName,
+      eventDate,
+      coordinatorName,
+      signatureImage: finalSignatureUrl,
+      students: validStudents,
+      studentCount: validStudents.length,
+      status: 'PENDING_APPROVAL',
+      submittedBy: req.admin._id,
+      submittedByName: req.admin.name || 'Admin',
+      submittedByEmail: req.admin.email,
+    });
+
+    return res.status(201).json(
+      new ApiResponse(
+        201,
+        { batch, count: validStudents.length, autoApproved: false },
+        `Certificate batch submitted successfully (#${batch.batchId}). Awaiting Super Admin approval before generation begins.`
+      )
+    );
+  }
 });
 
 const verifyCertificate = asyncHandler(async (req, res) => {
@@ -133,4 +194,427 @@ const getAllCertificates = asyncHandler(async (req, res) => {
   );
 });
 
-export { generateBulkCertificates, verifyCertificate, getLatestSignature, getAllCertificates };
+// @desc    Get Certificate Batches (with approval status)
+// @route   GET /api/v1/certificates/batches
+// @access  Private (Admin & Super Admin)
+const getCertificateBatches = asyncHandler(async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
+  const skip = (page - 1) * limit;
+
+  const query = {};
+  if (req.query.status && req.query.status !== 'ALL') {
+    query.status = req.query.status;
+  }
+
+  const [batches, total, pendingCount] = await Promise.all([
+    CertificateBatch.find(query)
+      .select('-students')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    CertificateBatch.countDocuments(query),
+    CertificateBatch.countDocuments({ status: 'PENDING_APPROVAL' }),
+  ]);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        batches,
+        pendingCount,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      'Certificate batches fetched successfully'
+    )
+  );
+});
+
+// @desc    Get Single Certificate Batch Details (including student list)
+// @route   GET /api/v1/certificates/batches/:id
+// @access  Private (Admin & Super Admin)
+const getCertificateBatchById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const batch = await CertificateBatch.findById(id).lean();
+
+  if (!batch) {
+    throw new ApiError(404, 'Certificate batch not found');
+  }
+
+  // If students array was purged after batch completion to eliminate database redundancy,
+  // dynamically hydrate from the Certificate collection using the indexed batchId link
+  if (!batch.students || batch.students.length === 0) {
+    const certs = await Certificate.find({ batchId: batch._id })
+      .select('studentName studentEmail position certificateId')
+      .lean();
+
+    if (certs && certs.length > 0) {
+      batch.students = certs.map((c) => ({
+        name: c.studentName,
+        email: c.studentEmail,
+        position: c.position,
+        certificateId: c.certificateId,
+      }));
+    } else {
+      batch.students = [];
+    }
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, batch, 'Certificate batch details retrieved successfully')
+  );
+});
+
+// @desc    Approve Certificate Batch & Trigger Generation Queue
+// @route   PATCH /api/v1/certificates/batches/:id/approve
+// @access  Private (Super Admin Only)
+const approveCertificateBatch = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const batch = await CertificateBatch.findById(id);
+  if (!batch) {
+    throw new ApiError(404, 'Certificate batch not found');
+  }
+
+  if (batch.status !== 'PENDING_APPROVAL') {
+    throw new ApiError(400, `Cannot approve a batch with status "${batch.status}".`);
+  }
+
+  batch.status = 'PROCESSING';
+  batch.approvedBy = req.admin._id;
+  batch.approvedByName = req.admin.name || 'Super Admin';
+  batch.approvedAt = new Date();
+  await batch.save();
+
+  const bulkJobs = batch.students.map((student) => ({
+    type: 'CERTIFICATE_BULK',
+    payload: {
+      batchId: batch._id,
+      eventName: batch.eventName,
+      eventDate: batch.eventDate,
+      coordinatorName: batch.coordinatorName,
+      student,
+      finalSignatureUrl: batch.signatureImage,
+    },
+  }));
+
+  await queueService.enqueueJobBatch(bulkJobs);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      batch,
+      `Certificate batch #${batch.batchId} approved successfully! ${batch.studentCount} certificates are now queued for generation.`
+    )
+  );
+});
+
+// @desc    Reject Certificate Batch
+// @route   PATCH /api/v1/certificates/batches/:id/reject
+// @access  Private (Super Admin Only)
+const rejectCertificateBatch = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body;
+
+  const batch = await CertificateBatch.findById(id);
+  if (!batch) {
+    throw new ApiError(404, 'Certificate batch not found');
+  }
+
+  if (batch.status === 'REJECTED') {
+    throw new ApiError(400, `Batch #${batch.batchId} is already rejected.`);
+  }
+
+  batch.status = 'REJECTED';
+  batch.rejectionReason = reason?.trim() || 'Rejected by Super Admin';
+  batch.rejectedAt = new Date();
+
+  // 1. Permanently delete any generated certificates associated with this batch from the database
+  const certDeleteResult = await Certificate.deleteMany({
+    $or: [
+      { batchId: batch._id },
+      { eventName: batch.eventName, eventDate: batch.eventDate },
+    ],
+  });
+
+  // 2. Suppress and cancel any pending or in-flight background queue jobs for this batch
+  await BackgroundJob.updateMany(
+    {
+      'payload.batchId': batch._id,
+      status: { $in: ['PENDING', 'PROCESSING'] },
+    },
+    {
+      status: 'SUPPRESSED',
+      lastError: `Batch #${batch.batchId} was rejected by Super Admin: ${batch.rejectionReason}`,
+    }
+  );
+
+  await batch.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        batch,
+        deletedCertificatesCount: certDeleteResult.deletedCount || 0,
+      },
+      `Certificate batch #${batch.batchId} rejected.${
+        certDeleteResult.deletedCount > 0
+          ? ` ${certDeleteResult.deletedCount} certificate(s) deleted from database.`
+          : ''
+      }`
+    )
+  );
+});
+
+// @desc    Update a Certificate Batch (Details & Student Roster)
+// @route   PUT /api/v1/certificates/batches/:id
+// @access  Private (Submitting Admin or Super Admin)
+const updateCertificateBatch = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const batch = await CertificateBatch.findById(id);
+
+  if (!batch) {
+    throw new ApiError(404, 'Certificate batch not found');
+  }
+
+  // Authorization check: Submitting Admin or Super Admin
+  const isSuperAdmin = req.admin?.role === 'SuperAdmin';
+  const isOwner = batch.submittedBy && batch.submittedBy.toString() === req.admin._id.toString();
+
+  if (!isSuperAdmin && !isOwner) {
+    throw new ApiError(403, 'You do not have permission to edit this certificate batch.');
+  }
+
+  // Regular admins can only edit PENDING_APPROVAL batches;
+  // Super Admins can edit any batch (PENDING_APPROVAL, REJECTED, or modify previously approved batches)
+  if (!isSuperAdmin && batch.status !== 'PENDING_APPROVAL') {
+    throw new ApiError(
+      400,
+      `Cannot edit batch #${batch.batchId}. It is currently in "${batch.status}" status. Only batches in "PENDING_APPROVAL" can be modified by standard Admins.`
+    );
+  }
+
+  const { eventName, eventDate, coordinatorName, studentsStr, signatureImageUrl } = req.body;
+
+  if (eventName && eventName.trim()) {
+    batch.eventName = eventName.trim();
+  }
+  if (eventDate) {
+    batch.eventDate = eventDate;
+  }
+  if (coordinatorName && coordinatorName.trim()) {
+    batch.coordinatorName = coordinatorName.trim();
+  }
+
+  // Handle signature image update if provided
+  if (req.file?.path) {
+    const signatureImage = await uploadOnCloudinary(req.file.path, 'CodeX/certificate');
+    if (signatureImage) {
+      batch.signatureImage = signatureImage.secure_url || signatureImage.url;
+    }
+  } else if (signatureImageUrl && signatureImageUrl.trim()) {
+    batch.signatureImage = signatureImageUrl.trim();
+  }
+
+  // Update students roster if provided
+  if (studentsStr || req.body.students) {
+    let rawStudents;
+    if (studentsStr) {
+      try {
+        rawStudents = JSON.parse(studentsStr);
+      } catch (e) {
+        throw new ApiError(400, 'Invalid students data format');
+      }
+    } else {
+      rawStudents = req.body.students;
+    }
+
+    if (Array.isArray(rawStudents)) {
+      const validStudents = rawStudents
+        .filter((s) => s && s.name && s.email)
+        .map((s) => ({
+          name: s.name.trim(),
+          email: s.email.trim().toLowerCase(),
+          position: s.position?.trim() || 'Participant',
+        }));
+
+      if (validStudents.length === 0) {
+        throw new ApiError(400, 'A certificate batch must contain at least one valid student.');
+      }
+
+      batch.students = validStudents;
+      batch.studentCount = validStudents.length;
+    }
+  }
+
+  // When an edit is performed on a batch, delete any prior certificates and suppress stale queue jobs
+  // so no outdated/mismatched certificates remain in the database
+  const certDeleteResult = await Certificate.deleteMany({
+    $or: [
+      { batchId: batch._id },
+      { eventName: batch.eventName, eventDate: batch.eventDate },
+    ],
+  });
+
+  await BackgroundJob.updateMany(
+    {
+      'payload.batchId': batch._id,
+      status: { $in: ['PENDING', 'PROCESSING'] },
+    },
+    {
+      status: 'SUPPRESSED',
+      lastError: `Batch #${batch.batchId} was edited. Previous queue jobs suppressed.`,
+    }
+  );
+
+  // Reset status to PENDING_APPROVAL so the freshly updated batch can be reviewed and authorized
+  batch.status = 'PENDING_APPROVAL';
+  batch.rejectionReason = '';
+  batch.approvedBy = undefined;
+  batch.approvedByName = undefined;
+  batch.approvedAt = undefined;
+
+  await batch.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        batch,
+        deletedCertificatesCount: certDeleteResult.deletedCount || 0,
+      },
+      `Certificate batch #${batch.batchId} updated successfully.${
+        certDeleteResult.deletedCount > 0
+          ? ` ${certDeleteResult.deletedCount} outdated certificate(s) were removed.`
+          : ''
+      } Ready for review & authorization.`
+    )
+  );
+});
+
+// @desc    Delete Single Certificate
+// @route   DELETE /api/v1/certificates/:id
+// @access  Private (Super Admin Only)
+const deleteCertificate = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const certificate = await Certificate.findByIdAndDelete(id);
+
+  if (!certificate) {
+    throw new ApiError(404, 'Certificate not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, certificate, `Certificate #${certificate.certificateId} deleted successfully`)
+  );
+});
+
+// @desc    Resend Certificate Email to Student
+// @route   POST /api/v1/certificates/:id/resend
+// @access  Private (Admin & Super Admin)
+const resendCertificateEmail = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const certificate = await Certificate.findById(id);
+
+  if (!certificate) {
+    throw new ApiError(404, 'Certificate not found');
+  }
+
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${certificate.certificateId}`;
+  const { html, text } = certificateEmail({
+    studentName: certificate.studentName,
+    eventName: certificate.eventName,
+    certificateId: certificate.certificateId,
+    verificationLink,
+    position: certificate.position || 'Participant',
+  });
+
+  await queueService.enqueueJob('EMAIL_SEND', {
+    certificateId: certificate.certificateId,
+    email: certificate.studentEmail,
+    subject: `Your Certificate for ${certificate.eventName} (Resent)`,
+    message: html,
+    textMessage: text,
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { certificateId: certificate.certificateId, studentEmail: certificate.studentEmail },
+      `Certificate email queued for delivery to ${certificate.studentEmail}.`
+    )
+  );
+});
+
+// @desc    Export Batch Certificates as CSV
+// @route   GET /api/v1/certificates/batches/:id/export
+// @access  Private (Admin & Super Admin)
+const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const batch = await CertificateBatch.findById(id).lean();
+
+  if (!batch) {
+    throw new ApiError(404, 'Certificate batch not found');
+  }
+
+  const certs = await Certificate.find({ batchId: batch._id }).sort({ createdAt: 1 }).lean();
+
+  const rows = [
+    ['Student Name', 'Email', 'Position', 'Certificate ID', 'Verification Link', 'Delivery Status', 'Issued At'],
+  ];
+
+  if (certs && certs.length > 0) {
+    for (const c of certs) {
+      const link = `${process.env.FRONTEND_URL}/verify-certificate/${c.certificateId}`;
+      rows.push([
+        `"${(c.studentName || '').replace(/"/g, '""')}"`,
+        `"${(c.studentEmail || '').replace(/"/g, '""')}"`,
+        `"${(c.position || 'Participant').replace(/"/g, '""')}"`,
+        `"${c.certificateId || ''}"`,
+        `"${link}"`,
+        `"${c.emailStatus || 'SENT'}"`,
+        `"${c.createdAt ? new Date(c.createdAt).toISOString() : ''}"`,
+      ]);
+    }
+  } else if (batch.students && batch.students.length > 0) {
+    for (const s of batch.students) {
+      rows.push([
+        `"${(s.name || '').replace(/"/g, '""')}"`,
+        `"${(s.email || '').replace(/"/g, '""')}"`,
+        `"${(s.position || 'Participant').replace(/"/g, '""')}"`,
+        '"PENDING_APPROVAL"',
+        '""',
+        '"NOT_GENERATED"',
+        '""',
+      ]);
+    }
+  }
+
+  const csvContent = rows.map((r) => r.join(',')).join('\n');
+  const filename = `CodeX_Certificates_${(batch.eventName || 'Batch').replace(/[^a-zA-Z0-9]/g, '_')}_${batch.batchId}.csv`;
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  return res.status(200).send(csvContent);
+});
+
+export {
+  generateBulkCertificates,
+  verifyCertificate,
+  getLatestSignature,
+  getAllCertificates,
+  getCertificateBatches,
+  getCertificateBatchById,
+  approveCertificateBatch,
+  rejectCertificateBatch,
+  updateCertificateBatch,
+  deleteCertificate,
+  resendCertificateEmail,
+  exportBatchCertificatesCsv,
+};

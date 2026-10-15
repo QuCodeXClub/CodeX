@@ -4,46 +4,70 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
-import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import { globalLimiter } from "./middlewares/rateLimiter.middleware.js";
 import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
+// Security: Disable Express signature header to prevent fingerprinting
+app.disable("x-powered-by");
+
 // Trust proxy to properly inspect forwarded client IP addresses behind reverse proxies
 app.set("trust proxy", 1);
 
-// Security Headers
-app.use(helmet());
+// Security Headers: Frameguard, noSniff, strict referrer policy, cross-origin resource policy
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    frameguard: { action: "deny" },
+    xssFilter: true,
+    noSniff: true,
+  })
+);
 
 // Request Logging
 app.use(morgan("dev"));
 
-// Rate Limiting (limit repeated requests to public APIs and/or endpoints)
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10000, // Limit each IP to 10000 requests per `window`
-  message: { message: "Too many requests from this IP, please try again after 15 minutes" },
-});
-app.use("/api", limiter);
+// Production Rate Limiting across all /api routes
+app.use("/api", globalLimiter);
 
 // Compression for better performance
 app.use(compression());
 
+const configuredOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
 
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
-  : ["*"];
+const isDevelopment = process.env.NODE_ENV !== "production";
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      // In development, permit localhost and 127.0.0.1 on any port
+      if (
+        isDevelopment &&
+        (/^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+          /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin))
+      ) {
+        return callback(null, true);
       }
+
+      // In production or configured env, check against CORS_ORIGIN
+      if (
+        configuredOrigins.length === 0 ||
+        configuredOrigins.includes("*") ||
+        configuredOrigins.includes(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS policy violation: Origin not allowed"), false);
     },
     credentials: true,
   })
@@ -117,6 +141,7 @@ import contactRouter from "./routes/contact.routes.js";
 import qrRouter from "./routes/qr.routes.js";
 import blocklistRouter from "./routes/blocklist.routes.js";
 import jobRouter from "./routes/job.routes.js";
+import superAdminRouter from "./routes/superAdmin.routes.js";
 
 // root & api v1 status endpoints
 const apiStatusHandler = (req, res) => {
@@ -128,6 +153,7 @@ const apiStatusHandler = (req, res) => {
       healthcheck: "/api/v1/healthcheck",
       events: "/api/v1/events",
       admin: "/api/v1/admin",
+      superAdmin: "/api/v1/superAdmin",
       students: "/api/v1/students",
       registrations: "/api/v1/registrations",
       teams: "/api/v1/teams",
@@ -147,6 +173,7 @@ app.get("/api/v1", apiStatusHandler);
 // routes declaration
 app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/superAdmin", superAdminRouter);
 app.use("/api/v1/students", studentRouter);
 app.use("/api/v1/registrations", registrationRouter);
 app.use("/api/v1/events", eventRouter);

@@ -52,9 +52,10 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Indexes for fast timeline filtering (upcoming/past) and sorting
+// Indexes for fast timeline filtering (upcoming/past), text search, and pagination
+// Note: In MongoDB, a single-field index on date: 1 can be traversed in both forward and reverse directions.
 eventSchema.index({ date: 1 });
-eventSchema.index({ date: -1 });
+eventSchema.index({ createdAt: -1 });
 eventSchema.index({ eventName: "text", location: "text", tags: "text" });
 
 export const Event = mongoose.model("Event", eventSchema);

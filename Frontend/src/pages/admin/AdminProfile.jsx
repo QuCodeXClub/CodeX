@@ -33,6 +33,7 @@ export default function AdminProfile() {
   const { user } = useSelector((state) => state.auth);
 
   const currentTab = location.hash || "#profile";
+  const isSuperAdmin = (user?.admin?.role || user?.role) === "SuperAdmin";
 
   // Profile State
   const [formData, setFormData] = useState({
@@ -109,21 +110,28 @@ export default function AdminProfile() {
 
     try {
       const submitData = new FormData();
-      if (formData.name) submitData.append("name", formData.name);
+      if (formData.name) submitData.append("name", formData.name.trim());
       if (formData.mobileNumber)
-        submitData.append("mobileNumber", formData.mobileNumber);
+        submitData.append("mobileNumber", formData.mobileNumber.trim());
       if (profilePhoto) submitData.append("profilePhoto", profilePhoto);
 
       const response = await adminService.updateProfile(submitData);
 
-      if (response.success) {
-        dispatch(setLogin(response.data));
+      if (response?.success || response?.data) {
+        const updatedAdmin = response.data || response;
+        // Keep existing token so auth session remains consistent
+        const existingToken = user?.token;
+        dispatch(setLogin(existingToken ? { admin: updatedAdmin, token: existingToken, ...updatedAdmin } : updatedAdmin));
         setMessage({ type: "success", text: "Profile updated successfully!" });
       }
     } catch (error) {
+      const errorText =
+        error?.message ||
+        error?.response?.data?.message ||
+        (typeof error === "string" ? error : "Failed to update profile.");
       setMessage({
         type: "error",
-        text: error.response?.data?.message || "Failed to update profile.",
+        text: errorText,
       });
     } finally {
       setLoading(false);
@@ -207,10 +215,17 @@ export default function AdminProfile() {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-border/60">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-            <User className="w-3.5 h-3.5" />
-            <span>ACCOUNT & SECURITY</span>
-          </div>
+          {isSuperAdmin ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
+              <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
+              <span>ROOT CONTROL • SUPER ADMIN</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+              <User className="w-3.5 h-3.5" />
+              <span>ACCOUNT & SECURITY</span>
+            </div>
+          )}
           <h1 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-text uppercase">
             ACCOUNT <span className="text-accent">SETTINGS</span>
           </h1>
@@ -259,9 +274,16 @@ export default function AdminProfile() {
                   <p className="text-xs text-text-muted">Personal administrator details and avatar</p>
                 </div>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-bold uppercase hidden sm:inline-block">
-                Admin Profile
-              </span>
+              {isSuperAdmin ? (
+                <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-300 font-extrabold uppercase tracking-wider shadow-sm shadow-fuchsia-500/20 hidden sm:inline-flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
+                  ROOT CONTROL • SUPER ADMIN
+                </span>
+              ) : (
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-bold uppercase hidden sm:inline-block">
+                  Admin Profile
+                </span>
+              )}
             </div>
 
             <div className="p-5 sm:p-8 md:p-10">
@@ -390,16 +412,24 @@ export default function AdminProfile() {
 
                   {/* Role (Disabled) */}
                   <div className="space-y-2">
-                    <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block">
-                      System Role
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block">
+                        System Role
+                      </label>
+                      {isSuperAdmin && (
+                        <span className="inline-flex items-center gap-1.5 text-[9px] font-mono font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
+                          ROOT CONTROL • SUPER ADMIN
+                        </span>
+                      )}
+                    </div>
                     <div className="relative">
-                      <Shield size={18} className="absolute left-3 top-3 text-accent pointer-events-none" />
+                      <Shield size={18} className={`absolute left-3 top-3 ${isSuperAdmin ? "text-fuchsia-400" : "text-accent"} pointer-events-none`} />
                       <input
                         type="text"
-                        value="Super Administrator"
+                        value={isSuperAdmin ? "ROOT CONTROL • SUPER ADMIN" : "Administrator"}
                         disabled
-                        className="w-full bg-card/50 text-accent font-semibold rounded-xl border border-border/60 pl-10 pr-4 py-2.5 text-sm cursor-not-allowed"
+                        className={`w-full bg-card/50 ${isSuperAdmin ? "text-fuchsia-300 border-fuchsia-500/40 font-mono font-extrabold tracking-wide" : "text-accent border-border/60 font-semibold"} rounded-xl border pl-10 pr-4 py-2.5 text-sm cursor-not-allowed`}
                       />
                       <Lock size={14} className="absolute right-3 top-3.5 text-text-muted" />
                     </div>

@@ -26,9 +26,18 @@ const adminSchema = new mongoose.Schema(
     profilePhoto: {
       type: String,
     },
+    role: {
+      type: String,
+      enum: ['Admin', 'SuperAdmin'],
+      default: 'Admin',
+    },
   },
   { timestamps: true }
 );
+
+// High-performance compound indexes for admin role filtering and account management
+adminSchema.index({ role: 1, createdAt: -1 });
+adminSchema.index({ createdAt: -1 });
 
 adminSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
@@ -46,10 +55,11 @@ adminSchema.methods.generateAuthToken = function (sessionId) {
       _id: this._id,
       email: this.email,
       sessionId: sessionId,
-      role: 'Admin',
+      role: this.role || 'Admin',
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
+      algorithm: 'HS256',
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '10d',
     }
   );
