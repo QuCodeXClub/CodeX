@@ -63,7 +63,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.sessionId = session._id;
     next();
   } catch (error) {
-    throw new ApiError(401, error?.message || 'Invalid access token');
+    throw new ApiError(error?.statusCode || 401, error?.message || 'Invalid access token');
   }
 });
 

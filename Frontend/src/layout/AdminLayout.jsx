@@ -18,14 +18,15 @@ export default function AdminLayout() {
   useEffect(() => {
     dispatch(setAuthResolved(false));
 
-    // Optimization: check if we even have a valid session before making the API call
+    // Optimization: check if we have a valid session or token before making the network call
     const hasAuthFlag = localStorage.getItem("codex_admin_auth") === "true";
+    const hasToken = !!localStorage.getItem("codex_access_token");
 
-    if (!hasAuthFlag) {
+    if (!hasAuthFlag && !hasToken) {
       dispatch(setLogout());
       setTimeout(() => {
         setShowSplash(false);
-      }, 500); // Shorter splash since no network request is made
+      }, 300); // Fast exit for guest users
       return;
     }
 
@@ -39,7 +40,7 @@ export default function AdminLayout() {
         dispatch(setAuthResolved(true));
         setTimeout(() => {
           setShowSplash(false);
-        }, 1200);
+        }, 400);
       }
     };
 
@@ -50,17 +51,18 @@ export default function AdminLayout() {
   const isLoginPage = location.pathname === "/admin/login";
 
   if (isAuthResolved) {
-    // 2. If unauthenticated and trying to access dashboard routes, redirect to login
+    // 1. If unauthenticated and trying to access dashboard routes, redirect to login
     if (!user && !isLoginPage) {
       content = (
         <Navigate to="/admin/login" replace state={{ from: location }} />
       );
     }
-    // 3. If authenticated and trying to access the login page, redirect to dashboard
+    // 2. If authenticated and trying to access the login page, redirect to intended route or dashboard
     else if (user && isLoginPage) {
-      content = <Navigate to="/admin/dashboard" replace />;
+      const destination = location.state?.from?.pathname || "/admin/dashboard";
+      content = <Navigate to={destination} replace />;
     }
-    // 4. Otherwise, render the requested route
+    // 3. Otherwise, render the requested route
     else {
       content = <Outlet />;
     }

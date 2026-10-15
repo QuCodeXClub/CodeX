@@ -15,6 +15,19 @@ axiosInstance.interceptors.request.use((config) => {
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];
   }
+
+  // Dual auth strategy for production software:
+  // 1. withCredentials: true sends the httpOnly cookie
+  // 2. Authorization header sends the Bearer token as a fail-safe against cross-origin cookie blockage
+  try {
+    const token = store.getState()?.auth?.token || localStorage.getItem("codex_access_token");
+    if (token && !config.headers["Authorization"]) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+  } catch {
+    // Graceful fallback if storage is inaccessible
+  }
+
   return config;
 });
 
@@ -46,7 +59,14 @@ axiosInstance.interceptors.response.use(
         store.dispatch(setLogout());
       }
     }
-    return Promise.reject(error.response?.data || error.message);
+
+    // Enrich error so both err.response.data.message and err.message work across all frontend pages
+    const enrichedError =
+      error.response?.data && typeof error.response.data === "object"
+        ? Object.assign(error, error.response.data)
+        : error;
+
+    return Promise.reject(enrichedError);
   }
 );
 
