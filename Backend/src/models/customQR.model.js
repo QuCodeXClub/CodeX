@@ -15,4 +15,6 @@ const customQrSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+customQrSchema.index({ createdAt: -1 });
+
 export const CustomQR = mongoose.model('CustomQR', customQrSchema);

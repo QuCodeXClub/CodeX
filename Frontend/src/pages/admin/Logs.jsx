@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ScrollText, Activity, Globe } from "lucide-react";
 import ActivityLogsModal from "./components/ActivityLogsModal";
 import AccessLogsModal from "./components/AccessLogsModal";
 
 export default function Logs() {
+  const { user } = useSelector((state) => state.auth);
+  const isSuperAdmin = (user?.admin?.role || user?.role) === "SuperAdmin";
+
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "activity";
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -26,10 +30,17 @@ export default function Logs() {
       {/* Header */}
       <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-6 shrink-0">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-            <ScrollText className="w-3.5 h-3.5" />
-            <span>SYSTEM AUDIT & LOGS</span>
-          </div>
+          {isSuperAdmin ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
+              <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
+              <span>ROOT CONTROL • SUPER ADMIN</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+              <ScrollText className="w-3.5 h-3.5" />
+              <span>SYSTEM AUDIT & LOGS</span>
+            </div>
+          )}
           <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             SYSTEM <span className="text-accent">LOGS</span>
           </h1>

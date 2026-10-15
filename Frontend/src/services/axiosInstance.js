@@ -10,6 +10,14 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+axiosInstance.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
   (response) => {
     const method = response.config.method?.toLowerCase();

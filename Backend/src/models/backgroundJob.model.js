@@ -6,7 +6,6 @@ const backgroundJobSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Job type is required'],
       enum: ['CERTIFICATE_BULK', 'BOARDING_PASS_BULK', 'EMAIL_SEND', 'ANNOUNCEMENT_BULK'],
-      index: true,
     },
     payload: {
       type: mongoose.Schema.Types.Mixed,
@@ -16,7 +15,6 @@ const backgroundJobSchema = new mongoose.Schema(
       type: String,
       enum: ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'SUPPRESSED'],
       default: 'PENDING',
-      index: true,
     },
     attempts: {
       type: Number,
@@ -33,7 +31,6 @@ const backgroundJobSchema = new mongoose.Schema(
     scheduledAt: {
       type: Date,
       default: Date.now,
-      index: true,
     },
     processedAt: {
       type: Date,
@@ -48,5 +45,17 @@ const backgroundJobSchema = new mongoose.Schema(
 backgroundJobSchema.index({ status: 1, scheduledAt: 1, type: 1 });
 backgroundJobSchema.index({ status: 1, type: 1, createdAt: -1 });
 backgroundJobSchema.index({ status: 1, updatedAt: 1 });
+backgroundJobSchema.index({ type: 1, createdAt: -1 });
+backgroundJobSchema.index({ createdAt: -1 });
+
+// Production storage optimization: Auto-purge COMPLETED jobs after 30 days via MongoDB TTL engine
+// Prevents unbounded database disk growth from large stored email/payload structures
+backgroundJobSchema.index(
+  { processedAt: 1 },
+  {
+    expireAfterSeconds: 30 * 24 * 60 * 60,
+    partialFilterExpression: { status: 'COMPLETED' },
+  }
+);
 
 export const BackgroundJob = mongoose.model('BackgroundJob', backgroundJobSchema);

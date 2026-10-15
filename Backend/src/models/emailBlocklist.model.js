@@ -8,14 +8,12 @@ const emailBlocklistSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       unique: true,
-      index: true,
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address'],
     },
     type: {
       type: String,
       enum: ['BOUNCE', 'COMPLAINT', 'MANUAL'],
       default: 'BOUNCE',
-      index: true,
     },
     reason: {
       type: String,
@@ -32,5 +30,9 @@ const emailBlocklistSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// High-performance compound indexes for filtering and pagination
+emailBlocklistSchema.index({ type: 1, createdAt: -1 });
+emailBlocklistSchema.index({ createdAt: -1 });
 
 export const EmailBlocklist = mongoose.model('EmailBlocklist', emailBlocklistSchema);

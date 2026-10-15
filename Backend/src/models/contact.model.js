@@ -35,4 +35,8 @@ const contactSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// High-performance compound & sort indexes for messages inbox and read status filtering
+contactSchema.index({ createdAt: -1 });
+contactSchema.index({ isRead: 1, createdAt: -1 });
+
 export const Contact = mongoose.model('Contact', contactSchema);

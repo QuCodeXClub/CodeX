@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Loader2, Globe, Server } from "lucide-react";
+import { useSelector } from "react-redux";
+import { Loader2, Globe, Server, Shield } from "lucide-react";
 import { adminService } from "../../../services/adminService";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 
 export default function AccessLogsModal({ isModal = false }) {
+  const user = useSelector((state) => state.auth.user);
+  const isSuperAdmin = (user?.admin?.role || user?.role) === "SuperAdmin";
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -49,9 +52,17 @@ export default function AccessLogsModal({ isModal = false }) {
     <div className="w-full flex flex-col space-y-6 animate-fadeIn">
       {/* Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card p-4 rounded-xl border border-border/80 shadow-sm shrink-0">
-        <div className="text-xs font-mono text-text-muted flex items-center gap-2">
-          <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>Note: All logs auto delete after 3 months.</span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {isSuperAdmin && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
+              ROOT CONTROL • SUPER ADMIN
+            </span>
+          )}
+          <div className="text-xs font-mono text-text-muted flex items-center gap-2">
+            <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Note: All logs auto delete after 3 months.</span>
+          </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <button
@@ -60,12 +71,19 @@ export default function AccessLogsModal({ isModal = false }) {
           >
             Refresh
           </button>
-          <button
-            onClick={handleClearLogs}
-            className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs font-bold hover:bg-red-500/20 transition-colors"
-          >
-            Clear Logs
-          </button>
+          {isSuperAdmin ? (
+            <button
+              onClick={handleClearLogs}
+              className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs font-bold hover:bg-red-500/20 transition-colors"
+            >
+              Clear Logs
+            </button>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/70 bg-card/50 text-text-muted font-mono text-xs select-none">
+              <Shield className="w-3.5 h-3.5 text-accent/70" />
+              Read-Only
+            </span>
+          )}
         </div>
       </div>
 

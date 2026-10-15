@@ -30,6 +30,8 @@ export default function ManageSessions() {
   const { sessions, loading, isLoaded } = useSelector(
     (state) => state.adminSessions
   );
+  const { user } = useSelector((state) => state.auth);
+  const isSuperAdmin = (user?.admin?.role || user?.role) === "SuperAdmin";
   const dispatch = useDispatch();
   const confirm = useConfirm();
   const location = useLocation();
@@ -204,10 +206,17 @@ export default function ManageSessions() {
       {isStandalonePage ? (
         <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 border-b border-border/60 pb-5 sm:pb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-              <Monitor className="w-3.5 h-3.5" />
-              <span>SECURITY & ACCESS</span>
-            </div>
+            {isSuperAdmin ? (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
+                <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
+                <span>ROOT CONTROL • SUPER ADMIN</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+                <Monitor className="w-3.5 h-3.5" />
+                <span>SECURITY & ACCESS</span>
+              </div>
+            )}
             <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
               ACTIVE <span className="text-accent">SESSIONS</span>
             </h1>
@@ -454,7 +463,7 @@ export default function ManageSessions() {
                       </div>
 
                       {session.adminId && (
-                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded-md bg-card-hover/60 border border-border/40 text-xs font-mono text-text-muted max-w-full">
+                        <div className="inline-flex flex-wrap items-center gap-1.5 px-2 py-0.5 mt-1 rounded-md bg-card-hover/60 border border-border/40 text-xs font-mono text-text-muted max-w-full">
                           <User className="w-3.5 h-3.5 text-accent shrink-0" />
                           <span className="font-semibold text-text truncate max-w-[110px] xs:max-w-[160px] sm:max-w-none">
                             {session.adminId.name || "Admin"}
@@ -462,6 +471,12 @@ export default function ManageSessions() {
                           <span className="truncate max-w-[130px] xs:max-w-[180px] sm:max-w-none text-text-muted">
                             ({session.adminId.email || "N/A"})
                           </span>
+                          {(session.adminId.role === "SuperAdmin" || session.adminId.isSuperAdmin) && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
+                              <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
+                              ROOT CONTROL • SUPER ADMIN
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -511,15 +526,17 @@ export default function ManageSessions() {
                     <span className="truncate">
                       Established:{" "}
                       <span className="text-text font-medium">
-                        {new Date(session.createdAt).toLocaleDateString([], {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                        ,{" "}
-                        {new Date(session.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {session.createdAt && !isNaN(new Date(session.createdAt).getTime()) ? (
+                          `${new Date(session.createdAt).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}, ${new Date(session.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}`
+                        ) : (
+                          "Active Session"
+                        )}
                       </span>
                     </span>
                   </div>
@@ -532,15 +549,17 @@ export default function ManageSessions() {
                         <span className="truncate">
                           Ended:{" "}
                           <span className="text-text font-medium">
-                            {new Date(session.loggedOutAt).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                            ,{" "}
-                            {new Date(session.loggedOutAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {session.loggedOutAt && !isNaN(new Date(session.loggedOutAt).getTime()) ? (
+                              `${new Date(session.loggedOutAt).toLocaleDateString([], {
+                                month: "short",
+                                day: "numeric",
+                              })}, ${new Date(session.loggedOutAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}`
+                            ) : (
+                              "Revoked"
+                            )}
                           </span>
                         </span>
                       </>
@@ -550,15 +569,17 @@ export default function ManageSessions() {
                         <span className="truncate">
                           Expires:{" "}
                           <span className="text-text font-medium">
-                            {new Date(session.expiresAt).toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                            ,{" "}
-                            {new Date(session.expiresAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {session.expiresAt && !isNaN(new Date(session.expiresAt).getTime()) ? (
+                              `${new Date(session.expiresAt).toLocaleDateString([], {
+                                month: "short",
+                                day: "numeric",
+                              })}, ${new Date(session.expiresAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}`
+                            ) : (
+                              "—"
+                            )}
                           </span>
                         </span>
                       </>

@@ -41,4 +41,8 @@ const teamMemberSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// High-performance compound & sort indexes for team roster queries by academic year and sub-team
+teamMemberSchema.index({ academicYear: 1, subTeam: 1, sequenceNumber: 1 });
+teamMemberSchema.index({ createdAt: -1 });
+
 export const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
