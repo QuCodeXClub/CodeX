@@ -5,6 +5,7 @@ import { adminService } from "../services/adminService";
 import { setLogin, setLogout, setAuthResolved } from "../context/authSlice";
 import SplashScreen from "../components/common/SplashScreen";
 import RouteProgressBar from "../components/common/RouteProgressBar";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 export default function AdminLayout() {
   const dispatch = useDispatch();
@@ -14,6 +15,9 @@ export default function AdminLayout() {
   const navigation = useNavigation();
   const [showSplash, setShowSplash] = useState(true);
   const isPageLoading = navigation.state === "loading";
+
+  // Dynamic Page Title & SEO Meta Management for Admin Suite
+  usePageMeta();
 
   useEffect(() => {
     dispatch(setAuthResolved(false));
