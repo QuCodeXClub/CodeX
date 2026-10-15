@@ -77,4 +77,10 @@ const boardingPassSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// High-performance compound & sort indexes for verification, student lookups, and pagination
+boardingPassSchema.index({ createdAt: -1 });
+boardingPassSchema.index({ studentEmail: 1, createdAt: -1 });
+boardingPassSchema.index({ qid: 1, createdAt: -1 });
+boardingPassSchema.index({ eventName: 1, createdAt: -1 });
+
 export const BoardingPass = mongoose.model('BoardingPass', boardingPassSchema);

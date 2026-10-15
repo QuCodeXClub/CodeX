@@ -13,19 +13,19 @@ const sessionSchema = new mongoose.Schema(
     },
     userAgent: {
       type: String, // Full raw string
-      required: [true, "User agent string is required"],
+      default: 'Unknown User Agent',
     },
     os: {
       type: String,
-      required: [true, "Operating system is required"],
+      default: 'Unknown OS',
     },
     browser: {
       type: String,
-      required: [true, "Browser information is required"],
+      default: 'Unknown Browser',
     },
     device: {
       type: String, // E.g., Mobile, Tablet, Desktop
-      required: [true, "Device type is required"],
+      default: 'Desktop',
     },
     ipAddress: {
       type: String,
@@ -62,7 +62,13 @@ sessionSchema.index(
   }
 );
 
+// High-performance compound indexes for session validation and admin active session queries
+// Note: { adminId: 1, status: 1, expiresAt: 1 } fully covers any { adminId, status } prefix lookups.
+sessionSchema.index({ token: 1, status: 1 });
+sessionSchema.index({ adminId: 1, status: 1, expiresAt: 1 });
+sessionSchema.index({ adminId: 1, createdAt: -1 });
+
 export const Session = mongoose.model('Session', sessionSchema);
 
-// Synchronize indexes with MongoDB to ensure legacy TTL indexes (updatedAt_1, expiresAt_1) are dropped
+// Synchronize indexes with MongoDB to ensure legacy duplicate indexes are dropped
 Session.syncIndexes().catch(() => {});

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   Award,
@@ -16,15 +16,32 @@ import {
   Upload,
   Download,
   History,
+  ShieldCheck,
+  Clock,
+  Layers,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setError, setSuccess } from "../../context/messageSlice";
 import { certificateService } from "../../services/certificateService";
 import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
+import CertificateBatchesSection from "./components/CertificateBatchesSection";
+import { parseCertificateCsv, downloadCertificateCsvTemplate } from "../../utils/csvParser";
 
 export default function BulkCertificates() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentUser = useSelector((state) => state.auth.user);
+  const currentRole = currentUser?.admin?.role || currentUser?.role;
+  const isSuperAdmin = currentRole === "SuperAdmin";
+
+  const initialTab = searchParams.get("tab") === "batches" ? "batches" : "create";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [pendingCount, setPendingCount] = useState(0);
+
   const [loading, setLoading] = useState(false);
   const [signaturePreview, setSignaturePreview] = useState(null);
   const [previousSignatureUrl, setPreviousSignatureUrl] = useState(null);
@@ -32,6 +49,28 @@ export default function BulkCertificates() {
   const [importStatus, setImportStatus] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
+
+  // Sync tab with search params
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
+
+  // Poll / fetch pending batches count
+  const fetchPendingCount = async () => {
+    try {
+      const response = await certificateService.getCertificateBatches({ limit: 1 });
+      if (response.data && typeof response.data.pendingCount === "number") {
+        setPendingCount(response.data.pendingCount);
+      }
+    } catch {
+      // silent fallback
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingCount();
+  }, [activeTab]);
 
   useEffect(() => {
     const fetchLatestSignature = async () => {
@@ -74,7 +113,7 @@ export default function BulkCertificates() {
   });
 
   //-----------------------------------------------------
-  // CSV Upload (Native JS, No Dependencies)
+  // CSV Upload (Production RFC-4180 Parser)
   //-----------------------------------------------------
   const handleCsvUpload = (e) => {
     const file = e.target.files[0];
@@ -91,51 +130,24 @@ export default function BulkCertificates() {
       setTimeout(() => {
         try {
           const text = event.target.result;
-          const rows = text.split(/\r?\n/).filter((row) => row.trim() !== "");
+          const { success, students, skippedCount, error } = parseCertificateCsv(text);
 
-          if (rows.length === 0) {
-            setIsImportingCsv(false);
-            setImportStatus("");
-            dispatch(setError("CSV file is empty."));
+          if (!success) {
+            dispatch(setError(error || "Could not parse valid student records from the CSV."));
             return;
           }
 
-          let startIndex = 0;
-          if (
-            rows[0].toLowerCase().includes("name") ||
-            rows[0].toLowerCase().includes("email")
-          ) {
-            startIndex = 1;
-          }
-
-          const parsedStudents = [];
-
-          for (let i = startIndex; i < rows.length; i++) {
-            const cols = rows[i]
-              .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-              .map((col) => col.replace(/^"|"$/g, "").trim());
-
-            if (cols.length >= 2) {
-              parsedStudents.push({
-                name: cols[0] || "",
-                email: cols[1] || "",
-                position: cols[2] || "Participant",
-              });
-            }
-          }
-
-          if (parsedStudents.length > 0) {
-            if (fields.length === 1 && !fields[0].name && !fields[0].email) {
-              replace(parsedStudents);
-            } else {
-              append(parsedStudents);
-            }
-            dispatch(
-              setSuccess(`Successfully imported ${parsedStudents.length} student(s) from CSV.`)
-            );
+          if (fields.length === 1 && !fields[0].name && !fields[0].email) {
+            replace(students);
           } else {
-            dispatch(setError("Could not parse valid students from the CSV."));
+            append(students);
           }
+
+          let msg = `Successfully imported ${students.length} student(s) from CSV.`;
+          if (skippedCount > 0) {
+            msg += ` (${skippedCount} blank or invalid row(s) were skipped).`;
+          }
+          dispatch(setSuccess(msg));
         } catch (err) {
           console.error("CSV import error:", err);
           dispatch(setError("Failed to parse CSV file."));
@@ -143,7 +155,7 @@ export default function BulkCertificates() {
           setIsImportingCsv(false);
           setImportStatus("");
         }
-      }, 300);
+      }, 200);
     };
 
     reader.onerror = () => {
@@ -157,14 +169,7 @@ export default function BulkCertificates() {
   };
 
   const handleDownloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Email,Position\n";
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "certificate_template.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCertificateCsvTemplate();
   };
 
   //-----------------------------------------------------
@@ -207,16 +212,24 @@ export default function BulkCertificates() {
         await certificateService.generateBulkCertificates(submitData);
 
       dispatch(
-        setSuccess(response.message || "Certificates generated successfully.")
+        setSuccess(
+          response.message ||
+            (isSuperAdmin
+              ? "Certificates authorized and queued successfully."
+              : "Certificate batch submitted for Super Admin review.")
+        )
       );
       reset();
       setSignaturePreview(null);
+      // Auto-switch to batches tab so user can see the created batch
+      handleTabChange("batches");
+      fetchPendingCount();
     } catch (error) {
       dispatch(
         setError(
           error?.response?.data?.message ||
           error?.message ||
-          "Failed to generate certificates."
+          "Failed to process certificates."
         )
       );
       console.error(error);
@@ -229,22 +242,29 @@ export default function BulkCertificates() {
     <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full">
       <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-            <Award className="w-3.5 h-3.5" />
-            <span>CERTIFICATE PORTAL</span>
-          </div>
+          {isSuperAdmin ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-700 dark:text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
+              <span className="w-2 h-2 rounded-full bg-fuchsia-500 dark:bg-fuchsia-400 animate-pulse" />
+              <span>ROOT CONTROL • SUPER ADMIN</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+              <Award className="w-3.5 h-3.5" />
+              <span>CERTIFICATE PORTAL</span>
+            </div>
+          )}
           <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             BULK <span className="text-accent">CERTIFICATES</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Bulk generate, verify, and email cryptographic completion certificates.
+            Bulk submit, verify, approve, and email cryptographic completion certificates.
           </p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => navigate("/admin/history?tab=certificates")}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition-all shadow-md cursor-pointer whitespace-nowrap"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-teal-500/15 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/25 dark:hover:bg-teal-500/20 transition-all shadow-md cursor-pointer whitespace-nowrap"
           >
             <History className="w-4 h-4" />
             <span>Issued Certificates History</span>
@@ -255,10 +275,91 @@ export default function BulkCertificates() {
         </div>
       </header>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8"
-      >
+      {/* Tabs Navigation */}
+      <div className="flex items-center gap-2 mb-8 border-b border-border/60 pb-3 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => handleTabChange("create")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold uppercase transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === "create"
+              ? "bg-accent text-[#111111] shadow-lg shadow-accent/20"
+              : "text-text-muted hover:text-text hover:bg-card-hover border border-transparent"
+          }`}
+        >
+          <Plus className="w-4 h-4" />
+          <span>{isSuperAdmin ? "Direct Certificate Issuance" : "Submit Certificates Batch"}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange("batches")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold uppercase transition-all cursor-pointer whitespace-nowrap relative ${
+            activeTab === "batches"
+              ? "bg-accent text-[#111111] shadow-lg shadow-accent/20"
+              : "text-text-muted hover:text-text hover:bg-card-hover border border-transparent"
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>Approval Requests & Batches</span>
+          {pendingCount > 0 && (
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                activeTab === "batches"
+                  ? "bg-[#111111] text-accent"
+                  : "bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 animate-pulse"
+              }`}
+            >
+              {pendingCount} Pending
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* View 1: Approval Requests & Batches */}
+      {activeTab === "batches" && (
+        <CertificateBatchesSection
+          isSuperAdmin={isSuperAdmin}
+          onSwitchToCreate={() => handleTabChange("create")}
+        />
+      )}
+
+      {/* View 2: Form */}
+      {activeTab === "create" && (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+        >
+          {/* Approval Notice Banner */}
+          {!isSuperAdmin ? (
+            <div className="lg:col-span-12 flex items-start sm:items-center gap-3.5 p-4 rounded-2xl bg-amber-500/15 dark:bg-amber-500/10 border border-amber-500/30 shadow-sm">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-400 shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs sm:text-sm font-bold text-amber-950 dark:text-amber-200">
+                  Super Admin Review & Approval Required
+                </p>
+                <p className="text-[11px] sm:text-xs text-amber-900/90 dark:text-amber-300/80">
+                  As an Administrator, your submitted batch will be held in <span className="font-mono font-bold text-amber-950 dark:text-amber-200">PENDING_APPROVAL</span>.
+                  The cryptographic certificate generation process and automated email dispatch will strictly begin once a Super Admin approves your batch.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="lg:col-span-12 flex items-start sm:items-center gap-3.5 p-4 rounded-2xl bg-teal-500/15 dark:bg-teal-500/10 border border-teal-500/40 dark:border-teal-500/30 shadow-sm">
+              <div className="p-2 rounded-xl bg-teal-500/20 text-teal-700 dark:text-teal-400 shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs sm:text-sm font-bold text-teal-950 dark:text-teal-200">
+                  Super Admin Direct Issuance (Auto-Authorized)
+                </p>
+                <p className="text-[11px] sm:text-xs text-teal-900/90 dark:text-teal-300/80">
+                  Direct issuance by Super Admin is automatically approved and dispatched to the background queue immediately for generation and delivery.
+                </p>
+              </div>
+            </div>
+          )}
         {/* Left Panel : Event Details */}
         <div className="lg:col-span-4 bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 h-fit space-y-6">
           <h2 className="flex items-center gap-2 text-base sm:text-lg font-display font-bold uppercase text-text border-b border-border/60 pb-4">
@@ -590,27 +691,33 @@ export default function BulkCertificates() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-[#111111] hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed font-bold"
+              className="flex-[2] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-[#111111] hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed font-bold cursor-pointer shadow-lg shadow-accent/20"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Generating Certificates...
+                  {isSuperAdmin ? "Authorizing & Dispatching..." : "Submitting for Approval..."}
+                </>
+              ) : isSuperAdmin ? (
+                <>
+                  <ShieldCheck className="w-5 h-5" />
+                  Authorize & Generate Immediately
                 </>
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  Generate & Send Certificates
+                  Submit for Super Admin Approval
                 </>
               )}
             </button>
           </div>
         </div>
       </form>
+      )}
 
       {/* History Modal Popup */}
       {showHistoryModal && (
-        <IssuedCertificatesModal onClose={() => setShowHistoryModal(false)} />
+        <IssuedCertificatesModal isModal={true} onClose={() => setShowHistoryModal(false)} />
       )}
     </div>
   );

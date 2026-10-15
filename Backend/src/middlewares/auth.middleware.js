@@ -14,20 +14,34 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, 'Unauthorized request');
     }
 
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {
+      algorithms: ['HS256'],
+    });
 
-    if (!decodedToken?.sessionId) {
+    if (!decodedToken?._id || !decodedToken?.sessionId) {
       throw new ApiError(401, 'Invalid session token format');
     }
 
-    if (decodedToken?.role !== 'Admin') {
+    if (!['Admin', 'SuperAdmin'].includes(decodedToken?.role)) {
       throw new ApiError(403, 'Access denied. Admin resources only.');
     }
 
-    const session = await Session.findById(decodedToken.sessionId);
+    const [session, admin] = await Promise.all([
+      Session.findById(decodedToken.sessionId),
+      Admin.findById(decodedToken._id).select('-password'),
+    ]);
 
     if (!session) {
       throw new ApiError(401, 'Session does not exist');
+    }
+
+    if (!admin) {
+      throw new ApiError(401, 'Invalid Access Token');
+    }
+
+    // Verify session belongs to the token user
+    if (session.adminId.toString() !== decodedToken._id.toString()) {
+      throw new ApiError(401, 'Session ownership validation failed');
     }
 
     // Check if session has been logged out, revoked, or expired
@@ -44,12 +58,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, 'Session has expired');
     }
 
-    const admin = await Admin.findById(decodedToken?._id).select('-password');
-
-    if (!admin) {
-      throw new ApiError(401, 'Invalid Access Token');
-    }
-
     // Access granted! Attach admin and sessionId to request
     req.admin = admin;
     req.sessionId = session._id;
@@ -57,4 +65,11 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   } catch (error) {
     throw new ApiError(401, error?.message || 'Invalid access token');
   }
+});
+
+export const verifySuperAdmin = asyncHandler(async (req, res, next) => {
+  if (req.admin?.role !== 'SuperAdmin') {
+    throw new ApiError(403, 'Access denied. Super Admin privileges required.');
+  }
+  next();
 });

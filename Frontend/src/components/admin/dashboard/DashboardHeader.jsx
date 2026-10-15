@@ -1,7 +1,22 @@
 import React from "react";
-import { CalendarDays, RefreshCw, Sparkles } from "lucide-react";
+import { useSelector } from "react-redux";
+import {
+  CalendarDays,
+  RefreshCw,
+  Sparkles,
+  ShieldAlert,
+  LayoutDashboard,
+} from "lucide-react";
 
-export default function DashboardHeader({ onRefresh, loading }) {
+export default function DashboardHeader({
+  onRefresh,
+  loading,
+  isSuperView = false,
+  onToggleView,
+}) {
+  const { user } = useSelector((state) => state.auth);
+  const isSuperAdmin = (user?.admin?.role || user?.role) === "SuperAdmin";
+
   const currentDate = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
@@ -11,20 +26,74 @@ export default function DashboardHeader({ onRefresh, loading }) {
   }).format(new Date());
 
   return (
-    <header className="flex flex-col items-start md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6">
+    <header className="flex flex-col items-start lg:flex-row lg:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>LIVE TELEMETRY</span>
-        </div>
+        {isSuperAdmin ? (
+          isSuperView ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
+              <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
+              <span>ROOT CONTROL • SUPER ADMIN</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <span>ADMIN OPERATIONS • STANDARD VIEW</span>
+            </div>
+          )
+        ) : (
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>LIVE TELEMETRY</span>
+          </div>
+        )}
+
         <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
-          SYSTEM <span className="text-accent">OVERVIEW</span>
+          {isSuperAdmin && isSuperView ? (
+            <>
+              SUPER ADMIN <span className="text-fuchsia-400">COMMAND</span>
+            </>
+          ) : (
+            <>
+              SYSTEM <span className="text-accent">OVERVIEW</span>
+            </>
+          )}
         </h1>
         <p className="text-xs sm:text-sm text-text-muted mt-1">
-          Real-time metrics, node performance, and platform telemetry.
+          {isSuperAdmin && isSuperView
+            ? "Platform governance, administrator provisioning, and live security telemetry."
+            : "Real-time metrics, node performance, and platform telemetry."}
         </p>
       </div>
-      <div className="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
+
+      <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5 w-full lg:w-auto">
+        {/* Super Admin / Admin Dashboard Switcher */}
+        {isSuperAdmin && onToggleView && (
+          <div className="flex items-center p-1 rounded-xl bg-card/90 border border-border/80 shadow-inner">
+            <button
+              onClick={() => onToggleView("super")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                isSuperView
+                  ? "bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm"
+                  : "text-text-muted hover:text-text hover:bg-card-hover"
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5 text-fuchsia-400" />
+              Super Admin
+            </button>
+            <button
+              onClick={() => onToggleView("admin")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                !isSuperView
+                  ? "bg-accent/15 text-accent border border-accent/30 shadow-sm"
+                  : "text-text-muted hover:text-text hover:bg-card-hover"
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5 text-accent" />
+              Admin View
+            </button>
+          </div>
+        )}
+
         <button
           onClick={onRefresh}
           disabled={loading}
@@ -41,6 +110,5 @@ export default function DashboardHeader({ onRefresh, loading }) {
         </div>
       </div>
     </header>
-
   );
 }

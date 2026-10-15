@@ -43,17 +43,11 @@ class AdminService {
   }
 
   async updateAdminAvatar(formData) {
-    return axiosInstance.patch("/admin/avatar", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return axiosInstance.patch("/admin/avatar", formData);
   }
 
   async updateProfile(formData) {
-    return axiosInstance.patch("/admin/profile", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    return axiosInstance.patch("/admin/profile", formData);
   }
 
   async getBlocklist(params = {}) {
@@ -110,6 +104,23 @@ class AdminService {
 
   async clearAccessLogs() {
     return axiosInstance.delete("/admin/logs/access");
+  }
+
+  // Super Admin - Admin Management APIs
+  async getAdmins() {
+    return axiosInstance.get("/superAdmin/admins");
+  }
+
+  async createAdmin(data) {
+    return axiosInstance.post("/superAdmin/admins", data);
+  }
+
+  async updateAdmin(id, data) {
+    return axiosInstance.patch(`/superAdmin/admins/${id}`, data);
+  }
+
+  async deleteAdmin(id) {
+    return axiosInstance.delete(`/superAdmin/admins/${id}`);
   }
 }
 

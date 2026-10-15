@@ -7,11 +7,12 @@ import {
   replyToMessage,
 } from '../controllers/contact.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
+import { publicSubmissionLimiter } from '../middlewares/rateLimiter.middleware.js';
 
 const router = Router();
 
 // Public route for submitting contact form
-router.route('/').post(submitContactForm);
+router.route('/').post(publicSubmissionLimiter, submitContactForm);
 
 // Secured routes (Admin only)
 router.use(verifyJWT);

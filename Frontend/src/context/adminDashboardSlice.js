@@ -29,6 +29,7 @@ const adminDashboardSlice = createSlice({
       teamSize: 0,
     },
     recentLogs: [],
+    recentActivityLogs: [],
     loading: false,
     error: null,
     isLoaded: false,
@@ -47,6 +48,9 @@ const adminDashboardSlice = createSlice({
         }
         if (action.payload?.recentLogs) {
           state.recentLogs = action.payload.recentLogs;
+        }
+        if (action.payload?.recentActivityLogs) {
+          state.recentActivityLogs = action.payload.recentActivityLogs;
         }
       })
       .addCase(fetchDashboardMetrics.rejected, (state, action) => {

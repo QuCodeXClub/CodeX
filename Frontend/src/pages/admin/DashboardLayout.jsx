@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useLocation, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../hooks/useTheme";
 
 import {
@@ -20,6 +21,7 @@ import {
   Sun,
   Moon,
   ScrollText,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -37,7 +39,44 @@ export default function DashboardLayout() {
     }
   }, [location.pathname]);
 
-  const navItems = [
+  const currentUser = useSelector((state) => state.auth.user);
+  const isSuperAdmin = (currentUser?.admin?.role || currentUser?.role) === "SuperAdmin";
+
+  const superAdminNavItems = [
+    {
+      name: "Super Admin Dashboard",
+      path: "/admin/dashboard",
+      icon: LayoutDashboard,
+      end: true,
+    },
+    {
+      name: "Admin Accounts",
+      path: "/admin/admins",
+      icon: ShieldAlert,
+    },
+    { name: "Certificates", path: "/admin/certificates", icon: FileText },
+    { name: "System Logs", path: "/admin/logs", icon: ScrollText },
+    { name: "Profile", path: "/admin/profile", icon: User },
+  ];
+
+  const adminNavItemsForSuperAdmin = [
+    {
+      name: "Admin Dashboard",
+      path: "/admin/dashboard?view=admin",
+      icon: LayoutDashboard,
+    },
+    { name: "Registrations", path: "/admin/registrations", icon: Users },
+    { name: "Events", path: "/admin/events", icon: Calendar },
+    { name: "Team Roster", path: "/admin/team", icon: ShieldCheck },
+    { name: "Boarding Passes", path: "/admin/boarding-passes", icon: Ticket },
+    { name: "QR Generator", path: "/admin/qr-generator", icon: Scan },
+    { name: "Announcements", path: "/admin/announcements", icon: Megaphone },
+    { name: "Task Queue", path: "/admin/tasks", icon: Cpu },
+    { name: "Audit History", path: "/admin/history", icon: History },
+    { name: "Messages", path: "/admin/messages", icon: MessageSquare },
+  ];
+
+  const standardAdminNavItems = [
     {
       name: "Dashboard",
       path: "/admin/dashboard",
@@ -91,10 +130,17 @@ export default function DashboardLayout() {
             <h1 className="text-2xl font-display font-black tracking-tight text-text flex items-center gap-2">
               CODE <span className="text-accent">X</span>
             </h1>
-            <p className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent border border-accent/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-              Admin Portal
-            </p>
+            {isSuperAdmin ? (
+              <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-extrabold uppercase tracking-wider bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
+                <span>ROOT CONTROL • SUPER ADMIN</span>
+              </div>
+            ) : (
+              <p className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent border border-accent/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Admin Portal
+              </p>
+            )}
           </div>
           <button
             onClick={() => setIsSidebarOpen(false)}
@@ -105,23 +151,140 @@ export default function DashboardLayout() {
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              end={item.end}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
-                  ? "bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] font-semibold"
-                  : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
-                }`
-              }
-            >
-              <item.icon className="w-4 h-4 text-accent/90 shrink-0" />
-              <span className="truncate">{item.name}</span>
-            </NavLink>
-          ))}
+          {isSuperAdmin ? (
+            <>
+              {/* Part 1: Super Admin Services (Top Side) */}
+              <div className="pb-1">
+                <div className="px-3 pt-1 pb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-fuchsia-400" />
+                    Super Admin
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/30">
+                    ROOT
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {superAdminNavItems.map((item) => {
+                    const isItemActive =
+                      item.path === "/admin/dashboard"
+                        ? location.pathname === "/admin/dashboard" && !location.search.includes("view=admin")
+                        : location.pathname === item.path;
+
+                    return (
+                      <NavLink
+                        key={item.name}
+                        to={item.path}
+                        end={item.end}
+                        className={() =>
+                          `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                            isItemActive
+                              ? "bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40 shadow-[0_0_15px_rgba(217,70,239,0.25)] font-semibold"
+                              : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
+                          }`
+                        }
+                      >
+                        <item.icon className="w-4 h-4 text-fuchsia-400 shrink-0" />
+                        <span className="truncate">{item.name}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Section Divider */}
+              <div className="my-2.5 border-t border-border/60" />
+
+              {/* Part 2: Admin Services */}
+              <div>
+                <div className="px-3 pb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+                    <LayoutDashboard className="w-3.5 h-3.5 text-accent" />
+                    Admin Services
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {adminNavItemsForSuperAdmin.map((item) => {
+                    const isItemActive = item.path.includes("/admin/dashboard")
+                      ? location.pathname === "/admin/dashboard" && location.search.includes("view=admin")
+                      : location.pathname === item.path;
+
+                    return (
+                      <NavLink
+                        key={item.name}
+                        to={item.path}
+                        end={item.end}
+                        className={() =>
+                          `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                            isItemActive
+                              ? "bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] font-semibold"
+                              : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
+                          }`
+                        }
+                      >
+                        <item.icon className="w-4 h-4 text-accent/90 shrink-0" />
+                        <span className="truncate">{item.name}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Standard Admin Navigation (for non-SuperAdmin) */
+            standardAdminNavItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                end={item.end}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${isActive
+                    ? "bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] font-semibold"
+                    : "text-text-muted hover:bg-card-hover/80 hover:text-text hover:border-border/60 border border-transparent"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4 text-accent/90 shrink-0" />
+                <span className="truncate">{item.name}</span>
+              </NavLink>
+            ))
+          )}
         </nav>
+
+        {/* Sidebar Footer User Badge */}
+        <div className="p-3 border-t border-border/60 shrink-0">
+          {isSuperAdmin ? (
+            <div className="p-2.5 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/30 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 flex items-center justify-center font-mono font-black text-xs shrink-0">
+                SA
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-fuchsia-300 truncate">
+                  ROOT CONTROL
+                </div>
+                <div className="text-[9px] font-mono text-fuchsia-400/80 truncate">
+                  SUPER ADMIN
+                </div>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-ping shrink-0" />
+            </div>
+          ) : (
+            <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-accent/20 text-accent border border-accent/40 flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                AD
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-text truncate">
+                  Admin Active
+                </div>
+                <div className="text-[9px] font-mono text-text-muted truncate">
+                  Standard Access
+                </div>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            </div>
+          )}
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -140,9 +303,16 @@ export default function DashboardLayout() {
               <h1 className="text-lg font-display font-black tracking-tight text-text leading-none">
                 CODE <span className="text-accent">X</span>
               </h1>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20">
-                Admin
-              </span>
+              {isSuperAdmin ? (
+                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase tracking-wider bg-fuchsia-500/15 text-fuchsia-300 px-2 py-0.5 rounded-full border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
+                  <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
+                  ROOT CONTROL • SUPER ADMIN
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20">
+                  Admin
+                </span>
+              )}
             </div>
           </div>
 
