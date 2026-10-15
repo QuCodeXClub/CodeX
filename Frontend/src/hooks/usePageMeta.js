@@ -6,115 +6,115 @@ import { useLocation } from "react-router-dom";
  */
 const ROUTE_META_MAP = {
   "/": {
-    title: "CodeX | Official Technical Club of Quantum University",
-    description: "Official technical club of Quantum University empowering students to learn, build, and innovate through real-world software, hackathons, and bootcamps.",
+    title: "CodeX | Coding the Future, Today.",
+    description: "CodeX is the official technical club of Quantum University, empowering students to learn, build, and innovate through real-world projects, workshops, hackathons, and collaborative learning.",
   },
   "/about": {
-    title: "About Us | CodeX - Quantum University Tech Club",
+    title: "Coding the Future, Today. - CodeX",
     description: "Discover CodeX's history, mission, student leadership, technical domains, and community vision at Quantum University.",
   },
   "/events": {
-    title: "Events, Hackathons & Workshops | CodeX",
+    title: "Events - CodeX | Coding the Future, Today.",
     description: "Explore upcoming and past hackathons, coding workshops, tech summits, and project exhibitions hosted by CodeX.",
   },
   "/team": {
-    title: "Meet the Team & Mentors | CodeX",
+    title: "Team - CodeX | Coding the Future, Today.",
     description: "Meet the passionate executive leads, technical heads, student coordinators, and faculty mentors powering CodeX.",
   },
   "/register": {
-    title: "Join the Club & Event Registration | CodeX",
+    title: "Join The Club - CodeX | Coding the Future, Today.",
     description: "Register to join the CodeX club or enroll in upcoming technical competitions and bootcamps at Quantum University.",
   },
   "/privacy-policy": {
-    title: "Privacy Policy | CodeX",
+    title: "Privacy Policy - CodeX | Coding the Future, Today.",
     description: "Official privacy policy and data governance practices for CodeX members, registrants, and visitors.",
   },
   "/terms-conditions": {
-    title: "Terms & Conditions | CodeX",
+    title: "Terms & Conditions - CodeX | Coding the Future, Today.",
     description: "Terms and conditions of participation, registration, and platform usage for CodeX events and programs.",
   },
   "/community-guidelines": {
-    title: "Community Guidelines | CodeX",
+    title: "Community Guidelines - CodeX | Coding the Future, Today.",
     description: "Our standards of conduct, collaboration, inclusivity, and technical integrity within the CodeX community.",
   },
   "/event-policy": {
-    title: "Event Participation Policy | CodeX",
+    title: "Event Policy - CodeX | Coding the Future, Today.",
     description: "Rules, eligibility, attendance requirements, and guidelines for CodeX competitions and events.",
   },
   "/accessibility": {
-    title: "Accessibility Statement | CodeX",
+    title: "Accessibility - CodeX | Coding the Future, Today.",
     description: "CodeX's commitment to web accessibility, assistive technologies, and inclusive technical education.",
   },
   "/payment-registration-guide": {
-    title: "Registration & Payment Guide | CodeX",
+    title: "Registration Guide - CodeX | Coding the Future, Today.",
     description: "Step-by-step instructions for completing student registration, payment verification, and pass confirmation.",
   },
   "/admin/login": {
-    title: "Admin Portal Sign In | CodeX",
+    title: "Admin Login - CodeX | Coding the Future, Today.",
     description: "Secure multi-factor authentication portal for authorized CodeX system administrators.",
   },
   "/admin/dashboard": {
-    title: "Admin Dashboard | CodeX Control Hub",
+    title: "Dashboard - CodeX | Coding the Future, Today.",
     description: "Centralized control panel for CodeX registrations, events, certificates, and system telemetry.",
   },
   "/admin/registrations": {
-    title: "Student Registrations | CodeX Admin",
+    title: "Registrations - CodeX | Coding the Future, Today.",
     description: "Manage, review, verify, and export participant registrations across CodeX initiatives.",
   },
   "/admin/events": {
-    title: "Manage Events | CodeX Admin",
+    title: "Manage Events - CodeX | Coding the Future, Today.",
     description: "Create, schedule, edit, and publish technical workshops, competitions, and conferences.",
   },
   "/admin/certificates": {
-    title: "Certificate Dispatch & Issuance | CodeX Admin",
+    title: "Certificates - CodeX | Coding the Future, Today.",
     description: "Generate, verify, batch-process, and dispatch cryptographic certificates of completion.",
   },
   "/admin/boarding-passes": {
-    title: "Boarding Passes & Entry Passes | CodeX Admin",
+    title: "Boarding Passes - CodeX | Coding the Future, Today.",
     description: "Issue digital event boarding passes, manage desk allocations, and monitor attendee check-in.",
   },
   "/admin/team": {
-    title: "Team Roster Governance | CodeX Admin",
+    title: "Team Governance - CodeX | Coding the Future, Today.",
     description: "Manage club members, leads, mentors, designations, and social profiles.",
   },
   "/admin/qr-generator": {
-    title: "QR Code Generator | CodeX Admin",
+    title: "QR Generator - CodeX | Coding the Future, Today.",
     description: "Generate branded SVG and PNG QR codes with embedded tracking and logos.",
   },
   "/admin/sessions": {
-    title: "Active Security Sessions | CodeX Admin",
+    title: "Security Sessions - CodeX | Coding the Future, Today.",
     description: "Inspect active administrator devices, IP addresses, locations, and revoke sessions.",
   },
   "/admin/messages": {
-    title: "Contact Inquiries | CodeX Admin",
+    title: "Contact Inquiries - CodeX | Coding the Future, Today.",
     description: "View and respond to inquiries received via the public contact forms.",
   },
   "/admin/tasks": {
-    title: "Background Job Queue | CodeX Admin",
+    title: "Task Queue - CodeX | Coding the Future, Today.",
     description: "Monitor asynchronous BullMQ worker queues for certificate dispatch, email delivery, and rendering.",
   },
   "/admin/history": {
-    title: "System Audit Trail | CodeX Admin",
+    title: "Audit History - CodeX | Coding the Future, Today.",
     description: "Inspect administrative actions, state alterations, and security audit logs.",
   },
   "/admin/logs": {
-    title: "System & Access Logs | CodeX Admin",
+    title: "System Logs - CodeX | Coding the Future, Today.",
     description: "Inspect server telemetry, public access traffic, and critical exception logs.",
   },
   "/admin/profile": {
-    title: "Admin Profile | CodeX Admin",
+    title: "Admin Profile - CodeX | Coding the Future, Today.",
     description: "Manage personal admin credentials, profile photo, and password security.",
   },
   "/admin/settings": {
-    title: "System Settings | CodeX Admin",
+    title: "Settings - CodeX | Coding the Future, Today.",
     description: "Configure registration status, maintenance mode, and view security rate limit policies.",
   },
   "/admin/announcements": {
-    title: "Broadcast Announcements | CodeX Admin",
+    title: "Announcements - CodeX | Coding the Future, Today.",
     description: "Send multi-channel email announcements to verified participants and team members.",
   },
   "/admin/admins": {
-    title: "Admin Accounts Governance | CodeX Admin",
+    title: "Admin Accounts - CodeX | Coding the Future, Today.",
     description: "Super Admin root console for creating, updating, and revoking administrator credentials.",
   },
 };
@@ -139,17 +139,17 @@ export function usePageMeta(customMeta) {
         resolvedMeta = ROUTE_META_MAP[pathname];
       } else if (pathname.startsWith("/verify-certificate")) {
         resolvedMeta = {
-          title: "Verify Certificate of Authenticity | CodeX Registry",
+          title: "Verify Certificate - CodeX | Coding the Future, Today.",
           description: "Verify the authenticity, recipient details, and cryptographic signature of official CodeX certificates.",
         };
       } else if (pathname.startsWith("/verify-boarding-pass")) {
         resolvedMeta = {
-          title: "Verify Event Boarding Pass | CodeX Check-in",
+          title: "Verify Boarding Pass - CodeX | Coding the Future, Today.",
           description: "Authenticate event entry credentials, desk numbers, and registration verification for CodeX summits.",
         };
       } else if (pathname.startsWith("/events/")) {
         resolvedMeta = {
-          title: "Event Details | CodeX Events",
+          title: "Event Details - CodeX | Coding the Future, Today.",
           description: "Explore complete schedule, rules, eligibility, venue, and registration instructions for this CodeX event.",
         };
       } else {
@@ -160,7 +160,7 @@ export function usePageMeta(customMeta) {
             .replace(/-/g, " ")
             .replace(/\b\w/g, (c) => c.toUpperCase());
           resolvedMeta = {
-            title: `${formatted} | CodeX`,
+            title: `${formatted} - CodeX | Coding the Future, Today.`,
             description: "CodeX is the official technical club of Quantum University.",
           };
         } else {
