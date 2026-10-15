@@ -46,4 +46,19 @@ export const optimizeDbIndexes = async () => {
       console.warn(`[DB Optimizer] Index sync notice for ${model.modelName}:`, err.message);
     }
   }
+
+  // Auto-reconcile legacy certificates: set emailStatus to 'SENT' if missing or legacy PENDING
+  try {
+    await Certificate.updateMany(
+      {
+        $or: [
+          { emailStatus: { $in: [null, undefined] } },
+          { emailStatus: 'PENDING', createdAt: { $lt: new Date(Date.now() - 5 * 60 * 1000) } },
+        ],
+      },
+      { $set: { emailStatus: 'SENT' } }
+    );
+  } catch (reconcileErr) {
+    console.warn('[DB Optimizer] Legacy certificate reconciliation notice:', reconcileErr.message);
+  }
 };

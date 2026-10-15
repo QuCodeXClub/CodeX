@@ -134,6 +134,7 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
   const renderEmailStatus = (status) => {
     switch (status) {
       case "SENT":
+      case "DELIVERED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
             <Check className="w-3 h-3" /> Delivered
@@ -147,10 +148,15 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
           </span>
         );
       case "PENDING":
-      default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
             <Loader2 className="w-3 h-3 animate-spin" /> Pending Dispatch
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <Check className="w-3 h-3" /> Delivered
           </span>
         );
     }
