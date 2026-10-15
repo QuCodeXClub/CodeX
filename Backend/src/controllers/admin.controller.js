@@ -260,7 +260,13 @@ const verifyOtp = asyncHandler(async (req, res) => {
   // Enforce brute-force attempt lockout (maximum 5 attempts)
   if ((tokenDoc.attempts || 0) >= 5) {
     await Token.deleteOne({ _id: tokenDoc._id });
-    throw new ApiError(429, 'Maximum OTP attempts exceeded. Code has been permanently revoked for security. Please request a new OTP.');
+    throw new ApiError(
+      429,
+      'Maximum OTP verification attempts exceeded (5/5). Code has been permanently revoked for security. Please request a new OTP.',
+      [],
+      '',
+      { attemptsRemaining: 0, maxAttempts: 5, isLocked: true }
+    );
   }
 
   const isOtpValid = await tokenDoc.isTokenCorrect(cleanedOtp);
@@ -270,11 +276,23 @@ const verifyOtp = asyncHandler(async (req, res) => {
     tokenDoc.attempts = (tokenDoc.attempts || 0) + 1;
     if (tokenDoc.attempts >= 5) {
       await Token.deleteOne({ _id: tokenDoc._id });
-      throw new ApiError(429, 'Maximum OTP verification attempts exceeded. Code has been revoked for security.');
+      throw new ApiError(
+        429,
+        'Maximum OTP verification attempts exceeded (5/5). Code has been revoked for security. Please request a new OTP.',
+        [],
+        '',
+        { attemptsRemaining: 0, maxAttempts: 5, isLocked: true }
+      );
     }
     await tokenDoc.save();
     const remaining = 5 - tokenDoc.attempts;
-    throw new ApiError(400, `Invalid or expired OTP. ${remaining} attempt(s) remaining.`);
+    throw new ApiError(
+      400,
+      `Invalid or expired OTP. ${remaining} attempt(s) remaining out of 5.`,
+      [],
+      '',
+      { attemptsRemaining: remaining, maxAttempts: 5, attempts: tokenDoc.attempts }
+    );
   }
 
   // OTP is correct, clear it
