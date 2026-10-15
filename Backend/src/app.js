@@ -70,6 +70,15 @@ app.use(
       return callback(new Error("CORS policy violation: Origin not allowed"), false);
     },
     credentials: true,
+    exposedHeaders: [
+      "RateLimit-Limit",
+      "RateLimit-Remaining",
+      "RateLimit-Reset",
+      "Retry-After",
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "X-RateLimit-Reset",
+    ],
   })
 );
 

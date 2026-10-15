@@ -63,6 +63,12 @@ const errorHandler = (err, req, res, next) => {
     success: false,
     message: finalMessage,
     errors: error.errors || [],
+    ...(error.attemptsRemaining !== undefined && { attemptsRemaining: error.attemptsRemaining }),
+    ...(error.maxAttempts !== undefined && { maxAttempts: error.maxAttempts }),
+    ...(error.isLocked !== undefined && { isLocked: error.isLocked }),
+    ...(error.retryAfter !== undefined && { retryAfter: error.retryAfter }),
+    ...(error.rateLimit && { rateLimit: error.rateLimit }),
+    ...(error.data && { data: error.data }),
   };
 
   return res.status(error.statusCode || 500).json(response);

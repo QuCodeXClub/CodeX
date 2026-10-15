@@ -38,6 +38,12 @@ export default function EventDetails() {
   const dispatch = useDispatch();
   const { openImage } = useImageZoom();
   const [event, setEvent] = useState(null);
+
+  useEffect(() => {
+    if (event?.title) {
+      document.title = `${event.title} | CodeX Events`;
+    }
+  }, [event]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

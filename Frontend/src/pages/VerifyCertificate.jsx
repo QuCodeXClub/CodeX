@@ -21,6 +21,12 @@ const VerifyCertificate = () => {
 
   const verificationURL = `${window.location.origin}/verify-certificate/${certificateId}`;
 
+  useEffect(() => {
+    if (certificate?.studentName) {
+      document.title = `Certificate: ${certificate.studentName} (${certificate.position || "Participant"}) | CodeX`;
+    }
+  }, [certificate]);
+
   const fetchCertificate = useCallback(async () => {
     try {
       setLoading(true);
