@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import contentData from "../data/content.json";
 import RouteProgressBar from "../components/common/RouteProgressBar";
 import { fetchRegistrationStatus } from "../context/registrationSlice";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -17,6 +18,9 @@ const MainLayout = () => {
   const [footerClicks, setFooterClicks] = useState(0);
   const { layout } = contentData;
   const isPageLoading = navigation.state === "loading";
+
+  // Dynamic Page Title & SEO Meta Management
+  usePageMeta();
 
   // Check registration portal status from backend on initial mount
   useEffect(() => {

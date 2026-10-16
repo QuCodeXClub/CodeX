@@ -10,6 +10,7 @@ import {
   Clock,
   User,
   Check,
+  ShieldCheck,
 } from "lucide-react";
 import { useTheme } from "../../hooks/useTheme";
 import { useDispatch, useSelector } from "react-redux";
@@ -292,6 +293,135 @@ export default function AdminSettings() {
               </button>
             </div>
           </section>
+        </div>
+      </div>
+
+      {/* Security Policies & Rate Limits Dashboard */}
+      <div className="bg-card/85 backdrop-blur-xl rounded-2xl shadow-lg border border-border/80 overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-border-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card-hover/50">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="text-accent w-5 h-5 shrink-0" />
+            <div>
+              <h2 className="font-semibold text-text">Security Policies & Rate Limits</h2>
+              <p className="text-xs text-text-muted mt-0.5">
+                Configured protective thresholds defending the production platform against brute-force attacks and abuse.
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0 self-start sm:self-auto">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            PROTECTION ENFORCED
+          </span>
+        </div>
+
+        <div className="p-4 sm:p-6 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Card 1: Auth Rate Limiter */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-accent">Credential Guard</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent border border-accent/20">
+                  Strict Limit
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                15 <span className="text-xs font-normal text-text-muted">Attempts / 15m</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Protects admin login endpoints against automated credential stuffing with IP rate tracking.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: OTP Attempt Limit */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-emerald-500">MFA Verification</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  Auto-Revoke
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                5 <span className="text-xs font-normal text-text-muted">Attempts / Code</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                6-digit OTP codes are permanently deleted after 5 failed verification attempts to prevent brute force.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: OTP Resend Throttle */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-amber-500">Email Throttle</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                  Cooldown
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                60 <span className="text-xs font-normal text-text-muted">Seconds Interval</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Enforces a 60-second cooldown period between verification email dispatch requests to avoid inbox spam.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Global API Rate Limit */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-cyan-500">Global API Defense</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
+                  DDoS Shield
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                1,500 <span className="text-xs font-normal text-text-muted">Requests / 15m</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Protects the application from denial-of-service surges and high-frequency web scrapers.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 5: Super Admin Limiter */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-fuchsia-400">Root Governance</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20">
+                  Privileged
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                120 <span className="text-xs font-normal text-text-muted">Operations / 15m</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Throttles bulk admin management, log clearing, and sensitive root operations.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 6: Public Form Limiter */}
+          <div className="p-4 rounded-xl bg-bg/60 border border-border flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono font-bold uppercase text-indigo-400">Public Forms</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  Anti-Spam
+                </span>
+              </div>
+              <div className="text-xl font-mono font-black text-text mb-1">
+                30 <span className="text-xs font-normal text-text-muted">Submissions / 15m</span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Guards registration and contact message forms against bot submission flooding.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

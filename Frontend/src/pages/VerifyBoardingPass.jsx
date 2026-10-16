@@ -26,6 +26,12 @@ const VerifyBoardingPass = () => {
 
   const verificationURL = `${window.location.origin}/verify-boarding-pass/${boardingPassId}`;
 
+  useEffect(() => {
+    if (boardingPass?.name) {
+      document.title = `Boarding Pass: ${boardingPass.name} | CodeX`;
+    }
+  }, [boardingPass]);
+
   const fetchBoardingPass = useCallback(async () => {
     try {
       setLoading(true);
