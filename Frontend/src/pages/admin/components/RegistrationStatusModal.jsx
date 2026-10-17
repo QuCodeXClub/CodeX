@@ -37,7 +37,7 @@ export default function RegistrationStatusModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-card border border-border/80 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-card border border-border/80 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="p-5 sm:p-6 border-b border-border-soft flex items-center justify-between bg-card-hover/40">
           <div className="flex items-center gap-3">

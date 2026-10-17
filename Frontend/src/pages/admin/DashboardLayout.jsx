@@ -291,25 +291,25 @@ export default function DashboardLayout() {
       <main className="flex-1 relative overflow-hidden flex flex-col h-full w-full min-w-0 z-10">
         {/* Mobile Header */}
         <header className="bg-card/90 backdrop-blur-xl border-b border-border/80 px-4 py-3 flex items-center justify-between lg:hidden z-30 shrink-0 shadow-sm">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 -ml-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl transition-colors cursor-pointer"
+              className="p-2 -ml-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl transition-colors cursor-pointer shrink-0"
               aria-label="Open sidebar navigation"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-display font-black tracking-tight text-text leading-none">
+            <div className="flex items-center gap-2 min-w-0">
+              <h1 className="text-base sm:text-lg font-display font-black tracking-tight text-text leading-none shrink-0">
                 CODE <span className="text-accent">X</span>
               </h1>
               {isSuperAdmin ? (
-                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase tracking-wider bg-fuchsia-500/15 text-fuchsia-300 px-2 py-0.5 rounded-full border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
-                  <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
-                  ROOT CONTROL • SUPER ADMIN
+                <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-mono font-extrabold uppercase tracking-wider bg-fuchsia-500/15 text-fuchsia-300 px-2 py-0.5 rounded-full border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20 truncate max-w-[140px] sm:max-w-none">
+                  <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse shrink-0" />
+                  <span className="truncate">SUPER ADMIN</span>
                 </span>
               ) : (
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20">
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-widest bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20 shrink-0">
                   Admin
                 </span>
               )}

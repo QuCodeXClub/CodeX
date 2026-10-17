@@ -205,7 +205,7 @@ export default function ManageContacts() {
                 {/* Expanded Content */}
                 {expandedId === msg._id && (
                   <div className="px-4 sm:px-10 pb-5 pt-2 border-t border-border-soft bg-card-hover/50">
-                    <div className="mb-4 whitespace-pre-wrap text-sm text-text leading-relaxed bg-card p-4 rounded-xl border border-border">
+                    <div className="mb-4 whitespace-pre-wrap break-words text-sm text-text leading-relaxed bg-card p-4 rounded-xl border border-border">
                       {msg.message}
                     </div>
                     <div className="flex justify-end gap-3">

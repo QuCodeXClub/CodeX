@@ -377,28 +377,143 @@ export default function ManageAdmins() {
               </p>
             </div>
           ) : (
-            <table className="w-full text-left border-collapse whitespace-nowrap">
-              <thead>
-                <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase tracking-wider">
-                  <th className="p-4 pl-6">Admin Member</th>
-                  <th className="p-4">Email Address</th>
-                  <th className="p-4">System Role</th>
-                  <th className="p-4">Mobile</th>
-                  <th className="p-4">Active Sessions</th>
-                  <th className="p-4">Created Date</th>
-                  <th className="p-4 pr-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40 text-xs font-sans">
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap">
+                  <thead>
+                    <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase tracking-wider">
+                      <th className="p-4 pl-6">Admin Member</th>
+                      <th className="p-4">Email Address</th>
+                      <th className="p-4">System Role</th>
+                      <th className="p-4">Mobile</th>
+                      <th className="p-4">Active Sessions</th>
+                      <th className="p-4">Created Date</th>
+                      <th className="p-4 pr-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs font-sans">
+                    {filteredAdmins.map((admin) => (
+                      <tr
+                        key={admin._id}
+                        className="hover:bg-card-hover/40 transition-colors group"
+                      >
+                        {/* Name & Avatar */}
+                        <td className="p-4 pl-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-xs uppercase overflow-hidden shrink-0 border bg-accent/15 text-accent border-accent/30">
+                              {admin.profilePhoto ? (
+                                <img
+                                  src={admin.profilePhoto}
+                                  alt={admin.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                admin.name?.charAt(0) || "A"
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-text text-sm flex items-center gap-2">
+                                <span>{admin.name}</span>
+                              </div>
+                              <div className="text-[11px] text-text-muted font-mono">
+                                ID: {admin._id.slice(-6)}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Email */}
+                        <td className="p-4">
+                          <div className="flex items-center gap-1.5 text-text font-mono text-xs">
+                            <Mail className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                            <span>{admin.email}</span>
+                          </div>
+                        </td>
+
+                        {/* Role Badge */}
+                        <td className="p-4">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent/10 text-accent border border-accent/20">
+                            <Shield className="w-3.5 h-3.5" />
+                            Admin
+                          </span>
+                        </td>
+
+                        {/* Mobile */}
+                        <td className="p-4 font-mono text-text-muted text-xs">
+                          {admin.mobileNumber ? (
+                            <div className="flex items-center gap-1.5 text-text">
+                              <Phone className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                              <span>{admin.mobileNumber}</span>
+                            </div>
+                          ) : (
+                            <span className="text-text-muted/50">—</span>
+                          )}
+                        </td>
+
+                        {/* Active Sessions */}
+                        <td className="p-4">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-card border border-border/80 font-mono text-xs">
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                admin.activeSessionsCount > 0
+                                  ? "bg-emerald-400 animate-pulse"
+                                  : "bg-text-muted/40"
+                              }`}
+                            />
+                            <span className="font-bold text-text">
+                              {admin.activeSessionsCount || 0}
+                            </span>
+                            <span className="text-[10px] text-text-muted">
+                              {admin.activeSessionsCount === 1 ? "live" : "live"}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Created At */}
+                        <td className="p-4 font-mono text-text-muted text-[11px]">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3 h-3 text-text-muted/60" />
+                            <span>
+                              {admin.createdAt
+                                ? new Date(admin.createdAt).toLocaleDateString("en-IN")
+                                : "—"}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="p-4 pr-6 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => openEditModal(admin)}
+                              className="p-2 rounded-xl text-text-muted hover:text-accent hover:bg-card-hover border border-transparent hover:border-border/80 transition-all cursor-pointer"
+                              title="Edit Credentials"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => openDeleteModal(admin)}
+                              className="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 border border-transparent hover:border-danger/30 transition-all cursor-pointer"
+                              title="Remove Admin Account"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="block md:hidden divide-y divide-border/60">
                 {filteredAdmins.map((admin) => (
-                  <tr
-                    key={admin._id}
-                    className="hover:bg-card-hover/40 transition-colors group"
-                  >
-                    {/* Name & Avatar */}
-                    <td className="p-4 pl-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-xs uppercase overflow-hidden shrink-0 border bg-accent/15 text-accent border-accent/30">
+                  <div key={admin._id} className="p-4 space-y-3 bg-card-hover/20">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-xs uppercase overflow-hidden shrink-0 border bg-accent/15 text-accent border-accent/30">
                           {admin.profilePhoto ? (
                             <img
                               src={admin.profilePhoto}
@@ -409,48 +524,33 @@ export default function ManageAdmins() {
                             admin.name?.charAt(0) || "A"
                           )}
                         </div>
-                        <div>
-                          <div className="font-bold text-text text-sm flex items-center gap-2">
-                            <span>{admin.name}</span>
-                          </div>
-                          <div className="text-[11px] text-text-muted font-mono">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-text text-sm truncate">{admin.name}</h4>
+                          <span className="text-[10px] text-text-muted font-mono block">
                             ID: {admin._id.slice(-6)}
-                          </div>
+                          </span>
                         </div>
                       </div>
-                    </td>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-accent/10 text-accent border border-accent/20 shrink-0">
+                        <Shield className="w-3 h-3" /> Admin
+                      </span>
+                    </div>
 
-                    {/* Email */}
-                    <td className="p-4">
-                      <div className="flex items-center gap-1.5 text-text font-mono text-xs">
+                    <div className="space-y-1.5 text-xs font-mono">
+                      <div className="flex items-center gap-2 text-text break-all">
                         <Mail className="w-3.5 h-3.5 text-text-muted shrink-0" />
                         <span>{admin.email}</span>
                       </div>
-                    </td>
-
-                    {/* Role Badge */}
-                    <td className="p-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent/10 text-accent border border-accent/20">
-                        <Shield className="w-3.5 h-3.5" />
-                        Admin
-                      </span>
-                    </td>
-
-                    {/* Mobile */}
-                    <td className="p-4 font-mono text-text-muted text-xs">
-                      {admin.mobileNumber ? (
-                        <div className="flex items-center gap-1.5 text-text">
-                          <Phone className="w-3 h-3 text-text-muted shrink-0" />
+                      {admin.mobileNumber && (
+                        <div className="flex items-center gap-2 text-text">
+                          <Phone className="w-3.5 h-3.5 text-text-muted shrink-0" />
                           <span>{admin.mobileNumber}</span>
                         </div>
-                      ) : (
-                        <span className="text-text-muted/50">—</span>
                       )}
-                    </td>
+                    </div>
 
-                    {/* Active Sessions */}
-                    <td className="p-4">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-card border border-border/80 font-mono text-xs">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-text-muted border-t border-border/40 pt-2.5">
+                      <div className="inline-flex items-center gap-1.5">
                         <span
                           className={`w-2 h-2 rounded-full ${
                             admin.activeSessionsCount > 0
@@ -458,50 +558,33 @@ export default function ManageAdmins() {
                               : "bg-text-muted/40"
                           }`}
                         />
-                        <span className="font-bold text-text">
-                          {admin.activeSessionsCount || 0}
-                        </span>
-                        <span className="text-[10px] text-text-muted">
-                          {admin.activeSessionsCount === 1 ? "live" : "live"}
-                        </span>
+                        <span>{admin.activeSessionsCount || 0} active session(s)</span>
                       </div>
-                    </td>
+                      <div>
+                        {admin.createdAt
+                          ? new Date(admin.createdAt).toLocaleDateString("en-IN")
+                          : "—"}
+                      </div>
+                    </div>
 
-                    {/* Created At */}
-                    <td className="p-4 font-mono text-text-muted text-[11px]">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3 h-3 text-text-muted/60" />
-                        <span>
-                          {admin.createdAt
-                            ? new Date(admin.createdAt).toLocaleDateString("en-IN")
-                            : "—"}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="p-4 pr-6 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => openEditModal(admin)}
-                          className="p-2 rounded-xl text-text-muted hover:text-accent hover:bg-card-hover border border-transparent hover:border-border/80 transition-all cursor-pointer"
-                          title="Edit Credentials"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openDeleteModal(admin)}
-                          className="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 border border-transparent hover:border-danger/30 transition-all cursor-pointer"
-                          title="Remove Admin Account"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/30">
+                      <button
+                        onClick={() => openEditModal(admin)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card text-text-muted hover:text-accent transition-all text-xs font-mono"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button
+                        onClick={() => openDeleteModal(admin)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 transition-all text-xs font-mono"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -509,7 +592,7 @@ export default function ManageAdmins() {
       {/* ================= ADD ADMIN MODAL ================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 relative">
+          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
@@ -652,7 +735,7 @@ export default function ManageAdmins() {
       {/* ================= EDIT ADMIN MODAL ================= */}
       {showEditModal && selectedAdmin && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 relative">
+          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">

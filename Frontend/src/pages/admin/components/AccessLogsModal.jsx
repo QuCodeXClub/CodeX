@@ -101,40 +101,71 @@ export default function AccessLogsModal({ isModal = false }) {
               <span className="text-sm font-semibold text-text">No access logs found</span>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse whitespace-nowrap">
-                <thead>
-                  <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
-                    <th className="p-4 pl-6">Action Performed</th>
-                    <th className="p-4">Timestamp</th>
-                    <th className="p-4 pr-6">IP Address</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40 text-xs font-sans">
-                  {logs.map((log) => (
-                    <tr key={log._id} className="hover:bg-card-hover/40 transition-colors">
-                      <td className="p-4 pl-6">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-text text-sm">
-                            {log.action || (log.method ? `${log.method} ${log.url}` : "Unknown Action")}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4 font-mono text-text-muted text-[11px]">
-                        <div>{new Date(log.createdAt).toLocaleDateString("en-IN")}</div>
-                        <div className="text-text-muted/60">{new Date(log.createdAt).toLocaleTimeString("en-IN")}</div>
-                      </td>
-                      <td className="p-4 pr-6">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border/80 text-text font-mono text-[10px]">
-                          <Server className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>{log.ipAddress || "Unknown"}</span>
-                        </div>
-                      </td>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap">
+                  <thead>
+                    <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
+                      <th className="p-4 pl-6">Action Performed</th>
+                      <th className="p-4">Timestamp</th>
+                      <th className="p-4 pr-6">IP Address</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs font-sans">
+                    {logs.map((log) => (
+                      <tr key={log._id} className="hover:bg-card-hover/40 transition-colors">
+                        <td className="p-4 pl-6">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-text text-sm">
+                              {log.action || (log.method ? `${log.method} ${log.url}` : "Unknown Action")}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4 font-mono text-text-muted text-[11px]">
+                          <div>{new Date(log.createdAt).toLocaleDateString("en-IN")}</div>
+                          <div className="text-text-muted/60">{new Date(log.createdAt).toLocaleTimeString("en-IN")}</div>
+                        </td>
+                        <td className="p-4 pr-6">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border/80 text-text font-mono text-[10px]">
+                            <Server className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>{log.ipAddress || "Unknown"}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="block md:hidden space-y-3">
+                {logs.map((log) => (
+                  <div
+                    key={log._id}
+                    className="p-4 rounded-xl bg-card-hover/40 border border-border/60 space-y-2.5"
+                  >
+                    <div className="font-bold text-text text-sm break-all">
+                      {log.action || (log.method ? `${log.method} ${log.url}` : "Unknown Action")}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono text-text-muted">
+                      <div className="flex items-center gap-1.5">
+                        <Server className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <span>{log.ipAddress || "Unknown"}</span>
+                      </div>
+                      <span>
+                        {new Date(log.createdAt).toLocaleDateString("en-IN")}{" "}
+                        {new Date(log.createdAt).toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
