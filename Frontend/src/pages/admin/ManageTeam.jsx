@@ -301,7 +301,7 @@ export default function ManageTeam() {
             </button>
 
             <div className="p-4 sm:p-6 md:p-8">
-              <h2 className="text-lg sm:text-xl font-bold text-text border-b border-border-soft pb-4 mb-6">
+              <h2 className="text-lg sm:text-xl font-bold text-text border-b border-border-soft pb-4 mb-6 pr-8">
                 {editingId ? "Edit Team Member" : "Add Team Member"}
               </h2>
 

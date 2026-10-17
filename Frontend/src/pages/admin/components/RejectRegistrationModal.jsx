@@ -27,7 +27,7 @@ export default function RejectRegistrationModal({ registration, onClose, onConfi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/70 backdrop-blur-md animate-fadeIn">
-      <div className="bg-card/90 backdrop-blur-2xl border border-rose-500/30 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+      <div className="bg-card/90 backdrop-blur-2xl border border-rose-500/30 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="p-6 border-b border-border/60 flex items-center justify-between bg-card-hover/40">
           <div className="flex items-center gap-3">

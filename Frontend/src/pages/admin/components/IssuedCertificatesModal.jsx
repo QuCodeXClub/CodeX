@@ -527,14 +527,14 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
 
   if (isModal) {
     return (
-      <div className="fixed inset-0 z-50 bg-bg/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-fadeIn">
-        <div className="bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col p-6 space-y-4">
-          <div className="flex justify-between items-center pb-3 border-b border-border/60">
-            <h2 className="text-lg font-bold text-text uppercase flex items-center gap-2">
-              <Award className="w-5 h-5 text-teal-400" />
-              Issued Certificates Archive
+      <div className="fixed inset-0 z-50 bg-bg/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-fadeIn">
+        <div className="bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto flex flex-col p-4 sm:p-6 space-y-4">
+          <div className="flex justify-between items-center pb-3 border-b border-border/60 gap-3">
+            <h2 className="text-base sm:text-lg font-bold text-text uppercase flex items-center gap-2 min-w-0 truncate">
+              <Award className="w-5 h-5 text-teal-400 shrink-0" />
+              <span className="truncate">Issued Certificates Archive</span>
             </h2>
-            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text cursor-pointer">
+            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text cursor-pointer shrink-0">
               <X className="w-5 h-5" />
             </button>
           </div>

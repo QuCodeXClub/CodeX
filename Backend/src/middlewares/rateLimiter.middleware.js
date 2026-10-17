@@ -74,8 +74,8 @@ export const superAdminLimiter = rateLimit({
  * Protects registration and contact submission forms against automated bot flooding
  */
 export const publicSubmissionLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // 30 submissions per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   handler: createRateLimitHandler(

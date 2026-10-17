@@ -10,6 +10,8 @@ import {
   Upload,
   FileText,
   Edit3,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "../../context/ConfirmContext";
@@ -526,7 +528,8 @@ export default function Registrations() {
 
       {/* Data Table */}
       <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-lg overflow-hidden">
-        <div className="w-full overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block w-full overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[760px]">
 
             <thead className="bg-card-hover/90 border-b border-border/80">
@@ -674,6 +677,132 @@ export default function Registrations() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile / Tablet Cards View */}
+        <div className="block lg:hidden divide-y divide-border/40">
+          {loading ? (
+            <div className="p-8 text-center text-text-muted">
+              <Loader2 className="w-7 h-7 animate-spin mx-auto text-accent mb-2" />
+              <span className="text-xs font-mono">Loading registrations...</span>
+            </div>
+          ) : currentData.length === 0 ? (
+            <div className="p-8 text-center text-text-muted text-xs font-mono">
+              No records found matching criteria.
+            </div>
+          ) : (
+            currentData.map((reg) => {
+              const isNew = isNewEntry(reg);
+              return (
+                <div
+                  key={reg._id}
+                  className={`p-4 space-y-3 transition-colors ${
+                    isNew ? "bg-accent/10" : "hover:bg-card-hover/40"
+                  }`}
+                >
+                  {/* Top: Name & Status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-text text-sm flex items-center gap-2 flex-wrap">
+                        <span className="break-words">{reg.name}</span>
+                        {isNew && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-accent/20 text-accent tracking-wider border border-accent/30 shrink-0">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-text-muted mt-0.5 truncate">
+                        D/O, S/O: {reg.fatherName || "—"}
+                      </div>
+                    </div>
+                    <div className="shrink-0">
+                      <StatusBadge status={reg.status} />
+                    </div>
+                  </div>
+
+                  {/* Middle Info Badges */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-card p-2.5 rounded-xl border border-border/60 space-y-1">
+                      <div className="flex items-center gap-1.5 text-text font-medium text-xs break-all">
+                        <Mail className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                        <span>{reg.email}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-text-muted">
+                        <Phone className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                        <span>{reg.phone || "—"}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-card p-2.5 rounded-xl border border-border/60 space-y-1">
+                      <div className="font-semibold text-text text-xs">
+                        {reg.course} <span className="text-text-muted font-normal">({reg.year})</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-text-muted">
+                        Q-ID: <span className="font-bold text-text">{reg.studentId}</span> | Sec: {reg.section} | Set: {reg.set}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Verification details */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <div
+                      className="inline-flex items-center px-2 py-0.5 rounded bg-card-hover border border-border/80 text-text-muted font-mono text-[11px] max-w-[200px] truncate"
+                      title={`UTR: ${reg.transactionId}`}
+                    >
+                      UTR: {reg.transactionId}
+                    </div>
+                    {!reg.paymentMode || reg.paymentMode === "ONLINE" ? (
+                      <span className="text-[9px] font-mono font-bold text-text bg-text/10 px-2 py-0.5 rounded border border-text/20 uppercase">
+                        ONLINE
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-mono font-bold text-success bg-success/10 px-2 py-0.5 rounded border border-success/20 uppercase">
+                        CASH
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Bottom Action Bar */}
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/40">
+                    {updatingId === reg._id ? (
+                      <div className="flex items-center gap-2 text-text-muted text-xs font-mono py-1">
+                        <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                        <span>Updating...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setEditingRegistration(reg)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-text-muted hover:text-accent bg-card border border-border/80 hover:border-accent/30 rounded-lg transition-all font-mono font-bold cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        {reg.status !== "APPROVED" && (
+                          <button
+                            onClick={() => handleStatusChange(reg._id, "APPROVED")}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-accent bg-accent/10 hover:bg-accent/20 border border-accent/30 rounded-lg transition-all font-mono font-bold cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve</span>
+                          </button>
+                        )}
+                        {reg.status !== "REJECTED" && (
+                          <button
+                            onClick={() => handleStatusChange(reg._id, "REJECTED")}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-danger bg-danger/10 hover:bg-danger/20 border border-danger/30 rounded-lg transition-all font-mono font-bold cursor-pointer"
+                          >
+                            <XIcon className="w-3.5 h-3.5" />
+                            <span>Reject</span>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Pagination Controls */}

@@ -5,23 +5,23 @@ import { ScrollText, ShieldAlert, Clock, UserCheck } from "lucide-react";
 export default function SuperAdminActivityFeed({ recentActivityLogs, loading }) {
   return (
     <div className="bg-card/85 backdrop-blur-xl rounded-2xl p-6 border border-fuchsia-500/30 shadow-lg shadow-fuchsia-500/5 flex flex-col h-[320px]">
-      <div className="flex items-center justify-between mb-5 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/30">
+      <div className="flex items-center justify-between mb-5 shrink-0 gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="p-1.5 rounded-lg bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/30 shrink-0">
             <ScrollText className="w-4 h-4" />
           </div>
-          <div>
-            <h3 className="font-display font-bold text-text uppercase tracking-wide text-sm flex items-center gap-1.5">
+          <div className="min-w-0">
+            <h3 className="font-display font-bold text-text uppercase tracking-wide text-sm flex items-center gap-1.5 truncate">
               AUDIT <span className="text-fuchsia-400">TELEMETRY</span>
             </h3>
-            <p className="text-[10px] font-mono text-fuchsia-300/80">
+            <p className="text-[10px] font-mono text-fuchsia-300/80 truncate">
               Live administrator activity feed
             </p>
           </div>
         </div>
         <Link
           to="/admin/logs"
-          className="text-xs font-mono font-semibold text-fuchsia-400 hover:text-fuchsia-300 hover:underline uppercase tracking-wider"
+          className="text-xs font-mono font-semibold text-fuchsia-400 hover:text-fuchsia-300 hover:underline uppercase tracking-wider shrink-0"
         >
           All Logs &rarr;
         </Link>
