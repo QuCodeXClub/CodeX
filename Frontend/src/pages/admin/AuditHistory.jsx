@@ -40,47 +40,47 @@ export default function AuditHistory() {
         </div>
 
         {/* Tab Navigation Chips in Main Header */}
-        <div className="flex flex-col lg:flex-row justify-center items-stretch lg:items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-card/90 border border-border/80 p-1.5 rounded-2xl shadow-md w-full md:w-auto shrink-0">
           <button
             onClick={() => handleTabChange("certificates")}
-            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 sm:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all whitespace-nowrap ${
               activeTab === "certificates"
                 ? "bg-teal-500/20 text-teal-400 border border-teal-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
             }`}
           >
-            <Award className="w-4 h-4 text-teal-400" />
+            <Award className="w-4 h-4 text-teal-400 shrink-0" />
             <span>Certificates</span>
           </button>
 
           <button
             onClick={() => handleTabChange("boarding-passes")}
-            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 sm:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all whitespace-nowrap ${
               activeTab === "boarding-passes"
                 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
             }`}
           >
-            <Ticket className="w-4 h-4 text-cyan-400" />
+            <Ticket className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Boarding Passes</span>
           </button>
 
           <button
             onClick={() => handleTabChange("announcements")}
-            className={`flex flex-1 lg:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`flex flex-1 sm:flex-none justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all whitespace-nowrap ${
               activeTab === "announcements"
                 ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 shadow-sm"
                 : "text-text-muted hover:text-text hover:bg-card-hover"
             }`}
           >
-            <Megaphone className="w-4 h-4 text-indigo-400" />
+            <Megaphone className="w-4 h-4 text-indigo-400 shrink-0" />
             <span>Announcements</span>
           </button>
         </div>
       </header>
 
       {/* Embedded History Section Viewport */}
-      <div className="flex-1 relative min-h-[600px] w-full">
+      <div className="flex-1 relative min-h-[450px] sm:min-h-[600px] w-full">
         {activeTab === "certificates" && (
           <IssuedCertificatesModal onClose={() => handleTabChange("certificates")} />
         )}

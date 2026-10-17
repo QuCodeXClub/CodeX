@@ -302,21 +302,21 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-border-soft mt-6">
+          <div className="pt-4 flex flex-col-reverse sm:flex-row justify-end gap-3 border-t border-border-soft mt-6">
             <button
               type="button"
               onClick={() => {
                 onClose();
                 reset();
               }}
-              className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
+              className="px-4 py-2.5 text-sm font-medium text-text-muted hover:text-text transition-colors text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-accent text-[#111111] rounded-lg text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-accent text-[#111111] rounded-lg text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {isSubmitting && <Loader2 className="w-4 h-4 animate-spin text-[#111111]" />}
               Register & Approve

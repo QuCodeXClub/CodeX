@@ -217,25 +217,25 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
 
       {/* Message Preview Sub-Modal */}
       {selectedAnnouncement && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="bg-card border border-indigo-500/30 rounded-2xl p-6 max-w-xl w-full space-y-4 shadow-2xl flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-2.5">
-                <Megaphone className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-text text-sm">
-                  {selectedAnnouncement.payload?.subject}
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
+          <div className="bg-card border border-indigo-500/30 rounded-2xl p-4 sm:p-6 max-w-xl w-full space-y-4 shadow-2xl flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3 gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Megaphone className="w-5 h-5 text-indigo-400 shrink-0" />
+                <h3 className="font-bold text-text text-sm truncate">
+                  {selectedAnnouncement.payload?.subject || "Announcement Preview"}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedAnnouncement(null)}
-                className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-card-hover"
+                className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-card-hover shrink-0 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div
-              className="flex-1 overflow-y-auto text-xs text-text p-4 rounded-xl bg-card-hover border border-border/60 font-sans"
+              className="flex-1 overflow-y-auto text-xs text-text p-4 rounded-xl bg-card-hover border border-border/60 font-sans break-words"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(selectedAnnouncement.payload?.messageHtml || selectedAnnouncement.payload?.messageText || "No message content"),
               }}
@@ -245,7 +245,7 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
               <span>{selectedAnnouncement.payload?.emailList?.length || 0} Total Recipients</span>
               <button
                 onClick={() => setSelectedAnnouncement(null)}
-                className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover"
+                className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover cursor-pointer"
               >
                 Close Preview
               </button>
@@ -258,14 +258,14 @@ export default function AnnouncementsHistoryModal({ onClose, isModal = false }) 
 
   if (isModal) {
     return (
-      <div className="fixed inset-0 z-50 bg-bg/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-fadeIn">
-        <div className="bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col p-6 space-y-4">
-          <div className="flex justify-between items-center pb-3 border-b border-border/60">
-            <h2 className="text-lg font-bold text-text uppercase flex items-center gap-2">
-              <Megaphone className="w-5 h-5 text-indigo-400" />
-              Announcements Broadcast Archive
+      <div className="fixed inset-0 z-50 bg-bg/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-fadeIn">
+        <div className="bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto flex flex-col p-4 sm:p-6 space-y-4">
+          <div className="flex justify-between items-center pb-3 border-b border-border/60 gap-3">
+            <h2 className="text-base sm:text-lg font-bold text-text uppercase flex items-center gap-2 min-w-0 truncate">
+              <Megaphone className="w-5 h-5 text-indigo-400 shrink-0" />
+              <span className="truncate">Announcements Broadcast Archive</span>
             </h2>
-            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text">
+            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text cursor-pointer shrink-0">
               <X className="w-5 h-5" />
             </button>
           </div>

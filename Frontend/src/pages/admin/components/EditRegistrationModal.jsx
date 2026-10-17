@@ -55,23 +55,23 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card/95 backdrop-blur-md z-10">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-accent/10 border border-accent/25 text-accent">
+        <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card/95 backdrop-blur-md z-10 gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-accent/10 border border-accent/25 text-accent shrink-0">
               <Edit3 className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-display font-bold text-text uppercase tracking-tight">
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-display font-bold text-text uppercase tracking-tight truncate">
                 Edit Student Details
               </h2>
-              <p className="text-xs text-text-muted font-mono">
+              <p className="text-xs text-text-muted font-mono truncate">
                 Updating record for {registration?.name || "Student"} (Q-ID: {registration?.studentId})
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-text-muted hover:text-text p-2 rounded-xl hover:bg-card-hover transition-colors cursor-pointer border border-transparent hover:border-border"
+            className="text-text-muted hover:text-text p-2 rounded-xl hover:bg-card-hover transition-colors cursor-pointer border border-transparent hover:border-border shrink-0"
           >
             <XIcon className="w-5 h-5" />
           </button>
@@ -425,18 +425,18 @@ export default function EditRegistrationModal({ registration, onClose, onSave })
           </div>
 
           {/* Modal Footer */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-6">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-border mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-accent text-text-inverse hover:bg-accent/90 text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-accent/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-xl bg-accent text-text-inverse hover:bg-accent/90 text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-accent/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

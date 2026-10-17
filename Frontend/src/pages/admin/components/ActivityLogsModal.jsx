@@ -101,53 +101,103 @@ export default function ActivityLogsModal({ isModal = false }) {
               <span className="text-sm font-semibold text-text">No activity logs found</span>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse whitespace-nowrap">
-                <thead>
-                  <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
-                    <th className="p-4 pl-6">Admin</th>
-                    <th className="p-4">Action</th>
-                    <th className="p-4">Timestamp</th>
-                    <th className="p-4 pr-6">IP Address</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40 text-xs font-sans">
-                  {logs.map((log) => {
-                    const isLogSuperAdmin =
-                      log.adminId?.role === "SuperAdmin" ||
-                      log.adminRole === "SuperAdmin" ||
-                      log.adminName?.toLowerCase().includes("super");
-                    return (
-                      <tr key={log._id} className="hover:bg-card-hover/40 transition-colors">
-                        <td className="p-4 pl-6">
-                          <div className="flex flex-wrap items-center gap-2 font-bold text-text text-sm">
-                            <User className="w-4 h-4 text-accent" />
-                            <span>{log.adminName || log.adminId?.name || "Admin"}</span>
-                            {isLogSuperAdmin && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40">
-                                <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
-                                ROOT CONTROL • SUPER ADMIN
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      <td className="p-4 text-text">{log.action}</td>
-                      <td className="p-4 font-mono text-text-muted text-[11px]">
-                        <div>{new Date(log.createdAt).toLocaleDateString("en-IN")}</div>
-                        <div className="text-text-muted/60">{new Date(log.createdAt).toLocaleTimeString("en-IN")}</div>
-                      </td>
-                      <td className="p-4 pr-6">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border/80 text-text font-mono text-[10px]">
-                          <Monitor className="w-3.5 h-3.5 text-indigo-400" />
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap">
+                  <thead>
+                    <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
+                      <th className="p-4 pl-6">Admin</th>
+                      <th className="p-4">Action</th>
+                      <th className="p-4">Timestamp</th>
+                      <th className="p-4 pr-6">IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs font-sans">
+                    {logs.map((log) => {
+                      const isLogSuperAdmin =
+                        log.adminId?.role === "SuperAdmin" ||
+                        log.adminRole === "SuperAdmin" ||
+                        log.adminName?.toLowerCase().includes("super");
+                      return (
+                        <tr key={log._id} className="hover:bg-card-hover/40 transition-colors">
+                          <td className="p-4 pl-6">
+                            <div className="flex flex-wrap items-center gap-2 font-bold text-text text-sm">
+                              <User className="w-4 h-4 text-accent" />
+                              <span>{log.adminName || log.adminId?.name || "Admin"}</span>
+                              {isLogSuperAdmin && (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40">
+                                  <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
+                                  ROOT CONTROL • SUPER ADMIN
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-4 text-text">{log.action}</td>
+                          <td className="p-4 font-mono text-text-muted text-[11px]">
+                            <div>{new Date(log.createdAt).toLocaleDateString("en-IN")}</div>
+                            <div className="text-text-muted/60">{new Date(log.createdAt).toLocaleTimeString("en-IN")}</div>
+                          </td>
+                          <td className="p-4 pr-6">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border/80 text-text font-mono text-[10px]">
+                              <Monitor className="w-3.5 h-3.5 text-indigo-400" />
+                              <span>{log.details?.ip || "Unknown"}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="block md:hidden space-y-3">
+                {logs.map((log) => {
+                  const isLogSuperAdmin =
+                    log.adminId?.role === "SuperAdmin" ||
+                    log.adminRole === "SuperAdmin" ||
+                    log.adminName?.toLowerCase().includes("super");
+                  return (
+                    <div
+                      key={log._id}
+                      className="p-4 rounded-xl bg-card-hover/40 border border-border/60 space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 font-bold text-text text-sm">
+                          <User className="w-4 h-4 text-accent shrink-0" />
+                          <span>{log.adminName || log.adminId?.name || "Admin"}</span>
+                        </div>
+                        {isLogSuperAdmin && (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-mono font-extrabold uppercase px-2 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40">
+                            <span className="w-1 h-1 rounded-full bg-fuchsia-400 animate-pulse" />
+                            SUPER ADMIN
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="text-xs text-text bg-card p-2.5 rounded-lg border border-border/50 font-mono">
+                        {log.action}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono text-text-muted">
+                        <div className="flex items-center gap-1.5">
+                          <Monitor className="w-3 h-3 text-indigo-400 shrink-0" />
                           <span>{log.details?.ip || "Unknown"}</span>
                         </div>
-                      </td>
-                    </tr>
+                        <span>
+                          {new Date(log.createdAt).toLocaleDateString("en-IN")}{" "}
+                          {new Date(log.createdAt).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-              </table>
-            </div>
+              </div>
+            </>
           )}
         </div>
 

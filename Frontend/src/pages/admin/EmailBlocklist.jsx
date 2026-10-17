@@ -273,49 +273,91 @@ export default function EmailBlocklist() {
             <span className="text-xs">Your email domain reputation is healthy with no blocked entries matching criteria.</span>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
-                  <th className="p-4 pl-6">Recipient Email</th>
-                  <th className="p-4">Category</th>
-                  <th className="p-4">Reason / Diagnostic</th>
-                  <th className="p-4">Date Added</th>
-                  <th className="p-4 pr-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40 text-xs">
-                {items.map((item) => (
-                  <tr key={item._id} className="hover:bg-card-hover/30 transition-colors">
-                    <td className="p-4 pl-6 font-mono font-medium text-text flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-text-muted" />
-                      {item.email}
-                    </td>
-                    <td className="p-4 whitespace-nowrap">{getTypeBadge(item.type)}</td>
-                    <td className="p-4 text-text-muted max-w-xs truncate" title={item.reason}>
-                      {item.reason || "No details available"}
-                    </td>
-                    <td className="p-4 text-text-muted whitespace-nowrap">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-border/60 bg-card-hover/50 text-[11px] font-mono text-text-muted uppercase">
+                    <th className="p-4 pl-6">Recipient Email</th>
+                    <th className="p-4">Category</th>
+                    <th className="p-4">Reason / Diagnostic</th>
+                    <th className="p-4">Date Added</th>
+                    <th className="p-4 pr-6 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40 text-xs">
+                  {items.map((item) => (
+                    <tr key={item._id} className="hover:bg-card-hover/30 transition-colors">
+                      <td className="p-4 pl-6 font-mono font-medium text-text flex items-center gap-2">
+                        <Mail className="w-3.5 h-3.5 text-text-muted" />
+                        {item.email}
+                      </td>
+                      <td className="p-4 whitespace-nowrap">{getTypeBadge(item.type)}</td>
+                      <td className="p-4 text-text-muted max-w-xs truncate" title={item.reason}>
+                        {item.reason || "No details available"}
+                      </td>
+                      <td className="p-4 text-text-muted whitespace-nowrap">
+                        {new Date(item.createdAt).toLocaleDateString("en-IN", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="p-4 pr-6 text-right whitespace-nowrap">
+                        <button
+                          onClick={() => handleUnblock(item._id, item.email)}
+                          disabled={actionLoading}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono font-semibold hover:bg-emerald-500/20 transition-all disabled:opacity-50"
+                        >
+                          <Trash2 className="w-3 h-3" /> Unblock
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="block md:hidden divide-y divide-border/40">
+              {items.map((item) => (
+                <div key={item._id} className="p-4 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="font-mono font-medium text-text text-xs flex items-center gap-2 break-all">
+                      <Mail className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                      <span>{item.email}</span>
+                    </div>
+                    <div className="shrink-0">{getTypeBadge(item.type)}</div>
+                  </div>
+
+                  {item.reason && (
+                    <div className="text-xs text-text-muted bg-card-hover/40 p-2.5 rounded-lg border border-border/40">
+                      {item.reason}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] font-mono text-text-muted">
+                    <span>
+                      Added:{" "}
                       {new Date(item.createdAt).toLocaleDateString("en-IN", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
-                    </td>
-                    <td className="p-4 pr-6 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => handleUnblock(item._id, item.email)}
-                        disabled={actionLoading}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono font-semibold hover:bg-emerald-500/20 transition-all disabled:opacity-50"
-                      >
-                        <Trash2 className="w-3 h-3" /> Unblock
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                    <button
+                      onClick={() => handleUnblock(item._id, item.email)}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono font-semibold hover:bg-emerald-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      <Trash2 className="w-3 h-3" /> Unblock
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination Footer */}
@@ -347,7 +389,7 @@ export default function EmailBlocklist() {
       {/* Add Blocklist Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150">
+          <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2 text-text font-semibold">
                 <Ban className="w-5 h-5 text-accent" />

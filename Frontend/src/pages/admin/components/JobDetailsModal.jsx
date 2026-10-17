@@ -89,23 +89,23 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/75 backdrop-blur-md animate-fadeIn">
       <div className="bg-card/90 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="p-6 border-b border-border/60 flex items-center justify-between bg-card-hover/40">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
+        <div className="p-4 sm:p-6 border-b border-border/60 flex items-center justify-between bg-card-hover/40 gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20 shrink-0">
               <Cpu className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-lg font-display font-bold text-text uppercase">
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-display font-bold text-text uppercase truncate">
                 Task Inspection
               </h2>
-              <p className="text-xs text-text-muted font-mono">
+              <p className="text-xs text-text-muted font-mono truncate">
                 ID: {job._id}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-text-muted hover:text-text hover:bg-card-hover transition-colors"
+            className="p-2 rounded-xl text-text-muted hover:text-text hover:bg-card-hover transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -161,44 +161,44 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
             </span>
             <div className="p-4 rounded-xl bg-card border border-border/80 font-mono text-xs space-y-2">
               {payload.email && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Recipient Email:</span>
-                  <span className="text-accent font-semibold">{payload.email}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Recipient Email:</span>
+                  <span className="text-accent font-semibold break-all">{payload.email}</span>
                 </div>
               )}
               {payload.subject && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Subject:</span>
-                  <span className="text-text">{payload.subject}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Subject:</span>
+                  <span className="text-text break-all">{payload.subject}</span>
                 </div>
               )}
               {payload.eventName && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Event Name:</span>
-                  <span className="text-text font-bold">{payload.eventName}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Event Name:</span>
+                  <span className="text-text font-bold break-all">{payload.eventName}</span>
                 </div>
               )}
               {payload.student?.name && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Student Name:</span>
-                  <span className="text-text">{payload.student.name}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Student Name:</span>
+                  <span className="text-text break-all">{payload.student.name}</span>
                 </div>
               )}
               {payload.student?.qid && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Student QID:</span>
-                  <span className="text-accent font-bold">{payload.student.qid}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Student QID:</span>
+                  <span className="text-accent font-bold break-all">{payload.student.qid}</span>
                 </div>
               )}
               {payload.student?.deskNumber && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Desk Number:</span>
-                  <span className="text-text">{payload.student.deskNumber}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Desk Number:</span>
+                  <span className="text-text break-all">{payload.student.deskNumber}</span>
                 </div>
               )}
               {payload.emailList && (
-                <div className="flex justify-between border-b border-border/40 pb-2">
-                  <span className="text-text-muted">Broadcast Recipients:</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Broadcast Recipients:</span>
                   <span className="text-text font-bold">{payload.emailList.length} Recipients</span>
                 </div>
               )}

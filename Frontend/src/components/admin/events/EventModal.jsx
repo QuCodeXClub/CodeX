@@ -173,18 +173,18 @@ export default function EventModal({ setIsModalOpen, editingEvent, onSuccess }) 
 
           <button
             onClick={() => setIsModalOpen(false)}
-            className="absolute top-5 right-5 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors z-10 cursor-pointer"
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 text-text-muted hover:text-text p-2 hover:bg-card-hover rounded-full transition-colors z-10 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="p-6 md:p-8 lg:p-10 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 md:p-8 lg:p-10 flex-1 flex flex-col">
             <div className="border-b border-border/60 pb-5 mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>EVENT CONFIGURATION</span>
               </div>
-              <h2 className="text-2xl lg:text-3xl font-display font-black uppercase text-text tracking-tight">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-black uppercase text-text tracking-tight pr-8">
                 {editingEvent ? "EDIT EVENT DETAILS" : "CREATE NEW EVENT"}
               </h2>
             </div>

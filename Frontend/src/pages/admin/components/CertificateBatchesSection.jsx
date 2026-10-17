@@ -584,7 +584,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               )}
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-border/60 bg-card/60 text-[11px] font-mono uppercase text-text-muted tracking-wider">
                   <th className="p-4 pl-6 font-bold">Batch ID / Event</th>
@@ -756,6 +759,123 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                 })}
               </tbody>
             </table>
+          </div>
+
+              {/* Mobile Cards View */}
+              <div className="block md:hidden divide-y divide-border/40">
+                {filteredBatches.map((batch) => {
+                  const isPending = batch.status === "PENDING_APPROVAL";
+                  const isActionLoading = actionLoadingId === batch._id;
+
+                  return (
+                    <div key={batch._id} className="p-4 space-y-3">
+                      {/* Top: Batch ID, Event, Status */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-mono text-xs font-bold text-accent">
+                            #{batch.batchId}
+                          </span>
+                          <h4 className="font-display font-bold text-sm text-text mt-0.5">
+                            {batch.eventName}
+                          </h4>
+                          <div className="flex items-center gap-2 text-[11px] text-text-muted font-mono mt-1">
+                            <Calendar className="w-3 h-3 shrink-0" />
+                            <span>
+                              {batch.eventDate
+                                ? new Date(batch.eventDate).toLocaleDateString("en-IN")
+                                : "—"}
+                            </span>
+                            <span>•</span>
+                            <span className="truncate">Coord: {batch.coordinatorName}</span>
+                          </div>
+                        </div>
+                        <div className="shrink-0">
+                          {renderStatusBadge(batch.status, batch)}
+                        </div>
+                      </div>
+
+                      {/* Info Grid */}
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="bg-card p-2 rounded-xl border border-border/60">
+                          <span className="text-[10px] text-text-muted uppercase font-mono block">Submitted By</span>
+                          <span className="font-bold text-text truncate block mt-0.5">{batch.submittedByName || "Admin"}</span>
+                        </div>
+                        <div className="bg-card p-2 rounded-xl border border-border/60">
+                          <span className="text-[10px] text-text-muted uppercase font-mono block">Students</span>
+                          <span className="font-bold text-text block mt-0.5">{batch.studentCount || 0} records</span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-border/40">
+                        <button
+                          onClick={() => handleViewDetails(batch)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text text-xs font-mono transition-all cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Details</span>
+                        </button>
+
+                        {(batch.status === "COMPLETED" || batch.status === "PROCESSING" || (batch.generatedCount && batch.generatedCount > 0)) && (
+                          <button
+                            onClick={() => handleExportCsv(batch)}
+                            disabled={isActionLoading}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-accent text-xs font-mono transition-all cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>CSV</span>
+                          </button>
+                        )}
+
+                        {(isPending || (isSuperAdmin && batch.status !== "PROCESSING")) && (
+                          <button
+                            onClick={() => handleStartEdit(batch)}
+                            disabled={isActionLoading}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Edit</span>
+                          </button>
+                        )}
+
+                        {isSuperAdmin && (
+                          <>
+                            {isPending && (
+                              <button
+                                onClick={() => handleApprove(batch)}
+                                disabled={isActionLoading}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                              >
+                                {isActionLoading ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                )}
+                                <span>Approve</span>
+                              </button>
+                            )}
+
+                            {batch.status !== "REJECTED" && (
+                              <button
+                                onClick={() => {
+                                  setRejectModalBatch(batch);
+                                  setRejectReason("");
+                                }}
+                                disabled={isActionLoading}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                              >
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span>{batch.status === "COMPLETED" ? "Revoke" : "Reject"}</span>
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -1118,8 +1238,8 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               </div>
 
               {/* Student Rows Table */}
-              <div className="flex-1 overflow-y-auto rounded-xl border border-border/60 bg-card/40 max-h-[320px]">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="flex-1 overflow-x-auto overflow-y-auto rounded-xl border border-border/60 bg-card/40 max-h-[320px]">
+                <table className="w-full text-left text-xs border-collapse min-w-[560px]">
                   <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 z-10 backdrop-blur-sm">
                     <tr>
                       <th className="p-2.5 pl-3 w-10">#</th>
@@ -1222,7 +1342,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       {/* ================= REJECT REASON MODAL ================= */}
       {rejectModalBatch && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-md bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-5 relative">
+          <div className="w-full max-w-md bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-display font-bold uppercase">
                 <XCircle className="w-5 h-5" />

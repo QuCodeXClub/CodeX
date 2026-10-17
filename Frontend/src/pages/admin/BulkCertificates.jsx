@@ -240,7 +240,7 @@ export default function BulkCertificates() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full">
-      <header className="flex items-start justify-between mb-8 gap-4 border-b border-border/60 pb-6">
+      <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4 border-b border-border/60 pb-6">
         <div>
           {isSuperAdmin ? (
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-500/40 text-fuchsia-700 dark:text-fuchsia-300 font-mono text-xs font-extrabold uppercase tracking-wider mb-2 shadow-sm shadow-fuchsia-500/20">
