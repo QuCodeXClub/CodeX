@@ -154,6 +154,16 @@ export default function ManageTeam() {
       }
 
       setIsModalOpen(false);
+      setEditingId(null);
+      reset({
+        name: "",
+        post: "",
+        subTeam: "",
+        academicYear: "",
+        email: "",
+      });
+      setPhotoFile(null);
+      setImagePreview(null);
     } catch (err) {
       if (err.response?.data?.errors?.length > 0) {
         err.response.data.errors.forEach((e) => {
