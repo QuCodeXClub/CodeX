@@ -93,6 +93,21 @@ export default function ManageAdmins() {
     setAddForm({ ...addForm, [e.target.name]: e.target.value });
   };
 
+  // Close Add Modal and clear form
+  const handleCloseAddModal = () => {
+    setShowAddModal(false);
+    setAddForm({ name: "", email: "", password: "", mobileNumber: "" });
+    setShowAddPassword(false);
+  };
+
+  // Close Edit Modal and clear form
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedAdmin(null);
+    setEditForm({ name: "", email: "", password: "", mobileNumber: "" });
+    setShowEditPassword(false);
+  };
+
   // Submit Add Admin
   const handleAddSubmit = async (e) => {
     e.preventDefault();
@@ -101,19 +116,28 @@ export default function ManageAdmins() {
 
     try {
       const res = await adminService.createAdmin(addForm);
-      if (res.data?.success || res.status === 201 || res.status === 200) {
+      if (
+        res?.success ||
+        res?.statusCode === 201 ||
+        res?.statusCode === 200 ||
+        res?.data ||
+        res?.status === 201 ||
+        res?.status === 200
+      ) {
         setFeedback({
           type: "success",
           text: `Admin account "${addForm.name}" created successfully.`,
         });
-        setShowAddModal(false);
-        setAddForm({ name: "", email: "", password: "", mobileNumber: "" });
+        handleCloseAddModal();
         fetchAdmins();
       }
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err.response?.data?.message || "Failed to create admin account.",
+        text:
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to create admin account.",
       });
     } finally {
       setAddLoading(false);
@@ -154,13 +178,15 @@ export default function ManageAdmins() {
         type: "success",
         text: `Admin account "${editForm.name}" updated successfully.`,
       });
-      setShowEditModal(false);
-      setSelectedAdmin(null);
+      handleCloseEditModal();
       fetchAdmins();
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err.response?.data?.message || "Failed to update admin account.",
+        text:
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to update admin account.",
       });
     } finally {
       setEditLoading(false);
@@ -608,7 +634,7 @@ export default function ManageAdmins() {
                 </div>
               </div>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={handleCloseAddModal}
                 className="text-text-muted hover:text-text p-1.5 rounded-lg hover:bg-card-hover transition-colors cursor-pointer"
               >
                 ✕
@@ -704,7 +730,7 @@ export default function ManageAdmins() {
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-border/60">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={handleCloseAddModal}
                   className="px-5 py-2.5 rounded-xl border border-border bg-card text-text-muted hover:text-text font-mono text-xs font-bold transition-colors cursor-pointer"
                 >
                   Cancel
@@ -751,10 +777,7 @@ export default function ManageAdmins() {
                 </div>
               </div>
               <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setSelectedAdmin(null);
-                }}
+                onClick={handleCloseEditModal}
                 className="text-text-muted hover:text-text p-1.5 rounded-lg hover:bg-card-hover transition-colors cursor-pointer"
               >
                 ✕
@@ -851,10 +874,7 @@ export default function ManageAdmins() {
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-border/60">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setSelectedAdmin(null);
-                  }}
+                  onClick={handleCloseEditModal}
                   className="px-5 py-2.5 rounded-xl border border-border bg-card text-text-muted hover:text-text font-mono text-xs font-bold transition-colors cursor-pointer"
                 >
                   Cancel
