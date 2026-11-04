@@ -56,9 +56,9 @@ export default function ImportRegistrationModal({ onClose, onImport }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/50 backdrop-blur-sm">
-      <div className="bg-card rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border-soft flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md overflow-y-auto pt-16 sm:pt-4">
+      <div className="bg-card border border-border/90 rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto">
+        <div className="p-4 sm:p-6 border-b border-border/60 flex items-center justify-between shrink-0">
           <h2 className="text-xl font-bold text-text">
             Bulk Import Students
           </h2>
@@ -70,7 +70,7 @@ export default function ImportRegistrationModal({ onClose, onImport }) {
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto">
           <div className="bg-text/10 border border-border p-4 rounded-xl text-sm text-text">
             <p className="mb-2">
               <strong>Step 1:</strong> Download the template to see the required

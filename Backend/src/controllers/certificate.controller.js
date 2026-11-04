@@ -247,12 +247,23 @@ const getCertificateBatchById = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Certificate batch not found');
   }
 
-  // If students array was purged after batch completion to eliminate database redundancy,
-  // dynamically hydrate from the Certificate collection using the indexed batchId link
+  // If students array was purged or missing, dynamically hydrate from the Certificate collection
   if (!batch.students || batch.students.length === 0) {
-    const certs = await Certificate.find({ batchId: batch._id })
+    let certs = await Certificate.find({ batchId: batch._id })
       .select('studentName studentEmail position certificateId')
       .lean();
+
+    if (!certs || certs.length === 0) {
+      certs = await Certificate.find({
+        $or: [
+          { batchId: String(batch._id) },
+          { batchId: batch.batchId },
+          { eventName: batch.eventName },
+        ],
+      })
+      .select('studentName studentEmail position certificateId')
+      .lean();
+    }
 
     if (certs && certs.length > 0) {
       batch.students = certs.map((c) => ({
@@ -564,8 +575,14 @@ const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
   }
 
   let certs = await Certificate.find({ batchId: batch._id }).sort({ createdAt: 1 }).lean();
-  if ((!certs || certs.length === 0) && batch.eventName) {
-    certs = await Certificate.find({ eventName: batch.eventName, eventDate: batch.eventDate }).sort({ createdAt: 1 }).lean();
+  if (!certs || certs.length === 0) {
+    certs = await Certificate.find({
+      $or: [
+        { batchId: String(batch._id) },
+        { batchId: batch.batchId },
+        { eventName: batch.eventName },
+      ]
+    }).sort({ createdAt: 1 }).lean();
   }
 
   const rows = [

@@ -26,10 +26,10 @@ export default function RejectRegistrationModal({ registration, onClose, onConfi
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/70 backdrop-blur-md animate-fadeIn">
-      <div className="bg-card/90 backdrop-blur-2xl border border-rose-500/30 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md animate-fadeIn overflow-y-auto pt-16 sm:pt-4">
+      <div className="bg-card border border-rose-500/30 rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto">
         {/* Header */}
-        <div className="p-6 border-b border-border/60 flex items-center justify-between bg-card-hover/40">
+        <div className="p-4 sm:p-6 border-b border-border/60 flex items-center justify-between bg-card-hover/40 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
               <AlertTriangle className="w-5 h-5" />
@@ -52,7 +52,7 @@ export default function RejectRegistrationModal({ registration, onClose, onConfi
         </div>
 
         {/* Student Info Pill */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 flex-1">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 flex-1 overflow-y-auto">
           {registration && (
             <div className="p-4 rounded-xl bg-card border border-border/80 text-xs space-y-1">
               <div className="font-semibold text-text text-sm">

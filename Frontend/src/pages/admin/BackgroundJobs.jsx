@@ -281,7 +281,7 @@ export default function BackgroundJobs() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full space-y-6 sm:space-y-8">
+    <div className="p-3.5 sm:p-6 lg:p-8 xl:p-10 font-sans text-text min-h-full space-y-5 sm:space-y-6 max-w-[1600px] mx-auto w-full">
       {/* Header Banner */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-6">
         <div>

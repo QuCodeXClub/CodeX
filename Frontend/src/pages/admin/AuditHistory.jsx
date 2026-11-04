@@ -23,7 +23,7 @@ export default function AuditHistory() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full flex flex-col">
+    <div className="p-3.5 sm:p-6 lg:p-8 xl:p-10 font-sans text-text min-h-full flex flex-col max-w-[1600px] mx-auto w-full">
       {/* Header */}
       <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-6 shrink-0">
         <div>
