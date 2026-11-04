@@ -265,7 +265,6 @@ class QueueService {
             await CertificateBatch.findByIdAndUpdate(job.payload.batchId, {
               status: finalStatus,
               completedAt: new Date(),
-              $unset: { students: 1 },
             });
           }
         } catch (failCheckErr) {
@@ -488,7 +487,6 @@ class QueueService {
           await CertificateBatch.findByIdAndUpdate(batchId, {
             status: finalStatus,
             completedAt: new Date(),
-            $unset: { students: 1 },
           });
         }
       } catch (batchErr) {

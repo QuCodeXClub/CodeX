@@ -40,7 +40,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full">
+    <div className="p-3.5 sm:p-6 lg:p-8 xl:p-10 font-sans text-text min-h-full max-w-[1600px] mx-auto w-full">
       <DashboardHeader
         onRefresh={() => dispatch(fetchDashboardMetrics())}
         loading={loading}
@@ -48,16 +48,16 @@ export default function Dashboard() {
         onToggleView={handleToggleView}
       />
 
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 lg:col-span-4 space-y-6">
+      <div className="grid grid-cols-12 gap-4 sm:gap-6">
+        <div className="col-span-12 xl:col-span-4 space-y-4 sm:space-y-6">
           <AdminWelcome isSuperView={isSuperView} />
           <QuickActions isSuperView={isSuperView} />
         </div>
-        <div className="col-span-12 lg:col-span-8 space-y-6">
+        <div className="col-span-12 xl:col-span-8 space-y-4 sm:space-y-6">
           <MetricsGrid metrics={metrics} isSuperView={isSuperView} />
           {isSuperView ? (
             <>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <SuperAdminActivityFeed
                   recentActivityLogs={recentActivityLogs}
                   loading={loading}
@@ -67,7 +67,7 @@ export default function Dashboard() {
               <RecentRegistrations metrics={metrics} recentLogs={recentLogs} />
             </>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <DatabaseAggregates metrics={metrics} />
               <RecentRegistrations metrics={metrics} recentLogs={recentLogs} />
             </div>

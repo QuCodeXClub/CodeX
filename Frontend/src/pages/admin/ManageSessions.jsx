@@ -198,7 +198,7 @@ export default function ManageSessions() {
     <div
       className={`${
         isStandalonePage
-          ? "p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-full"
+          ? "p-3.5 sm:p-6 lg:p-8 xl:p-10 max-w-[1600px] mx-auto min-h-full w-full"
           : "w-full"
       } font-sans text-text relative`}
     >

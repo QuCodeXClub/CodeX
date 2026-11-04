@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Award,
   CheckCircle2,
   XCircle,
+  X,
   Clock,
   Search,
   Eye,
@@ -153,10 +155,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
 
   // Open Edit Modal for a batch (fetch full batch to get student list if not present)
   const handleStartEdit = async (batchSummary) => {
-    if (batchSummary.status !== "PENDING_APPROVAL" && !isSuperAdmin) {
+    if (batchSummary.status !== "PENDING_APPROVAL") {
       setFeedback({
         type: "error",
-        text: `Batch #${batchSummary.batchId} is ${batchSummary.status} and cannot be modified. Only PENDING_APPROVAL batches can be edited by standard Admins.`,
+        text: `Batch #${batchSummary.batchId} is already ${batchSummary.status} and cannot be modified. Batches can only be edited while in PENDING_APPROVAL status.`,
       });
       return;
     }
@@ -309,13 +311,59 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     }
   };
 
-  // Export Batch to CSV
+  // Export Batch to CSV (with smart fallback to batch student roster if server CSV is header-only)
   const handleExportCsv = async (batch) => {
     try {
       setActionLoadingId(batch._id);
-      const res = await certificateService.exportBatchCertificates(batch._id);
-      const blob = new Blob([res.data], { type: "text/csv;charset=utf-8;" });
-      const url = window.URL.createObjectURL(blob);
+      let csvBlob = null;
+
+      try {
+        const res = await certificateService.exportBatchCertificates(batch._id);
+        const text = typeof res.data === "string" ? res.data : await new Response(res.data).text();
+        const lineCount = text.trim().split(/\r?\n/).length;
+
+        // If server produced at least 2 lines (header + 1 record)
+        if (lineCount > 1) {
+          csvBlob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+        }
+      } catch (serverErr) {
+        console.warn("Backend export endpoint failed, falling back to batch roster:", serverErr);
+      }
+
+      // Fallback: If server CSV is empty or header-only, construct CSV from batch students
+      if (!csvBlob) {
+        let studentsList = batch.students || [];
+        if (studentsList.length === 0) {
+          try {
+            const detailRes = await certificateService.getCertificateBatchById(batch._id);
+            studentsList = detailRes.data?.students || [];
+          } catch {
+            studentsList = [];
+          }
+        }
+
+        const rows = [
+          ["Student Name", "Email", "Position", "Certificate ID", "Verification Link", "Status"]
+        ];
+
+        studentsList.forEach((s) => {
+          const certId = s.certificateId || (batch.status === "COMPLETED" ? "GENERATED" : "PENDING");
+          const verifyUrl = s.certificateId ? `${window.location.origin}/verify-certificate/${s.certificateId}` : "";
+          rows.push([
+            `"${(s.name || "").replace(/"/g, '""')}"`,
+            `"${(s.email || "").replace(/"/g, '""')}"`,
+            `"${(s.position || "Participant").replace(/"/g, '""')}"`,
+            `"${certId}"`,
+            `"${verifyUrl}"`,
+            `"${batch.status || "COMPLETED"}"`
+          ]);
+        });
+
+        const csvString = "\uFEFF" + rows.map((r) => r.join(",")).join("\r\n");
+        csvBlob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+      }
+
+      const url = window.URL.createObjectURL(csvBlob);
       const link = document.createElement("a");
       link.href = url;
       const sanitizedName = (batch.eventName || "batch").replace(/[^a-zA-Z0-9_-]/g, "_");
@@ -324,6 +372,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+
       setFeedback({
         type: "success",
         text: `Exported certificates for "${batch.eventName}" successfully!`,
@@ -331,7 +380,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err.response?.data?.message || "Failed to export certificates CSV.",
+        text: err.response?.data?.message || err.message || "Failed to export certificates CSV.",
       });
     } finally {
       setActionLoadingId(null);
@@ -368,8 +417,8 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     switch (status) {
       case "PENDING_APPROVAL":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-ping" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-ping shrink-0" />
             Pending Review
           </span>
         );
@@ -379,10 +428,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
         const gen = batch?.generatedCount || 0;
         const pct = Math.min(100, Math.round((gen / total) * 100));
         return (
-          <div className="space-y-1 min-w-[120px]">
+          <div className="space-y-1 min-w-[100px] sm:min-w-[120px]">
             <div className="flex items-center justify-between text-[10px] font-mono">
-              <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
                 Generating
               </span>
               <span className="text-text-muted font-bold">{gen}/{total}</span>
@@ -398,28 +447,28 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       }
       case "COMPLETED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent/15 text-accent border border-accent/30">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent/15 text-accent border border-accent/30 whitespace-nowrap">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
             Completed
           </span>
         );
       case "FAILED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30">
-            <AlertTriangle className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 whitespace-nowrap">
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
             Failed
           </span>
         );
       case "REJECTED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30">
-            <XCircle className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 whitespace-nowrap">
+            <XCircle className="w-3.5 h-3.5 shrink-0" />
             Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-card border border-border text-text-muted">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-card border border-border text-text-muted whitespace-nowrap">
             {status}
           </span>
         );
@@ -510,7 +559,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       {/* Main Container */}
       <div className="bg-card/85 backdrop-blur-xl rounded-2xl border border-border/80 shadow-xl overflow-hidden flex flex-col">
         {/* Controls Bar */}
-        <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card-hover/30">
+        <div className="p-3.5 sm:p-4 border-b border-border/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card-hover/30">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-3 text-text-muted pointer-events-none" />
             <input
@@ -522,13 +571,13 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             />
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
             <Filter className="w-3.5 h-3.5 text-text-muted shrink-0" />
             {["ALL", "PENDING_APPROVAL", "PROCESSING", "COMPLETED", "REJECTED"].map((st) => (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   statusFilter === st
                     ? "bg-accent text-[#111111] shadow-sm shadow-accent/20"
                     : "bg-card hover:bg-card-hover border border-border/80 text-text-muted hover:text-text"
@@ -548,7 +597,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
 
             <button
               onClick={fetchBatches}
-              className="p-2 rounded-xl bg-card border border-border/80 text-text-muted hover:text-accent hover:bg-card-hover transition-all cursor-pointer ml-1"
+              className="p-2 rounded-xl bg-card border border-border/80 text-text-muted hover:text-accent hover:bg-card-hover transition-all cursor-pointer ml-1 shrink-0"
               title="Refresh Batches"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -585,212 +634,167 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             </div>
           ) : (
             <>
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border/60 bg-card/60 text-[11px] font-mono uppercase text-text-muted tracking-wider">
-                  <th className="p-4 pl-6 font-bold">Batch ID / Event</th>
-                  <th className="p-4 font-bold">Submitted By</th>
-                  <th className="p-4 font-bold">Students</th>
-                  <th className="p-4 font-bold">Status</th>
-                  <th className="p-4 pr-6 font-bold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40 text-xs">
-                {filteredBatches.map((batch) => {
-                  const isPending = batch.status === "PENDING_APPROVAL";
-                  const isActionLoading = actionLoadingId === batch._id;
+              {/* Desktop Table View - Streamlined to Essential Info Only */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left border-collapse whitespace-nowrap">
+                  <thead>
+                    <tr className="border-b border-border/60 bg-card/60 text-[11px] font-mono uppercase text-text-muted tracking-wider">
+                      <th className="py-3 px-4 pl-6 font-bold">Event & Batch</th>
+                      <th className="py-3 px-4 font-bold">By</th>
+                      <th className="py-3 px-4 font-bold">Students</th>
+                      <th className="py-3 px-4 font-bold">Status</th>
+                      <th className="py-3 px-4 pr-6 font-bold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs font-sans">
+                    {filteredBatches.map((batch) => {
+                      const isPending = batch.status === "PENDING_APPROVAL";
+                      const isActionLoading = actionLoadingId === batch._id;
 
-                  return (
-                    <tr
-                      key={batch._id}
-                      className="hover:bg-card-hover/40 transition-colors group"
-                    >
-                      {/* Batch ID & Event */}
-                      <td className="p-4 pl-6">
-                        <div className="font-mono text-xs font-bold text-accent">
-                          #{batch.batchId}
-                        </div>
-                        <div className="font-display font-bold text-sm text-text mt-0.5">
-                          {batch.eventName}
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] text-text-muted font-mono mt-1">
-                          <Calendar className="w-3 h-3 text-text-muted shrink-0" />
-                          <span>
-                            {batch.eventDate
-                              ? new Date(batch.eventDate).toLocaleDateString("en-IN")
-                              : "—"}
-                          </span>
-                          <span>•</span>
-                          <span>Coord: {batch.coordinatorName}</span>
-                        </div>
-                      </td>
+                      return (
+                        <tr
+                          key={batch._id}
+                          className="hover:bg-card-hover/40 transition-colors group"
+                        >
+                          {/* Batch ID & Event */}
+                          <td className="py-3 px-4 pl-6">
+                            <div className="flex items-center gap-2">
+                              <span className="font-display font-bold text-sm text-text">
+                                {batch.eventName}
+                              </span>
+                              <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent font-semibold">
+                                #{batch.batchId?.slice(-6) || batch.batchId}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-text-muted font-mono mt-0.5">
+                              {batch.eventDate ? new Date(batch.eventDate).toLocaleDateString("en-IN") : "—"}
+                            </div>
+                          </td>
 
-                      {/* Submitted By */}
-                      <td className="p-4">
-                        <div className="flex items-center gap-1.5 font-bold text-text">
-                          <User className="w-3.5 h-3.5 text-accent shrink-0" />
-                          <span>{batch.submittedByName || "Admin"}</span>
-                        </div>
-                        {batch.submittedByEmail && (
-                          <div className="text-[11px] text-text-muted font-mono mt-0.5">
-                            {batch.submittedByEmail}
-                          </div>
-                        )}
-                        <div className="text-[10px] text-text-muted/60 font-mono mt-1">
-                          {new Date(batch.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}{" "}
-                          on {new Date(batch.createdAt).toLocaleDateString("en-IN")}
-                        </div>
-                      </td>
+                          {/* Submitted By - compact */}
+                          <td className="py-3 px-4">
+                            <div className="font-semibold text-text text-xs flex items-center gap-1.5">
+                              <User className="w-3.5 h-3.5 text-accent shrink-0" />
+                              <span>{batch.submittedByName || "Admin"}</span>
+                            </div>
+                          </td>
 
-                      {/* Students Count */}
-                      <td className="p-4">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border/80 font-mono text-xs">
-                          <Award className="w-3.5 h-3.5 text-accent" />
-                          <span className="font-bold text-text">{batch.studentCount || 0}</span>
-                          <span className="text-[10px] text-text-muted">records</span>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td className="p-4">
-                        {renderStatusBadge(batch.status, batch)}
-                        {batch.rejectionReason && (
-                          <div className="text-[10px] font-mono text-rose-700 dark:text-rose-400/80 mt-1 max-w-xs truncate">
-                            Reason: {batch.rejectionReason}
-                          </div>
-                        )}
-                        {batch.approvedByName && (
-                          <div className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400/80 mt-1">
-                            Approved by: {batch.approvedByName}
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="p-4 pr-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleViewDetails(batch)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-all cursor-pointer"
-                            title="Inspect Batch Details & Student Roster"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Details</span>
-                          </button>
-
-                          {/* Export CSV button */}
-                          {(batch.status === "COMPLETED" || batch.status === "PROCESSING" || (batch.generatedCount && batch.generatedCount > 0)) && (
-                            <button
-                              onClick={() => handleExportCsv(batch)}
-                              disabled={isActionLoading}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-accent hover:bg-card-hover text-xs font-mono transition-all cursor-pointer"
-                              title="Export issued certificates to CSV"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                              <span>CSV</span>
-                            </button>
-                          )}
-
-                          {/* Edit button: allowed when PENDING_APPROVAL, or for Super Admin on any non-processing batch */}
-                          {(isPending || (isSuperAdmin && batch.status !== "PROCESSING")) ? (
-                            <button
-                              onClick={() => handleStartEdit(batch)}
-                              disabled={isActionLoading}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
-                              title="Edit batch event details or student roster (resets previous certificates)"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>Edit</span>
-                            </button>
-                          ) : (
-                            <span
-                              className="inline-flex items-center gap-1 text-[11px] font-mono text-text-muted/40 px-2 py-1 rounded bg-card/40 border border-border/30 cursor-not-allowed select-none"
-                              title={`Batch #${batch.batchId} is ${batch.status} and cannot be edited.`}
-                            >
-                              <Lock className="w-3 h-3" />
-                              <span>Locked</span>
+                          {/* Students Count */}
+                          <td className="py-3 px-4">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-card border border-border/70 font-mono text-xs font-bold text-text">
+                              <Award className="w-3.5 h-3.5 text-accent" />
+                              <span>{batch.studentCount || 0}</span>
                             </span>
-                          )}
+                          </td>
 
-                          {/* Super Admin Approval & Revocation Controls */}
-                          {isSuperAdmin && (
-                            <>
+                          {/* Status */}
+                          <td className="py-3 px-4">
+                            {renderStatusBadge(batch.status, batch)}
+                          </td>
+
+                          {/* Actions - clean icons with text */}
+                          <td className="py-3 px-4 pr-6 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                onClick={() => handleViewDetails(batch)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-all cursor-pointer"
+                                title="Inspect Batch Details & Student Roster"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Details</span>
+                              </button>
+
+                              {(batch.status === "COMPLETED" || batch.status === "PROCESSING" || (batch.generatedCount && batch.generatedCount > 0)) && (
+                                <button
+                                  onClick={() => handleExportCsv(batch)}
+                                  disabled={isActionLoading}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-text-muted hover:text-accent hover:bg-card-hover text-xs font-mono transition-all cursor-pointer"
+                                  title="Export CSV"
+                                >
+                                  <Download className="w-3.5 h-3.5" />
+                                  <span>CSV</span>
+                                </button>
+                              )}
+
                               {isPending && (
+                                <button
+                                  onClick={() => handleStartEdit(batch)}
+                                  disabled={isActionLoading}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                                  title="Edit batch"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Edit</span>
+                                </button>
+                              )}
+
+                              {isSuperAdmin && isPending && (
                                 <button
                                   onClick={() => handleApprove(batch)}
                                   disabled={isActionLoading}
-                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
-                                  title="Authorize and start background generation"
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                                  title="Approve batch"
                                 >
-                                  {isActionLoading ? (
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  ) : (
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                  )}
+                                  {isActionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                   <span>Approve</span>
                                 </button>
                               )}
 
-                              {batch.status !== "REJECTED" && (
+                              {isSuperAdmin && batch.status !== "REJECTED" && (
                                 <button
                                   onClick={() => {
                                     setRejectModalBatch(batch);
                                     setRejectReason("");
                                   }}
                                   disabled={isActionLoading}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
-                                  title="Reject batch and delete all generated certificates"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                                  title="Reject or Revoke"
                                 >
                                   <XCircle className="w-3.5 h-3.5" />
-                                  <span>{batch.status === "COMPLETED" ? "Revoke & Delete" : "Reject"}</span>
+                                  <span>{batch.status === "COMPLETED" ? "Revoke" : "Reject"}</span>
                                 </button>
                               )}
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-              {/* Mobile Cards View */}
-              <div className="block md:hidden divide-y divide-border/40">
+              {/* Tablet & Mobile Cards View (below lg screen) - clean, compact, essential only */}
+              <div className="block lg:hidden divide-y divide-border/40">
                 {filteredBatches.map((batch) => {
                   const isPending = batch.status === "PENDING_APPROVAL";
                   const isActionLoading = actionLoadingId === batch._id;
 
                   return (
-                    <div key={batch._id} className="p-4 space-y-3">
-                      {/* Top: Batch ID, Event, Status */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <span className="font-mono text-xs font-bold text-accent">
-                            #{batch.batchId}
-                          </span>
-                          <h4 className="font-display font-bold text-sm text-text mt-0.5">
-                            {batch.eventName}
-                          </h4>
-                          <div className="flex items-center gap-2 text-[11px] text-text-muted font-mono mt-1">
-                            <Calendar className="w-3 h-3 shrink-0" />
-                            <span>
-                              {batch.eventDate
-                                ? new Date(batch.eventDate).toLocaleDateString("en-IN")
-                                : "—"}
-                            </span>
-                            <span>•</span>
-                            <span className="truncate">Coord: {batch.coordinatorName}</span>
-                          </div>
-                        </div>
+                    <div key={batch._id} className="p-3.5 sm:p-4 space-y-3">
+                      {/* Row 1: Batch ID & Status Badge */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="font-mono text-[11px] sm:text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                          #{batch.batchId}
+                        </span>
                         <div className="shrink-0">
                           {renderStatusBadge(batch.status, batch)}
+                        </div>
+                      </div>
+
+                      {/* Row 2: Event Title & Date / Coordinator */}
+                      <div>
+                        <h4 className="font-display font-bold text-sm sm:text-base text-text">
+                          {batch.eventName}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-text-muted font-mono mt-1">
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="w-3 h-3 shrink-0 text-text-muted" />
+                            {batch.eventDate
+                              ? new Date(batch.eventDate).toLocaleDateString("en-IN")
+                              : "—"}
+                          </span>
+                          <span>•</span>
+                          <span className="truncate">Coord: {batch.coordinatorName}</span>
                         </div>
                       </div>
 
@@ -798,19 +802,19 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-card p-2 rounded-xl border border-border/60">
                           <span className="text-[10px] text-text-muted uppercase font-mono block">Submitted By</span>
-                          <span className="font-bold text-text truncate block mt-0.5">{batch.submittedByName || "Admin"}</span>
+                          <span className="font-bold text-text truncate block mt-0.5 text-xs">{batch.submittedByName || "Admin"}</span>
                         </div>
                         <div className="bg-card p-2 rounded-xl border border-border/60">
                           <span className="text-[10px] text-text-muted uppercase font-mono block">Students</span>
-                          <span className="font-bold text-text block mt-0.5">{batch.studentCount || 0} records</span>
+                          <span className="font-bold text-text block mt-0.5 text-xs">{batch.studentCount || 0} records</span>
                         </div>
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-border/40">
+                      <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-border/40">
                         <button
                           onClick={() => handleViewDetails(batch)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text text-xs font-mono transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-text-muted hover:text-text text-xs font-mono transition-all cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Details</span>
@@ -820,18 +824,18 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                           <button
                             onClick={() => handleExportCsv(batch)}
                             disabled={isActionLoading}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-accent text-xs font-mono transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-text-muted hover:text-accent text-xs font-mono transition-all cursor-pointer"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>CSV</span>
                           </button>
                         )}
 
-                        {(isPending || (isSuperAdmin && batch.status !== "PROCESSING")) && (
+                        {isPending && (
                           <button
                             onClick={() => handleStartEdit(batch)}
                             disabled={isActionLoading}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                             <span>Edit</span>
@@ -844,7 +848,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                               <button
                                 onClick={() => handleApprove(batch)}
                                 disabled={isActionLoading}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
                               >
                                 {isActionLoading ? (
                                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -862,7 +866,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                                   setRejectReason("");
                                 }}
                                 disabled={isActionLoading}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
                               >
                                 <XCircle className="w-3.5 h-3.5" />
                                 <span>{batch.status === "COMPLETED" ? "Revoke" : "Reject"}</span>
@@ -880,172 +884,235 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
         </div>
       </div>
 
-      {/* ================= DETAILS MODAL ================= */}
-      {selectedBatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-3xl bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
-              <div>
-                <div className="text-xs font-mono text-accent font-bold">
-                  Batch #{selectedBatch.batchId}
+      {/* ================= DETAILS MODAL (Viewport Constrained: Centered, Zero Outer-Scroll, Pinned Controls) ================= */}
+      {selectedBatch && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-hidden animate-fadeIn">
+          <div className="w-full max-w-4xl max-h-[90vh] sm:max-h-[92vh] bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
+            {/* Pinned Modal Header */}
+            <div className="p-3.5 sm:p-5 pb-3 border-b border-border/60 shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1 shadow-sm">
+                    <Award className="w-3 h-3" />
+                    <span>BATCH #{selectedBatch.batchId}</span>
+                  </div>
+                  <h2 className="text-base sm:text-xl font-display font-black uppercase text-text tracking-tight truncate">
+                    {selectedBatch.eventName}
+                  </h2>
                 </div>
-                <h3 className="text-lg font-display font-bold text-text uppercase mt-0.5">
-                  {selectedBatch.eventName}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleExportCsv(selectedBatch)}
-                  disabled={actionLoadingId === selectedBatch._id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
-                  title="Export issued certificates to CSV"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export CSV</span>
-                </button>
-                <button
-                  onClick={() => setSelectedBatch(null)}
-                  className="text-text-muted hover:text-text p-1.5 rounded-lg hover:bg-card-hover transition-colors cursor-pointer"
-                >
-                  ✕
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleExportCsv(selectedBatch)}
+                    disabled={actionLoadingId === selectedBatch._id}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:text-accent hover:bg-card-hover transition-colors cursor-pointer shadow-sm"
+                    title="Export issued certificates to CSV"
+                  >
+                    <Download className="w-3.5 h-3.5 text-accent" />
+                    <span>Export CSV</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedBatch(null)}
+                    className="p-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl border border-border/60 transition-colors cursor-pointer"
+                    aria-label="Close modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Batch Info Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 rounded-xl bg-card-hover/40 border border-border/60 text-xs font-mono">
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Status</span>
-                <div className="mt-1">{renderStatusBadge(selectedBatch.status, selectedBatch)}</div>
-              </div>
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Coordinator</span>
-                <span className="font-bold text-text mt-1 block truncate">{selectedBatch.coordinatorName}</span>
-              </div>
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Total Students</span>
-                <span className="font-bold text-text mt-1 block">{selectedBatch.studentCount}</span>
-              </div>
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Generated</span>
-                <span className="font-bold text-emerald-700 dark:text-emerald-400 mt-1 block">
-                  {selectedBatch.generatedCount ?? (selectedBatch.status === "COMPLETED" ? selectedBatch.studentCount : 0)} / {selectedBatch.studentCount}
-                </span>
-              </div>
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Failed</span>
-                <span className={`font-bold mt-1 block ${selectedBatch.failedCount > 0 ? "text-rose-500" : "text-text-muted"}`}>
-                  {selectedBatch.failedCount || 0}
-                </span>
-              </div>
-              <div>
-                <span className="text-text-muted block text-[10px] uppercase">Submitted By</span>
-                <span className="font-bold text-text mt-1 block truncate">{selectedBatch.submittedByName || "Admin"}</span>
-              </div>
-            </div>
-
-            {/* Signature Preview */}
-            {selectedBatch.signatureImage && (
-              <div className="p-3 rounded-xl bg-card border border-border flex items-center justify-between gap-4">
-                <span className="text-xs font-mono font-bold text-text uppercase">
-                  Coordinator Signature:
-                </span>
-                <img
-                  src={selectedBatch.signatureImage}
-                  alt="Signature"
-                  className="h-10 max-w-[160px] object-contain rounded bg-white/10 p-1 border border-border/50"
-                />
-              </div>
-            )}
-
-            {/* Student Search & List */}
-            <div className="flex-1 overflow-hidden flex flex-col space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-mono font-bold text-text uppercase">
-                  Student Roster ({selectedBatch.students?.length || selectedBatch.studentCount || 0})
-                </span>
-                <input
-                  type="text"
-                  value={studentSearch}
-                  onChange={(e) => setStudentSearch(e.target.value)}
-                  placeholder="Filter students in batch..."
-                  className="px-3 py-1.5 bg-card border border-border/80 rounded-lg text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                />
+            {/* Scrollable Internal Body (fits without outer window scroll) */}
+            <div className="p-3.5 sm:p-5 flex-1 overflow-y-auto space-y-3">
+              {/* Batch Info Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2.5 sm:p-3 rounded-xl bg-card-hover/40 border border-border/60 text-xs font-mono shrink-0">
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Status</span>
+                  <div className="mt-0.5">{renderStatusBadge(selectedBatch.status, selectedBatch)}</div>
+                </div>
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Coordinator</span>
+                  <span className="font-bold text-text mt-0.5 block truncate text-xs">{selectedBatch.coordinatorName}</span>
+                </div>
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Total Students</span>
+                  <span className="font-bold text-text mt-0.5 block text-xs">{selectedBatch.studentCount}</span>
+                </div>
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Generated</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400 mt-0.5 block text-xs">
+                    {selectedBatch.generatedCount ?? (selectedBatch.status === "COMPLETED" ? selectedBatch.studentCount : 0)} / {selectedBatch.studentCount}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Failed</span>
+                  <span className={`font-bold mt-0.5 block text-xs ${selectedBatch.failedCount > 0 ? "text-rose-500" : "text-text-muted"}`}>
+                    {selectedBatch.failedCount || 0}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-text-muted block text-[10px] uppercase font-bold">Submitted By</span>
+                  <span className="font-bold text-text mt-0.5 block truncate text-xs">{selectedBatch.submittedByName || "Admin"}</span>
+                </div>
               </div>
 
-              <div className="overflow-y-auto flex-1 rounded-xl border border-border/60 bg-card/60">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-card-hover/60 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0">
-                    <tr>
-                      <th className="p-3 pl-4">#</th>
-                      <th className="p-3">Student Name</th>
-                      <th className="p-3">Email Address</th>
-                      <th className="p-3 pr-4">Award / Position</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/30 font-mono">
-                    {(selectedBatch.students || [])
-                      .filter((s) => {
-                        if (!studentSearch.trim()) return true;
-                        const sq = studentSearch.toLowerCase();
-                        return (
-                          s.name.toLowerCase().includes(sq) ||
-                          s.email.toLowerCase().includes(sq) ||
-                          (s.position && s.position.toLowerCase().includes(sq))
-                        );
-                      })
-                      .map((student, idx) => (
-                        <tr key={idx} className="hover:bg-card-hover/40">
-                          <td className="p-3 pl-4 text-text-muted">{idx + 1}</td>
-                          <td className="p-3 font-sans font-bold text-text">
-                            <div className="flex items-center gap-2">
-                              <span>{student.name}</span>
+              {/* Signature Preview */}
+              {selectedBatch.signatureImage && (
+                <div className="p-2.5 sm:p-3 rounded-xl bg-card border border-border flex items-center justify-between gap-3 shrink-0">
+                  <span className="text-xs font-mono font-bold text-text uppercase">
+                    Coordinator Signature:
+                  </span>
+                  <img
+                    src={selectedBatch.signatureImage}
+                    alt="Signature"
+                    className="h-8 sm:h-9 max-w-[140px] sm:max-w-[160px] object-contain rounded bg-white/10 p-1 border border-border/50"
+                  />
+                </div>
+              )}
+
+              {/* Student Search & List */}
+              <div className="flex-1 flex flex-col space-y-2 min-h-[140px]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+                  <span className="text-xs font-mono font-bold text-text uppercase">
+                    Student Roster ({selectedBatch.students?.length || selectedBatch.studentCount || 0})
+                  </span>
+                  <input
+                    type="text"
+                    value={studentSearch}
+                    onChange={(e) => setStudentSearch(e.target.value)}
+                    placeholder="Filter students in batch..."
+                    className="w-full sm:w-auto px-3 py-1 bg-card border border-border/80 rounded-lg text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent placeholder:text-text-muted/60"
+                  />
+                </div>
+
+                {/* Roster Container */}
+                <div className="overflow-y-auto flex-1 rounded-xl border border-border/60 bg-card/60 max-h-[280px]">
+                  {(!selectedBatch.students || selectedBatch.students.length === 0) ? (
+                    <div className="p-6 text-center text-text-muted font-sans text-xs">
+                      No student records in this batch.
+                    </div>
+                  ) : (
+                    <>
+                      {/* Desktop / Tablet Table View */}
+                      <table className="hidden sm:table w-full text-left text-xs border-collapse">
+                        <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 backdrop-blur-sm z-10">
+                          <tr>
+                            <th className="p-2 pl-3.5 w-12">#</th>
+                            <th className="p-2">Student Name</th>
+                            <th className="p-2">Email Address</th>
+                            <th className="p-2 pr-3.5 text-right">Award / Position</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/30 font-mono">
+                          {selectedBatch.students
+                            .filter((s) => {
+                              if (!studentSearch.trim()) return true;
+                              const sq = studentSearch.toLowerCase();
+                              return (
+                                (s.name && s.name.toLowerCase().includes(sq)) ||
+                                (s.email && s.email.toLowerCase().includes(sq)) ||
+                                (s.position && s.position.toLowerCase().includes(sq))
+                              );
+                            })
+                            .map((student, idx) => (
+                              <tr key={idx} className="hover:bg-card-hover/40 transition-colors">
+                                <td className="p-2 pl-3.5 text-text-muted">{idx + 1}</td>
+                                <td className="p-2 font-sans font-bold text-text">
+                                  <div className="flex items-center gap-2">
+                                    <span>{student.name}</span>
+                                    {student.certificateId && (
+                                      <a
+                                        href={`/verify-certificate/${student.certificateId}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[10px] text-accent hover:underline inline-flex items-center gap-0.5 font-mono font-normal"
+                                        title="Verify certificate"
+                                      >
+                                        Verify ↗
+                                      </a>
+                                    )}
+                                  </div>
+                                  {student.certificateId && (
+                                    <span className="block font-mono text-[10px] text-accent font-normal mt-0.5">
+                                      #{student.certificateId}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="p-2 text-text-muted">{student.email}</td>
+                                <td className="p-2 pr-3.5 text-right">
+                                  <span className="inline-block px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
+                                    {student.position || "Participant"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+
+                      {/* Mobile Compact Cards View */}
+                      <div className="sm:hidden divide-y divide-border/30 font-mono">
+                        {selectedBatch.students
+                          .filter((s) => {
+                            if (!studentSearch.trim()) return true;
+                            const sq = studentSearch.toLowerCase();
+                            return (
+                              (s.name && s.name.toLowerCase().includes(sq)) ||
+                              (s.email && s.email.toLowerCase().includes(sq)) ||
+                              (s.position && s.position.toLowerCase().includes(sq))
+                            );
+                          })
+                          .map((student, idx) => (
+                            <div key={idx} className="p-2 space-y-1 hover:bg-card-hover/30">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="text-[10px] text-text-muted font-bold">#{idx + 1}</span>
+                                  <span className="font-sans font-bold text-text text-xs truncate">{student.name}</span>
+                                </div>
+                                <span className="shrink-0 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
+                                  {student.position || "Participant"}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between gap-2 text-[11px] text-text-muted">
+                                <span className="truncate">{student.email}</span>
+                                {student.certificateId && (
+                                  <a
+                                    href={`/verify-certificate/${student.certificateId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] text-accent hover:underline shrink-0"
+                                  >
+                                    Verify ↗
+                                  </a>
+                                )}
+                              </div>
                               {student.certificateId && (
-                                <a
-                                  href={`/verify-certificate/${student.certificateId}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[10px] text-accent hover:underline inline-flex items-center gap-0.5 font-mono font-normal"
-                                  title="Verify certificate"
-                                >
-                                  Verify ↗
-                                </a>
+                                <div className="text-[10px] text-accent/80">
+                                  #{student.certificateId}
+                                </div>
                               )}
                             </div>
-                            {student.certificateId && (
-                              <span className="block font-mono text-[10px] text-accent font-normal mt-0.5">
-                                #{student.certificateId}
-                              </span>
-                            )}
-                          </td>
-                          <td className="p-3 text-text-muted">{student.email}</td>
-                          <td className="p-3 pr-4">
-                            <span className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
-                              {student.position || "Participant"}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                          ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Modal Bottom Controls */}
-            <div className="border-t border-border/60 pt-4 flex flex-wrap items-center justify-between gap-3">
+            {/* Pinned Modal Footer */}
+            <div className="p-3 sm:p-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-2 shrink-0 bg-card/95">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSelectedBatch(null)}
-                  className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
                 >
                   Close
                 </button>
 
                 {/* Edit Batch & Roster button in details modal */}
-                {(selectedBatch.status === "PENDING_APPROVAL" || isSuperAdmin) && (
+                {selectedBatch.status === "PENDING_APPROVAL" && (
                   <button
                     onClick={() => handleStartEdit(selectedBatch)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all cursor-pointer shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all cursor-pointer shadow-sm"
                     title="Edit batch event metadata or modify student recipients"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -1062,7 +1129,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                         setRejectModalBatch(selectedBatch);
                         setRejectReason("");
                       }}
-                      className="px-4 py-2 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all cursor-pointer"
                     >
                       {selectedBatch.status === "COMPLETED" ? "Revoke & Delete Certificates" : "Reject"}
                     </button>
@@ -1071,7 +1138,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                     <button
                       onClick={() => handleApprove(selectedBatch)}
                       disabled={actionLoadingId === selectedBatch._id}
-                      className="px-5 py-2 rounded-xl bg-emerald-500 text-black font-mono font-bold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-lg shadow-emerald-500/20"
+                      className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl bg-emerald-500 text-black font-mono font-bold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-lg shadow-emerald-500/20"
                     >
                       Authorize & Generate Batch
                     </button>
@@ -1080,255 +1147,261 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ================= EDIT BATCH MODAL ================= */}
-      {editingBatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-4xl bg-card border border-border/90 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative max-h-[92vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
-              <div>
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 font-mono text-[10px] font-bold uppercase mb-1">
+      {/* ================= EDIT BATCH MODAL (Viewport Constrained: Centered, Zero Outer-Scroll, Pinned Controls) ================= */}
+      {editingBatch && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-hidden animate-fadeIn">
+          <div className="w-full max-w-4xl max-h-[90vh] sm:max-h-[92vh] bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
+            {/* Pinned Modal Header */}
+            <div className="p-3.5 sm:p-5 pb-3 border-b border-border/60 shrink-0 flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 font-mono text-[10px] font-bold uppercase mb-1 shadow-sm">
                   <Clock className="w-3 h-3" />
                   <span>PENDING APPROVAL • EDIT MODE</span>
                 </div>
-                <h3 className="text-lg font-display font-bold text-text uppercase">
-                  Edit Batch #{editingBatch.batchId}
-                </h3>
+                <h2 className="text-base sm:text-xl font-display font-black uppercase text-text tracking-tight truncate">
+                  EDIT BATCH #{editingBatch.batchId}
+                </h2>
               </div>
               <button
                 onClick={() => setEditingBatch(null)}
-                className="text-text-muted hover:text-text p-1.5 rounded-lg hover:bg-card-hover transition-colors cursor-pointer"
+                className="p-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl border border-border/60 transition-colors cursor-pointer shrink-0"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveEdit} className="flex-1 overflow-hidden flex flex-col space-y-5">
-              {/* Event Metadata Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs font-mono font-bold text-text uppercase block mb-1">
-                    Event Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.eventName}
-                    onChange={(e) => setEditForm({ ...editForm, eventName: e.target.value })}
-                    required
-                    className="w-full bg-card-hover border border-border rounded-xl p-2.5 text-xs font-sans text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono font-bold text-text uppercase block mb-1">
-                    Event Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={editForm.eventDate}
-                    onChange={(e) => setEditForm({ ...editForm, eventDate: e.target.value })}
-                    required
-                    className="w-full bg-card-hover border border-border rounded-xl p-2.5 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono font-bold text-text uppercase block mb-1">
-                    Coordinator Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.coordinatorName}
-                    onChange={(e) => setEditForm({ ...editForm, coordinatorName: e.target.value })}
-                    required
-                    className="w-full bg-card-hover border border-border rounded-xl p-2.5 text-xs font-sans text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-              </div>
-
-              {/* Signature Image Edit */}
-              <div className="p-3.5 rounded-xl bg-card-hover/40 border border-border/60 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {editFilePreview ? (
-                    <img
-                      src={editFilePreview}
-                      alt="Signature"
-                      className="h-10 max-w-[140px] object-contain rounded bg-white/10 p-1 border border-border"
-                    />
-                  ) : (
-                    <div className="h-10 w-24 rounded bg-card border border-border flex items-center justify-center text-[10px] text-text-muted">
-                      No Signature
-                    </div>
-                  )}
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSaveEdit} className="flex-1 overflow-hidden flex flex-col">
+              <div className="p-3.5 sm:p-5 flex-1 overflow-y-auto space-y-3.5">
+                {/* Event Metadata Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0">
                   <div>
-                    <span className="text-xs font-mono font-bold text-text block">
-                      Coordinator Signature
-                    </span>
-                    <span className="text-[10px] text-text-muted">
-                      Leave unchanged or upload a replacement signature image
-                    </span>
+                    <label className="text-[11px] font-mono font-bold text-text uppercase block mb-1">
+                      Event Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.eventName}
+                      onChange={(e) => setEditForm({ ...editForm, eventName: e.target.value })}
+                      required
+                      className="w-full bg-card-hover/60 border border-border/80 rounded-xl p-2.5 text-xs font-sans text-text focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono font-bold text-text uppercase block mb-1">
+                      Event Date *
+                    </label>
+                    <input
+                      type="date"
+                      value={editForm.eventDate}
+                      onChange={(e) => setEditForm({ ...editForm, eventDate: e.target.value })}
+                      required
+                      className="w-full bg-card-hover/60 border border-border/80 rounded-xl p-2.5 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono font-bold text-text uppercase block mb-1">
+                      Coordinator Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.coordinatorName}
+                      onChange={(e) => setEditForm({ ...editForm, coordinatorName: e.target.value })}
+                      required
+                      className="w-full bg-card-hover/60 border border-border/80 rounded-xl p-2.5 text-xs font-sans text-text focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                    />
                   </div>
                 </div>
 
-                <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-card-hover text-xs font-mono font-bold text-text cursor-pointer transition-colors">
-                  <ImageIcon className="w-3.5 h-3.5 text-accent" />
-                  <span>Replace Signature</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setEditForm({ ...editForm, signatureFile: file });
-                        setEditFilePreview(URL.createObjectURL(file));
-                      }
-                    }}
-                  />
-                </label>
-              </div>
+                {/* Signature Image Edit */}
+                <div className="p-2.5 sm:p-3 rounded-xl bg-card-hover/40 border border-border/60 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    {editFilePreview ? (
+                      <img
+                        src={editFilePreview}
+                        alt="Signature"
+                        className="h-8 max-w-[120px] object-contain rounded bg-white/10 p-1 border border-border"
+                      />
+                    ) : (
+                      <div className="h-8 w-20 rounded bg-card border border-border flex items-center justify-center text-[10px] text-text-muted">
+                        No Signature
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-xs font-mono font-bold text-text block">
+                        Coordinator Signature
+                      </span>
+                      <span className="text-[10px] text-text-muted">
+                        Leave unchanged or upload a replacement signature image
+                      </span>
+                    </div>
+                  </div>
 
-              {/* Student Roster Header & Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-text uppercase">
-                    Student Roster
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-mono text-[11px] font-bold">
-                    {editForm.students.length} Student(s)
-                  </span>
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-card-hover text-xs font-mono font-bold text-text cursor-pointer transition-colors shadow-sm">
+                    <ImageIcon className="w-3.5 h-3.5 text-accent" />
+                    <span>Replace Signature</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setEditForm({ ...editForm, signatureFile: file });
+                          setEditFilePreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                  </label>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept=".csv"
-                    ref={editCsvInputRef}
-                    onChange={handleEditCsvUpload}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => editCsvInputRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text hover:bg-card-hover text-xs font-mono transition-colors cursor-pointer"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Import CSV</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={downloadCertificateCsvTemplate}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-colors cursor-pointer"
-                    title="Download Sample CSV Template"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Template</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleAddEditStudent}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent text-[#111111] font-mono text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Student</span>
-                  </button>
-                </div>
-              </div>
+                {/* Student Roster Header & Controls */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/40 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-text uppercase">
+                      Student Roster
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-mono text-[11px] font-bold">
+                      {editForm.students.length} Student(s)
+                    </span>
+                  </div>
 
-              {/* Student Rows Table */}
-              <div className="flex-1 overflow-x-auto overflow-y-auto rounded-xl border border-border/60 bg-card/40 max-h-[320px]">
-                <table className="w-full text-left text-xs border-collapse min-w-[560px]">
-                  <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 z-10 backdrop-blur-sm">
-                    <tr>
-                      <th className="p-2.5 pl-3 w-10">#</th>
-                      <th className="p-2.5">Student Name *</th>
-                      <th className="p-2.5">Email Address *</th>
-                      <th className="p-2.5 w-44">Award / Position</th>
-                      <th className="p-2.5 pr-3 text-right w-12">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/30">
-                    {editForm.students.map((student, idx) => (
-                      <tr key={idx} className="hover:bg-card-hover/30">
-                        <td className="p-2.5 pl-3 font-mono text-text-muted text-[11px]">
-                          {idx + 1}
-                        </td>
-                        <td className="p-2.5">
-                          <input
-                            type="text"
-                            value={student.name}
-                            onChange={(e) => handleEditStudentChange(idx, "name", e.target.value)}
-                            placeholder="Student Name"
-                            required
-                            className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                          />
-                        </td>
-                        <td className="p-2.5">
-                          <input
-                            type="email"
-                            value={student.email}
-                            onChange={(e) => handleEditStudentChange(idx, "email", e.target.value)}
-                            placeholder="student@example.com"
-                            required
-                            className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                          />
-                        </td>
-                        <td className="p-2.5">
-                          <select
-                            value={student.position || "Participant"}
-                            onChange={(e) => handleEditStudentChange(idx, "position", e.target.value)}
-                            className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                          >
-                            <option value="Participant">Participant</option>
-                            <option value="Winner">Winner</option>
-                            <option value="Runner Up">Runner Up</option>
-                            <option value="1st Runner-up">1st Runner-up</option>
-                            <option value="2nd Runner-up">2nd Runner-up</option>
-                            <option value="Volunteer">Volunteer</option>
-                            <option value="Organizer">Organizer</option>
-                          </select>
-                        </td>
-                        <td className="p-2.5 pr-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveEditStudent(idx)}
-                            disabled={editForm.students.length <= 1}
-                            className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                            title="Remove student row"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="file"
+                      accept=".csv"
+                      ref={editCsvInputRef}
+                      onChange={handleEditCsvUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => editCsvInputRef.current?.click()}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-card border border-border text-text hover:bg-card-hover text-xs font-mono transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-3 h-3" />
+                      <span>CSV</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={downloadCertificateCsvTemplate}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-card border border-border text-text-muted hover:text-text hover:bg-card-hover text-xs font-mono transition-colors cursor-pointer"
+                      title="Download Sample CSV Template"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span className="hidden sm:inline">Template</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddEditStudent}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent text-[#111111] font-mono text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Add Student</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Student Rows Table */}
+                <div className="rounded-xl border border-border/60 bg-card/40 max-h-[250px] overflow-y-auto overflow-x-auto flex-1">
+                  <table className="w-full text-left text-xs border-collapse min-w-[500px]">
+                    <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 z-10 backdrop-blur-sm">
+                      <tr>
+                        <th className="p-2 pl-3 w-10">#</th>
+                        <th className="p-2">Student Name *</th>
+                        <th className="p-2">Email Address *</th>
+                        <th className="p-2 w-40">Award / Position</th>
+                        <th className="p-2 pr-3 text-right w-10"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {editForm.students.map((student, idx) => (
+                        <tr key={idx} className="hover:bg-card-hover/30">
+                          <td className="p-1.5 pl-3 font-mono text-text-muted text-[11px]">
+                            {idx + 1}
+                          </td>
+                          <td className="p-1.5">
+                            <input
+                              type="text"
+                              value={student.name}
+                              onChange={(e) => handleEditStudentChange(idx, "name", e.target.value)}
+                              placeholder="Student Name"
+                              required
+                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
+                            />
+                          </td>
+                          <td className="p-1.5">
+                            <input
+                              type="email"
+                              value={student.email}
+                              onChange={(e) => handleEditStudentChange(idx, "email", e.target.value)}
+                              placeholder="student@example.com"
+                              required
+                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
+                            />
+                          </td>
+                          <td className="p-1.5">
+                            <select
+                              value={student.position || "Participant"}
+                              onChange={(e) => handleEditStudentChange(idx, "position", e.target.value)}
+                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
+                            >
+                              <option value="Participant">Participant</option>
+                              <option value="Winner">Winner</option>
+                              <option value="Runner Up">Runner Up</option>
+                              <option value="1st Runner-up">1st Runner-up</option>
+                              <option value="2nd Runner-up">2nd Runner-up</option>
+                              <option value="Volunteer">Volunteer</option>
+                              <option value="Organizer">Organizer</option>
+                            </select>
+                          </td>
+                          <td className="p-1.5 pr-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEditStudent(idx)}
+                              disabled={editForm.students.length <= 1}
+                              className="p-1 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                              title="Remove student row"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              {/* Bottom Actions */}
-              <div className="border-t border-border/60 pt-4 flex items-center justify-end gap-3">
+              {/* Pinned Form Footer */}
+              <div className="p-3 sm:p-4 border-t border-border/60 flex items-center justify-end gap-2.5 shrink-0 bg-card/95">
                 <button
                   type="button"
                   onClick={() => setEditingBatch(null)}
-                  className="px-5 py-2.5 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-accent text-[#111111] font-mono font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer shadow-lg shadow-accent/20"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-accent text-[#111111] font-mono font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer shadow-lg shadow-accent/20"
                 >
                   {editLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       <span>Saving Changes...</span>
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4" />
+                      <Save className="w-3.5 h-3.5" />
                       <span>Save Changes</span>
                     </>
                   )}
@@ -1336,64 +1409,69 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ================= REJECT REASON MODAL ================= */}
-      {rejectModalBatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-md bg-card border border-border/90 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-display font-bold uppercase">
-                <XCircle className="w-5 h-5" />
-                <span>Reject Certificate Batch</span>
-              </div>
-              <button
-                onClick={() => setRejectModalBatch(null)}
-                className="text-text-muted hover:text-text cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-xs text-text-muted">
-              Rejecting batch <span className="font-mono font-bold text-text">#{rejectModalBatch.batchId}</span> for{" "}
-              <span className="font-bold text-text">{rejectModalBatch.eventName}</span> will suppress background queue processing and permanently delete all generated certificates for this batch from the database.
-            </p>
-
-            <form onSubmit={handleConfirmReject} className="space-y-4">
-              <div>
-                <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block mb-1.5">
-                  Rejection Reason (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder="e.g., Signature image resolution is too low, or event date is incorrect..."
-                  className="w-full bg-card-hover border border-border rounded-xl p-3 text-xs font-mono text-text focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
+      {/* ================= REJECT REASON MODAL (Viewport Constrained: Centered, Zero Outer-Scroll) ================= */}
+      {rejectModalBatch && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-fadeIn">
+          <div className="w-full max-w-md max-h-[90vh] bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden">
+            <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto">
+              <div className="border-b border-border/60 pb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-display font-bold uppercase text-base sm:text-lg min-w-0 truncate">
+                  <XCircle className="w-5 h-5 shrink-0" />
+                  <span className="truncate">Reject Certificate Batch</span>
+                </div>
                 <button
-                  type="button"
                   onClick={() => setRejectModalBatch(null)}
-                  className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
+                  className="p-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl border border-border/60 transition-colors cursor-pointer shrink-0"
+                  aria-label="Close modal"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoadingId === rejectModalBatch._id}
-                  className="px-5 py-2 rounded-xl bg-rose-500 text-white font-mono font-bold text-xs hover:bg-rose-600 transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-rose-500/20"
-                >
-                  {actionLoadingId === rejectModalBatch._id ? "Rejecting..." : "Confirm Reject"}
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
+
+              <p className="text-xs text-text-muted">
+                Rejecting batch <span className="font-mono font-bold text-text">#{rejectModalBatch.batchId}</span> for{" "}
+                <span className="font-bold text-text">{rejectModalBatch.eventName}</span> will suppress background queue processing and delete unverified certificates for this batch.
+              </p>
+
+              <form onSubmit={handleConfirmReject} className="space-y-3.5">
+                <div>
+                  <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block mb-1">
+                    Rejection Reason (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="e.g., Signature image resolution is too low, or event date is incorrect..."
+                    className="w-full bg-card-hover/60 border border-border/80 rounded-xl p-2.5 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent transition-all resize-none"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/40">
+                  <button
+                    type="button"
+                    onClick={() => setRejectModalBatch(null)}
+                    className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-mono font-bold text-text hover:bg-card-hover transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={actionLoadingId === rejectModalBatch._id}
+                    className="px-5 py-2 rounded-xl bg-rose-500 text-white font-mono font-bold text-xs hover:bg-rose-600 transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-rose-500/20"
+                  >
+                    {actionLoadingId === rejectModalBatch._id ? "Rejecting..." : "Confirm Reject"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

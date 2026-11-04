@@ -216,6 +216,47 @@
   }
 }
 
+
+@layer base {
+  /* Fluid typography and UI scaling based on viewport width */
+  :root {
+    --fluid-scale: clamp(0.875rem, 0.8rem + 0.35vw, 1.0625rem);
+  }
+
+  html {
+    font-size: var(--fluid-scale);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Smooth fluid headings across devices */
+  h1 {
+    font-size: clamp(1.5rem, 1.15rem + 1.6vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-size: clamp(1.25rem, 1.05rem + 1.1vw, 2rem);
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.5rem);
+    line-height: 1.25;
+  }
+
+  /* Responsive interactive element min-touch sizes */
+  button, input, select, textarea {
+    font-size: inherit;
+  }
+
+  /* Responsive image & media scaling */
+  img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 @layer utilities {
   .ambient-glow {
     position: absolute;

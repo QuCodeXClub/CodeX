@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Search,
@@ -526,21 +527,26 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
   );
 
   if (isModal) {
-    return (
-      <div className="fixed inset-0 z-50 bg-bg/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-fadeIn">
-        <div className="bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto flex flex-col p-4 sm:p-6 space-y-4">
-          <div className="flex justify-between items-center pb-3 border-b border-border/60 gap-3">
-            <h2 className="text-base sm:text-lg font-bold text-text uppercase flex items-center gap-2 min-w-0 truncate">
-              <Award className="w-5 h-5 text-teal-400 shrink-0" />
-              <span className="truncate">Issued Certificates Archive</span>
+    return createPortal(
+      <div className="fixed inset-0 z-[99999] bg-panel/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-hidden animate-fadeIn">
+        <div className="w-full max-w-6xl max-h-[90vh] sm:max-h-[92vh] bg-card/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl relative flex flex-col overflow-hidden p-4 sm:p-6 md:p-8 space-y-4">
+          <div className="flex justify-between items-center pb-3 border-b border-border/60 gap-3 shrink-0">
+            <h2 className="text-xl sm:text-2xl font-display font-black text-text uppercase flex items-center gap-2 min-w-0 truncate tracking-tight">
+              <Award className="w-6 h-6 text-teal-400 shrink-0" />
+              <span className="truncate">ISSUED CERTIFICATES ARCHIVE</span>
             </h2>
-            <button onClick={onClose} className="p-2 rounded-xl text-text-muted hover:text-text cursor-pointer shrink-0">
+            <button
+              onClick={onClose}
+              className="p-1.5 text-text-muted hover:text-text hover:bg-card-hover rounded-xl border border-border/60 transition-colors cursor-pointer shrink-0"
+              aria-label="Close modal"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
           {containerContent}
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
