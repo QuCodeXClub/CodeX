@@ -497,17 +497,19 @@ export default function ManageAdmins() {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => openEditModal(admin)}
-                              className="p-2 rounded-xl text-text-muted hover:text-accent hover:bg-card-hover border border-transparent hover:border-border/80 transition-all cursor-pointer"
+                              className="p-2 rounded-xl bg-card border border-border/70 text-text hover:text-accent hover:bg-card-hover hover:border-accent/40 transition-all cursor-pointer shadow-sm"
                               title="Edit Credentials"
+                              aria-label="Edit Admin"
                             >
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="w-4 h-4 shrink-0 text-accent" />
                             </button>
                             <button
                               onClick={() => openDeleteModal(admin)}
-                              className="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 border border-transparent hover:border-danger/30 transition-all cursor-pointer"
+                              className="p-2 rounded-xl bg-card border border-border/70 text-text hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer shadow-sm"
                               title="Remove Admin Account"
+                              aria-label="Remove Admin"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4 shrink-0 text-rose-500" />
                             </button>
                           </div>
                         </td>
@@ -580,15 +582,15 @@ export default function ManageAdmins() {
                     <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/30">
                       <button
                         onClick={() => openEditModal(admin)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card text-text-muted hover:text-accent transition-all text-xs font-mono"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border/70 bg-card text-text hover:text-accent transition-all text-xs font-mono shadow-sm"
                       >
-                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                        <Edit2 className="w-3.5 h-3.5 shrink-0 text-accent" /> Edit
                       </button>
                       <button
                         onClick={() => openDeleteModal(admin)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 transition-all text-xs font-mono"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all text-xs font-mono shadow-sm"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                        <Trash2 className="w-3.5 h-3.5 shrink-0" /> Remove
                       </button>
                     </div>
                   </div>

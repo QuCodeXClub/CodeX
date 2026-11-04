@@ -251,7 +251,7 @@
   }
 
   /* Responsive image & media scaling */
-  img, svg, video, canvas, audio, iframe, embed, object {
+  img, video, canvas, audio, iframe, embed, object {
     max-width: 100%;
     height: auto;
   }
