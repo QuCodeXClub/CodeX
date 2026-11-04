@@ -262,9 +262,9 @@ export default function ManageAdmins() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full flex flex-col space-y-6">
+    <div className="p-3.5 sm:p-6 lg:p-8 xl:p-10 font-sans text-text min-h-full flex flex-col space-y-5 sm:space-y-6 max-w-[1600px] mx-auto w-full">
       {/* Header Section */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-6 shrink-0">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5 sm:pb-6 shrink-0">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-400 font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
             <ShieldAlert className="w-3.5 h-3.5" />
@@ -299,7 +299,7 @@ export default function ManageAdmins() {
       </header>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {/* Metric 1 */}
         <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl p-5 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
@@ -319,22 +319,6 @@ export default function ManageAdmins() {
           <div>
             <div className="text-xs font-mono font-bold text-text-muted uppercase">Active Sessions</div>
             <div className="text-2xl font-display font-black text-emerald-400 mt-0.5">{activeSessionsTotal}</div>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="bg-card/85 backdrop-blur-xl border border-border/80 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 shrink-0">
-            <Sparkles className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-xs font-mono font-bold text-text-muted uppercase">Root Security Mode</div>
-            <div className="mt-1">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 shadow-sm shadow-fuchsia-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
-                ROOT CONTROL • SUPER ADMIN
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -617,9 +601,9 @@ export default function ManageAdmins() {
 
       {/* ================= ADD ADMIN MODAL ================= */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md animate-fadeIn overflow-y-auto pt-16 sm:pt-4">
+          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto">
+            <div className="p-4 sm:p-6 border-b border-border/60 flex items-center justify-between shrink-0 bg-card">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
                   <UserPlus className="w-5 h-5" />
@@ -641,7 +625,7 @@ export default function ManageAdmins() {
               </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} className="space-y-4">
+            <form onSubmit={handleAddSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {/* Full Name */}
               <div>
                 <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block mb-1.5">
@@ -760,9 +744,9 @@ export default function ManageAdmins() {
 
       {/* ================= EDIT ADMIN MODAL ================= */}
       {showEditModal && selectedAdmin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md animate-fadeIn overflow-y-auto pt-16 sm:pt-4">
+          <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto">
+            <div className="p-4 sm:p-6 border-b border-border/60 flex items-center justify-between shrink-0 bg-card">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
                   <Edit2 className="w-5 h-5" />
@@ -784,7 +768,7 @@ export default function ManageAdmins() {
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-4">
+            <form onSubmit={handleEditSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {/* Full Name */}
               <div>
                 <label className="text-xs font-mono font-bold text-text uppercase tracking-wider block mb-1.5">

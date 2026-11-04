@@ -3,19 +3,19 @@ import { Link } from "react-router-dom";
 
 export default function RecentRegistrations({ metrics, recentLogs }) {
   return (
-    <div className="bg-card/85 backdrop-blur-xl rounded-2xl p-6 border border-border/80 shadow-lg flex flex-col h-[320px]">
-      <div className="flex items-center justify-between mb-5 shrink-0">
-        <h3 className="font-display font-bold text-text uppercase tracking-wide text-sm">
+    <div className="bg-card/85 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-border/80 shadow-lg flex flex-col min-h-[300px] h-[320px]">
+      <div className="flex items-center justify-between mb-4 sm:mb-5 shrink-0 gap-2">
+        <h3 className="font-display font-bold text-text uppercase tracking-wide text-xs sm:text-sm truncate">
           RECENT <span className="text-accent">REGISTRATIONS</span>
         </h3>
         <Link
           to="/admin/registrations"
-          className="text-xs font-mono font-semibold text-accent hover:underline uppercase tracking-wider"
+          className="text-[11px] sm:text-xs font-mono font-semibold text-accent hover:underline uppercase tracking-wider shrink-0"
         >
           View All &rarr;
         </Link>
       </div>
-      <div className="space-y-3.5 overflow-y-auto pr-2">
+      <div className="space-y-2.5 sm:space-y-3.5 overflow-y-auto pr-1 sm:pr-2 flex-1">
         {metrics.loading ? (
           <p className="text-xs font-mono text-text-muted">Loading activity...</p>
         ) : recentLogs.length === 0 ? (
@@ -24,7 +24,7 @@ export default function RecentRegistrations({ metrics, recentLogs }) {
           </p>
         ) : (
           recentLogs.map((log) => (
-            <div key={log._id} className="flex gap-3 items-start p-2.5 rounded-xl bg-card-hover/40 border border-border/40 hover:border-accent/30 transition-all">
+            <div key={log._id} className="flex gap-2.5 sm:gap-3 items-start p-2.5 rounded-xl bg-card-hover/40 border border-border/40 hover:border-accent/30 transition-all">
               <div
                 className={`mt-1.5 w-2 h-2 rounded-full shrink-0 shadow-sm ${
                   log.status === "APPROVED"

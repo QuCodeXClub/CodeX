@@ -344,15 +344,15 @@ export default function Registrations() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 font-sans text-text min-h-full">
+    <div className="p-3.5 sm:p-6 lg:p-8 xl:p-10 font-sans text-text min-h-full max-w-[1600px] mx-auto w-full">
       {/* Header */}
-      <header className="mb-8 flex flex-col items-start md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-6">
+      <header className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-5 sm:pb-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
             <FileText className="w-3.5 h-3.5" />
             <span>APPLICANT REGISTRY</span>
           </div>
-          <h1 className="text-3xl font-display font-black text-text uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-display font-black text-text uppercase tracking-tight">
             REGISTRATION <span className="text-accent">DATABASE</span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">

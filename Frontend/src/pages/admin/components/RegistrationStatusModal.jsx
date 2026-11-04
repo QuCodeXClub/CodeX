@@ -36,10 +36,10 @@ export default function RegistrationStatusModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-card border border-border/80 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto pt-16 sm:pt-4">
+      <div className="bg-card border border-border/80 rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-border-soft flex items-center justify-between bg-card-hover/40">
+        <div className="p-4 sm:p-6 border-b border-border-soft flex items-center justify-between bg-card-hover/40 shrink-0">
           <div className="flex items-center gap-3">
             <div
               className={`p-2.5 rounded-xl border ${
@@ -65,7 +65,7 @@ export default function RegistrationStatusModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 overflow-y-auto">
           {error && (
             <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs font-mono">
               {error}

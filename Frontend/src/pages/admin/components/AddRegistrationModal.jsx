@@ -22,9 +22,9 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/50 backdrop-blur-sm">
-      <div className="bg-card rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-border-soft flex items-center justify-between sticky top-0 bg-card z-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-bg/80 backdrop-blur-md overflow-y-auto pt-16 sm:pt-4">
+      <div className="bg-card border border-border/90 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden my-auto">
+        <div className="p-4 sm:p-6 border-b border-border-soft flex items-center justify-between sticky top-0 bg-card z-10">
           <h2 className="text-xl font-bold text-text">
             Add Student (Cash)
           </h2>
@@ -38,7 +38,7 @@ export default function AddRegistrationModal({ onClose, onSubmit }) {
 
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
-          className="p-6 space-y-4"
+          className="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Student Name */}
