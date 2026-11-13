@@ -295,6 +295,41 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       return;
     }
 
+    // Check for duplicate emails / conflicting names: Halt update if conflicts exist
+    const emailMap = new Map();
+    const conflictList = [];
+
+    for (let i = 0; i < validStudents.length; i++) {
+      const s = validStudents[i];
+      const email = s.email.trim().toLowerCase();
+      const name = s.name.trim();
+
+      if (emailMap.has(email)) {
+        const existing = emailMap.get(email);
+        if (existing.name.toLowerCase() !== name.toLowerCase()) {
+          conflictList.push(
+            `Email "${email}" is assigned to conflicting names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+          );
+        } else {
+          conflictList.push(
+            `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+          );
+        }
+      } else {
+        emailMap.set(email, { name, index: i });
+      }
+    }
+
+    if (conflictList.length > 0) {
+      const detailList = conflictList.slice(0, 4).map((c) => `• ${c}`).join('\n');
+      const more = conflictList.length > 4 ? `\n...and ${conflictList.length - 4} more conflict(s).` : '';
+      setFeedback({
+        type: "error",
+        text: `Cannot update batch due to duplicate email conflict:\n${detailList}${more}\n\nEach student must have a unique email address.`,
+      });
+      return;
+    }
+
     setEditLoading(true);
     try {
       const submitData = new FormData();
@@ -499,11 +534,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       {/* Feedback banner */}
       {feedback.text && (
         <div
-          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${
-            feedback.type === "success"
+          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${feedback.type === "success"
               ? "bg-accent/15 text-accent border-accent/40"
               : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/40"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === "success" ? (
@@ -596,11 +630,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                  statusFilter === st
+                className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${statusFilter === st
                     ? "bg-accent text-[#111111] shadow-sm shadow-accent/20"
                     : "bg-card hover:bg-card-hover border border-border/80 text-text-muted hover:text-text"
-                }`}
+                  }`}
               >
                 {st === "ALL"
                   ? "All Batches"

@@ -160,16 +160,9 @@ export default function BulkCertificates() {
             append(students);
           }
 
-          let msg = `Successfully imported ${students.length} unique student(s) from CSV.`;
-          const details = [];
-          if (duplicateCount > 0) {
-            details.push(`${duplicateCount} duplicate email(s) deduplicated`);
-          }
+          let msg = `Successfully imported ${students.length} student(s) from CSV.`;
           if (skippedCount > 0) {
-            details.push(`${skippedCount} blank/invalid row(s) skipped`);
-          }
-          if (details.length > 0) {
-            msg += ` (${details.join(", ")}).`;
+            msg += ` (${skippedCount} blank/invalid row(s) skipped).`;
           }
           dispatch(setSuccess(msg));
         } catch (err) {
@@ -210,6 +203,43 @@ export default function BulkCertificates() {
 
       if (validStudents.length === 0) {
         dispatch(setError("Please provide at least one valid student."));
+        setLoading(false);
+        return;
+      }
+
+      // Check for duplicate emails / conflicting names in the roster: Halt batch if conflicts exist
+      const emailMap = new Map();
+      const conflictList = [];
+
+      for (let i = 0; i < validStudents.length; i++) {
+        const s = validStudents[i];
+        const email = s.email.trim().toLowerCase();
+        const name = s.name.trim();
+
+        if (emailMap.has(email)) {
+          const existing = emailMap.get(email);
+          if (existing.name.toLowerCase() !== name.toLowerCase()) {
+            conflictList.push(
+              `Email "${email}" is assigned to conflicting names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+            );
+          } else {
+            conflictList.push(
+              `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+            );
+          }
+        } else {
+          emailMap.set(email, { name, index: i });
+        }
+      }
+
+      if (conflictList.length > 0) {
+        const detailList = conflictList.slice(0, 4).map((c) => `• ${c}`).join('\n');
+        const more = conflictList.length > 4 ? `\n...and ${conflictList.length - 4} more conflict(s).` : '';
+        dispatch(
+          setError(
+            `Cannot process batch due to duplicate email conflict:\n${detailList}${more}\n\nEach student must have a unique email address.`
+          )
+        );
         setLoading(false);
         return;
       }

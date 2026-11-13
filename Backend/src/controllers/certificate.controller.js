@@ -44,22 +44,50 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     finalSignatureUrl = signatureImage.secure_url || signatureImage.url;
   }
 
-  // Deduplicate students by normalized email to prevent duplicate jobs and race conditions
-  const seenEmails = new Set();
-  const validStudents = [];
-  for (const s of (students || [])) {
-    if (s && s.name && s.email) {
+  // Validate duplicate emails / name conflicts: Halt batch processing if duplicate emails are present
+  const emailMap = new Map();
+  const duplicateErrors = [];
+
+  for (let i = 0; i < (students || []).length; i++) {
+    const s = students[i];
+    if (s && s.email) {
       const email = s.email.trim().toLowerCase();
-      if (!seenEmails.has(email)) {
-        seenEmails.add(email);
-        validStudents.push({
-          name: s.name.trim(),
-          email,
-          position: s.position?.trim() || 'Participant',
-        });
+      const name = (s.name || '').trim();
+
+      if (emailMap.has(email)) {
+        const existing = emailMap.get(email);
+        if (existing.name.toLowerCase() !== name.toLowerCase()) {
+          duplicateErrors.push(
+            `Email "${email}" is assigned to conflicting student names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+          );
+        } else {
+          duplicateErrors.push(
+            `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+          );
+        }
+      } else {
+        emailMap.set(email, { name, index: i });
       }
     }
   }
+
+  if (duplicateErrors.length > 0) {
+    const detailList = duplicateErrors.slice(0, 5).map((err) => `• ${err}`).join('\n');
+    const extraCount = duplicateErrors.length > 5 ? `\n...and ${duplicateErrors.length - 5} more conflict(s).` : '';
+    throw new ApiError(
+      400,
+      `Cannot process certificate batch due to duplicate email conflict:\n${detailList}${extraCount}\n\nEach recipient must have a unique email address. Please resolve these entries in your CSV/roster before submitting.`
+    );
+  }
+
+  const validStudents = Array.from(emailMap.entries()).map(([email, info]) => {
+    const original = students[info.index];
+    return {
+      name: info.name,
+      email,
+      position: original.position?.trim() || 'Participant',
+    };
+  });
 
   if (validStudents.length === 0) {
     throw new ApiError(400, 'No valid student records provided');
@@ -496,21 +524,49 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
     }
 
     if (Array.isArray(rawStudents)) {
-      const seenEmails = new Set();
-      validStudents = [];
-      for (const s of rawStudents) {
-        if (s && s.name && s.email) {
+      const emailMap = new Map();
+      const duplicateErrors = [];
+
+      for (let i = 0; i < rawStudents.length; i++) {
+        const s = rawStudents[i];
+        if (s && s.email) {
           const email = s.email.trim().toLowerCase();
-          if (!seenEmails.has(email)) {
-            seenEmails.add(email);
-            validStudents.push({
-              name: s.name.trim(),
-              email,
-              position: s.position?.trim() || 'Participant',
-            });
+          const name = (s.name || '').trim();
+
+          if (emailMap.has(email)) {
+            const existing = emailMap.get(email);
+            if (existing.name.toLowerCase() !== name.toLowerCase()) {
+              duplicateErrors.push(
+                `Email "${email}" is assigned to conflicting student names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+              );
+            } else {
+              duplicateErrors.push(
+                `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+              );
+            }
+          } else {
+            emailMap.set(email, { name, index: i });
           }
         }
       }
+
+      if (duplicateErrors.length > 0) {
+        const detailList = duplicateErrors.slice(0, 5).map((err) => `• ${err}`).join('\n');
+        const extraCount = duplicateErrors.length > 5 ? `\n...and ${duplicateErrors.length - 5} more conflict(s).` : '';
+        throw new ApiError(
+          400,
+          `Cannot process batch update due to duplicate email conflict:\n${detailList}${extraCount}\n\nEach recipient must have a unique email address.`
+        );
+      }
+
+      validStudents = Array.from(emailMap.entries()).map(([email, info]) => {
+        const original = rawStudents[info.index];
+        return {
+          name: info.name,
+          email,
+          position: original.position?.trim() || 'Participant',
+        };
+      });
 
       if (validStudents.length === 0) {
         throw new ApiError(400, 'A certificate batch must contain at least one valid student.');
