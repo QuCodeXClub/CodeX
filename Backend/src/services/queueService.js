@@ -410,6 +410,20 @@ class QueueService {
       cert = await Certificate.findOne({ batchId, studentEmail: normalizedEmail });
     }
 
+    if (cert && cert.isDeleted) {
+      // Revive and update soft-deleted certificate if batch is regenerated/reapproved
+      cert.isDeleted = false;
+      cert.deletedAt = null;
+      cert.deleteReason = '';
+      cert.studentName = student.name.trim();
+      cert.eventName = eventName;
+      cert.eventDate = eventDate;
+      cert.coordinatorName = coordinatorName;
+      cert.signatureImage = finalSignatureUrl;
+      cert.position = student.position?.trim() || 'Participant';
+      await cert.save();
+    }
+
     let certificateId = cert?.certificateId;
     if (!certificateId) {
       certificateId = crypto.randomBytes(8).toString('hex');
@@ -482,10 +496,14 @@ class QueueService {
         });
 
         if (remainingJobs === 0) {
-          const currentBatch = await CertificateBatch.findById(batchId).select('generatedCount studentCount');
-          const finalStatus = (currentBatch?.generatedCount || 0) > 0 ? 'COMPLETED' : 'FAILED';
+          const actualGeneratedCount = await Certificate.countDocuments({
+            batchId,
+            isDeleted: { $ne: true },
+          });
+          const finalStatus = actualGeneratedCount > 0 ? 'COMPLETED' : 'FAILED';
           await CertificateBatch.findByIdAndUpdate(batchId, {
             status: finalStatus,
+            generatedCount: actualGeneratedCount,
             completedAt: new Date(),
           });
         }

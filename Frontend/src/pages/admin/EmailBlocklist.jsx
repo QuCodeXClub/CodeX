@@ -14,8 +14,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { adminService } from "../../services/adminService";
+import { useConfirm } from "../../context/ConfirmContext";
 
 export default function EmailBlocklist() {
+  const confirm = useConfirm();
   const [items, setItems] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -101,7 +103,14 @@ export default function EmailBlocklist() {
   };
 
   const handleUnblock = async (id, email) => {
-    if (!window.confirm(`Are you sure you want to unblock ${email}?`)) return;
+    const isConfirmed = await confirm({
+      title: "Unblock Email Address",
+      message: `Are you sure you want to remove ${email} from the suppression blocklist? The platform will resume delivering transactional emails to this address.`,
+      confirmText: "Unblock Address",
+      cancelText: "Keep Blocked",
+      type: "warning",
+    });
+    if (!isConfirmed) return;
 
     setActionLoading(true);
     setMessage({ type: "", text: "" });
