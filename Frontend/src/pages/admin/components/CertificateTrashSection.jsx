@@ -43,16 +43,17 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
         limit: 15,
         search: search.trim(),
       });
-      if (res.data?.data) {
-        setCertificates(res.data.data.certificates || []);
-        if (res.data.data.pagination) {
-          setPagination(res.data.data.pagination);
+      const payload = res?.data || res;
+      if (payload) {
+        setCertificates(payload.certificates || []);
+        if (payload.pagination) {
+          setPagination(payload.pagination);
         }
       }
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || "Failed to fetch trash certificates.",
+        text: err?.response?.data?.message || err?.message || "Failed to fetch trash certificates.",
       });
     } finally {
       setLoading(false);
@@ -70,13 +71,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
       const res = await certificateService.restoreCertificate(cert._id);
       setFeedback({
         type: "success",
-        text: res.data?.message || `Certificate #${cert.certificateId} restored successfully!`,
+        text: res?.message || res?.data?.message || `Certificate #${cert.certificateId} restored successfully!`,
       });
       fetchTrash();
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || "Failed to restore certificate.",
+        text: err?.response?.data?.message || err?.message || "Failed to restore certificate.",
       });
     } finally {
       setActionLoadingId(null);
@@ -95,13 +96,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
       const res = await certificateService.permanentlyDeleteCertificate(cert._id);
       setFeedback({
         type: "success",
-        text: res.data?.message || `Certificate #${cert.certificateId} permanently deleted.`,
+        text: res?.message || res?.data?.message || `Certificate #${cert.certificateId} permanently deleted.`,
       });
       fetchTrash();
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || "Failed to permanently delete certificate.",
+        text: err?.response?.data?.message || err?.message || "Failed to permanently delete certificate.",
       });
     } finally {
       setActionLoadingId(null);
@@ -120,13 +121,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
       const res = await certificateService.restoreAllCertificates();
       setFeedback({
         type: "success",
-        text: res.data?.message || "All certificates restored successfully!",
+        text: res?.message || res?.data?.message || "All certificates restored successfully!",
       });
       fetchTrash();
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || "Failed to restore all certificates.",
+        text: err?.response?.data?.message || err?.message || "Failed to restore all certificates.",
       });
     } finally {
       setBulkActionLoading(false);
@@ -145,13 +146,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
       const res = await certificateService.clearCertificateTrash();
       setFeedback({
         type: "success",
-        text: res.data?.message || "Certificate trash cleared successfully.",
+        text: res?.message || res?.data?.message || "Certificate trash cleared successfully.",
       });
       fetchTrash();
     } catch (err) {
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || "Failed to empty trash.",
+        text: err?.response?.data?.message || err?.message || "Failed to empty trash.",
       });
     } finally {
       setBulkActionLoading(false);

@@ -496,10 +496,14 @@ class QueueService {
         });
 
         if (remainingJobs === 0) {
-          const currentBatch = await CertificateBatch.findById(batchId).select('generatedCount studentCount');
-          const finalStatus = (currentBatch?.generatedCount || 0) > 0 ? 'COMPLETED' : 'FAILED';
+          const actualGeneratedCount = await Certificate.countDocuments({
+            batchId,
+            isDeleted: { $ne: true },
+          });
+          const finalStatus = actualGeneratedCount > 0 ? 'COMPLETED' : 'FAILED';
           await CertificateBatch.findByIdAndUpdate(batchId, {
             status: finalStatus,
+            generatedCount: actualGeneratedCount,
             completedAt: new Date(),
           });
         }

@@ -43,13 +43,22 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     finalSignatureUrl = signatureImage.secure_url || signatureImage.url;
   }
 
-  const validStudents = students
-    .filter((s) => s && s.name && s.email)
-    .map((s) => ({
-      name: s.name.trim(),
-      email: s.email.trim().toLowerCase(),
-      position: s.position?.trim() || 'Participant',
-    }));
+  // Deduplicate students by normalized email to prevent duplicate jobs and race conditions
+  const seenEmails = new Set();
+  const validStudents = [];
+  for (const s of (students || [])) {
+    if (s && s.name && s.email) {
+      const email = s.email.trim().toLowerCase();
+      if (!seenEmails.has(email)) {
+        seenEmails.add(email);
+        validStudents.push({
+          name: s.name.trim(),
+          email,
+          position: s.position?.trim() || 'Participant',
+        });
+      }
+    }
+  }
 
   if (validStudents.length === 0) {
     throw new ApiError(400, 'No valid student records provided');
@@ -307,6 +316,10 @@ const approveCertificateBatch = asyncHandler(async (req, res) => {
     throw new ApiError(400, `Cannot approve a batch with status "${batch.status}".`);
   }
 
+  if (!batch.students || batch.students.length === 0) {
+    throw new ApiError(400, `Cannot approve batch #${batch.batchId}: No students found in this batch roster.`);
+  }
+
   batch.status = 'PROCESSING';
   batch.approvedBy = req.admin._id;
   batch.approvedByName = req.admin.name || 'Super Admin';
@@ -464,13 +477,21 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
     }
 
     if (Array.isArray(rawStudents)) {
-      const validStudents = rawStudents
-        .filter((s) => s && s.name && s.email)
-        .map((s) => ({
-          name: s.name.trim(),
-          email: s.email.trim().toLowerCase(),
-          position: s.position?.trim() || 'Participant',
-        }));
+      const seenEmails = new Set();
+      const validStudents = [];
+      for (const s of rawStudents) {
+        if (s && s.name && s.email) {
+          const email = s.email.trim().toLowerCase();
+          if (!seenEmails.has(email)) {
+            seenEmails.add(email);
+            validStudents.push({
+              name: s.name.trim(),
+              email,
+              position: s.position?.trim() || 'Participant',
+            });
+          }
+        }
+      }
 
       if (validStudents.length === 0) {
         throw new ApiError(400, 'A certificate batch must contain at least one valid student.');

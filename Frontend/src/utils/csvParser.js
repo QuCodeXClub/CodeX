@@ -104,8 +104,10 @@ export const parseCertificateCsv = (csvText) => {
   }
 
   const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
+  const seenEmails = new Set();
   const students = [];
   let skippedCount = 0;
+  let duplicateCount = 0;
 
   for (let i = startIndex; i < rawLines.length; i++) {
     const cols = tokenizeCsvLine(rawLines[i]);
@@ -118,7 +120,12 @@ export const parseCertificateCsv = (csvText) => {
     const position = normalizePosition(rawPos);
 
     if (name && email && emailRegex.test(email)) {
-      students.push({ name, email, position });
+      if (!seenEmails.has(email)) {
+        seenEmails.add(email);
+        students.push({ name, email, position });
+      } else {
+        duplicateCount++;
+      }
     } else {
       skippedCount++;
     }
@@ -129,6 +136,7 @@ export const parseCertificateCsv = (csvText) => {
       success: false,
       students: [],
       skippedCount,
+      duplicateCount,
       error: 'No valid student records found. Please ensure each row has a valid Name and Email.',
     };
   }
@@ -137,6 +145,7 @@ export const parseCertificateCsv = (csvText) => {
     success: true,
     students,
     skippedCount,
+    duplicateCount,
     error: null,
   };
 };

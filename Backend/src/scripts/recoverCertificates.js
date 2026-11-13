@@ -144,6 +144,19 @@ async function runRecovery() {
         }
       }
 
+      if (existingCert && existingCert.isDeleted) {
+        // Revive soft-deleted certificate back to active status
+        existingCert.isDeleted = false;
+        existingCert.deletedAt = null;
+        existingCert.deleteReason = '';
+        existingCert.batchId = batch._id;
+        await existingCert.save();
+        console.log(`   ♻️ Revived soft-deleted certificate #${existingCert.certificateId} for ${student.name} (${email})`);
+        batchRestored++;
+        totalRestored++;
+        continue;
+      }
+
       if (!existingCert) {
         // Generate certificate record
         const certificateId = crypto.randomBytes(8).toString('hex');

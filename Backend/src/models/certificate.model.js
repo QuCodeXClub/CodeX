@@ -96,8 +96,11 @@ const certificateSchema = new mongoose.Schema(
 );
 
 // High-performance compound & sort indexes for verification, student lookups, and pagination
-// Idempotency: guarantees no duplicate certificates can ever exist for the same student within a batch
-certificateSchema.index({ batchId: 1, studentEmail: 1 }, { unique: true, sparse: true });
+// Idempotency: guarantees no duplicate active certificates can ever exist for the same student within a batch
+certificateSchema.index(
+  { batchId: 1, studentEmail: 1 },
+  { unique: true, sparse: true, partialFilterExpression: { isDeleted: false } }
+);
 certificateSchema.index({ batchId: 1, createdAt: -1 });
 certificateSchema.index({ createdAt: -1 });
 certificateSchema.index({ studentEmail: 1, createdAt: -1 });

@@ -75,9 +75,8 @@ export default function BulkCertificates() {
     if (!isSuperAdmin) return;
     try {
       const response = await certificateService.getTrashCertificates({ limit: 1 });
-      if (response.data?.data?.pagination) {
-        setTrashCount(response.data.data.pagination.total || 0);
-      }
+      const total = response?.data?.pagination?.total ?? response?.pagination?.total ?? 0;
+      setTrashCount(total);
     } catch {
       // silent fallback
     }
@@ -148,7 +147,7 @@ export default function BulkCertificates() {
       setTimeout(() => {
         try {
           const text = event.target.result;
-          const { success, students, skippedCount, error } = parseCertificateCsv(text);
+          const { success, students, skippedCount, duplicateCount, error } = parseCertificateCsv(text);
 
           if (!success) {
             dispatch(setError(error || "Could not parse valid student records from the CSV."));
@@ -161,9 +160,16 @@ export default function BulkCertificates() {
             append(students);
           }
 
-          let msg = `Successfully imported ${students.length} student(s) from CSV.`;
+          let msg = `Successfully imported ${students.length} unique student(s) from CSV.`;
+          const details = [];
+          if (duplicateCount > 0) {
+            details.push(`${duplicateCount} duplicate email(s) deduplicated`);
+          }
           if (skippedCount > 0) {
-            msg += ` (${skippedCount} blank or invalid row(s) were skipped).`;
+            details.push(`${skippedCount} blank/invalid row(s) skipped`);
+          }
+          if (details.length > 0) {
+            msg += ` (${details.join(", ")}).`;
           }
           dispatch(setSuccess(msg));
         } catch (err) {
