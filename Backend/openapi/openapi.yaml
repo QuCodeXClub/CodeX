@@ -759,6 +759,92 @@ paths:
       responses:
         "201":
           description: Certificates generated and emails sent
+  /certificates/trash:
+    get:
+      tags:
+        - Certificates
+      summary: Get soft-deleted certificates in 7-day TTL recovery vault (super admin only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of soft-deleted certificates with TTL countdown
+        "403":
+          description: Super Admin privileges required
+    delete:
+      tags:
+        - Certificates
+      summary: Permanently hard-delete all certificates in trash (super admin only)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Trash cleared successfully
+        "403":
+          description: Super Admin privileges required
+  /certificates/trash/restore-all:
+    post:
+      tags:
+        - Certificates
+      summary: Restore all soft-deleted certificates from trash (super admin only)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: All certificates restored successfully
+        "403":
+          description: Super Admin privileges required
+  /certificates/trash/{id}/restore:
+    patch:
+      tags:
+        - Certificates
+      summary: Restore a single certificate from trash (super admin only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Certificate restored successfully
+        "404":
+          description: Certificate not found in trash
+  /certificates/trash/{id}:
+    delete:
+      tags:
+        - Certificates
+      summary: Permanently hard-delete a single certificate (super admin only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Certificate permanently deleted
+        "404":
+          description: Certificate not found in trash
   /boarding-passes/verify/{boardingPassId}:
     get:
       tags:
