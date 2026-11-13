@@ -122,10 +122,19 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     }
   };
 
-  // Submit Rejection (Super Admin only)
+  // Submit Rejection (Super Admin only - PENDING_APPROVAL batches only)
   const handleConfirmReject = async (e) => {
     e.preventDefault();
     if (!rejectModalBatch) return;
+
+    if (rejectModalBatch.status !== "PENDING_APPROVAL") {
+      setFeedback({
+        type: "error",
+        text: "Approved certificate batches cannot be rejected.",
+      });
+      setRejectModalBatch(null);
+      return;
+    }
 
     setActionLoadingId(rejectModalBatch._id);
     try {
@@ -155,10 +164,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
 
   // Open Edit Modal for a batch (fetch full batch to get student list if not present)
   const handleStartEdit = async (batchSummary) => {
-    if (batchSummary.status !== "PENDING_APPROVAL") {
+    if (!isSuperAdmin && batchSummary.status !== "PENDING_APPROVAL") {
       setFeedback({
         type: "error",
-        text: `Batch #${batchSummary.batchId} is already ${batchSummary.status} and cannot be modified. Batches can only be edited while in PENDING_APPROVAL status.`,
+        text: `Batch #${batchSummary.batchId} is already ${batchSummary.status} and cannot be modified. Only Super Admins can edit approved batches.`,
       });
       return;
     }
@@ -178,6 +187,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
           name: s.name || "",
           email: s.email || "",
           position: s.position || "Participant",
+          isOriginal: fullBatch.status !== "PENDING_APPROVAL",
         })),
       });
       setEditFilePreview(fullBatch.signatureImage || null);
@@ -194,11 +204,20 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
   const handleAddEditStudent = () => {
     setEditForm((prev) => ({
       ...prev,
-      students: [...prev.students, { name: "", email: "", position: "Participant" }],
+      students: [...prev.students, { name: "", email: "", position: "Participant", isOriginal: false }],
     }));
   };
 
   const handleRemoveEditStudent = (index) => {
+    const studentToRemove = editForm.students[index];
+    if (editingBatch?.status !== "PENDING_APPROVAL" && studentToRemove?.isOriginal) {
+      setFeedback({
+        type: "error",
+        text: "Cannot remove previously approved members from this batch. You may only edit details or add new members.",
+      });
+      return;
+    }
+
     if (editForm.students.length <= 1) {
       setFeedback({ type: "error", text: "A batch must have at least one student." });
       return;
@@ -716,12 +735,12 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                                 </button>
                               )}
 
-                              {isPending && (
+                              {(isPending || isSuperAdmin) && (
                                 <button
                                   onClick={() => handleStartEdit(batch)}
                                   disabled={isActionLoading}
                                   className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
-                                  title="Edit batch"
+                                  title="Edit batch details or add members"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
                                   <span>Edit</span>
@@ -740,7 +759,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                                 </button>
                               )}
 
-                              {isSuperAdmin && batch.status !== "REJECTED" && (
+                              {isSuperAdmin && isPending && (
                                 <button
                                   onClick={() => {
                                     setRejectModalBatch(batch);
@@ -748,10 +767,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                                   }}
                                   disabled={isActionLoading}
                                   className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
-                                  title="Reject or Revoke"
+                                  title="Reject batch request"
                                 >
                                   <XCircle className="w-3.5 h-3.5" />
-                                  <span>{batch.status === "COMPLETED" ? "Revoke" : "Reject"}</span>
+                                  <span>Reject</span>
                                 </button>
                               )}
                             </div>
@@ -831,7 +850,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                           </button>
                         )}
 
-                        {isPending && (
+                        {(isPending || isSuperAdmin) && (
                           <button
                             onClick={() => handleStartEdit(batch)}
                             disabled={isActionLoading}
@@ -859,7 +878,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                               </button>
                             )}
 
-                            {batch.status !== "REJECTED" && (
+                            {isPending && (
                               <button
                                 onClick={() => {
                                   setRejectModalBatch(batch);
@@ -869,7 +888,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 text-xs font-mono font-bold transition-all disabled:opacity-50 cursor-pointer"
                               >
                                 <XCircle className="w-3.5 h-3.5" />
-                                <span>{batch.status === "COMPLETED" ? "Revoke" : "Reject"}</span>
+                                <span>Reject</span>
                               </button>
                             )}
                           </>
@@ -1109,11 +1128,11 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                 </button>
 
                 {/* Edit Batch & Roster button in details modal */}
-                {selectedBatch.status === "PENDING_APPROVAL" && (
+                {(selectedBatch.status === "PENDING_APPROVAL" || isSuperAdmin) && (
                   <button
                     onClick={() => handleStartEdit(selectedBatch)}
                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 text-xs font-mono font-bold transition-all cursor-pointer shadow-sm"
-                    title="Edit batch event metadata or modify student recipients"
+                    title="Edit batch event metadata or add new student recipients"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>Edit Batch & Student Roster</span>
@@ -1121,28 +1140,24 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                 )}
               </div>
 
-              {isSuperAdmin && (
+              {isSuperAdmin && selectedBatch.status === "PENDING_APPROVAL" && (
                 <div className="flex items-center gap-2">
-                  {selectedBatch.status !== "REJECTED" && (
-                    <button
-                      onClick={() => {
-                        setRejectModalBatch(selectedBatch);
-                        setRejectReason("");
-                      }}
-                      className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all cursor-pointer"
-                    >
-                      {selectedBatch.status === "COMPLETED" ? "Revoke & Delete Certificates" : "Reject"}
-                    </button>
-                  )}
-                  {selectedBatch.status === "PENDING_APPROVAL" && (
-                    <button
-                      onClick={() => handleApprove(selectedBatch)}
-                      disabled={actionLoadingId === selectedBatch._id}
-                      className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl bg-emerald-500 text-black font-mono font-bold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-lg shadow-emerald-500/20"
-                    >
-                      Authorize & Generate Batch
-                    </button>
-                  )}
+                  <button
+                    onClick={() => {
+                      setRejectModalBatch(selectedBatch);
+                      setRejectReason("");
+                    }}
+                    className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 text-xs font-mono font-bold transition-all cursor-pointer"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => handleApprove(selectedBatch)}
+                    disabled={actionLoadingId === selectedBatch._id}
+                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl bg-emerald-500 text-black font-mono font-bold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-lg shadow-emerald-500/20"
+                  >
+                    Authorize & Generate Batch
+                  </button>
                 </div>
               )}
             </div>
@@ -1158,10 +1173,17 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             {/* Pinned Modal Header */}
             <div className="p-3.5 sm:p-5 pb-3 border-b border-border/60 shrink-0 flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 font-mono text-[10px] font-bold uppercase mb-1 shadow-sm">
-                  <Clock className="w-3 h-3" />
-                  <span>PENDING APPROVAL • EDIT MODE</span>
-                </div>
+                {editingBatch.status === "PENDING_APPROVAL" ? (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 font-mono text-[10px] font-bold uppercase mb-1 shadow-sm">
+                    <Clock className="w-3 h-3" />
+                    <span>PENDING APPROVAL • EDIT MODE</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-mono text-[10px] font-bold uppercase mb-1 shadow-sm">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>APPROVED BATCH • EDIT DETAILS & ADD MEMBERS</span>
+                  </div>
+                )}
                 <h2 className="text-base sm:text-xl font-display font-black uppercase text-text tracking-tight truncate">
                   EDIT BATCH #{editingBatch.batchId}
                 </h2>
@@ -1366,9 +1388,16 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                             <button
                               type="button"
                               onClick={() => handleRemoveEditStudent(idx)}
-                              disabled={editForm.students.length <= 1}
-                              className="p-1 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                              title="Remove student row"
+                              disabled={
+                                editForm.students.length <= 1 ||
+                                (editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal)
+                              }
+                              className="p-1 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              title={
+                                editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal
+                                  ? "Existing approved members cannot be removed"
+                                  : "Remove student row"
+                              }
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
