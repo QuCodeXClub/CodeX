@@ -414,6 +414,9 @@ class QueueService {
       // Revive and update soft-deleted certificate if batch is regenerated/reapproved
       cert.isDeleted = false;
       cert.deletedAt = null;
+      cert.deletionId = null;
+      cert.deletedBy = undefined;
+      cert.deletedByName = '';
       cert.deleteReason = '';
       cert.studentName = student.name.trim();
       cert.eventName = eventName;
@@ -421,7 +424,30 @@ class QueueService {
       cert.coordinatorName = coordinatorName;
       cert.signatureImage = finalSignatureUrl;
       cert.position = student.position?.trim() || 'Participant';
+      cert.emailStatus = 'PENDING';
+
+      // Ensure QR code exists on revived certificate
+      if (!cert.qrCodeImage && cert.certificateId) {
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-certificate/${cert.certificateId}`;
+        try {
+          const dataUri = await generateQRCodeWithLogo(verificationLink);
+          const qrUpload = await uploadOnCloudinary(dataUri, 'CodeX/certificate');
+          if (qrUpload) {
+            cert.qrCodeImage = qrUpload.secure_url || qrUpload.url;
+          }
+        } catch (qrError) {
+          console.error('[QueueService] QR generation failed for revived cert:', normalizedEmail, qrError);
+        }
+      }
+
       await cert.save();
+
+      // Real-time counter progression for revived certificate
+      if (batchId) {
+        await CertificateBatch.findByIdAndUpdate(batchId, {
+          $inc: { generatedCount: 1 },
+        });
+      }
     }
 
     let certificateId = cert?.certificateId;

@@ -78,6 +78,14 @@ const certificateSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    // Normalized deletion session reference: avoids duplicating deletedBy, deletedByName,
+    // and deleteReason across hundreds of certificate documents in the same batch/operation.
+    deletionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CertificateDeletion',
+      default: null,
+    },
+    // Optional legacy fields maintained for backwards-compatibility with unmigrated records
     deletedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Admin',
@@ -111,5 +119,6 @@ certificateSchema.index({ eventName: 1, createdAt: -1 });
 certificateSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 604800 });
 certificateSchema.index({ isDeleted: 1, createdAt: -1 });
 certificateSchema.index({ isDeleted: 1, batchId: 1 });
+certificateSchema.index({ deletionId: 1 });
 
 export const Certificate = mongoose.model('Certificate', certificateSchema);
