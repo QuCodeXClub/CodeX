@@ -414,6 +414,7 @@ class QueueService {
       // Revive and update soft-deleted certificate if batch is regenerated/reapproved
       cert.isDeleted = false;
       cert.deletedAt = null;
+      cert.deletionId = null;
       cert.deleteReason = '';
       cert.studentName = student.name.trim();
       cert.eventName = eventName;
