@@ -40,3 +40,4 @@ certificateDeletionSchema.index({ batchId: 1 });
 certificateDeletionSchema.index({ deletedBy: 1 });
 
 export const CertificateDeletion = mongoose.model('CertificateDeletion', certificateDeletionSchema);
+

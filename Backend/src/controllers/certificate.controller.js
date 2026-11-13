@@ -904,6 +904,7 @@ const restoreCertificate = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Certificate is active and not in trash');
   }
 
+  const oldDeletionId = certificate.deletionId;
   certificate.isDeleted = false;
   certificate.deletedAt = null;
   certificate.deletionId = null;
@@ -911,6 +912,13 @@ const restoreCertificate = asyncHandler(async (req, res) => {
   certificate.deletedByName = '';
   certificate.deleteReason = '';
   await certificate.save();
+
+  if (oldDeletionId) {
+    const remainingWithDeletion = await Certificate.countDocuments({ deletionId: oldDeletionId });
+    if (remainingWithDeletion === 0) {
+      await CertificateDeletion.findByIdAndDelete(oldDeletionId);
+    }
+  }
 
   if (certificate.batchId) {
     await CertificateBatch.findByIdAndUpdate(certificate.batchId, {
@@ -979,6 +987,14 @@ const permanentlyDeleteCertificate = asyncHandler(async (req, res) => {
 
   if (!certificate) {
     throw new ApiError(404, 'Certificate not found in trash');
+  }
+
+  // Clean up normalized deletion log if no other soft-deleted certificates reference it
+  if (certificate.deletionId) {
+    const remainingWithDeletion = await Certificate.countDocuments({ deletionId: certificate.deletionId });
+    if (remainingWithDeletion === 0) {
+      await CertificateDeletion.findByIdAndDelete(certificate.deletionId);
+    }
   }
 
   return res.status(200).json(
