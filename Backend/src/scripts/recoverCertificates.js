@@ -151,7 +151,7 @@ async function runRecovery() {
         existingCert.deleteReason = '';
         existingCert.batchId = batch._id;
         await existingCert.save();
-        console.log(`   ♻️ Revived soft-deleted certificate #${existingCert.certificateId} for ${student.name} (${email})`);
+        console.log(`  Revived soft-deleted certificate #${existingCert.certificateId} for ${student.name} (${email})`);
         batchRestored++;
         totalRestored++;
         continue;
