@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { LinkIcon, Download, Loader2, QrCode, Trash2, Copy, Check } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchQRHistory, generateCustomQR, deleteCustomQR, clearError, clearGeneratedQr } from "../../context/adminQrSlice";
+import { setError } from "../../context/messageSlice";
 import ConfirmModal from "../../components/common/ConfirmModal";
 
 export default function QRGenerator() {
@@ -174,7 +175,7 @@ export default function QRGenerator() {
       }
     } catch (err) {
       console.error("Download failed:", err);
-      alert("Failed to download the image. Please open it in a new tab.");
+      dispatch(setError("Failed to download the image. Please open it in a new tab."));
     } finally {
       setDownloadingState(null);
     }

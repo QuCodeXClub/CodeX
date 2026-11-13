@@ -14,6 +14,7 @@ import {
   Phone,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { setError } from "../../context/messageSlice";
 import { useConfirm } from "../../context/ConfirmContext";
 import {
   fetchAdminRegistrations,
@@ -205,7 +206,7 @@ export default function Registrations() {
       await dispatch(createManualRegistration(data)).unwrap();
       setShowAddModal(false);
     } catch (error) {
-      alert(error || "Failed to add registration");
+      dispatch(setError(error || "Failed to add registration"));
     }
   };
 
@@ -252,7 +253,7 @@ export default function Registrations() {
         payload.registrations || (Array.isArray(payload) ? payload : []);
 
       if (finalExportData.length === 0) {
-        alert("No data matches your current filters to export.");
+        dispatch(setError("No data matches your current filters to export."));
         return;
       }
 
@@ -330,7 +331,7 @@ export default function Registrations() {
         console.warn("Failed to log export action:", err);
       }
     } catch {
-      alert("Failed to fetch full data for export.");
+      dispatch(setError("Failed to fetch full data for export."));
     } finally {
       setIsExporting(false);
     }
