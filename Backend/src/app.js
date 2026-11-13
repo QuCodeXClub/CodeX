@@ -28,8 +28,12 @@ app.use(
   })
 );
 
-// Request Logging
-app.use(morgan("dev"));
+// Request Logging (skip automated healthcheck polling to keep container logs clean)
+app.use(
+  morgan("dev", {
+    skip: (req) => (req.originalUrl || req.url || "").includes("/healthcheck"),
+  })
+);
 
 // Production Rate Limiting across all /api routes
 app.use("/api", globalLimiter);

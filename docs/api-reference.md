@@ -718,6 +718,40 @@ Verifies certificate authenticity using its unique verification ID.
 
 ---
 
+## 7-Day TTL Recovery Vault (Super Admin Only)
+
+### Get Soft-Deleted Certificates
+```
+GET /certificates/trash
+```
+🔒 Super Admin Only. Retrieves all certificates soft-deleted within the last 7 days along with computed TTL expiration countdown (`daysRemaining`, `hoursRemaining`).
+
+### Restore Certificate
+```
+PATCH /certificates/trash/:id/restore
+```
+🔒 Super Admin Only. Restores a soft-deleted certificate back to active status, making it immediately publicly verifiable again.
+
+### Restore All Certificates
+```
+POST /certificates/trash/restore-all
+```
+🔒 Super Admin Only. Bulk restores all soft-deleted certificates from trash.
+
+### Permanently Delete Certificate
+```
+DELETE /certificates/trash/:id
+```
+🔒 Super Admin Only. Immediately and permanently purges a certificate from MongoDB, bypassing the 7-day TTL countdown.
+
+### Empty Trash
+```
+DELETE /certificates/trash
+```
+🔒 Super Admin Only. Immediately and permanently deletes all soft-deleted certificates from MongoDB.
+
+---
+
 # 🎟️ Boarding Pass APIs
 
 Base Route

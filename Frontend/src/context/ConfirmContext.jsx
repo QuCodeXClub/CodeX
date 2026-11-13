@@ -17,6 +17,9 @@ export const ConfirmProvider = ({ children }) => {
     isOpen: false,
     title: "",
     message: "",
+    confirmText: "Confirm",
+    cancelText: "Cancel",
+    type: "danger",
     resolve: null,
   });
 
@@ -26,6 +29,9 @@ export const ConfirmProvider = ({ children }) => {
         isOpen: true,
         title: options.title || "Confirm Action",
         message: options.message || "Are you sure you want to proceed?",
+        confirmText: options.confirmText || "Confirm",
+        cancelText: options.cancelText || "Cancel",
+        type: options.type || "danger",
         resolve,
       });
     });
@@ -52,6 +58,9 @@ export const ConfirmProvider = ({ children }) => {
         isOpen={confirmState.isOpen}
         title={confirmState.title}
         message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        type={confirmState.type}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
       />
