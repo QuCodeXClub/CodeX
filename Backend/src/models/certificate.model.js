@@ -69,6 +69,28 @@ const certificateSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+    },
+    deletedByName: {
+      type: String,
+      default: '',
+    },
+    deleteReason: {
+      type: String,
+      default: '',
+      trim: true,
+    },
   },
   { timestamps: true }
 );
@@ -80,5 +102,11 @@ certificateSchema.index({ batchId: 1, createdAt: -1 });
 certificateSchema.index({ createdAt: -1 });
 certificateSchema.index({ studentEmail: 1, createdAt: -1 });
 certificateSchema.index({ eventName: 1, createdAt: -1 });
+
+// MongoDB 7-Day TTL index: automatically purges soft-deleted documents 7 days after deletedAt (7 * 24 * 60 * 60 = 604800 seconds).
+// Active documents where deletedAt is null or missing are not deleted.
+certificateSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 604800 });
+certificateSchema.index({ isDeleted: 1, createdAt: -1 });
+certificateSchema.index({ isDeleted: 1, batchId: 1 });
 
 export const Certificate = mongoose.model('Certificate', certificateSchema);

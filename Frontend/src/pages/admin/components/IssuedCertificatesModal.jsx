@@ -105,8 +105,8 @@ export default function IssuedCertificatesModal({ onClose, isModal = false, isSu
 
   const handleDeleteCertificate = async (cert) => {
     const isConfirmed = await confirm({
-      title: "Delete Certificate",
-      message: `Permanently delete certificate #${cert.certificateId} for ${cert.studentName}? This will revoke verification portal access immediately and cannot be undone.`,
+      title: "Move Certificate to 7-Day Trash",
+      message: `Move certificate #${cert.certificateId} for ${cert.studentName} to 7-day recovery trash? Verification will be revoked immediately, and Super Admins can restore it from the 7-day Trash Vault before MongoDB permanently auto-purges it.`,
     });
 
     if (!isConfirmed) return;

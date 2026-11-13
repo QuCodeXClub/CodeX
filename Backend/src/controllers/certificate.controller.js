@@ -133,8 +133,8 @@ const verifyCertificate = asyncHandler(async (req, res) => {
 
   const certificate = await Certificate.findOne({ certificateId });
 
-  if (!certificate) {
-    throw new ApiError(404, 'Invalid Certificate ID');
+  if (!certificate || certificate.isDeleted) {
+    throw new ApiError(404, 'Invalid Certificate ID or certificate has been revoked');
   }
 
   await logPublicEvent(req, `Certificate verified: ${certificateId}`);
@@ -143,7 +143,7 @@ const verifyCertificate = asyncHandler(async (req, res) => {
 });
 
 const getLatestSignature = asyncHandler(async (req, res) => {
-  const latestCertificate = await Certificate.findOne().sort({ createdAt: -1 });
+  const latestCertificate = await Certificate.findOne({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
   
   if (!latestCertificate || !latestCertificate.signatureImage) {
     return res.status(200).json(new ApiResponse(200, { signatureUrl: null }, 'No previous signature found'));
@@ -159,14 +159,19 @@ const getAllCertificates = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 20;
   const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
 
-  const query = {};
+  const query = { isDeleted: { $ne: true } };
   if (rawSearch) {
     const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
-    query.$or = [
-      { studentName: { $regex: safeSearch, $options: 'i' } },
-      { studentEmail: { $regex: safeSearch, $options: 'i' } },
-      { eventName: { $regex: safeSearch, $options: 'i' } },
-      { certificateId: { $regex: safeSearch, $options: 'i' } },
+    query.$and = [
+      { isDeleted: { $ne: true } },
+      {
+        $or: [
+          { studentName: { $regex: safeSearch, $options: 'i' } },
+          { studentEmail: { $regex: safeSearch, $options: 'i' } },
+          { eventName: { $regex: safeSearch, $options: 'i' } },
+          { certificateId: { $regex: safeSearch, $options: 'i' } },
+        ],
+      },
     ];
   }
 
@@ -249,16 +254,21 @@ const getCertificateBatchById = asyncHandler(async (req, res) => {
 
   // If students array was purged or missing, dynamically hydrate from the Certificate collection
   if (!batch.students || batch.students.length === 0) {
-    let certs = await Certificate.find({ batchId: batch._id })
+    let certs = await Certificate.find({ batchId: batch._id, isDeleted: { $ne: true } })
       .select('studentName studentEmail position certificateId')
       .lean();
 
     if (!certs || certs.length === 0) {
       certs = await Certificate.find({
-        $or: [
-          { batchId: String(batch._id) },
-          { batchId: batch.batchId },
-          { eventName: batch.eventName },
+        $and: [
+          { isDeleted: { $ne: true } },
+          {
+            $or: [
+              { batchId: String(batch._id) },
+              { batchId: batch.batchId },
+              { eventName: batch.eventName },
+            ],
+          },
         ],
       })
       .select('studentName studentEmail position certificateId')
@@ -346,13 +356,19 @@ const rejectCertificateBatch = asyncHandler(async (req, res) => {
   batch.rejectionReason = reason?.trim() || 'Rejected by Super Admin';
   batch.rejectedAt = new Date();
 
-  // 1. Permanently delete any generated certificates associated with this batch from the database
-  const certDeleteResult = await Certificate.deleteMany({
-    $or: [
-      { batchId: batch._id },
-      { eventName: batch.eventName, eventDate: batch.eventDate },
-    ],
-  });
+  // 1. Soft-delete certificates associated strictly with this batch into 7-day TTL recovery trash
+  const certDeleteResult = await Certificate.updateMany(
+    { batchId: batch._id, isDeleted: { $ne: true } },
+    {
+      $set: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy: req.admin._id,
+        deletedByName: req.admin.name || 'Super Admin',
+        deleteReason: `Batch #${batch.batchId} rejected: ${batch.rejectionReason}`,
+      },
+    }
+  );
 
   // 2. Suppress and cancel any pending or in-flight background queue jobs for this batch
   await BackgroundJob.updateMany(
@@ -465,14 +481,19 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
     }
   }
 
-  // When an edit is performed on a batch, delete any prior certificates and suppress stale queue jobs
-  // so no outdated/mismatched certificates remain in the database
-  const certDeleteResult = await Certificate.deleteMany({
-    $or: [
-      { batchId: batch._id },
-      { eventName: batch.eventName, eventDate: batch.eventDate },
-    ],
-  });
+  // When an edit is performed on a batch, soft-delete prior certificates strictly for this batch into 7-day TTL recovery trash
+  const certDeleteResult = await Certificate.updateMany(
+    { batchId: batch._id, isDeleted: { $ne: true } },
+    {
+      $set: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy: req.admin._id,
+        deletedByName: req.admin.name || 'Admin',
+        deleteReason: `Batch #${batch.batchId} updated/edited`,
+      },
+    }
+  );
 
   await BackgroundJob.updateMany(
     {
@@ -499,30 +520,51 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
       200,
       {
         batch,
-        deletedCertificatesCount: certDeleteResult.deletedCount || 0,
+        deletedCertificatesCount: certDeleteResult.modifiedCount || 0,
       },
       `Certificate batch #${batch.batchId} updated successfully.${
-        certDeleteResult.deletedCount > 0
-          ? ` ${certDeleteResult.deletedCount} outdated certificate(s) were removed.`
+        certDeleteResult.modifiedCount > 0
+          ? ` ${certDeleteResult.modifiedCount} outdated certificate(s) moved to 7-day recovery trash.`
           : ''
       } Ready for review & authorization.`
     )
   );
 });
 
-// @desc    Delete Single Certificate
+// @desc    Delete Single Certificate (Soft delete with 7-day TTL recovery)
 // @route   DELETE /api/v1/certificates/:id
 // @access  Private (Super Admin Only)
 const deleteCertificate = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const certificate = await Certificate.findByIdAndDelete(id);
+  const certificate = await Certificate.findById(id);
 
   if (!certificate) {
     throw new ApiError(404, 'Certificate not found');
   }
 
+  if (certificate.isDeleted) {
+    throw new ApiError(400, 'Certificate is already in 7-day recovery trash');
+  }
+
+  certificate.isDeleted = true;
+  certificate.deletedAt = new Date();
+  certificate.deletedBy = req.admin._id;
+  certificate.deletedByName = req.admin.name || 'Super Admin';
+  certificate.deleteReason = req.body?.reason?.trim() || 'Deleted by Super Admin';
+  await certificate.save();
+
+  if (certificate.batchId) {
+    await CertificateBatch.findByIdAndUpdate(certificate.batchId, {
+      $inc: { generatedCount: -1 },
+    });
+  }
+
   return res.status(200).json(
-    new ApiResponse(200, certificate, `Certificate #${certificate.certificateId} deleted successfully`)
+    new ApiResponse(
+      200,
+      certificate,
+      `Certificate #${certificate.certificateId} moved to 7-day recovery trash. It will be permanently auto-purged by MongoDB after 7 days.`
+    )
   );
 });
 
@@ -574,14 +616,19 @@ const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Certificate batch not found');
   }
 
-  let certs = await Certificate.find({ batchId: batch._id }).sort({ createdAt: 1 }).lean();
+  let certs = await Certificate.find({ batchId: batch._id, isDeleted: { $ne: true } }).sort({ createdAt: 1 }).lean();
   if (!certs || certs.length === 0) {
     certs = await Certificate.find({
-      $or: [
-        { batchId: String(batch._id) },
-        { batchId: batch.batchId },
-        { eventName: batch.eventName },
-      ]
+      $and: [
+        { isDeleted: { $ne: true } },
+        {
+          $or: [
+            { batchId: String(batch._id) },
+            { batchId: batch.batchId },
+            { eventName: batch.eventName },
+          ],
+        },
+      ],
     }).sort({ createdAt: 1 }).lean();
   }
 
@@ -631,15 +678,20 @@ const exportBatchCertificatesCsv = asyncHandler(async (req, res) => {
 // @access  Private (Admin & Super Admin)
 const exportAllCertificatesCsv = asyncHandler(async (req, res) => {
   const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
-  const query = {};
+  const query = { isDeleted: { $ne: true } };
 
   if (rawSearch) {
     const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
-    query.$or = [
-      { studentName: { $regex: safeSearch, $options: 'i' } },
-      { studentEmail: { $regex: safeSearch, $options: 'i' } },
-      { eventName: { $regex: safeSearch, $options: 'i' } },
-      { certificateId: { $regex: safeSearch, $options: 'i' } },
+    query.$and = [
+      { isDeleted: { $ne: true } },
+      {
+        $or: [
+          { studentName: { $regex: safeSearch, $options: 'i' } },
+          { studentEmail: { $regex: safeSearch, $options: 'i' } },
+          { eventName: { $regex: safeSearch, $options: 'i' } },
+          { certificateId: { $regex: safeSearch, $options: 'i' } },
+        ],
+      },
     ];
   }
 
@@ -685,6 +737,186 @@ const exportAllCertificatesCsv = asyncHandler(async (req, res) => {
   return res.status(200).send(csvContent);
 });
 
+// ============================================================================
+// SUPER ADMIN ONLY: 7-DAY TTL TRASH / RECOVERY CONTROLLERS
+// ============================================================================
+
+// @desc    Get Soft-deleted Certificates in 7-day TTL Trash
+// @route   GET /api/v1/certificates/trash
+// @access  Private (Super Admin Only)
+const getDeletedCertificates = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+
+  const query = { isDeleted: true };
+
+  if (rawSearch) {
+    const safeSearch = escapeRegExp(rawSearch).slice(0, 100);
+    query.$and = [
+      { isDeleted: true },
+      {
+        $or: [
+          { studentName: { $regex: safeSearch, $options: 'i' } },
+          { studentEmail: { $regex: safeSearch, $options: 'i' } },
+          { eventName: { $regex: safeSearch, $options: 'i' } },
+          { certificateId: { $regex: safeSearch, $options: 'i' } },
+          { deletedByName: { $regex: safeSearch, $options: 'i' } },
+          { deleteReason: { $regex: safeSearch, $options: 'i' } },
+        ],
+      },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [rawCertificates, total] = await Promise.all([
+    Certificate.find(query).sort({ deletedAt: -1 }).skip(skip).limit(limit).lean(),
+    Certificate.countDocuments(query),
+  ]);
+
+  const now = Date.now();
+  const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+  const certificates = rawCertificates.map((cert) => {
+    const deletedTime = cert.deletedAt ? new Date(cert.deletedAt).getTime() : now;
+    const expiresAt = new Date(deletedTime + TTL_MS);
+    const msRemaining = Math.max(0, expiresAt.getTime() - now);
+    const totalHoursRemaining = Math.floor(msRemaining / (1000 * 60 * 60));
+    const daysRemaining = Math.floor(totalHoursRemaining / 24);
+    const hoursRemaining = totalHoursRemaining % 24;
+
+    return {
+      ...cert,
+      expiresAt,
+      msRemaining,
+      daysRemaining,
+      hoursRemaining,
+    };
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        certificates,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      'Trash certificates fetched successfully'
+    )
+  );
+});
+
+// @desc    Restore a Soft-deleted Certificate from Trash
+// @route   PATCH /api/v1/certificates/trash/:id/restore
+// @access  Private (Super Admin Only)
+const restoreCertificate = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const certificate = await Certificate.findById(id);
+
+  if (!certificate) {
+    throw new ApiError(404, 'Certificate not found');
+  }
+
+  if (!certificate.isDeleted) {
+    throw new ApiError(400, 'Certificate is active and not in trash');
+  }
+
+  certificate.isDeleted = false;
+  certificate.deletedAt = null;
+  certificate.deletedBy = undefined;
+  certificate.deletedByName = '';
+  certificate.deleteReason = '';
+  await certificate.save();
+
+  if (certificate.batchId) {
+    await CertificateBatch.findByIdAndUpdate(certificate.batchId, {
+      $inc: { generatedCount: 1 },
+    });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, certificate, `Certificate #${certificate.certificateId} restored successfully.`)
+  );
+});
+
+// @desc    Restore All Soft-deleted Certificates from Trash
+// @route   POST /api/v1/certificates/trash/restore-all
+// @access  Private (Super Admin Only)
+const restoreAllDeletedCertificates = asyncHandler(async (req, res) => {
+  const deletedCerts = await Certificate.find({ isDeleted: true }).lean();
+
+  if (deletedCerts.length === 0) {
+    return res.status(200).json(
+      new ApiResponse(200, { restoredCount: 0 }, 'Trash is already empty. No certificates to restore.')
+    );
+  }
+
+  const result = await Certificate.updateMany(
+    { isDeleted: true },
+    {
+      $set: {
+        isDeleted: false,
+        deletedAt: null,
+        deletedBy: null,
+        deletedByName: '',
+        deleteReason: '',
+      },
+    }
+  );
+
+  // Re-synchronize generated counts on batches
+  const batchIds = [...new Set(deletedCerts.map((c) => c.batchId).filter(Boolean))];
+  for (const bId of batchIds) {
+    const activeCount = await Certificate.countDocuments({ batchId: bId, isDeleted: { $ne: true } });
+    await CertificateBatch.findByIdAndUpdate(bId, { generatedCount: activeCount });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { restoredCount: result.modifiedCount },
+      `Successfully restored ${result.modifiedCount} certificate(s) from trash.`
+    )
+  );
+});
+
+// @desc    Permanently Hard Delete a Certificate (Super Admin Bypass 7-day TTL)
+// @route   DELETE /api/v1/certificates/trash/:id
+// @access  Private (Super Admin Only)
+const permanentlyDeleteCertificate = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const certificate = await Certificate.findByIdAndDelete(id);
+
+  if (!certificate) {
+    throw new ApiError(404, 'Certificate not found in trash');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, certificate, `Certificate #${certificate.certificateId} permanently deleted from database.`)
+  );
+});
+
+// @desc    Permanently Hard Delete All Soft-deleted Certificates in Trash
+// @route   DELETE /api/v1/certificates/trash
+// @access  Private (Super Admin Only)
+const clearCertificateTrash = asyncHandler(async (req, res) => {
+  const result = await Certificate.deleteMany({ isDeleted: true });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { deletedCount: result.deletedCount },
+      `Trash cleared: ${result.deletedCount} certificate(s) permanently deleted from database.`
+    )
+  );
+});
+
 export {
   generateBulkCertificates,
   verifyCertificate,
@@ -699,4 +931,9 @@ export {
   resendCertificateEmail,
   exportBatchCertificatesCsv,
   exportAllCertificatesCsv,
+  getDeletedCertificates,
+  restoreCertificate,
+  restoreAllDeletedCertificates,
+  permanentlyDeleteCertificate,
+  clearCertificateTrash,
 };

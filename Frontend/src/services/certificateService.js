@@ -57,6 +57,27 @@ class CertificateService {
       responseType: "blob",
     });
   }
+
+  // Super Admin 7-Day TTL Trash & Recovery Services
+  async getTrashCertificates(params = {}) {
+    return axiosInstance.get("/certificates/trash", { params });
+  }
+
+  async restoreCertificate(id) {
+    return axiosInstance.patch(`/certificates/trash/${id}/restore`);
+  }
+
+  async restoreAllCertificates() {
+    return axiosInstance.post("/certificates/trash/restore-all");
+  }
+
+  async permanentlyDeleteCertificate(id) {
+    return axiosInstance.delete(`/certificates/trash/${id}`);
+  }
+
+  async clearCertificateTrash() {
+    return axiosInstance.delete("/certificates/trash");
+  }
 }
 
 export const certificateService = new CertificateService();

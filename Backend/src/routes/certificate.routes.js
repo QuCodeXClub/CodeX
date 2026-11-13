@@ -13,6 +13,11 @@ import {
   resendCertificateEmail,
   exportBatchCertificatesCsv,
   exportAllCertificatesCsv,
+  getDeletedCertificates,
+  restoreCertificate,
+  restoreAllDeletedCertificates,
+  permanentlyDeleteCertificate,
+  clearCertificateTrash,
 } from '../controllers/certificate.controller.js';
 import { verifyJWT, verifySuperAdmin } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
@@ -26,10 +31,49 @@ router.route('/verify/:certificateId').get(verifyCertificate);
 // Secured admin routes
 router.route('/').get(verifyJWT, getAllCertificates);
 router.route('/export').get(verifyJWT, exportAllCertificatesCsv);
+
+// Super Admin 7-Day TTL Trash & Recovery routes (MUST be declared before /:id)
+router
+  .route('/trash')
+  .get(verifyJWT, verifySuperAdmin, getDeletedCertificates)
+  .delete(
+    verifyJWT,
+    verifySuperAdmin,
+    logAdminActivity('Super Admin emptied certificate trash (permanent hard delete)'),
+    clearCertificateTrash
+  );
+
+router
+  .route('/trash/restore-all')
+  .post(
+    verifyJWT,
+    verifySuperAdmin,
+    logAdminActivity('Super Admin restored all certificates from trash'),
+    restoreAllDeletedCertificates
+  );
+
+router
+  .route('/trash/:id/restore')
+  .patch(
+    verifyJWT,
+    verifySuperAdmin,
+    logAdminActivity((req) => `Super Admin restored certificate #${req.params.id} from trash`),
+    restoreCertificate
+  );
+
+router
+  .route('/trash/:id')
+  .delete(
+    verifyJWT,
+    verifySuperAdmin,
+    logAdminActivity((req) => `Super Admin permanently deleted certificate #${req.params.id}`),
+    permanentlyDeleteCertificate
+  );
+
 router.route('/:id').delete(
   verifyJWT,
   verifySuperAdmin,
-  logAdminActivity((req) => `Super Admin deleted certificate #${req.params.id}`),
+  logAdminActivity((req) => `Super Admin moved certificate #${req.params.id} to 7-day trash`),
   deleteCertificate
 );
 router.route('/:id/resend').post(

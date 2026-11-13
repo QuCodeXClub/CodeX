@@ -27,6 +27,7 @@ import { setError, setSuccess } from "../../context/messageSlice";
 import { certificateService } from "../../services/certificateService";
 import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
 import CertificateBatchesSection from "./components/CertificateBatchesSection";
+import CertificateTrashSection from "./components/CertificateTrashSection";
 import { parseCertificateCsv, downloadCertificateCsvTemplate } from "../../utils/csvParser";
 
 export default function BulkCertificates() {
@@ -38,9 +39,10 @@ export default function BulkCertificates() {
   const currentRole = currentUser?.admin?.role || currentUser?.role;
   const isSuperAdmin = currentRole === "SuperAdmin";
 
-  const initialTab = searchParams.get("tab") === "batches" ? "batches" : "create";
+  const initialTab = searchParams.get("tab") || "create";
   const [activeTab, setActiveTab] = useState(initialTab);
   const [pendingCount, setPendingCount] = useState(0);
+  const [trashCount, setTrashCount] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [signaturePreview, setSignaturePreview] = useState(null);
@@ -68,9 +70,25 @@ export default function BulkCertificates() {
     }
   };
 
+  // Fetch trash count for Super Admin
+  const fetchTrashCount = async () => {
+    if (!isSuperAdmin) return;
+    try {
+      const response = await certificateService.getTrashCertificates({ limit: 1 });
+      if (response.data?.data?.pagination) {
+        setTrashCount(response.data.data.pagination.total || 0);
+      }
+    } catch {
+      // silent fallback
+    }
+  };
+
   useEffect(() => {
     fetchPendingCount();
-  }, [activeTab]);
+    if (isSuperAdmin) {
+      fetchTrashCount();
+    }
+  }, [activeTab, isSuperAdmin]);
 
   useEffect(() => {
     const fetchLatestSignature = async () => {
@@ -313,6 +331,32 @@ export default function BulkCertificates() {
             </span>
           )}
         </button>
+
+        {isSuperAdmin && (
+          <button
+            type="button"
+            onClick={() => handleTabChange("trash")}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold uppercase transition-all cursor-pointer whitespace-nowrap relative ${
+              activeTab === "trash"
+                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/25"
+                : "text-text-muted hover:text-rose-500 hover:bg-rose-500/10 border border-transparent"
+            }`}
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>7-Day Trash & Recovery</span>
+            {trashCount > 0 && (
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                  activeTab === "trash"
+                    ? "bg-white text-rose-600"
+                    : "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30"
+                }`}
+              >
+                {trashCount}
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
       {/* View 1: Approval Requests & Batches */}
@@ -321,6 +365,11 @@ export default function BulkCertificates() {
           isSuperAdmin={isSuperAdmin}
           onSwitchToCreate={() => handleTabChange("create")}
         />
+      )}
+
+      {/* View 2: Super Admin 7-Day TTL Trash & Recovery */}
+      {activeTab === "trash" && isSuperAdmin && (
+        <CertificateTrashSection isSuperAdmin={isSuperAdmin} />
       )}
 
       {/* View 2: Form */}
