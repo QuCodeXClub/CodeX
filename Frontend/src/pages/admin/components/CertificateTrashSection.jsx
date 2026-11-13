@@ -17,8 +17,10 @@ import {
   Layers,
 } from "lucide-react";
 import { certificateService } from "../../../services/certificateService";
+import { useConfirm } from "../../../context/ConfirmContext";
 
 export default function CertificateTrashSection({ isSuperAdmin }) {
+  const confirm = useConfirm();
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
@@ -86,9 +88,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
 
   // Handle Permanently Hard Delete Single Certificate
   const handlePermanentDelete = async (cert) => {
-    const isConfirmed = window.confirm(
-      `⚠️ PERMANENT DELETE WARNING:\n\nAre you sure you want to permanently delete certificate #${cert.certificateId} for ${cert.studentName}?\n\nThis will bypass the 7-day TTL and CANNOT be undone.`
-    );
+    const isConfirmed = await confirm({
+      title: "Permanently Delete Certificate",
+      message: `Are you sure you want to permanently delete certificate #${cert.certificateId} for ${cert.studentName}? This will bypass the 7-day TTL and CANNOT be undone.`,
+      confirmText: "Delete Permanently",
+      cancelText: "Keep in Trash",
+      type: "danger",
+    });
     if (!isConfirmed) return;
 
     setActionLoadingId(cert._id);
@@ -111,9 +117,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
 
   // Handle Restore All
   const handleRestoreAll = async () => {
-    const isConfirmed = window.confirm(
-      `Are you sure you want to restore ALL ${pagination.total} soft-deleted certificates back to active status?`
-    );
+    const isConfirmed = await confirm({
+      title: "Restore All Certificates",
+      message: `Are you sure you want to restore all ${pagination.total} soft-deleted certificates back to active status? They will immediately be publicly verifiable again.`,
+      confirmText: "Restore All",
+      cancelText: "Cancel",
+      type: "success",
+    });
     if (!isConfirmed) return;
 
     setBulkActionLoading(true);
@@ -136,9 +146,13 @@ export default function CertificateTrashSection({ isSuperAdmin }) {
 
   // Handle Empty Trash
   const handleEmptyTrash = async () => {
-    const isConfirmed = window.confirm(
-      `🚨 EMPTY TRASH WARNING:\n\nAre you sure you want to permanently delete ALL ${pagination.total} certificates in trash?\n\nThis will immediately purge them from MongoDB and CANNOT be undone.`
-    );
+    const isConfirmed = await confirm({
+      title: "Empty Certificate Trash",
+      message: `Are you sure you want to permanently delete all ${pagination.total} certificates in trash? This will immediately purge them from MongoDB and cannot be undone.`,
+      confirmText: "Empty Trash Now",
+      cancelText: "Cancel",
+      type: "danger",
+    });
     if (!isConfirmed) return;
 
     setBulkActionLoading(true);
