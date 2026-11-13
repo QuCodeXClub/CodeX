@@ -104,10 +104,10 @@ export const parseCertificateCsv = (csvText) => {
   }
 
   const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
-  const seenEmails = new Set();
+  const emailMap = new Map();
   const students = [];
+  const duplicateConflicts = [];
   let skippedCount = 0;
-  let duplicateCount = 0;
 
   for (let i = startIndex; i < rawLines.length; i++) {
     const cols = tokenizeCsvLine(rawLines[i]);
@@ -120,15 +120,47 @@ export const parseCertificateCsv = (csvText) => {
     const position = normalizePosition(rawPos);
 
     if (name && email && emailRegex.test(email)) {
-      if (!seenEmails.has(email)) {
-        seenEmails.add(email);
-        students.push({ name, email, position });
+      if (emailMap.has(email)) {
+        const existing = emailMap.get(email);
+        duplicateConflicts.push({
+          email,
+          firstRow: existing.rowNumber,
+          firstName: existing.name,
+          duplicateRow: i + 1,
+          duplicateName: name,
+          isNameConflict: existing.name.toLowerCase() !== name.toLowerCase(),
+        });
       } else {
-        duplicateCount++;
+        emailMap.set(email, { name, rowNumber: i + 1 });
+        students.push({ name, email, position });
       }
     } else {
       skippedCount++;
     }
+  }
+
+  // If any duplicate emails or conflicting names are detected, HALT processing and display detailed error
+  if (duplicateConflicts.length > 0) {
+    const errorDetails = duplicateConflicts
+      .slice(0, 5)
+      .map((c) =>
+        c.isNameConflict
+          ? `• Email "${c.email}" is assigned to conflicting names: "${c.firstName}" (Row ${c.firstRow}) and "${c.duplicateName}" (Row ${c.duplicateRow})`
+          : `• Duplicate email "${c.email}" found on Row ${c.firstRow} and Row ${c.duplicateRow}`
+      )
+      .join('\n');
+
+    const totalConflicts = duplicateConflicts.length;
+    const moreText = totalConflicts > 5 ? `\n...and ${totalConflicts - 5} more conflict(s).` : '';
+
+    return {
+      success: false,
+      students: [],
+      skippedCount,
+      duplicateCount: totalConflicts,
+      error: `Cannot process batch due to duplicate email conflict:\n${errorDetails}${moreText}\n\nEach student must have a unique email address. Please resolve these entries in your CSV file before uploading.`,
+      duplicateConflicts,
+    };
   }
 
   if (students.length === 0) {

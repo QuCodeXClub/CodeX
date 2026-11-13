@@ -44,22 +44,50 @@ const generateBulkCertificates = asyncHandler(async (req, res) => {
     finalSignatureUrl = signatureImage.secure_url || signatureImage.url;
   }
 
-  // Deduplicate students by normalized email to prevent duplicate jobs and race conditions
-  const seenEmails = new Set();
-  const validStudents = [];
-  for (const s of (students || [])) {
-    if (s && s.name && s.email) {
+  // Validate duplicate emails / name conflicts: Halt batch processing if duplicate emails are present
+  const emailMap = new Map();
+  const duplicateErrors = [];
+
+  for (let i = 0; i < (students || []).length; i++) {
+    const s = students[i];
+    if (s && s.email) {
       const email = s.email.trim().toLowerCase();
-      if (!seenEmails.has(email)) {
-        seenEmails.add(email);
-        validStudents.push({
-          name: s.name.trim(),
-          email,
-          position: s.position?.trim() || 'Participant',
-        });
+      const name = (s.name || '').trim();
+
+      if (emailMap.has(email)) {
+        const existing = emailMap.get(email);
+        if (existing.name.toLowerCase() !== name.toLowerCase()) {
+          duplicateErrors.push(
+            `Email "${email}" is assigned to conflicting student names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+          );
+        } else {
+          duplicateErrors.push(
+            `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+          );
+        }
+      } else {
+        emailMap.set(email, { name, index: i });
       }
     }
   }
+
+  if (duplicateErrors.length > 0) {
+    const detailList = duplicateErrors.slice(0, 5).map((err) => `• ${err}`).join('\n');
+    const extraCount = duplicateErrors.length > 5 ? `\n...and ${duplicateErrors.length - 5} more conflict(s).` : '';
+    throw new ApiError(
+      400,
+      `Cannot process certificate batch due to duplicate email conflict:\n${detailList}${extraCount}\n\nEach recipient must have a unique email address. Please resolve these entries in your CSV/roster before submitting.`
+    );
+  }
+
+  const validStudents = Array.from(emailMap.entries()).map(([email, info]) => {
+    const original = students[info.index];
+    return {
+      name: info.name,
+      email,
+      position: original.position?.trim() || 'Participant',
+    };
+  });
 
   if (validStudents.length === 0) {
     throw new ApiError(400, 'No valid student records provided');
@@ -362,8 +390,12 @@ const rejectCertificateBatch = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Certificate batch not found');
   }
 
-  if (batch.status === 'REJECTED') {
-    throw new ApiError(400, `Batch #${batch.batchId} is already rejected.`);
+  // Once a certificate batch is approved, it can NEVER be rejected or revoked
+  if (batch.status !== 'PENDING_APPROVAL') {
+    throw new ApiError(
+      400,
+      `Cannot reject batch #${batch.batchId}. Once approved by Super Admin, a certificate batch cannot be rejected or revoked.`
+    );
   }
 
   batch.status = 'REJECTED';
@@ -478,6 +510,7 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
   }
 
   // Update students roster if provided
+  let validStudents = null;
   if (studentsStr || req.body.students) {
     let rawStudents;
     if (studentsStr) {
@@ -491,74 +524,147 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
     }
 
     if (Array.isArray(rawStudents)) {
-      const seenEmails = new Set();
-      const validStudents = [];
-      for (const s of rawStudents) {
-        if (s && s.name && s.email) {
+      const emailMap = new Map();
+      const duplicateErrors = [];
+
+      for (let i = 0; i < rawStudents.length; i++) {
+        const s = rawStudents[i];
+        if (s && s.email) {
           const email = s.email.trim().toLowerCase();
-          if (!seenEmails.has(email)) {
-            seenEmails.add(email);
-            validStudents.push({
-              name: s.name.trim(),
-              email,
-              position: s.position?.trim() || 'Participant',
-            });
+          const name = (s.name || '').trim();
+
+          if (emailMap.has(email)) {
+            const existing = emailMap.get(email);
+            if (existing.name.toLowerCase() !== name.toLowerCase()) {
+              duplicateErrors.push(
+                `Email "${email}" is assigned to conflicting student names: "${existing.name}" (Row ${existing.index + 1}) and "${name}" (Row ${i + 1})`
+              );
+            } else {
+              duplicateErrors.push(
+                `Duplicate email "${email}" found on Row ${existing.index + 1} and Row ${i + 1}`
+              );
+            }
+          } else {
+            emailMap.set(email, { name, index: i });
           }
         }
       }
 
+      if (duplicateErrors.length > 0) {
+        const detailList = duplicateErrors.slice(0, 5).map((err) => `• ${err}`).join('\n');
+        const extraCount = duplicateErrors.length > 5 ? `\n...and ${duplicateErrors.length - 5} more conflict(s).` : '';
+        throw new ApiError(
+          400,
+          `Cannot process batch update due to duplicate email conflict:\n${detailList}${extraCount}\n\nEach recipient must have a unique email address.`
+        );
+      }
+
+      validStudents = Array.from(emailMap.entries()).map(([email, info]) => {
+        const original = rawStudents[info.index];
+        return {
+          name: info.name,
+          email,
+          position: original.position?.trim() || 'Participant',
+        };
+      });
+
       if (validStudents.length === 0) {
         throw new ApiError(400, 'A certificate batch must contain at least one valid student.');
       }
-
-      batch.students = validStudents;
-      batch.studentCount = validStudents.length;
     }
   }
 
-  // When an edit is performed on a batch, create a normalized deletion record and soft-delete prior certificates strictly for this batch into 7-day TTL recovery trash
-  const deletionRecord = await CertificateDeletion.create({
-    deletedAt: new Date(),
-    deletedBy: req.admin._id,
-    deletedByName: req.admin.name || 'Admin',
-    reason: `Batch #${batch.batchId} updated/edited`,
-    batchId: batch._id,
-  });
+  const isAlreadyApproved =
+    batch.status === 'COMPLETED' || batch.status === 'APPROVED' || batch.status === 'PROCESSING';
 
-  const certDeleteResult = await Certificate.updateMany(
-    { batchId: batch._id, isDeleted: { $ne: true } },
-    {
-      $set: {
-        isDeleted: true,
-        deletedAt: deletionRecord.deletedAt,
-        deletionId: deletionRecord._id,
-      },
-      $unset: {
-        deletedBy: 1,
-        deletedByName: 1,
-        deleteReason: 1,
-      },
+  if (isAlreadyApproved) {
+    // 1. Update event metadata in-place on existing active certificates of this batch (never delete them)
+    const certUpdateFields = {};
+    if (eventName && eventName.trim()) certUpdateFields.eventName = batch.eventName;
+    if (eventDate) certUpdateFields.eventDate = batch.eventDate;
+    if (coordinatorName && coordinatorName.trim()) certUpdateFields.coordinatorName = batch.coordinatorName;
+    if (batch.signatureImage) certUpdateFields.signatureImage = batch.signatureImage;
+
+    if (Object.keys(certUpdateFields).length > 0) {
+      await Certificate.updateMany(
+        { batchId: batch._id, isDeleted: { $ne: true } },
+        { $set: certUpdateFields }
+      );
     }
-  );
 
-  await BackgroundJob.updateMany(
-    {
-      'payload.batchId': batch._id,
-      status: { $in: ['PENDING', 'PROCESSING'] },
-    },
-    {
-      status: 'SUPPRESSED',
-      lastError: `Batch #${batch.batchId} was edited. Previous queue jobs suppressed.`,
+    // 2. Preserve all existing approved members (cannot delete members), update details in-place, and append new members
+    const existingStudentsMap = new Map();
+    for (const s of (batch.students || [])) {
+      existingStudentsMap.set(s.email.toLowerCase().trim(), s);
     }
-  );
 
-  // Reset status to PENDING_APPROVAL so the freshly updated batch can be reviewed and authorized
+    const newStudents = [];
+    if (Array.isArray(validStudents)) {
+      for (const s of validStudents) {
+        const email = s.email.toLowerCase().trim();
+        if (!existingStudentsMap.has(email)) {
+          // Brand new member added to approved batch
+          newStudents.push(s);
+          existingStudentsMap.set(email, s);
+        } else {
+          // Existing member: update name or award/position in-place
+          const existing = existingStudentsMap.get(email);
+          existing.name = s.name.trim();
+          existing.position = s.position?.trim() || existing.position || 'Participant';
+          existingStudentsMap.set(email, existing);
+
+          await Certificate.updateOne(
+            { batchId: batch._id, studentEmail: email, isDeleted: { $ne: true } },
+            { $set: { studentName: s.name.trim(), position: existing.position } }
+          );
+        }
+      }
+    }
+
+    batch.students = Array.from(existingStudentsMap.values());
+    batch.studentCount = batch.students.length;
+
+    // 3. If new members were added, immediately queue generation strictly for the new members
+    if (newStudents.length > 0) {
+      for (const student of newStudents) {
+        await queueService.enqueueJob('CERTIFICATE_BULK', {
+          batchId: batch._id,
+          eventName: batch.eventName,
+          eventDate: batch.eventDate,
+          coordinatorName: batch.coordinatorName,
+          student,
+          finalSignatureUrl: batch.signatureImage,
+        });
+      }
+      batch.status = 'PROCESSING';
+    }
+
+    await batch.save();
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          batch,
+          newMembersAdded: newStudents.length,
+          deletedCertificatesCount: 0,
+        },
+        `Batch #${batch.batchId} updated successfully. Event details updated in-place.${
+          newStudents.length > 0
+            ? ` ${newStudents.length} new member(s) queued for generation.`
+            : ' All existing approved member certificates preserved.'
+        }`
+      )
+    );
+  }
+
+  // For unapproved batches (PENDING_APPROVAL), update metadata and roster freely
+  if (Array.isArray(validStudents)) {
+    batch.students = validStudents;
+    batch.studentCount = validStudents.length;
+  }
   batch.status = 'PENDING_APPROVAL';
   batch.rejectionReason = '';
-  batch.approvedBy = undefined;
-  batch.approvedByName = undefined;
-  batch.approvedAt = undefined;
-
   await batch.save();
 
   return res.status(200).json(
@@ -566,13 +672,9 @@ const updateCertificateBatch = asyncHandler(async (req, res) => {
       200,
       {
         batch,
-        deletedCertificatesCount: certDeleteResult.modifiedCount || 0,
+        deletedCertificatesCount: 0,
       },
-      `Certificate batch #${batch.batchId} updated successfully.${
-        certDeleteResult.modifiedCount > 0
-          ? ` ${certDeleteResult.modifiedCount} outdated certificate(s) moved to 7-day recovery trash.`
-          : ''
-      } Ready for review & authorization.`
+      `Certificate batch #${batch.batchId} updated successfully. Ready for review & authorization.`
     )
   );
 });
