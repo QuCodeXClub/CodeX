@@ -62,7 +62,7 @@ function GlobalMessage() {
               Security Rate Limit Protection
             </span>
           )}
-          <span>{message}</span>
+          <span className="whitespace-pre-line">{message}</span>
         </div>
 
         <button

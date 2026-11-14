@@ -36,9 +36,9 @@ export const normalizePosition = (rawPosition) => {
 
 /**
  * Robust RFC-4180 compliant CSV line tokenizer
- * Splits a single CSV line into columns, respecting quoted strings with embedded commas and quotes
+ * Splits a single CSV line into columns, respecting quoted strings with embedded delimiters and quotes
  */
-export const tokenizeCsvLine = (line) => {
+export const tokenizeCsvLine = (line, delimiter = ',') => {
   const result = [];
   let current = '';
   let inQuotes = false;
@@ -54,16 +54,38 @@ export const tokenizeCsvLine = (line) => {
       } else {
         inQuotes = !inQuotes;
       }
-    } else if (char === ',' && !inQuotes) {
-      result.push(current.trim());
+    } else if (char === delimiter && !inQuotes) {
+      let val = current.trim();
+      if (val.startsWith('"') && val.endsWith('"') && val.length >= 2) {
+        val = val.slice(1, -1).trim();
+      }
+      result.push(val);
       current = '';
     } else {
       current += char;
     }
   }
 
-  result.push(current.trim());
+  let val = current.trim();
+  if (val.startsWith('"') && val.endsWith('"') && val.length >= 2) {
+    val = val.slice(1, -1).trim();
+  }
+  result.push(val);
   return result;
+};
+
+/**
+ * Detect delimiter by analyzing header row (comma, semicolon, or tab)
+ */
+const detectDelimiter = (firstLine) => {
+  if (!firstLine) return ',';
+  const semicolons = (firstLine.match(/;/g) || []).length;
+  const commas = (firstLine.match(/,/g) || []).length;
+  const tabs = (firstLine.match(/\t/g) || []).length;
+
+  if (tabs > commas && tabs > semicolons) return '\t';
+  if (semicolons > commas) return ';';
+  return ',';
 };
 
 /**
@@ -71,16 +93,18 @@ export const tokenizeCsvLine = (line) => {
  */
 export const parseCertificateCsv = (csvText) => {
   if (!csvText || typeof csvText !== 'string') {
-    return { success: false, students: [], skippedCount: 0, error: 'Empty file' };
+    return { success: false, students: [], skippedCount: 0, duplicateCount: 0, error: 'Empty file' };
   }
 
-  // Strip leading UTF-8 Byte Order Mark (\uFEFF) if present (common in Excel exports)
-  const cleanText = csvText.replace(/^\uFEFF/, '').trim();
-  const rawLines = cleanText.split(/\r?\n/).filter((l) => l.trim() !== '');
+  // Strip leading UTF-8 Byte Order Mark (\uFEFF) and zero-width spaces
+  const cleanText = csvText.replace(/^[\uFEFF\u200B\u200C\u200D\uFFFD]+/, '').trim();
+  const rawLines = cleanText.split(/\r\n|\r|\n/).map((l) => l.trim()).filter((l) => l !== '');
 
   if (rawLines.length === 0) {
-    return { success: false, students: [], skippedCount: 0, error: 'CSV file contains no rows' };
+    return { success: false, students: [], skippedCount: 0, duplicateCount: 0, error: 'CSV file contains no rows' };
   }
+
+  const delimiter = detectDelimiter(rawLines[0]);
 
   let startIndex = 0;
   let nameCol = 0;
@@ -88,35 +112,58 @@ export const parseCertificateCsv = (csvText) => {
   let posCol = 2;
 
   // Header detection
-  const firstRowCols = tokenizeCsvLine(rawLines[0]);
+  const firstRowCols = tokenizeCsvLine(rawLines[0], delimiter);
   const hasHeader = firstRowCols.some((col) =>
-    /name|email|position|role|award/i.test(col)
+    /name|student|candidate|recipient|person|email|mail|position|role|award|category|status|rank/i.test(col)
   );
 
   if (hasHeader) {
     startIndex = 1;
+    let foundName = false;
+    let foundEmail = false;
+    let foundPos = false;
+
     firstRowCols.forEach((col, idx) => {
-      const lower = col.toLowerCase();
-      if (/name|student/i.test(lower)) nameCol = idx;
-      else if (/email|mail/i.test(lower)) emailCol = idx;
-      else if (/position|role|award|category|status/i.test(lower)) posCol = idx;
+      const lower = col.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!foundName && /name|student|candidate|recipient|person/.test(lower)) {
+        nameCol = idx;
+        foundName = true;
+      } else if (!foundEmail && /email|mail/.test(lower)) {
+        emailCol = idx;
+        foundEmail = true;
+      } else if (!foundPos && /position|role|award|category|status|rank|designation/.test(lower)) {
+        posCol = idx;
+        foundPos = true;
+      }
     });
+
+    if (!foundEmail) {
+      firstRowCols.forEach((col, idx) => {
+        if (/mail/i.test(col)) emailCol = idx;
+      });
+    }
   }
 
-  const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
   const emailMap = new Map();
   const students = [];
   const duplicateConflicts = [];
   let skippedCount = 0;
 
   for (let i = startIndex; i < rawLines.length; i++) {
-    const cols = tokenizeCsvLine(rawLines[i]);
+    const cols = tokenizeCsvLine(rawLines[i], delimiter);
+    // If row is empty, skip cleanly
+    if (cols.every((c) => !c || c.trim() === '')) {
+      continue;
+    }
+
     const rawName = cols[nameCol] || '';
     const rawEmail = cols[emailCol] || '';
     const rawPos = cols[posCol] || 'Participant';
 
     const name = rawName.trim();
-    const email = rawEmail.trim().toLowerCase();
+    // Clean potential angle brackets or spaces in emails
+    const email = rawEmail.trim().replace(/^<|>$/g, '').toLowerCase();
     const position = normalizePosition(rawPos);
 
     if (name && email && emailRegex.test(email)) {
@@ -139,6 +186,8 @@ export const parseCertificateCsv = (csvText) => {
     }
   }
 
+  const duplicateCount = duplicateConflicts.length;
+
   // If any duplicate emails or conflicting names are detected, HALT processing and display detailed error
   if (duplicateConflicts.length > 0) {
     const errorDetails = duplicateConflicts
@@ -150,14 +199,13 @@ export const parseCertificateCsv = (csvText) => {
       )
       .join('\n');
 
-    const totalConflicts = duplicateConflicts.length;
-    const moreText = totalConflicts > 5 ? `\n...and ${totalConflicts - 5} more conflict(s).` : '';
+    const moreText = duplicateCount > 5 ? `\n...and ${duplicateCount - 5} more conflict(s).` : '';
 
     return {
       success: false,
       students: [],
       skippedCount,
-      duplicateCount: totalConflicts,
+      duplicateCount,
       error: `Cannot process batch due to duplicate email conflict:\n${errorDetails}${moreText}\n\nEach student must have a unique email address. Please resolve these entries in your CSV file before uploading.`,
       duplicateConflicts,
     };
@@ -168,7 +216,7 @@ export const parseCertificateCsv = (csvText) => {
       success: false,
       students: [],
       skippedCount,
-      duplicateCount,
+      duplicateCount: 0,
       error: 'No valid student records found. Please ensure each row has a valid Name and Email.',
     };
   }
@@ -177,7 +225,7 @@ export const parseCertificateCsv = (csvText) => {
     success: true,
     students,
     skippedCount,
-    duplicateCount,
+    duplicateCount: 0,
     error: null,
   };
 };

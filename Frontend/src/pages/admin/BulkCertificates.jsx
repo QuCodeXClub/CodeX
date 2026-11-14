@@ -157,6 +157,32 @@ export default function BulkCertificates() {
           if (fields.length === 1 && !fields[0].name && !fields[0].email) {
             replace(students);
           } else {
+            // Check for duplicates with existing fields in the form
+            const existingMap = new Map();
+            fields.forEach((f, idx) => {
+              if (f.email?.trim()) {
+                existingMap.set(f.email.trim().toLowerCase(), { name: f.name?.trim(), row: idx + 1 });
+              }
+            });
+
+            const overlaps = [];
+            students.forEach((s) => {
+              if (existingMap.has(s.email.toLowerCase())) {
+                const ex = existingMap.get(s.email.toLowerCase());
+                overlaps.push(
+                  ex.name?.toLowerCase() !== s.name?.toLowerCase()
+                    ? `• Email "${s.email}" in CSV conflicts with existing student "${ex.name}" (Row ${ex.row})`
+                    : `• Email "${s.email}" already exists on Row ${ex.row}`
+                );
+              }
+            });
+
+            if (overlaps.length > 0) {
+              const more = overlaps.length > 5 ? `\n...and ${overlaps.length - 5} more conflict(s).` : '';
+              dispatch(setError(`Cannot append CSV records due to duplicate emails with existing entries:\n${overlaps.slice(0, 5).join('\n')}${more}`));
+              return;
+            }
+
             append(students);
           }
 

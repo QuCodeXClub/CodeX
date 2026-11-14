@@ -251,6 +251,35 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
           return;
         }
 
+        // Check for duplicates between CSV and existing students in the edit modal
+        const existingMap = new Map();
+        editForm.students.forEach((s, idx) => {
+          if (s.email?.trim()) {
+            existingMap.set(s.email.trim().toLowerCase(), { name: s.name?.trim(), row: idx + 1 });
+          }
+        });
+
+        const overlaps = [];
+        students.forEach((s) => {
+          if (existingMap.has(s.email.toLowerCase())) {
+            const ex = existingMap.get(s.email.toLowerCase());
+            overlaps.push(
+              ex.name?.toLowerCase() !== s.name?.toLowerCase()
+                ? `• Email "${s.email}" in CSV conflicts with existing batch member "${ex.name}" (Row ${ex.row})`
+                : `• Email "${s.email}" already exists in this batch on Row ${ex.row}`
+            );
+          }
+        });
+
+        if (overlaps.length > 0) {
+          const more = overlaps.length > 5 ? `\n...and ${overlaps.length - 5} more conflict(s).` : '';
+          setFeedback({
+            type: "error",
+            text: `Cannot import CSV records due to duplicate emails with existing batch entries:\n${overlaps.slice(0, 5).join('\n')}${more}`,
+          });
+          return;
+        }
+
         setEditForm((prev) => ({
           ...prev,
           students: [...prev.students, ...students],
@@ -545,7 +574,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             ) : (
               <AlertTriangle className="w-4 h-4 shrink-0" />
             )}
-            <span>{feedback.text}</span>
+            <span className="whitespace-pre-line">{feedback.text}</span>
           </div>
           <button
             onClick={() => setFeedback({ type: "", text: "" })}
