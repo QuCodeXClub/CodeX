@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Loader2,
   AlertTriangle,
+  AlertCircle,
   User,
   Calendar,
   Mail,
@@ -55,6 +56,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
   });
   const [editLoading, setEditLoading] = useState(false);
   const [editFilePreview, setEditFilePreview] = useState(null);
+  const [modalNotice, setModalNotice] = useState(null);
   const editCsvInputRef = useRef(null);
 
   const fetchBatches = useCallback(async () => {
@@ -176,6 +178,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       setActionLoadingId(batchSummary._id);
       const res = await certificateService.getCertificateBatchById(batchSummary._id);
       const fullBatch = res.data || batchSummary;
+      setModalNotice(null);
       setEditingBatch(fullBatch);
       setEditForm({
         eventName: fullBatch.eventName || "",
@@ -244,10 +247,58 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     reader.onload = (event) => {
       try {
         const text = event.target.result;
-        const { success, students, skippedCount, error } = parseCertificateCsv(text);
+        const {
+          success,
+          students,
+          skippedCount,
+          skippedRows,
+          skippedDetails,
+          error,
+        } = parseCertificateCsv(text);
 
         if (!success) {
-          setFeedback({ type: "error", text: error || "Could not parse valid student records from CSV." });
+          const errMsg = error || "Could not parse valid student records from CSV.";
+          setFeedback({ type: "error", text: errMsg });
+          setModalNotice({
+            type: "error",
+            title: "CSV Import Failed",
+            details: errMsg,
+          });
+          return;
+        }
+
+        // Check for duplicates between CSV and existing students in the edit modal
+        const existingMap = new Map();
+        editForm.students.forEach((s, idx) => {
+          if (s.email?.trim()) {
+            existingMap.set(s.email.trim().toLowerCase(), { name: s.name?.trim(), row: idx + 1 });
+          }
+        });
+
+        const overlaps = [];
+        students.forEach((s) => {
+          if (existingMap.has(s.email.toLowerCase())) {
+            const ex = existingMap.get(s.email.toLowerCase());
+            overlaps.push(
+              ex.name?.toLowerCase() !== s.name?.toLowerCase()
+                ? `• Email "${s.email}" in CSV conflicts with existing batch member "${ex.name}" (Row ${ex.row})`
+                : `• Email "${s.email}" already exists in this batch on Row ${ex.row}`
+            );
+          }
+        });
+
+        if (overlaps.length > 0) {
+          const more = overlaps.length > 5 ? `\n...and ${overlaps.length - 5} more conflict(s).` : '';
+          const conflictMsg = `Cannot import CSV records due to duplicate emails with existing batch entries:\n${overlaps.slice(0, 5).join('\n')}${more}`;
+          setFeedback({
+            type: "error",
+            text: conflictMsg,
+          });
+          setModalNotice({
+            type: "error",
+            title: "Duplicate Email Conflict with Batch Members",
+            details: conflictMsg,
+          });
           return;
         }
 
@@ -258,11 +309,28 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
 
         let msg = `Successfully imported ${students.length} student(s) from CSV.`;
         if (skippedCount > 0) {
-          msg += ` (${skippedCount} blank or invalid row(s) were skipped).`;
+          const warningDetails = `Imported ${students.length} student(s), but skipped ${skippedCount} invalid row(s):\n${skippedDetails}\n\nPlease check these entries and add them manually if needed.`;
+          setFeedback({ type: "warning", text: warningDetails });
+          setModalNotice({
+            type: "warning",
+            title: `Imported ${students.length} student(s) • ${skippedCount} Invalid Row(s) Skipped`,
+            details: skippedDetails,
+          });
+        } else {
+          setFeedback({ type: "success", text: msg });
+          setModalNotice({
+            type: "success",
+            title: "CSV Import Complete",
+            details: msg,
+          });
         }
-        setFeedback({ type: "success", text: msg });
       } catch (err) {
         setFeedback({ type: "error", text: "Failed to parse CSV file." });
+        setModalNotice({
+          type: "error",
+          title: "CSV Parsing Error",
+          details: "Failed to parse CSV file.",
+        });
       }
     };
     reader.readAsText(file);
@@ -323,9 +391,15 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
     if (conflictList.length > 0) {
       const detailList = conflictList.slice(0, 4).map((c) => `• ${c}`).join('\n');
       const more = conflictList.length > 4 ? `\n...and ${conflictList.length - 4} more conflict(s).` : '';
+      const conflictMsg = `Cannot update batch due to duplicate email conflict:\n${detailList}${more}\n\nEach student must have a unique email address.`;
       setFeedback({
         type: "error",
-        text: `Cannot update batch due to duplicate email conflict:\n${detailList}${more}\n\nEach student must have a unique email address.`,
+        text: conflictMsg,
+      });
+      setModalNotice({
+        type: "error",
+        title: "Duplicate Email Conflict",
+        details: conflictMsg,
       });
       return;
     }
@@ -354,11 +428,18 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
         setSelectedBatch(res.data || null);
       }
       setEditingBatch(null);
+      setModalNotice(null);
       fetchBatches();
     } catch (err) {
+      const errMsg = err?.response?.data?.message || err?.message || "Failed to update batch.";
       setFeedback({
         type: "error",
-        text: err?.response?.data?.message || err?.message || "Failed to update batch.",
+        text: errMsg,
+      });
+      setModalNotice({
+        type: "error",
+        title: "Update Failed",
+        details: errMsg,
       });
     } finally {
       setEditLoading(false);
@@ -534,10 +615,13 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       {/* Feedback banner */}
       {feedback.text && (
         <div
-          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${feedback.type === "success"
+          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${
+            feedback.type === "success"
               ? "bg-accent/15 text-accent border-accent/40"
+              : feedback.type === "warning"
+              ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40"
               : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/40"
-            }`}
+          }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === "success" ? (
@@ -545,7 +629,7 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             ) : (
               <AlertTriangle className="w-4 h-4 shrink-0" />
             )}
-            <span>{feedback.text}</span>
+            <span className="whitespace-pre-line">{feedback.text}</span>
           </div>
           <button
             onClick={() => setFeedback({ type: "", text: "" })}
@@ -1233,6 +1317,45 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
             {/* Scrollable Form Body */}
             <form onSubmit={handleSaveEdit} className="flex-1 overflow-hidden flex flex-col">
               <div className="p-3.5 sm:p-5 flex-1 overflow-y-auto space-y-3.5">
+                {/* Modal In-Form Notice / Error / Warning Banner */}
+                {modalNotice && (
+                  <div
+                    className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs font-mono transition-all shrink-0 ${
+                      modalNotice.type === "success"
+                        ? "bg-accent/15 border-accent/40 text-accent"
+                        : modalNotice.type === "warning"
+                        ? "bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300"
+                        : "bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5 flex-1">
+                      {modalNotice.type === "success" ? (
+                        <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-accent" />
+                      ) : modalNotice.type === "warning" ? (
+                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                      )}
+                      <div className="space-y-1 flex-1">
+                        <div className="font-bold uppercase tracking-wider text-[11px]">
+                          {modalNotice.title}
+                        </div>
+                        <div className="whitespace-pre-line text-[11px] leading-relaxed opacity-95">
+                          {modalNotice.details}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setModalNotice(null)}
+                      className="opacity-70 hover:opacity-100 text-xs font-bold shrink-0 cursor-pointer p-0.5"
+                      title="Dismiss notice"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
                 {/* Event Metadata Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0">
                   <div>
