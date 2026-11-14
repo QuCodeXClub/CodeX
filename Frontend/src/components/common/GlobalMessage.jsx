@@ -16,7 +16,8 @@ function GlobalMessage() {
 
   useEffect(() => {
     if (message) {
-      const displayDuration = isRateLimit ? 7000 : 4500;
+      const isMultiLine = message.includes("\n") || message.length > 80;
+      const displayDuration = isRateLimit ? 7000 : isMultiLine ? 9000 : 4500;
       const timer = setTimeout(() => {
         dispatch(clearError());
       }, displayDuration);

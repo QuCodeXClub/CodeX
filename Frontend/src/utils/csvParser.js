@@ -89,11 +89,35 @@ const detectDelimiter = (firstLine) => {
 };
 
 /**
- * Parses CSV text into a structured student roster with smart header detection and validation
+ * Produces user-friendly diagnostics explaining why an email is invalid
+ */
+export const explainEmailError = (rawEmail) => {
+  if (!rawEmail || !rawEmail.trim()) return 'Missing email address';
+  const clean = rawEmail.trim();
+  if (!clean.includes('@')) return `Email "${clean}" is missing "@" symbol`;
+  const parts = clean.split('@');
+  if (parts.length > 2) return `Email "${clean}" has multiple "@" symbols`;
+  if (!parts[0].trim()) return `Email "${clean}" is missing username before "@"`;
+  if (!parts[1].trim()) return `Email "${clean}" is missing domain after "@"`;
+  if (!parts[1].includes('.')) return `Email "${clean}" is missing domain extension (e.g. .com, .edu)`;
+  return `Invalid email format "${clean}"`;
+};
+
+/**
+ * Parses CSV text into a structured student roster with smart header detection,
+ * detailed error diagnostics, and duplicate detection
  */
 export const parseCertificateCsv = (csvText) => {
   if (!csvText || typeof csvText !== 'string') {
-    return { success: false, students: [], skippedCount: 0, duplicateCount: 0, error: 'Empty file' };
+    return {
+      success: false,
+      students: [],
+      skippedCount: 0,
+      skippedRows: [],
+      skippedDetails: '',
+      duplicateCount: 0,
+      error: 'Empty file',
+    };
   }
 
   // Strip leading UTF-8 Byte Order Mark (\uFEFF) and zero-width spaces
@@ -101,7 +125,15 @@ export const parseCertificateCsv = (csvText) => {
   const rawLines = cleanText.split(/\r\n|\r|\n/).map((l) => l.trim()).filter((l) => l !== '');
 
   if (rawLines.length === 0) {
-    return { success: false, students: [], skippedCount: 0, duplicateCount: 0, error: 'CSV file contains no rows' };
+    return {
+      success: false,
+      students: [],
+      skippedCount: 0,
+      skippedRows: [],
+      skippedDetails: '',
+      duplicateCount: 0,
+      error: 'CSV file contains no rows',
+    };
   }
 
   const delimiter = detectDelimiter(rawLines[0]);
@@ -148,11 +180,13 @@ export const parseCertificateCsv = (csvText) => {
   const emailMap = new Map();
   const students = [];
   const duplicateConflicts = [];
-  let skippedCount = 0;
+  const skippedRows = [];
 
   for (let i = startIndex; i < rawLines.length; i++) {
+    const rowNumber = i + 1; // 1-based row index in CSV file
     const cols = tokenizeCsvLine(rawLines[i], delimiter);
-    // If row is empty, skip cleanly
+
+    // If row is completely empty, skip cleanly without counting as skipped recipient
     if (cols.every((c) => !c || c.trim() === '')) {
       continue;
     }
@@ -161,34 +195,82 @@ export const parseCertificateCsv = (csvText) => {
     const rawEmail = cols[emailCol] || '';
     const rawPos = cols[posCol] || 'Participant';
 
-    const name = rawName.trim();
-    // Clean potential angle brackets or spaces in emails
-    const email = rawEmail.trim().replace(/^<|>$/g, '').toLowerCase();
+    const name = rawName.trim().replace(/^['"“‘]+|['"”’]+$/g, '');
+    // Clean angle brackets, wrapping quotes, and accidental trailing punctuation in emails
+    const email = rawEmail
+      .trim()
+      .replace(/^<|>$/g, '')
+      .replace(/^['"“‘]+|['"”’]+$/g, '')
+      .replace(/[.,;]+$/, '')
+      .toLowerCase();
     const position = normalizePosition(rawPos);
 
-    if (name && email && emailRegex.test(email)) {
-      if (emailMap.has(email)) {
-        const existing = emailMap.get(email);
-        duplicateConflicts.push({
-          email,
-          firstRow: existing.rowNumber,
-          firstName: existing.name,
-          duplicateRow: i + 1,
-          duplicateName: name,
-          isNameConflict: existing.name.toLowerCase() !== name.toLowerCase(),
-        });
-      } else {
-        emailMap.set(email, { name, rowNumber: i + 1 });
-        students.push({ name, email, position });
-      }
+    // Validation checks with granular diagnostics
+    if (!name && !email) {
+      skippedRows.push({
+        rowNumber,
+        name: '(empty name)',
+        email: '(empty email)',
+        reason: 'Both student Name and Email are empty',
+      });
+      continue;
+    }
+
+    if (!name) {
+      skippedRows.push({
+        rowNumber,
+        name: '(missing name)',
+        email: rawEmail.trim(),
+        reason: `Missing student Name for email "${rawEmail.trim()}"`,
+      });
+      continue;
+    }
+
+    if (!email) {
+      skippedRows.push({
+        rowNumber,
+        name,
+        email: '(missing email)',
+        reason: `Missing Email address for student "${name}"`,
+      });
+      continue;
+    }
+
+    if (!emailRegex.test(email)) {
+      skippedRows.push({
+        rowNumber,
+        name,
+        email: rawEmail.trim(),
+        reason: `${explainEmailError(rawEmail)} for student "${name}"`,
+      });
+      continue;
+    }
+
+    // Check duplicate within the CSV
+    if (emailMap.has(email)) {
+      const existing = emailMap.get(email);
+      duplicateConflicts.push({
+        email,
+        firstRow: existing.rowNumber,
+        firstName: existing.name,
+        duplicateRow: rowNumber,
+        duplicateName: name,
+        isNameConflict: existing.name.toLowerCase() !== name.toLowerCase(),
+      });
     } else {
-      skippedCount++;
+      emailMap.set(email, { name, rowNumber });
+      students.push({ name, email, position });
     }
   }
 
   const duplicateCount = duplicateConflicts.length;
+  const skippedCount = skippedRows.length;
+  const skippedDetails = skippedCount > 0
+    ? skippedRows.slice(0, 10).map((s) => `• Row ${s.rowNumber}: ${s.reason}`).join('\n')
+      + (skippedCount > 10 ? `\n...and ${skippedCount - 10} more invalid row(s).` : '')
+    : '';
 
-  // If any duplicate emails or conflicting names are detected, HALT processing and display detailed error
+  // If duplicate emails or conflicting names are detected, HALT processing and display detailed error
   if (duplicateConflicts.length > 0) {
     const errorDetails = duplicateConflicts
       .slice(0, 5)
@@ -205,6 +287,8 @@ export const parseCertificateCsv = (csvText) => {
       success: false,
       students: [],
       skippedCount,
+      skippedRows,
+      skippedDetails,
       duplicateCount,
       error: `Cannot process batch due to duplicate email conflict:\n${errorDetails}${moreText}\n\nEach student must have a unique email address. Please resolve these entries in your CSV file before uploading.`,
       duplicateConflicts,
@@ -216,8 +300,12 @@ export const parseCertificateCsv = (csvText) => {
       success: false,
       students: [],
       skippedCount,
+      skippedRows,
+      skippedDetails,
       duplicateCount: 0,
-      error: 'No valid student records found. Please ensure each row has a valid Name and Email.',
+      error: skippedCount > 0
+        ? `No valid student records could be imported from the CSV.\n\nErrors encountered:\n${skippedDetails}\n\nPlease correct these entries in your CSV file.`
+        : 'No valid student records found. Please ensure each row has a valid Name and Email.',
     };
   }
 
@@ -225,6 +313,8 @@ export const parseCertificateCsv = (csvText) => {
     success: true,
     students,
     skippedCount,
+    skippedRows,
+    skippedDetails,
     duplicateCount: 0,
     error: null,
   };

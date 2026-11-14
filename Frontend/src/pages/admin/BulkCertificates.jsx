@@ -21,9 +21,10 @@ import {
   Layers,
   Sparkles,
   AlertCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setError, setSuccess } from "../../context/messageSlice";
+import { setError, setSuccess, setWarning } from "../../context/messageSlice";
 import { certificateService } from "../../services/certificateService";
 import IssuedCertificatesModal from "./components/IssuedCertificatesModal";
 import CertificateBatchesSection from "./components/CertificateBatchesSection";
@@ -49,6 +50,7 @@ export default function BulkCertificates() {
   const [previousSignatureUrl, setPreviousSignatureUrl] = useState(null);
   const [isImportingCsv, setIsImportingCsv] = useState(false);
   const [importStatus, setImportStatus] = useState("");
+  const [csvNotice, setCsvNotice] = useState(null);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const csvInputRef = useRef(null);
 
@@ -147,10 +149,22 @@ export default function BulkCertificates() {
       setTimeout(() => {
         try {
           const text = event.target.result;
-          const { success, students, skippedCount, duplicateCount, error } = parseCertificateCsv(text);
+          const {
+            success,
+            students,
+            skippedCount,
+            skippedRows,
+            skippedDetails,
+            error,
+          } = parseCertificateCsv(text);
 
           if (!success) {
             dispatch(setError(error || "Could not parse valid student records from the CSV."));
+            setCsvNotice({
+              type: "error",
+              title: "CSV Import Failed",
+              details: error || "No valid student records could be parsed from the CSV.",
+            });
             return;
           }
 
@@ -179,21 +193,40 @@ export default function BulkCertificates() {
 
             if (overlaps.length > 0) {
               const more = overlaps.length > 5 ? `\n...and ${overlaps.length - 5} more conflict(s).` : '';
-              dispatch(setError(`Cannot append CSV records due to duplicate emails with existing entries:\n${overlaps.slice(0, 5).join('\n')}${more}`));
+              const overlapMsg = `Cannot append CSV records due to duplicate emails with existing entries:\n${overlaps.slice(0, 5).join('\n')}${more}`;
+              dispatch(setError(overlapMsg));
+              setCsvNotice({
+                type: "error",
+                title: "Duplicate Email Conflict with Existing Records",
+                details: overlapMsg,
+              });
               return;
             }
 
             append(students);
           }
 
-          let msg = `Successfully imported ${students.length} student(s) from CSV.`;
+          const baseMsg = `Successfully imported ${students.length} student(s) from CSV.`;
           if (skippedCount > 0) {
-            msg += ` (${skippedCount} blank/invalid row(s) skipped).`;
+            const warningMsg = `Imported ${students.length} student(s), but skipped ${skippedCount} invalid row(s):\n${skippedDetails}\n\nPlease review these entries and manually add them if needed.`;
+            dispatch(setWarning(warningMsg));
+            setCsvNotice({
+              type: "warning",
+              title: `Imported ${students.length} student(s) • ${skippedCount} Invalid Row(s) Skipped`,
+              details: skippedDetails,
+            });
+          } else {
+            dispatch(setSuccess(baseMsg));
+            setCsvNotice(null);
           }
-          dispatch(setSuccess(msg));
         } catch (err) {
           console.error("CSV import error:", err);
           dispatch(setError("Failed to parse CSV file."));
+          setCsvNotice({
+            type: "error",
+            title: "CSV Import Error",
+            details: "An unexpected error occurred while parsing the CSV file.",
+          });
         } finally {
           setIsImportingCsv(false);
           setImportStatus("");
@@ -670,6 +703,41 @@ export default function BulkCertificates() {
             <div className="flex items-center gap-3 p-4 rounded-xl bg-accent/10 border border-accent/30 text-accent font-mono text-xs font-semibold animate-pulse mb-6 shadow-sm">
               <Loader2 className="w-4 h-4 animate-spin shrink-0" />
               <span>{importStatus || "Importing student records from CSV..."}</span>
+            </div>
+          )}
+
+          {/* Detailed CSV Import Warning / Skipped Entries Notice */}
+          {csvNotice && (
+            <div
+              className={`flex items-start justify-between gap-3 p-4 rounded-xl border text-xs font-mono mb-6 shadow-sm transition-all ${
+                csvNotice.type === "warning"
+                  ? "bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300"
+                  : "bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300"
+              }`}
+            >
+              <div className="flex items-start gap-2.5 flex-1">
+                {csvNotice.type === "warning" ? (
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                )}
+                <div className="space-y-1.5 flex-1">
+                  <div className="font-bold uppercase tracking-wider text-[11px]">
+                    {csvNotice.title}
+                  </div>
+                  <div className="whitespace-pre-line text-[11px] leading-relaxed opacity-95">
+                    {csvNotice.details}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCsvNotice(null)}
+                className="opacity-70 hover:opacity-100 text-xs font-bold shrink-0 cursor-pointer p-1"
+                title="Dismiss notice"
+              >
+                ✕
+              </button>
             </div>
           )}
 
