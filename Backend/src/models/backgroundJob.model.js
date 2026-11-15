@@ -50,13 +50,34 @@ backgroundJobSchema.index({ status: 1, updatedAt: 1 });
 backgroundJobSchema.index({ type: 1, createdAt: -1 });
 backgroundJobSchema.index({ createdAt: -1 });
 
-// Production storage optimization: Auto-purge COMPLETED jobs after 30 days via MongoDB TTL engine
+// Production storage optimization: Auto-purge COMPLETED jobs after 14 days via MongoDB TTL engine
 // Prevents unbounded database disk growth from large stored email/payload structures
 backgroundJobSchema.index(
   { processedAt: 1 },
   {
-    expireAfterSeconds: 30 * 24 * 60 * 60,
+    expireAfterSeconds: 14 * 24 * 60 * 60,
     partialFilterExpression: { status: 'COMPLETED' },
+    name: 'ttl_completed_14d',
+  }
+);
+
+// Auto-purge SUPPRESSED jobs after 30 days
+backgroundJobSchema.index(
+  { processedAt: 1 },
+  {
+    expireAfterSeconds: 30 * 24 * 60 * 60,
+    partialFilterExpression: { status: 'SUPPRESSED' },
+    name: 'ttl_suppressed_30d',
+  }
+);
+
+// Auto-purge permanently FAILED jobs after 45 days
+backgroundJobSchema.index(
+  { processedAt: 1 },
+  {
+    expireAfterSeconds: 45 * 24 * 60 * 60,
+    partialFilterExpression: { status: 'FAILED' },
+    name: 'ttl_failed_45d',
   }
 );
 

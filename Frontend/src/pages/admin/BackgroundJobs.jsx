@@ -385,7 +385,7 @@ export default function BackgroundJobs() {
     if (job.type === "ANNOUNCEMENT_BULK") {
       return (
         <span className="text-text">
-          Broadcast: <strong>{p.subject}</strong> ({p.emailList?.length || 0} recipients)
+          Broadcast: <strong>{p.subject}</strong> ({p.recipientCount ?? p.emailList?.length ?? 0} recipients)
         </span>
       );
     }

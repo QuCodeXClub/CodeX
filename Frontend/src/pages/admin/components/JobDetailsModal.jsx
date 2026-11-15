@@ -196,10 +196,12 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
                   <span className="text-text break-all">{payload.student.deskNumber}</span>
                 </div>
               )}
-              {payload.emailList && (
+              {(payload.recipientCount !== undefined || payload.emailList) && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
                   <span className="text-text-muted shrink-0">Broadcast Recipients:</span>
-                  <span className="text-text font-bold">{payload.emailList.length} Recipients</span>
+                  <span className="text-text font-bold">
+                    {payload.recipientCount ?? payload.emailList?.length ?? 0} Recipients
+                  </span>
                 </div>
               )}
 

@@ -26,6 +26,7 @@ class QueueService {
 
     // In-memory cache for shared email templates (Storage Optimization)
     this.templateCache = new Map();
+    this.lastPruneTimestamp = 0;
   }
 
   /**
@@ -102,8 +103,9 @@ class QueueService {
       `[QueueService] High-Performance Job Worker started (Interval: ${intervalMs}ms, Max Rate: ${this.TARGET_MAX_EMAILS_PER_SEC}/s, Concurrency: ${this.CONCURRENCY_LIMIT}).`
     );
 
-    // Initial cache sync
+    // Initial cache sync and storage optimization prune
     this.syncBlocklistCache().catch(() => {});
+    this.pruneCompletedJobPayloads().catch(() => {});
 
     // Primary queue worker loop
     this.timerId = setInterval(async () => {
@@ -125,6 +127,12 @@ class QueueService {
         console.error('[QueueService] Error recovering stale jobs:', err)
       );
       this.syncBlocklistCache().catch(() => {});
+
+      // Every 6 hours, perform storage pruning
+      if (Date.now() - this.lastPruneTimestamp > 6 * 60 * 60 * 1000) {
+        this.lastPruneTimestamp = Date.now();
+        this.pruneCompletedJobPayloads().catch(() => {});
+      }
     }, 60000);
   }
 
@@ -141,6 +149,52 @@ class QueueService {
       this.staleRecoveryTimerId = null;
     }
     console.log('[QueueService] Background Job Worker stopped.');
+  }
+
+  /**
+   * Storage Optimization: Clean up oversized payload fields from legacy/completed jobs & auto-purge expired jobs
+   */
+  async pruneCompletedJobPayloads() {
+    try {
+      // 1. Unset heavy HTML, textMessage, signatureImage, and emailList from COMPLETED jobs
+      await BackgroundJob.updateMany(
+        {
+          status: 'COMPLETED',
+          $or: [
+            { 'payload.message': { $exists: true } },
+            { 'payload.html': { $exists: true } },
+            { 'payload.finalSignatureUrl': { $exists: true } },
+            { 'payload.emailList': { $exists: true } },
+          ],
+        },
+        {
+          $unset: {
+            'payload.message': '',
+            'payload.textMessage': '',
+            'payload.html': '',
+            'payload.finalSignatureUrl': '',
+            'payload.signatureImage': '',
+            'payload.emailList': '',
+          },
+        }
+      );
+
+      // 2. Programmatic safeguard cleanup for jobs exceeding TTL retention periods
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+      const fortyFiveDaysAgo = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
+
+      await BackgroundJob.deleteMany({
+        status: 'COMPLETED',
+        processedAt: { $lt: fourteenDaysAgo },
+      });
+
+      await BackgroundJob.deleteMany({
+        status: { $in: ['FAILED', 'SUPPRESSED'] },
+        processedAt: { $lt: fortyFiveDaysAgo },
+      });
+    } catch (err) {
+      console.warn('[QueueService] Storage pruning error (non-fatal):', err.message);
+    }
   }
 
   /**
@@ -348,6 +402,11 @@ class QueueService {
       await BackgroundJob.findByIdAndUpdate(job._id, {
         status: 'COMPLETED',
         processedAt: new Date(),
+        $unset: {
+          'payload.message': '',
+          'payload.textMessage': '',
+          'payload.html': '',
+        },
       });
     } catch (err) {
       const errorMsg = err.message || '';
@@ -509,6 +568,10 @@ class QueueService {
     await BackgroundJob.findByIdAndUpdate(job._id, {
       status: 'COMPLETED',
       processedAt: new Date(),
+      $unset: {
+        'payload.finalSignatureUrl': '',
+        'payload.signatureImage': '',
+      },
     });
 
     // Check if this completes the whole certificate batch
@@ -645,6 +708,12 @@ class QueueService {
     await BackgroundJob.findByIdAndUpdate(job._id, {
       status: 'COMPLETED',
       processedAt: new Date(),
+      $set: {
+        'payload.recipientCount': emailList?.length || 0,
+      },
+      $unset: {
+        'payload.emailList': '',
+      },
     });
   }
 }
