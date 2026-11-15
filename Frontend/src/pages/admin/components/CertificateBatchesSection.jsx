@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from "react";
 import { createPortal } from "react-dom";
 import {
   Award,
@@ -16,6 +16,7 @@ import {
   Calendar,
   Mail,
   ShieldCheck,
+  ChevronLeft,
   ChevronRight,
   Filter,
   Edit3,
@@ -31,6 +32,71 @@ import { certificateService } from "../../../services/certificateService";
 import { useConfirm } from "../../../context/ConfirmContext";
 import { parseCertificateCsv, downloadCertificateCsvTemplate } from "../../../utils/csvParser";
 
+// Memoized student row in edit modal to prevent re-rendering all rows on single keystroke
+const EditStudentRow = memo(function EditStudentRow({
+  student,
+  originalIndex,
+  displayIndex,
+  onChange,
+  onRemove,
+  canRemove,
+  removeTitle,
+}) {
+  return (
+    <tr className="hover:bg-card-hover/30">
+      <td className="p-1.5 pl-3 font-mono text-text-muted text-[11px]">
+        {displayIndex}
+      </td>
+      <td className="p-1.5">
+        <input
+          type="text"
+          value={student.name || ""}
+          onChange={(e) => onChange(originalIndex, "name", e.target.value)}
+          placeholder="Student Name"
+          required
+          className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </td>
+      <td className="p-1.5">
+        <input
+          type="email"
+          value={student.email || ""}
+          onChange={(e) => onChange(originalIndex, "email", e.target.value)}
+          placeholder="student@example.com"
+          required
+          className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
+        />
+      </td>
+      <td className="p-1.5">
+        <select
+          value={student.position || "Participant"}
+          onChange={(e) => onChange(originalIndex, "position", e.target.value)}
+          className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
+        >
+          <option value="Participant">Participant</option>
+          <option value="Winner">Winner</option>
+          <option value="Runner Up">Runner Up</option>
+          <option value="1st Runner-up">1st Runner-up</option>
+          <option value="2nd Runner-up">2nd Runner-up</option>
+          <option value="Volunteer">Volunteer</option>
+          <option value="Organizer">Organizer</option>
+        </select>
+      </td>
+      <td className="p-1.5 pr-3 text-right">
+        <button
+          type="button"
+          onClick={() => onRemove(originalIndex)}
+          disabled={!canRemove}
+          className="p-1 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+          title={removeTitle}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </td>
+    </tr>
+  );
+});
+
 export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCreate }) {
   const confirm = useConfirm();
   const [batches, setBatches] = useState([]);
@@ -43,6 +109,10 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
   const [rejectReason, setRejectReason] = useState("");
   const [studentSearch, setStudentSearch] = useState("");
   const [feedback, setFeedback] = useState({ type: "", text: "" });
+
+  // Detail Modal Pagination
+  const [detailPage, setDetailPage] = useState(1);
+  const [detailPageSize, setDetailPageSize] = useState(50);
 
   // Batch Editing State
   const [editingBatch, setEditingBatch] = useState(null);
@@ -58,6 +128,68 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
   const [editFilePreview, setEditFilePreview] = useState(null);
   const [modalNotice, setModalNotice] = useState(null);
   const editCsvInputRef = useRef(null);
+
+  // Edit Modal Pagination & Search State
+  const [editSearch, setEditSearch] = useState("");
+  const [editPage, setEditPage] = useState(1);
+  const [editPageSize, setEditPageSize] = useState(50);
+
+  // Detail Modal memoized filtered & paginated records
+  const detailFilteredStudents = useMemo(() => {
+    if (!selectedBatch?.students) return [];
+    if (!studentSearch.trim()) return selectedBatch.students;
+    const sq = studentSearch.toLowerCase().trim();
+    return selectedBatch.students.filter(
+      (s) =>
+        (s.name && s.name.toLowerCase().includes(sq)) ||
+        (s.email && s.email.toLowerCase().includes(sq)) ||
+        (s.position && s.position.toLowerCase().includes(sq)) ||
+        (s.certificateId && s.certificateId.toLowerCase().includes(sq))
+    );
+  }, [selectedBatch?.students, studentSearch]);
+
+  const detailTotalPages = Math.max(1, Math.ceil(detailFilteredStudents.length / detailPageSize));
+
+  const detailPaginatedStudents = useMemo(() => {
+    const start = (detailPage - 1) * detailPageSize;
+    return detailFilteredStudents.slice(start, start + detailPageSize);
+  }, [detailFilteredStudents, detailPage, detailPageSize]);
+
+  // Edit Modal memoized filtered & paginated records (with original indices preserved for 0ms lag mutation)
+  const editFilteredStudents = useMemo(() => {
+    const list = (editForm.students || []).map((student, originalIndex) => ({
+      student,
+      originalIndex,
+    }));
+    if (!editSearch.trim()) return list;
+    const query = editSearch.toLowerCase().trim();
+    return list.filter(
+      ({ student }) =>
+        (student.name && student.name.toLowerCase().includes(query)) ||
+        (student.email && student.email.toLowerCase().includes(query)) ||
+        (student.position && student.position.toLowerCase().includes(query))
+    );
+  }, [editForm.students, editSearch]);
+
+  const editTotalPages = Math.max(1, Math.ceil(editFilteredStudents.length / editPageSize));
+
+  const editPaginatedStudents = useMemo(() => {
+    const start = (editPage - 1) * editPageSize;
+    return editFilteredStudents.slice(start, start + editPageSize);
+  }, [editFilteredStudents, editPage, editPageSize]);
+
+  // Keep pagination within valid bounds
+  useEffect(() => {
+    if (detailPage > detailTotalPages) {
+      setDetailPage(Math.max(1, detailTotalPages));
+    }
+  }, [detailPage, detailTotalPages]);
+
+  useEffect(() => {
+    if (editPage > editTotalPages) {
+      setEditPage(Math.max(1, editTotalPages));
+    }
+  }, [editPage, editTotalPages]);
 
   const fetchBatches = useCallback(async () => {
     setLoading(true);
@@ -89,8 +221,11 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       const response = await certificateService.getCertificateBatchById(batchSummary._id);
       setSelectedBatch(response.data || batchSummary);
       setStudentSearch("");
+      setDetailPage(1);
     } catch {
       setSelectedBatch(batchSummary);
+      setStudentSearch("");
+      setDetailPage(1);
     }
   };
 
@@ -179,6 +314,8 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       const res = await certificateService.getCertificateBatchById(batchSummary._id);
       const fullBatch = res.data || batchSummary;
       setModalNotice(null);
+      setEditSearch("");
+      setEditPage(1);
       setEditingBatch(fullBatch);
       setEditForm({
         eventName: fullBatch.eventName || "",
@@ -205,39 +342,50 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
   };
 
   const handleAddEditStudent = () => {
-    setEditForm((prev) => ({
-      ...prev,
-      students: [...prev.students, { name: "", email: "", position: "Participant", isOriginal: false }],
-    }));
+    setEditForm((prev) => {
+      const newStudents = [
+        ...prev.students,
+        { name: "", email: "", position: "Participant", isOriginal: false },
+      ];
+      const targetPage = Math.ceil(newStudents.length / editPageSize);
+      setEditPage(targetPage);
+      return {
+        ...prev,
+        students: newStudents,
+      };
+    });
+    setEditSearch("");
   };
 
-  const handleRemoveEditStudent = (index) => {
-    const studentToRemove = editForm.students[index];
-    if (editingBatch?.status !== "PENDING_APPROVAL" && studentToRemove?.isOriginal) {
-      setFeedback({
-        type: "error",
-        text: "Cannot remove previously approved members from this batch. You may only edit details or add new members.",
-      });
-      return;
-    }
+  const handleRemoveEditStudent = useCallback((index) => {
+    setEditForm((prev) => {
+      const studentToRemove = prev.students[index];
+      if (editingBatch?.status !== "PENDING_APPROVAL" && studentToRemove?.isOriginal) {
+        setFeedback({
+          type: "error",
+          text: "Cannot remove previously approved members from this batch. You may only edit details or add new members.",
+        });
+        return prev;
+      }
 
-    if (editForm.students.length <= 1) {
-      setFeedback({ type: "error", text: "A batch must have at least one student." });
-      return;
-    }
-    setEditForm((prev) => ({
-      ...prev,
-      students: prev.students.filter((_, idx) => idx !== index),
-    }));
-  };
+      if (prev.students.length <= 1) {
+        setFeedback({ type: "error", text: "A batch must have at least one student." });
+        return prev;
+      }
+      return {
+        ...prev,
+        students: prev.students.filter((_, idx) => idx !== index),
+      };
+    });
+  }, [editingBatch?.status]);
 
-  const handleEditStudentChange = (index, field, value) => {
+  const handleEditStudentChange = useCallback((index, field, value) => {
     setEditForm((prev) => {
       const updated = [...prev.students];
       updated[index] = { ...updated[index], [field]: value };
       return { ...prev, students: updated };
     });
-  };
+  }, []);
 
   const handleEditCsvUpload = (e) => {
     const file = e.target.files[0];
@@ -306,6 +454,8 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
           ...prev,
           students: [...prev.students, ...students],
         }));
+        setEditSearch("");
+        setEditPage(1);
 
         let msg = `Successfully imported ${students.length} student(s) from CSV.`;
         if (skippedCount > 0) {
@@ -458,16 +608,16 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
           res instanceof Blob
             ? res
             : res?.data instanceof Blob
-            ? res.data
-            : res?.data !== undefined
-            ? res.data
-            : res;
+              ? res.data
+              : res?.data !== undefined
+                ? res.data
+                : res;
         const text =
           rawData instanceof Blob
             ? await rawData.text()
             : typeof rawData === "string"
-            ? rawData
-            : "";
+              ? rawData
+              : "";
         const lineCount = text.trim().split(/\r?\n/).length;
 
         // If server produced at least 2 lines (header + 1 record)
@@ -628,13 +778,12 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
       {/* Feedback banner */}
       {feedback.text && (
         <div
-          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${
-            feedback.type === "success"
+          className={`flex items-center justify-between gap-3 p-4 rounded-xl text-xs font-mono font-bold border transition-all ${feedback.type === "success"
               ? "bg-accent/15 text-accent border-accent/40"
               : feedback.type === "warning"
-              ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40"
-              : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/40"
-          }`}
+                ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40"
+                : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/40"
+            }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === "success" ? (
@@ -728,8 +877,8 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                 key={st}
                 onClick={() => setStatusFilter(st)}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all whitespace-nowrap cursor-pointer shrink-0 ${statusFilter === st
-                    ? "bg-accent text-[#111111] shadow-sm shadow-accent/20"
-                    : "bg-card hover:bg-card-hover border border-border/80 text-text-muted hover:text-text"
+                  ? "bg-accent text-[#111111] shadow-sm shadow-accent/20"
+                  : "bg-card hover:bg-card-hover border border-border/80 text-text-muted hover:text-text"
                   }`}
               >
                 {st === "ALL"
@@ -1121,127 +1270,203 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
               {/* Student Search & List */}
               <div className="flex-1 flex flex-col space-y-2 min-h-[140px]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
-                  <span className="text-xs font-mono font-bold text-text uppercase">
-                    Student Roster ({selectedBatch.students?.length || selectedBatch.studentCount || 0})
-                  </span>
-                  <input
-                    type="text"
-                    value={studentSearch}
-                    onChange={(e) => setStudentSearch(e.target.value)}
-                    placeholder="Filter students in batch..."
-                    className="w-full sm:w-auto px-3 py-1 bg-card border border-border/80 rounded-lg text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent placeholder:text-text-muted/60"
-                  />
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-text uppercase">
+                      Student Roster
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-mono text-[11px] font-bold">
+                      {detailFilteredStudents.length}
+                      {selectedBatch.students && selectedBatch.students.length !== detailFilteredStudents.length
+                        ? ` / ${selectedBatch.students.length}`
+                        : ""}
+                    </span>
+                  </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
+                    <input
+                      type="text"
+                      value={studentSearch}
+                      onChange={(e) => {
+                        setStudentSearch(e.target.value);
+                        setDetailPage(1);
+                      }}
+                      placeholder="Filter students in batch..."
+                      className="w-full pl-8 pr-3 py-1 bg-card border border-border/80 rounded-lg text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent placeholder:text-text-muted/60"
+                    />
+                  </div>
                 </div>
 
-                {/* Roster Container */}
-                <div className="overflow-y-auto flex-1 rounded-xl border border-border/60 bg-card/60 max-h-[280px]">
-                  {(!selectedBatch.students || selectedBatch.students.length === 0) ? (
-                    <div className="p-6 text-center text-text-muted font-sans text-xs">
-                      No student records in this batch.
-                    </div>
-                  ) : (
-                    <>
-                      {/* Desktop / Tablet Table View */}
-                      <table className="hidden sm:table w-full text-left text-xs border-collapse">
-                        <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 backdrop-blur-sm z-10">
-                          <tr>
-                            <th className="p-2 pl-3.5 w-12">#</th>
-                            <th className="p-2">Student Name</th>
-                            <th className="p-2">Email Address</th>
-                            <th className="p-2 pr-3.5 text-right">Award / Position</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border/30 font-mono">
-                          {selectedBatch.students
-                            .filter((s) => {
-                              if (!studentSearch.trim()) return true;
-                              const sq = studentSearch.toLowerCase();
+                {/* Roster Container (Pinned pagination at bottom) */}
+                <div className="flex flex-col flex-1 rounded-xl border border-border/60 bg-card/60 overflow-hidden">
+                  <div className="overflow-y-auto max-h-[280px] flex-1">
+                    {(!selectedBatch.students || selectedBatch.students.length === 0) ? (
+                      <div className="p-6 text-center text-text-muted font-sans text-xs">
+                        No student records in this batch.
+                      </div>
+                    ) : detailFilteredStudents.length === 0 ? (
+                      <div className="p-6 text-center text-text-muted font-mono text-xs space-y-2">
+                        <div>No students match &quot;{studentSearch}&quot;</div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setStudentSearch("");
+                            setDetailPage(1);
+                          }}
+                          className="text-xs text-accent hover:underline cursor-pointer"
+                        >
+                          Clear search filter
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Desktop / Tablet Table View */}
+                        <table className="hidden sm:table w-full text-left text-xs border-collapse">
+                          <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 backdrop-blur-sm z-10">
+                            <tr>
+                              <th className="p-2 pl-3.5 w-12">#</th>
+                              <th className="p-2">Student Name</th>
+                              <th className="p-2">Email Address</th>
+                              <th className="p-2 pr-3.5 text-right">Award / Position</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border/30 font-mono">
+                            {detailPaginatedStudents.map((student, idx) => {
+                              const displayNumber = (detailPage - 1) * detailPageSize + idx + 1;
                               return (
-                                (s.name && s.name.toLowerCase().includes(sq)) ||
-                                (s.email && s.email.toLowerCase().includes(sq)) ||
-                                (s.position && s.position.toLowerCase().includes(sq))
-                              );
-                            })
-                            .map((student, idx) => (
-                              <tr key={idx} className="hover:bg-card-hover/40 transition-colors">
-                                <td className="p-2 pl-3.5 text-text-muted">{idx + 1}</td>
-                                <td className="p-2 font-sans font-bold text-text">
-                                  <div className="flex items-center gap-2">
-                                    <span>{student.name}</span>
+                                <tr key={student._id || `${student.email}-${displayNumber}`} className="hover:bg-card-hover/40 transition-colors">
+                                  <td className="p-2 pl-3.5 text-text-muted">{displayNumber}</td>
+                                  <td className="p-2 font-sans font-bold text-text">
+                                    <div className="flex items-center gap-2">
+                                      <span>{student.name}</span>
+                                      {student.certificateId && (
+                                        <a
+                                          href={`/verify-certificate/${student.certificateId}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-[10px] text-accent hover:underline inline-flex items-center gap-0.5 font-mono font-normal"
+                                          title="Verify certificate"
+                                        >
+                                          Verify ↗
+                                        </a>
+                                      )}
+                                    </div>
                                     {student.certificateId && (
-                                      <a
-                                        href={`/verify-certificate/${student.certificateId}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[10px] text-accent hover:underline inline-flex items-center gap-0.5 font-mono font-normal"
-                                        title="Verify certificate"
-                                      >
-                                        Verify ↗
-                                      </a>
+                                      <span className="block font-mono text-[10px] text-accent font-normal mt-0.5">
+                                        #{student.certificateId}
+                                      </span>
                                     )}
-                                  </div>
-                                  {student.certificateId && (
-                                    <span className="block font-mono text-[10px] text-accent font-normal mt-0.5">
-                                      #{student.certificateId}
+                                  </td>
+                                  <td className="p-2 text-text-muted">{student.email}</td>
+                                  <td className="p-2 pr-3.5 text-right">
+                                    <span className="inline-block px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
+                                      {student.position || "Participant"}
                                     </span>
-                                  )}
-                                </td>
-                                <td className="p-2 text-text-muted">{student.email}</td>
-                                <td className="p-2 pr-3.5 text-right">
-                                  <span className="inline-block px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+
+                        {/* Mobile Compact Cards View */}
+                        <div className="sm:hidden divide-y divide-border/30 font-mono">
+                          {detailPaginatedStudents.map((student, idx) => {
+                            const displayNumber = (detailPage - 1) * detailPageSize + idx + 1;
+                            return (
+                              <div key={student._id || `${student.email}-${displayNumber}`} className="p-2 space-y-1 hover:bg-card-hover/30">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <span className="text-[10px] text-text-muted font-bold">#{displayNumber}</span>
+                                    <span className="font-sans font-bold text-text text-xs truncate">{student.name}</span>
+                                  </div>
+                                  <span className="shrink-0 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
                                     {student.position || "Participant"}
                                   </span>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-
-                      {/* Mobile Compact Cards View */}
-                      <div className="sm:hidden divide-y divide-border/30 font-mono">
-                        {selectedBatch.students
-                          .filter((s) => {
-                            if (!studentSearch.trim()) return true;
-                            const sq = studentSearch.toLowerCase();
-                            return (
-                              (s.name && s.name.toLowerCase().includes(sq)) ||
-                              (s.email && s.email.toLowerCase().includes(sq)) ||
-                              (s.position && s.position.toLowerCase().includes(sq))
-                            );
-                          })
-                          .map((student, idx) => (
-                            <div key={idx} className="p-2 space-y-1 hover:bg-card-hover/30">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-1.5 min-w-0">
-                                  <span className="text-[10px] text-text-muted font-bold">#{idx + 1}</span>
-                                  <span className="font-sans font-bold text-text text-xs truncate">{student.name}</span>
                                 </div>
-                                <span className="shrink-0 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold">
-                                  {student.position || "Participant"}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between gap-2 text-[11px] text-text-muted">
-                                <span className="truncate">{student.email}</span>
+                                <div className="flex items-center justify-between gap-2 text-[11px] text-text-muted">
+                                  <span className="truncate">{student.email}</span>
+                                  {student.certificateId && (
+                                    <a
+                                      href={`/verify-certificate/${student.certificateId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-[10px] text-accent hover:underline shrink-0"
+                                    >
+                                      Verify ↗
+                                    </a>
+                                  )}
+                                </div>
                                 {student.certificateId && (
-                                  <a
-                                    href={`/verify-certificate/${student.certificateId}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[10px] text-accent hover:underline shrink-0"
-                                  >
-                                    Verify ↗
-                                  </a>
+                                  <div className="text-[10px] text-accent/80">
+                                    #{student.certificateId}
+                                  </div>
                                 )}
                               </div>
-                              {student.certificateId && (
-                                <div className="text-[10px] text-accent/80">
-                                  #{student.certificateId}
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Detail Pagination Controls Bar */}
+                  {detailFilteredStudents.length > 0 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-2.5 bg-card/90 border-t border-border/60 text-xs font-mono shrink-0">
+                      <div className="text-text-muted text-[11px]">
+                        Showing{" "}
+                        <span className="font-bold text-text">
+                          {(detailPage - 1) * detailPageSize + 1}
+                        </span>
+                        {" - "}
+                        <span className="font-bold text-text">
+                          {Math.min(detailPage * detailPageSize, detailFilteredStudents.length)}
+                        </span>
+                        {" of "}
+                        <span className="font-bold text-text">{detailFilteredStudents.length}</span> students
                       </div>
-                    </>
+
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 text-[11px] text-text-muted">
+                          <span>Rows:</span>
+                          <select
+                            value={detailPageSize}
+                            onChange={(e) => {
+                              setDetailPageSize(Number(e.target.value));
+                              setDetailPage(1);
+                            }}
+                            className="bg-card border border-border/80 rounded-lg px-2 py-0.5 text-text font-mono text-xs focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                          >
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setDetailPage((p) => Math.max(1, p - 1))}
+                            disabled={detailPage <= 1}
+                            className="p-1 rounded-lg bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            title="Previous Page"
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="text-[11px] font-mono text-text px-1">
+                            {detailPage} / {detailTotalPages}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setDetailPage((p) => Math.min(detailTotalPages, p + 1))}
+                            disabled={detailPage >= detailTotalPages}
+                            className="p-1 rounded-lg bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            title="Next Page"
+                          >
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1333,13 +1558,12 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                 {/* Modal In-Form Notice / Error / Warning Banner */}
                 {modalNotice && (
                   <div
-                    className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs font-mono transition-all shrink-0 ${
-                      modalNotice.type === "success"
+                    className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs font-mono transition-all shrink-0 ${modalNotice.type === "success"
                         ? "bg-accent/15 border-accent/40 text-accent"
                         : modalNotice.type === "warning"
-                        ? "bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300"
-                        : "bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300"
-                    }`}
+                          ? "bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300"
+                          : "bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300"
+                      }`}
                   >
                     <div className="flex items-start gap-2.5 flex-1">
                       {modalNotice.type === "success" ? (
@@ -1460,11 +1684,30 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                       Student Roster
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-mono text-[11px] font-bold">
-                      {editForm.students.length} Student(s)
+                      {editFilteredStudents.length}
+                      {editForm.students.length !== editFilteredStudents.length
+                        ? ` / ${editForm.students.length}`
+                        : ""}{" "}
+                      Student(s)
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    {/* Search Filter in Edit Modal */}
+                    <div className="relative min-w-[140px] sm:min-w-[190px]">
+                      <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
+                      <input
+                        type="text"
+                        value={editSearch}
+                        onChange={(e) => {
+                          setEditSearch(e.target.value);
+                          setEditPage(1);
+                        }}
+                        placeholder="Filter roster..."
+                        className="w-full pl-6 pr-2 py-1 bg-card border border-border/80 rounded-lg text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent placeholder:text-text-muted/60"
+                      />
+                    </div>
+
                     <input
                       type="file"
                       accept=".csv"
@@ -1500,81 +1743,122 @@ export default function CertificateBatchesSection({ isSuperAdmin, onSwitchToCrea
                   </div>
                 </div>
 
-                {/* Student Rows Table */}
-                <div className="rounded-xl border border-border/60 bg-card/40 max-h-[250px] overflow-y-auto overflow-x-auto flex-1">
-                  <table className="w-full text-left text-xs border-collapse min-w-[500px]">
-                    <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 z-10 backdrop-blur-sm">
-                      <tr>
-                        <th className="p-2 pl-3 w-10">#</th>
-                        <th className="p-2">Student Name *</th>
-                        <th className="p-2">Email Address *</th>
-                        <th className="p-2 w-40">Award / Position</th>
-                        <th className="p-2 pr-3 text-right w-10"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/30">
-                      {editForm.students.map((student, idx) => (
-                        <tr key={idx} className="hover:bg-card-hover/30">
-                          <td className="p-1.5 pl-3 font-mono text-text-muted text-[11px]">
-                            {idx + 1}
-                          </td>
-                          <td className="p-1.5">
-                            <input
-                              type="text"
-                              value={student.name}
-                              onChange={(e) => handleEditStudentChange(idx, "name", e.target.value)}
-                              placeholder="Student Name"
-                              required
-                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                            />
-                          </td>
-                          <td className="p-1.5">
-                            <input
-                              type="email"
-                              value={student.email}
-                              onChange={(e) => handleEditStudentChange(idx, "email", e.target.value)}
-                              placeholder="student@example.com"
-                              required
-                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs font-mono text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                            />
-                          </td>
-                          <td className="p-1.5">
-                            <select
-                              value={student.position || "Participant"}
-                              onChange={(e) => handleEditStudentChange(idx, "position", e.target.value)}
-                              className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs text-text focus:outline-none focus:ring-1 focus:ring-accent"
-                            >
-                              <option value="Participant">Participant</option>
-                              <option value="Winner">Winner</option>
-                              <option value="Runner Up">Runner Up</option>
-                              <option value="1st Runner-up">1st Runner-up</option>
-                              <option value="2nd Runner-up">2nd Runner-up</option>
-                              <option value="Volunteer">Volunteer</option>
-                              <option value="Organizer">Organizer</option>
-                            </select>
-                          </td>
-                          <td className="p-1.5 pr-3 text-right">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveEditStudent(idx)}
-                              disabled={
-                                editForm.students.length <= 1 ||
-                                (editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal)
-                              }
-                              className="p-1 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-                              title={
-                                editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal
-                                  ? "Existing approved members cannot be removed"
-                                  : "Remove student row"
-                              }
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                {/* Student Rows Table Container (Pinned pagination at bottom) */}
+                <div className="flex flex-col flex-1 rounded-xl border border-border/60 bg-card/40 overflow-hidden">
+                  <div className="max-h-[250px] overflow-y-auto overflow-x-auto flex-1">
+                    {editFilteredStudents.length === 0 ? (
+                      <div className="p-6 text-center text-text-muted font-mono text-xs space-y-2">
+                        <div>No students match &quot;{editSearch}&quot;</div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditSearch("");
+                            setEditPage(1);
+                          }}
+                          className="text-xs text-accent hover:underline cursor-pointer"
+                        >
+                          Clear search filter
+                        </button>
+                      </div>
+                    ) : (
+                      <table className="w-full text-left text-xs border-collapse min-w-[500px]">
+                        <thead className="bg-card-hover/80 border-b border-border/60 text-[10px] font-mono uppercase text-text-muted sticky top-0 z-10 backdrop-blur-sm">
+                          <tr>
+                            <th className="p-2 pl-3 w-10">#</th>
+                            <th className="p-2">Student Name *</th>
+                            <th className="p-2">Email Address *</th>
+                            <th className="p-2 w-40">Award / Position</th>
+                            <th className="p-2 pr-3 text-right w-10"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/30">
+                          {editPaginatedStudents.map(({ student, originalIndex }, pageIdx) => {
+                            const displayIndex = (editPage - 1) * editPageSize + pageIdx + 1;
+                            const canRemove =
+                              editForm.students.length > 1 &&
+                              !(editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal);
+                            const removeTitle =
+                              editingBatch?.status !== "PENDING_APPROVAL" && student?.isOriginal
+                                ? "Existing approved members cannot be removed"
+                                : "Remove student row";
+
+                            return (
+                              <EditStudentRow
+                                key={originalIndex}
+                                student={student}
+                                originalIndex={originalIndex}
+                                displayIndex={displayIndex}
+                                onChange={handleEditStudentChange}
+                                onRemove={handleRemoveEditStudent}
+                                canRemove={canRemove}
+                                removeTitle={removeTitle}
+                              />
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+
+                  {/* Edit Pagination Controls Bar */}
+                  {editFilteredStudents.length > 0 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-2 bg-card/90 border-t border-border/60 text-xs font-mono shrink-0">
+                      <div className="text-text-muted text-[11px]">
+                        Showing{" "}
+                        <span className="font-bold text-text">
+                          {(editPage - 1) * editPageSize + 1}
+                        </span>
+                        {" - "}
+                        <span className="font-bold text-text">
+                          {Math.min(editPage * editPageSize, editFilteredStudents.length)}
+                        </span>
+                        {" of "}
+                        <span className="font-bold text-text">{editFilteredStudents.length}</span> students
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 text-[11px] text-text-muted">
+                          <span>Rows:</span>
+                          <select
+                            value={editPageSize}
+                            onChange={(e) => {
+                              setEditPageSize(Number(e.target.value));
+                              setEditPage(1);
+                            }}
+                            className="bg-card border border-border/80 rounded-lg px-2 py-0.5 text-text font-mono text-xs focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer"
+                          >
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setEditPage((p) => Math.max(1, p - 1))}
+                            disabled={editPage <= 1}
+                            className="p-1 rounded-lg bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            title="Previous Page"
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="text-[11px] font-mono text-text px-1">
+                            {editPage} / {editTotalPages}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setEditPage((p) => Math.min(editTotalPages, p + 1))}
+                            disabled={editPage >= editTotalPages}
+                            className="p-1 rounded-lg bg-card border border-border/80 text-text hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                            title="Next Page"
+                          >
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
