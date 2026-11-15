@@ -41,9 +41,11 @@ const backgroundJobSchema = new mongoose.Schema(
   }
 );
 
-// High-performance compound indexes for atomic polling & admin stats
+// High-performance compound indexes for atomic polling, admin stats, and instant sorted exports
 backgroundJobSchema.index({ status: 1, scheduledAt: 1, type: 1 });
 backgroundJobSchema.index({ status: 1, type: 1, createdAt: -1 });
+backgroundJobSchema.index({ status: 1, createdAt: -1 });
+backgroundJobSchema.index({ type: 1, status: 1, createdAt: -1 });
 backgroundJobSchema.index({ status: 1, updatedAt: 1 });
 backgroundJobSchema.index({ type: 1, createdAt: -1 });
 backgroundJobSchema.index({ createdAt: -1 });

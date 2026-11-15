@@ -46,7 +46,12 @@ axiosInstance.interceptors.response.use(
     const rLimit = response.headers?.["ratelimit-limit"] || response.headers?.["x-ratelimit-limit"];
     const rlReset = response.headers?.["ratelimit-reset"] || response.headers?.["x-ratelimit-reset"];
 
-    if (rlRemaining !== undefined && response.data && typeof response.data === "object") {
+    if (
+      rlRemaining !== undefined &&
+      response.data &&
+      typeof response.data === "object" &&
+      !(response.data instanceof Blob)
+    ) {
       response.data._rateLimit = {
         remaining: Number(rlRemaining),
         limit: Number(rLimit),
