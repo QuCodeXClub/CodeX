@@ -50,13 +50,13 @@ backgroundJobSchema.index({ status: 1, updatedAt: 1 });
 backgroundJobSchema.index({ type: 1, createdAt: -1 });
 backgroundJobSchema.index({ createdAt: -1 });
 
-// Safe 90-day retention guarantees that existing ~1200 production records are preserved
+// Auto-purge COMPLETED jobs after 45 days via MongoDB TTL engine
 backgroundJobSchema.index(
   { processedAt: 1 },
   {
-    expireAfterSeconds: 90 * 24 * 60 * 60,
+    expireAfterSeconds: 45 * 24 * 60 * 60,
     partialFilterExpression: { status: 'COMPLETED' },
-    name: 'ttl_completed_90d',
+    name: 'ttl_completed_45d',
   }
 );
 
@@ -83,8 +83,19 @@ backgroundJobSchema.index(
 export const BackgroundJob = mongoose.model('BackgroundJob', backgroundJobSchema);
 
 // Non-fatal index error listener for graceful index synchronization
-BackgroundJob.on('index', (err) => {
-  if (err) {
+BackgroundJob.on('index', async (err) => {
+  if (
+    err &&
+    (err.code === 85 ||
+      err.message?.includes('IndexOptionsConflict') ||
+      err.message?.includes('already exists with different options'))
+  ) {
+    try {
+      await BackgroundJob.collection.dropIndex('ttl_completed_90d').catch(() => {});
+      await BackgroundJob.collection.dropIndex('ttl_completed_14d').catch(() => {});
+      await BackgroundJob.createIndexes().catch(() => {});
+    } catch (_) {}
+  } else if (err) {
     console.warn('[BackgroundJob] Index sync notification (non-fatal):', err.message);
   }
 });
