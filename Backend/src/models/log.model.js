@@ -18,6 +18,11 @@ const logSchema = new mongoose.Schema(
     adminName: {
       type: String,
     },
+    adminRole: {
+      type: String,
+      enum: ['Admin', 'SuperAdmin'],
+      default: 'Admin',
+    },
     ipAddress: {
       type: String,
     },
@@ -34,7 +39,8 @@ const logSchema = new mongoose.Schema(
 // Auto delete after 3 months (90 days)
 logSchema.index({ createdAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
-// Compound index for instant paginated log queries by log type
+// Compound index for instant paginated log queries by log type and role
 logSchema.index({ type: 1, createdAt: -1 });
+logSchema.index({ type: 1, adminRole: 1, createdAt: -1 });
 
 export const SystemLog = mongoose.model('SystemLog', logSchema);

@@ -35,6 +35,7 @@ export const logAdminActivity = (actionDescription = null) => {
       if (res.statusCode >= 200 && res.statusCode < 400 && req.admin) {
         const adminId = req.admin._id;
         const adminName = req.admin.name || "Admin";
+        const adminRole = req.admin.role || "Admin";
         
         const details = {
           ip: req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress
@@ -60,6 +61,7 @@ export const logAdminActivity = (actionDescription = null) => {
             type: 'ADMIN_ACTIVITY',
             adminId,
             adminName,
+            adminRole,
             action,
             details
           });
