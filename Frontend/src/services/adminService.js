@@ -86,11 +86,15 @@ class AdminService {
     return axiosInstance.delete("/admin/jobs/clear-completed");
   }
 
+  async getJobExportParts(params = {}) {
+    return axiosInstance.get("/admin/jobs/export-parts", { params });
+  }
+
   async exportJobLogs(params = {}) {
     return axiosInstance.get("/admin/jobs/export", {
       params,
       responseType: "blob",
-      timeout: 120000,
+      timeout: 45000,
     });
   }
 

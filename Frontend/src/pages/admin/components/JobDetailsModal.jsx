@@ -12,6 +12,7 @@ import {
   Ticket,
   Megaphone,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 
 export default function JobDetailsModal({ job, onClose, onRetry }) {
@@ -160,10 +161,42 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
               Payload Specifications
             </span>
             <div className="p-4 rounded-xl bg-card border border-border/80 font-mono text-xs space-y-2">
-              {payload.email && (
+              {payload.certificateId && (
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Certificate ID:</span>
+                  <a
+                    href={`/verify-certificate/${payload.certificateId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent font-bold hover:underline flex items-center gap-1.5 break-all"
+                    title="Open public verification page"
+                  >
+                    <span>{payload.certificateId}</span>
+                    <ExternalLink className="w-3 h-3 shrink-0" />
+                  </a>
+                </div>
+              )}
+              {payload.boardingPassId && (
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
+                  <span className="text-text-muted shrink-0">Boarding Pass ID:</span>
+                  <a
+                    href={`/verify-boarding-pass/${payload.boardingPassId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-purple-400 font-bold hover:underline flex items-center gap-1.5 break-all"
+                    title="Open public verification page"
+                  >
+                    <span>{payload.boardingPassId}</span>
+                    <ExternalLink className="w-3 h-3 shrink-0" />
+                  </a>
+                </div>
+              )}
+              {(payload.email || payload.student?.email || payload.recipientEmail) && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
                   <span className="text-text-muted shrink-0">Recipient Email:</span>
-                  <span className="text-accent font-semibold break-all">{payload.email}</span>
+                  <span className="text-accent font-semibold break-all">
+                    {payload.email || payload.student?.email || payload.recipientEmail}
+                  </span>
                 </div>
               )}
               {payload.subject && (
@@ -196,10 +229,12 @@ export default function JobDetailsModal({ job, onClose, onRetry }) {
                   <span className="text-text break-all">{payload.student.deskNumber}</span>
                 </div>
               )}
-              {payload.emailList && (
+              {(payload.recipientCount !== undefined || payload.emailList) && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-border/40 pb-2">
                   <span className="text-text-muted shrink-0">Broadcast Recipients:</span>
-                  <span className="text-text font-bold">{payload.emailList.length} Recipients</span>
+                  <span className="text-text font-bold">
+                    {payload.recipientCount ?? payload.emailList?.length ?? 0} Recipients
+                  </span>
                 </div>
               )}
 

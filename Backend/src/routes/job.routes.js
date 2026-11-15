@@ -6,6 +6,7 @@ import {
   deleteJob,
   clearCompletedJobs,
   exportJobLogs,
+  getJobExportParts,
 } from '../controllers/job.controller.js';
 import { verifyJWT, verifySuperAdmin } from '../middlewares/auth.middleware.js';
 
@@ -15,6 +16,7 @@ router.use(verifyJWT); // Protect all job routes for admin only
 
 router.route('/').get(getBackgroundJobs);
 router.route('/stats').get(getJobStats);
+router.route('/export-parts').get(verifySuperAdmin, getJobExportParts);
 router.route('/export').get(verifySuperAdmin, exportJobLogs);
 router.route('/clear-completed').delete(clearCompletedJobs);
 router.route('/:id').delete(deleteJob);
