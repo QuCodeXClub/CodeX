@@ -43,9 +43,11 @@ const getBackgroundJobs = asyncHandler(async (req, res) => {
 
   const [items, total] = await Promise.all([
     BackgroundJob.find(query)
+      .select('-payload.html -payload.signatureImage -payload.finalSignatureUrl -payload.pdfBuffer -payload.attachments')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     BackgroundJob.countDocuments(query),
   ]);
 
@@ -272,10 +274,16 @@ const exportJobLogs = asyncHandler(async (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    // Disable compression buffering so chunks stream immediately without memory buildup
+    res.setHeader('x-no-compression', '1');
 
-    // High-performance streaming cursor with batchSize: 500
-    // Memory footprint stays constant O(1) regardless of whether there are 100 or 100,000 tasks
+    // High-performance streaming cursor: exclude massive bloat fields (html email bodies, base64 data)
+    // Memory footprint stays constant O(1) even for 100,000 tasks
     const cursor = BackgroundJob.find(query)
+      .select('-payload.html -payload.signatureImage -payload.finalSignatureUrl -payload.pdfBuffer -payload.attachments')
       .sort({ createdAt: -1 })
       .lean()
       .cursor({ batchSize: 500 });
@@ -285,17 +293,73 @@ const exportJobLogs = asyncHandler(async (req, res) => {
     });
 
     res.write('[\n');
+    if (typeof res.flush === 'function') res.flush();
+
     let isFirst = true;
 
     for await (const job of cursor) {
       if (!isFirst) {
         res.write(',\n');
       }
-      res.write(JSON.stringify(job, null, 2));
+
+      const p = job.payload || {};
+      const recipientEmail =
+        p.email ||
+        p.student?.email ||
+        (Array.isArray(p.emailList) ? `${p.emailList.length} recipients` : '');
+      const studentName = p.student?.name || '';
+      const eventName = p.eventName || '';
+      const subject = p.subject || '';
+
+      let durationSec = null;
+      if (job.processedAt && job.createdAt) {
+        const ms = new Date(job.processedAt).getTime() - new Date(job.createdAt).getTime();
+        durationSec = Number((ms / 1000).toFixed(2));
+      }
+
+      // Compact payload metadata (stripping any huge values if present)
+      const sanitizedPayload = {};
+      for (const [k, v] of Object.entries(p)) {
+        if (
+          k === 'html' ||
+          k === 'signatureImage' ||
+          k === 'finalSignatureUrl' ||
+          k === 'pdfBuffer' ||
+          k === 'attachments'
+        ) {
+          continue;
+        }
+        if (typeof v === 'string' && v.length > 500) {
+          sanitizedPayload[k] = v.slice(0, 500) + '...';
+        } else {
+          sanitizedPayload[k] = v;
+        }
+      }
+
+      const compactJob = {
+        jobId: job._id,
+        type: job.type,
+        status: job.status,
+        recipientEmail,
+        studentName,
+        eventName,
+        subject,
+        attempts: job.attempts ?? 0,
+        maxAttempts: job.maxAttempts ?? 3,
+        durationSec,
+        createdAt: job.createdAt,
+        scheduledAt: job.scheduledAt,
+        processedAt: job.processedAt,
+        lastError: job.lastError ? String(job.lastError).replace(/[\r\n]+/g, ' ').slice(0, 500) : '',
+        payload: sanitizedPayload,
+      };
+
+      res.write(JSON.stringify(compactJob));
       isFirst = false;
     }
 
     res.write('\n]');
+    if (typeof res.flush === 'function') res.flush();
     return res.end();
   }
 
@@ -320,9 +384,15 @@ const exportJobLogs = asyncHandler(async (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  // Disable compression buffering so chunks stream immediately
+  res.setHeader('x-no-compression', '1');
 
   // Stream CSV header with UTF-8 BOM
   res.write('\uFEFF' + headers.map((h) => `"${h}"`).join(',') + '\r\n');
+  if (typeof res.flush === 'function') res.flush();
 
   // Memory optimization: Project only the required metadata fields to avoid loading large HTML bodies into RAM
   const cursor = BackgroundJob.find(query)
@@ -347,6 +417,11 @@ const exportJobLogs = asyncHandler(async (req, res) => {
       durationSec = (ms / 1000).toFixed(2);
     }
 
+    // Sanitize lastError: strip newlines to prevent multi-line rows in CSV, truncate to 500 chars
+    const cleanError = job.lastError
+      ? String(job.lastError).replace(/[\r\n]+/g, ' ').replace(/"/g, '""').slice(0, 500)
+      : '';
+
     const row = [
       `"${String(job._id || '').replace(/"/g, '""')}"`,
       `"${String(job.type || '').replace(/"/g, '""')}"`,
@@ -360,11 +435,14 @@ const exportJobLogs = asyncHandler(async (req, res) => {
       `"${job.createdAt ? new Date(job.createdAt).toISOString() : ''}"`,
       `"${job.scheduledAt ? new Date(job.scheduledAt).toISOString() : ''}"`,
       `"${job.processedAt ? new Date(job.processedAt).toISOString() : ''}"`,
-      `"${String(job.lastError || '').replace(/"/g, '""')}"`,
+      `"${cleanError}"`,
     ];
 
     res.write(row.join(',') + '\r\n');
   }
+
+  if (typeof res.flush === 'function') res.flush();
+  return res.end();
 
   return res.end();
 });

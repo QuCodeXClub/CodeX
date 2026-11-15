@@ -269,9 +269,21 @@ export default function BackgroundJobs() {
       });
     } catch (err) {
       console.error("Export error:", err);
+      let errMsg = "Failed to export task queue logs.";
+      if (err.response?.data instanceof Blob) {
+        try {
+          const errText = await err.response.data.text();
+          const errJson = JSON.parse(errText);
+          errMsg = errJson.message || errMsg;
+        } catch {
+          errMsg = err.message || errMsg;
+        }
+      } else {
+        errMsg = err?.response?.data?.message || err?.message || errMsg;
+      }
       setMessage({
         type: "error",
-        text: err?.message || err?.response?.data?.message || "Failed to export task queue logs.",
+        text: errMsg,
       });
     } finally {
       setIsExporting(false);

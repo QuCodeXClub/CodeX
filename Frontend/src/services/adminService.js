@@ -90,6 +90,7 @@ class AdminService {
     return axiosInstance.get("/admin/jobs/export", {
       params,
       responseType: "blob",
+      timeout: 120000,
     });
   }
 
