@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { adminService } from "../../services/adminService";
 import { useConfirm } from "../../context/ConfirmContext";
 import JobDetailsModal from "./components/JobDetailsModal";
+import ExportLogsModal from "./components/ExportLogsModal";
 
 export default function BackgroundJobs() {
   const currentUser = useSelector((state) => state.auth.user);
@@ -64,6 +65,7 @@ export default function BackgroundJobs() {
   const [pagination, setPagination] = useState({ totalPages: 1, total: 0 });
   const [message, setMessage] = useState({ type: "", text: "" });
   const [selectedJob, setSelectedJob] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef(null);
@@ -430,100 +432,19 @@ export default function BackgroundJobs() {
             </button>
           )}
 
-          {/* Export Logs Dropdown (Super Admin Only) */}
+          {/* Export Logs Button (Super Admin Only - Instant Partitioned Export) */}
           {isSuperAdmin && (
-            <div className="relative" ref={exportMenuRef}>
-              <button
-                onClick={() => setShowExportMenu((prev) => !prev)}
-                disabled={isExporting}
-                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-card border border-border/80 text-xs font-mono text-text hover:text-accent hover:border-accent/40 transition-all shadow-sm cursor-pointer disabled:opacity-50"
-                title="Super Admin • Export Task Queue Logs"
-              >
-                {isExporting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
-                ) : (
-                  <Download className="w-3.5 h-3.5" />
-                )}
-                <span>{isExporting ? "Exporting..." : "Export Logs"}</span>
-                <ChevronDown className="w-3 h-3 text-text-muted" />
-              </button>
-
-              {showExportMenu && (
-                <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-xl shadow-2xl z-50 py-1.5 backdrop-blur-xl animate-fadeIn">
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-text-muted border-b border-border/60 flex items-center justify-between">
-                    <span>Export Format</span>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fuchsia-500/15 text-fuchsia-400 font-bold border border-fuchsia-500/30">
-                      SUPER ADMIN
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleExportLogs("csv", "all")}
-                    className="w-full px-3.5 py-2 text-left text-xs font-mono hover:bg-card-hover flex items-center justify-between text-text transition-colors cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>All Logs as CSV</span>
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                      EXCEL
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleExportLogs("json", "all")}
-                    className="w-full px-3.5 py-2 text-left text-xs font-mono hover:bg-card-hover flex items-center justify-between text-text transition-colors cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>All Logs as JSON</span>
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20">
-                      RAW
-                    </span>
-                  </button>
-
-                  {(statusFilter || typeFilter || search) && (
-                    <>
-                      <div className="my-1 border-t border-border/60" />
-                      <div className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-accent font-bold">
-                        Filtered Scope
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleExportLogs("csv", "filtered")}
-                        className="w-full px-3.5 py-2 text-left text-xs font-mono hover:bg-card-hover flex items-center justify-between text-text transition-colors cursor-pointer"
-                      >
-                        <span className="flex items-center gap-2">
-                          <FileSpreadsheet className="w-3.5 h-3.5 text-accent" />
-                          <span>Filtered as CSV</span>
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-bold border border-accent/20">
-                          CSV
-                        </span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleExportLogs("json", "filtered")}
-                        className="w-full px-3.5 py-2 text-left text-xs font-mono hover:bg-card-hover flex items-center justify-between text-text transition-colors cursor-pointer"
-                      >
-                        <span className="flex items-center gap-2">
-                          <FileText className="w-3.5 h-3.5 text-accent" />
-                          <span>Filtered as JSON</span>
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-bold border border-accent/20">
-                          JSON
-                        </span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-card border border-border/80 text-xs font-mono text-text hover:text-accent hover:border-accent/40 transition-all shadow-sm cursor-pointer"
+              title="Super Admin • Export Task Queue Logs in Partitioned Parts"
+            >
+              <Download className="w-3.5 h-3.5 text-accent" />
+              <span>Export Logs</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-fuchsia-500/15 text-fuchsia-400 font-bold border border-fuchsia-500/30">
+                PARTS
+              </span>
+            </button>
           )}
         </div>
       </header>
@@ -998,6 +919,18 @@ export default function BackgroundJobs() {
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
           onRetry={handleRetry}
+        />
+      )}
+
+      {/* Export Logs Partitioned Modal */}
+      {showExportModal && (
+        <ExportLogsModal
+          isOpen={showExportModal}
+          onClose={() => setShowExportModal(false)}
+          statusFilter={statusFilter}
+          typeFilter={typeFilter}
+          search={search}
+          totalJobsCount={stats.total || pagination.total || 0}
         />
       )}
     </div>
