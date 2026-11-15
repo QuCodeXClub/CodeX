@@ -34,8 +34,14 @@ const getBackgroundJobs = asyncHandler(async (req, res) => {
     query.$or = [
       { type: { $regex: safeSearch, $options: 'i' } },
       { 'payload.email': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.recipientEmail': { $regex: safeSearch, $options: 'i' } },
       { 'payload.student.email': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.student.name': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.name': { $regex: safeSearch, $options: 'i' } },
       { 'payload.eventName': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.subject': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.certificateId': { $regex: safeSearch, $options: 'i' } },
+      { 'payload.boardingPassId': { $regex: safeSearch, $options: 'i' } },
     ];
   }
 
@@ -259,6 +265,8 @@ const buildJobFilterQuery = (queryObj = {}) => {
         { 'payload.name': { $regex: safeSearch, $options: 'i' } },
         { 'payload.eventName': { $regex: safeSearch, $options: 'i' } },
         { 'payload.subject': { $regex: safeSearch, $options: 'i' } },
+        { 'payload.certificateId': { $regex: safeSearch, $options: 'i' } },
+        { 'payload.boardingPassId': { $regex: safeSearch, $options: 'i' } },
       ];
     }
   }
@@ -306,6 +314,8 @@ const formatJobRowForCSV = (job) => {
     `"${String(recipientEmail || '').replace(/"/g, '""')}"`,
     `"${String(studentName || '').replace(/"/g, '""')}"`,
     `"${String(eventOrSubject || '').replace(/"/g, '""')}"`,
+    `"${String(p.certificateId || '').replace(/"/g, '""')}"`,
+    `"${String(p.boardingPassId || '').replace(/"/g, '""')}"`,
     `"${job.attempts ?? 0}"`,
     `"${job.maxAttempts ?? 3}"`,
     `"${durationSec}"`,
@@ -373,6 +383,8 @@ const formatJobForJSON = (job) => {
     studentName,
     eventName,
     subject,
+    certificateId: p.certificateId || '',
+    boardingPassId: p.boardingPassId || '',
     attempts: job.attempts ?? 0,
     maxAttempts: job.maxAttempts ?? 3,
     durationSec,
@@ -497,6 +509,8 @@ const exportJobLogs = asyncHandler(async (req, res) => {
       'Recipient / Email',
       'Student Name',
       'Event / Subject',
+      'Certificate ID',
+      'Boarding Pass ID',
       'Attempts',
       'Max Attempts',
       'Duration (sec)',
@@ -567,6 +581,8 @@ const exportJobLogs = asyncHandler(async (req, res) => {
     'Recipient / Email',
     'Student Name',
     'Event / Subject',
+    'Certificate ID',
+    'Boarding Pass ID',
     'Attempts',
     'Max Attempts',
     'Duration (sec)',

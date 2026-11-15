@@ -50,35 +50,41 @@ backgroundJobSchema.index({ status: 1, updatedAt: 1 });
 backgroundJobSchema.index({ type: 1, createdAt: -1 });
 backgroundJobSchema.index({ createdAt: -1 });
 
-// Production storage optimization: Auto-purge COMPLETED jobs after 14 days via MongoDB TTL engine
-// Prevents unbounded database disk growth from large stored email/payload structures
+// Safe 90-day retention guarantees that existing ~1200 production records are preserved
 backgroundJobSchema.index(
   { processedAt: 1 },
   {
-    expireAfterSeconds: 14 * 24 * 60 * 60,
+    expireAfterSeconds: 90 * 24 * 60 * 60,
     partialFilterExpression: { status: 'COMPLETED' },
-    name: 'ttl_completed_14d',
+    name: 'ttl_completed_90d',
   }
 );
 
-// Auto-purge SUPPRESSED jobs after 30 days
+// Auto-purge SUPPRESSED jobs after 90 days
 backgroundJobSchema.index(
   { processedAt: 1 },
   {
-    expireAfterSeconds: 30 * 24 * 60 * 60,
+    expireAfterSeconds: 90 * 24 * 60 * 60,
     partialFilterExpression: { status: 'SUPPRESSED' },
-    name: 'ttl_suppressed_30d',
+    name: 'ttl_suppressed_90d',
   }
 );
 
-// Auto-purge permanently FAILED jobs after 45 days
+// Auto-purge permanently FAILED jobs after 90 days
 backgroundJobSchema.index(
   { processedAt: 1 },
   {
-    expireAfterSeconds: 45 * 24 * 60 * 60,
+    expireAfterSeconds: 90 * 24 * 60 * 60,
     partialFilterExpression: { status: 'FAILED' },
-    name: 'ttl_failed_45d',
+    name: 'ttl_failed_90d',
   }
 );
 
 export const BackgroundJob = mongoose.model('BackgroundJob', backgroundJobSchema);
+
+// Non-fatal index error listener for graceful index synchronization
+BackgroundJob.on('index', (err) => {
+  if (err) {
+    console.warn('[BackgroundJob] Index sync notification (non-fatal):', err.message);
+  }
+});

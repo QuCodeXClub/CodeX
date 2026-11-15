@@ -361,33 +361,76 @@ export default function BackgroundJobs() {
   const renderPayloadSummary = (job) => {
     const p = job.payload || {};
     if (job.type === "EMAIL_SEND") {
+      const recipient =
+        p.email ||
+        p.student?.email ||
+        p.recipientEmail ||
+        (typeof p.student === "string" && p.student.includes("@") ? p.student : "");
       return (
-        <span className="font-mono text-text">
-          {p.email ? `To: ${p.email}` : "Bulk Send"}{" "}
+        <span className="font-mono text-text flex flex-wrap items-center gap-1.5">
+          <span>{recipient ? `To: ${recipient}` : "Bulk Send"}</span>
           <span className="text-text-muted">({p.subject || "No subject"})</span>
+          {p.certificateId && (
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-accent/10 text-accent font-mono border border-accent/20">
+              Cert: {p.certificateId}
+            </span>
+          )}
+          {p.boardingPassId && (
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-400 font-mono border border-purple-500/20">
+              Pass: {p.boardingPassId}
+            </span>
+          )}
         </span>
       );
     }
     if (job.type === "CERTIFICATE_BULK") {
+      const studentName =
+        p.student?.name ||
+        (typeof p.student === "string" ? p.student : "") ||
+        p.student?.email ||
+        p.name ||
+        "Student";
       return (
-        <span className="text-text">
-          Event: <strong className="text-accent">{p.eventName}</strong> | Student:{" "}
-          <span className="font-semibold">{p.student?.name || p.student?.email}</span>
+        <span className="text-text flex flex-wrap items-center gap-1.5">
+          <span>
+            Event: <strong className="text-accent">{p.eventName || "Certificate"}</strong> | Student:{" "}
+            <span className="font-semibold">{studentName}</span>
+          </span>
+          {p.certificateId && (
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-accent/10 text-accent font-mono font-bold border border-accent/20">
+              ID: {p.certificateId}
+            </span>
+          )}
         </span>
       );
     }
     if (job.type === "BOARDING_PASS_BULK") {
+      const studentName =
+        p.student?.name ||
+        (typeof p.student === "string" ? p.student : "") ||
+        p.name ||
+        "Attendee";
+      const studentEmail = p.student?.email || p.email || "";
+      const qid = p.student?.qid || p.qid || "";
       return (
-        <span className="text-text">
-          Pass: <strong className="text-accent">{p.eventName}</strong> | Attendee:{" "}
-          <span className="font-semibold">{p.student?.name}</span> ({p.student?.email}) {p.student?.qid ? `[QID: ${p.student.qid}]` : ""}
+        <span className="text-text flex flex-wrap items-center gap-1.5">
+          <span>
+            Pass: <strong className="text-accent">{p.eventName || "Boarding Pass"}</strong> | Attendee:{" "}
+            <span className="font-semibold">{studentName}</span> {studentEmail ? `(${studentEmail})` : ""}{" "}
+            {qid ? `[QID: ${qid}]` : ""}
+          </span>
+          {p.boardingPassId && (
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-400 font-mono font-bold border border-purple-500/20">
+              ID: {p.boardingPassId}
+            </span>
+          )}
         </span>
       );
     }
     if (job.type === "ANNOUNCEMENT_BULK") {
       return (
         <span className="text-text">
-          Broadcast: <strong>{p.subject}</strong> ({p.recipientCount ?? p.emailList?.length ?? 0} recipients)
+          Broadcast: <strong>{p.subject || "Announcement"}</strong> ({p.recipientCount ?? p.emailList?.length ?? 0} recipients)
         </span>
       );
     }
