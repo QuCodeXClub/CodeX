@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Loader2, Activity, User, Monitor, Shield } from "lucide-react";
 import { adminService } from "../../../services/adminService";
@@ -12,6 +12,19 @@ export default function ActivityLogsModal({ isModal = false }) {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ totalPages: 1, total: 0 });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Defense-in-depth: Ensure regular Admins can never see any Super Admin logs
+  const visibleLogs = useMemo(() => {
+    if (isSuperAdmin) return logs;
+    return logs.filter((log) => {
+      const isLogSuperAdmin =
+        log.adminRole === "SuperAdmin" ||
+        log.adminId?.role === "SuperAdmin" ||
+        (typeof log.adminName === "string" && /super\s*admin/i.test(log.adminName)) ||
+        (typeof log.action === "string" && /^super\s*admin/i.test(log.action));
+      return !isLogSuperAdmin;
+    });
+  }, [logs, isSuperAdmin]);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -90,12 +103,12 @@ export default function ActivityLogsModal({ isModal = false }) {
       {/* Main Content Area */}
       <div className="bg-card/85 backdrop-blur-xl rounded-2xl border border-border/80 shadow-xl overflow-hidden flex flex-col min-h-[500px]">
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {loading && logs.length === 0 ? (
+          {loading && visibleLogs.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center text-text-muted gap-3 py-16">
               <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
               <span className="text-xs font-mono">Loading activity logs...</span>
             </div>
-          ) : logs.length === 0 ? (
+          ) : visibleLogs.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center text-text-muted gap-3 py-16">
               <Activity className="w-12 h-12 text-indigo-400/60" />
               <span className="text-sm font-semibold text-text">No activity logs found</span>
@@ -113,8 +126,8 @@ export default function ActivityLogsModal({ isModal = false }) {
                       <th className="p-4 pr-6">IP Address</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/40 text-xs font-sans">
-                    {logs.map((log) => {
+                  <tbody className="divide-y border-border/40 text-xs font-sans">
+                    {visibleLogs.map((log) => {
                       const isLogSuperAdmin =
                         log.adminId?.role === "SuperAdmin" ||
                         log.adminRole === "SuperAdmin" ||
@@ -153,7 +166,7 @@ export default function ActivityLogsModal({ isModal = false }) {
 
               {/* Mobile Card View */}
               <div className="block md:hidden space-y-3">
-                {logs.map((log) => {
+                {visibleLogs.map((log) => {
                   const isLogSuperAdmin =
                     log.adminId?.role === "SuperAdmin" ||
                     log.adminRole === "SuperAdmin" ||
